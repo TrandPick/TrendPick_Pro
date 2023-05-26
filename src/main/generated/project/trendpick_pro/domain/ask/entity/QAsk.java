@@ -24,6 +24,8 @@ public class QAsk extends EntityPathBase<Ask> {
 
     public final StringPath author = createString("author");
 
+    public final StringPath brand = createString("brand");
+
     public final StringPath content = createString("content");
 
     public final DateTimePath<java.time.LocalDateTime> createDate = createDateTime("createDate", java.time.LocalDateTime.class);
