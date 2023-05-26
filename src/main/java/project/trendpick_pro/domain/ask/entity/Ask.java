@@ -36,5 +36,4 @@ public class Ask {
     @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Answer> answerList = new ArrayList<>();
-
 }
