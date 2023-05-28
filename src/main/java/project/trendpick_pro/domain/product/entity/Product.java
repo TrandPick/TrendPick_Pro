@@ -83,6 +83,19 @@ public class Product extends BaseTimeEntity {
                 .build();
     }
 
+    public void addStock(int quantity) {
+        this.stock += quantity;
+    }
+
+    public void removeStock(int quantity) throws IllegalAccessException {
+        int restStock = this.stock - quantity;
+        if (restStock < 0) {
+            throw new IllegalAccessException("need more stock");
+        }
+        this.stock = restStock;
+    }
+
+
     public void update(ProductSaveRequest request) {
 
         // 여기서 파일 지지고 볶고 할 예정

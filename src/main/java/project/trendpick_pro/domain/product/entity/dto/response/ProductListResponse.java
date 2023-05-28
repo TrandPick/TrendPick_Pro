@@ -8,7 +8,7 @@ import project.trendpick_pro.domain.common.file.CommonFile;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductWithIdResponse {
+public class ProductListResponse {
 
     private Long id;
     private String name;
@@ -17,7 +17,7 @@ public class ProductWithIdResponse {
     private int price;
 
     @QueryProjection
-    public ProductWithIdResponse(Long id, String name, String brand, CommonFile mainFile, int price) {
+    public ProductListResponse(Long id, String name, String brand, CommonFile mainFile, int price) {
         this.id = id;
         this.name = name;
         this.brand = brand;
