@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.delivery.entity.DeliveryState;
-import project.trendpick_pro.domain.user.entity.User;
+import project.trendpick_pro.domain.member.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;

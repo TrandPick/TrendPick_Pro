@@ -1,7 +1,7 @@
-package project.trendpick_pro.domain.user.repository;
+package project.trendpick_pro.domain.member.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import project.trendpick_pro.domain.user.entity.User;
+import project.trendpick_pro.domain.member.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 }

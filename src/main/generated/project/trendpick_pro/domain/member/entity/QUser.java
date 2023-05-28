@@ -1,4 +1,4 @@
-package project.trendpick_pro.domain.user.entity;
+package project.trendpick_pro.domain.member.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 

@@ -16,8 +16,8 @@ import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.user.entity.User;
-import project.trendpick_pro.domain.user.repository.UserRepository;
+import project.trendpick_pro.domain.member.entity.User;
+import project.trendpick_pro.domain.member.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,15 +1,12 @@
-package project.trendpick_pro.domain.user.entity;
+package project.trendpick_pro.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.trendpick_pro.domain.tag.entity.Tag;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -18,7 +15,7 @@ import java.util.List;
 @Getter
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "member_id")
     private Long id;
 
     private String email;
