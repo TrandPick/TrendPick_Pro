@@ -48,10 +48,10 @@ public class MemberController {
         return "회원가입이 완료되었습니다";
     }
 
-//    @PreAuthorize("isAnonymous()")
+    @PreAuthorize("isAnonymous()")
     @GetMapping("/login")
     public String showLogin() {
-        return "로그인에 성공하셨습니다";
+        return "/trendpick/usr/member/login";
     }
 
     @PreAuthorize("isAuthenticated()")
