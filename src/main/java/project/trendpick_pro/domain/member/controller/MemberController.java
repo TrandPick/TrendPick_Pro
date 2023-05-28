@@ -24,7 +24,7 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @GetMapping("/join")
     public String showJoin() {
-        return "usr/member/join";
+        return "trendpick/usr/member/join";
     }
 
     @AllArgsConstructor
@@ -41,6 +41,10 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @PostMapping("/join")
     public String join(@Valid JoinForm joinForm) {
+        if ( memberService.findByUsername(joinForm.getUsername()).isPresent() ) {
+            return "해당 아이디는 이미 사용중입니다.";
+        }
+
         memberService.join(joinForm.getUsername(), joinForm.getPassword());
 
         return "회원가입이 완료되었습니다";
@@ -49,12 +53,12 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @GetMapping("/login")
     public String showLogin() {
-        return "usr/member/login";
+        return "trendpick/usr/member/login";
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
     public String showMe() {
-        return "usr/member/me";
+        return "trendpick/usr/member/me";
     }
 }
