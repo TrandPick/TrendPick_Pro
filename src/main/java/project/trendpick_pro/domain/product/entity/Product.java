@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+import project.trendpick_pro.domain.brand.entity.Brand;
+import project.trendpick_pro.domain.category.entity.MainCategory;
+import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
@@ -25,19 +28,18 @@ public class Product extends BaseTimeEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "main-category_id")
-    private String mainCategory;    // Category
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "main_category_id")
+    private MainCategory mainCategory;    // Category
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "sub-category_id")
-    @ElementCollection      // 이거 빨간줄 때문에 예비로 추가한거라 보고 추가하시면 안되요!!!
-    private List<String> subCategory = new ArrayList<>();   // Category
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_category_id")
+    private SubCategory subCategory;   // Category
 
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "brand_id")
-    private String brand;   // Brand
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 
     @Column(name = "description", nullable = false)
     private String description;
@@ -56,7 +58,7 @@ public class Product extends BaseTimeEntity {
     private List<Tag> tags = new ArrayList<>();
 
     @Builder
-    public Product(String name, String mainCategory, List<String> subCategory, String brand,
+    public Product(String name, MainCategory mainCategory, SubCategory subCategory, Brand brand,
                    String description, CommonFile commonFile, int price, int stock, List<Tag> tags) {
         this.name = name;
         this.mainCategory = mainCategory;
@@ -69,12 +71,12 @@ public class Product extends BaseTimeEntity {
         this.tags = tags;
     }
 
-    public static Product of(ProductSaveRequest request) {
+    public static Product of(ProductSaveRequest request, MainCategory mainCategory, SubCategory subCategory, Brand brand) {
         return Product.builder()
                 .name(request.getName())
-                .mainCategory(request.getMainCategory())
-                .subCategory(request.getSubCategory())
-                .brand(request.getBrand())
+                .mainCategory(mainCategory)
+                .subCategory(subCategory)
+                .brand(brand)
                 .description(request.getDescription())
                 .commonFile(makeFiles(request.getMainFile(), request.getSubFiles()))
                 .price(request.getPrice())
