@@ -1,0 +1,24 @@
+package project.trendpick_pro.domain.delivery.entity;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import project.trendpick_pro.domain.common.base.BaseTimeEntity;
+import project.trendpick_pro.domain.orders.entity.Orders;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Delivery extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY)
+    private Orders order;
+    private String address;
+    @Enumerated(EnumType.STRING)
+    private DeliveryState state;
+}
