@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
@@ -16,7 +17,6 @@ import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.member.entity.User;
 import project.trendpick_pro.domain.member.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class OrderService {
     @Transactional
     public void order(Long userId, OrderSaveRequest... orderSaveRequests) throws IllegalAccessException {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 입니다."));// 임시 exception 설정 나중에 할 수도 있고 아닐수도
+        Member member = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 입니다."));// 임시 exception 설정 나중에 할 수도 있고 아닐수도
 
         Delivery delivery = new Delivery();
 
@@ -48,7 +48,7 @@ public class OrderService {
             orderItemList.add(new OrderItem(product, product.getPrice(), request.getQuantity()));
         }
 
-        Order order = Order.createOrder(user, delivery, OrderStatus.ORDERED, orderItemList);
+        Order order = Order.createOrder(member, delivery, OrderStatus.ORDERED, orderItemList);
         orderRepository.save(order);
     }
 
