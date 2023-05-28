@@ -3,41 +3,50 @@ package project.trendpick_pro.domain.ask.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
+import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
+import project.trendpick_pro.domain.ask.service.AskService;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/ask")
+@RequestMapping("trendpick/asks")
 public class AskController {
+    private final AskService askService;
 
     @GetMapping("/list")
-    public String showAllAsk(){
-
-        return "/ask/list";
+    public String showAllAsk(Model model) {
+        model.addAttribute("askResponse", askService.showAll());
+        return "trendpick/customerservice/ask/list";
     }
 
     @GetMapping("/{askId}}")
-    public String showAsk(@PathVariable Long askId){
-
-        return "/ask/detail";
+    public String showAsk(@PathVariable Long askId, Model model) {
+        model.addAttribute("askResponse", askService.show(askId));
+        return "trendpick/customerservice/ask/detail";
     }
 
-    @PostMapping("/delete/{id}")
-    public String deleteAsk(@PathVariable Long id){
+    @PostMapping("/delete/{askId}")
+    public String deleteAsk(@PathVariable Long askId) {
+        askService.delete(askId);
 
-        return "redirect:/ask/get/%s".formatted(id);
+        return "redirect:/trendpick/asks/list";
     }
 
-    @PostMapping("/modify/{id}")
-    public String modifyAsk(@PathVariable Long id){
+    @PostMapping("/edit/{askId}")
+    public String modifyAsk(@PathVariable Long askId, @Valid AskRequest askRequest, Model model) {
+        AskResponse askResponse = askService.modify(askId, askRequest);
 
-        return "redirect:/ask/get/%s".formatted(id);
+        model.addAttribute("askResponse", askResponse);
+        return "redirect:/trendpick/asks/%s".formatted(askId);
     }
 
-    @PostMapping("/add/{brandId}")
-    public String addAsk(@Valid AskRequest askRequestDto, @PathVariable Long brandId){
+    @PostMapping("/register")
+    public String registerAsk(@Valid AskRequest askRequest, @RequestParam(value = "brand") Long brandId, Model model) {
+        AskResponse askResponse = askService.register(askRequest);
 
-        return "redirect:/ask/list";
+        model.addAttribute("askResponse", askResponse);
+        return "redirect:/trendpick/asks/%s".formatted(askResponse.getId());
     }
 }

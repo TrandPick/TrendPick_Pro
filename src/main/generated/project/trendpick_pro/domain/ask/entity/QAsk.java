@@ -20,6 +20,8 @@ public class QAsk extends EntityPathBase<Ask> {
 
     public static final QAsk ask = new QAsk("ask");
 
+    public final project.trendpick_pro.domain.common.base.QBaseTimeEntity _super = new project.trendpick_pro.domain.common.base.QBaseTimeEntity(this);
+
     public final ListPath<project.trendpick_pro.domain.answer.entity.Answer, project.trendpick_pro.domain.answer.entity.QAnswer> answerList = this.<project.trendpick_pro.domain.answer.entity.Answer, project.trendpick_pro.domain.answer.entity.QAnswer>createList("answerList", project.trendpick_pro.domain.answer.entity.Answer.class, project.trendpick_pro.domain.answer.entity.QAnswer.class, PathInits.DIRECT2);
 
     public final StringPath author = createString("author");
@@ -28,9 +30,13 @@ public class QAsk extends EntityPathBase<Ask> {
 
     public final StringPath content = createString("content");
 
-    public final DateTimePath<java.time.LocalDateTime> createDate = createDateTime("createDate", java.time.LocalDateTime.class);
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
 
     public final StringPath title = createString("title");
 

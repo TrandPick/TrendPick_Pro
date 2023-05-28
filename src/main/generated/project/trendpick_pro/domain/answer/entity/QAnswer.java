@@ -22,15 +22,21 @@ public class QAnswer extends EntityPathBase<Answer> {
 
     public static final QAnswer answer = new QAnswer("answer");
 
+    public final project.trendpick_pro.domain.common.base.QBaseTimeEntity _super = new project.trendpick_pro.domain.common.base.QBaseTimeEntity(this);
+
     public final project.trendpick_pro.domain.ask.entity.QAsk ask;
 
     public final StringPath author = createString("author");
 
     public final StringPath content = createString("content");
 
-    public final DateTimePath<java.time.LocalDateTime> createDate = createDateTime("createDate", java.time.LocalDateTime.class);
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
 
     public QAnswer(String variable) {
         this(Answer.class, forVariable(variable), INITS);
