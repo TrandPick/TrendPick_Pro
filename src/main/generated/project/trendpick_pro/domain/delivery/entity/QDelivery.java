@@ -34,7 +34,7 @@ public class QDelivery extends EntityPathBase<Delivery> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
 
-    public final project.trendpick_pro.domain.orders.entity.QOrders order;
+    public final project.trendpick_pro.domain.orders.entity.QOrder order;
 
     public final EnumPath<DeliveryState> state = createEnum("state", DeliveryState.class);
 
@@ -56,7 +56,7 @@ public class QDelivery extends EntityPathBase<Delivery> {
 
     public QDelivery(Class<? extends Delivery> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.order = inits.isInitialized("order") ? new project.trendpick_pro.domain.orders.entity.QOrders(forProperty("order"), inits.get("order")) : null;
+        this.order = inits.isInitialized("order") ? new project.trendpick_pro.domain.orders.entity.QOrder(forProperty("order"), inits.get("order")) : null;
     }
 
 }

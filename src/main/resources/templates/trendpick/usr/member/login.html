@@ -1,0 +1,62 @@
+<html layout:decorate="~{usr/layout/layout.html}">
+
+<head>
+  <title>로그인</title>
+</head>
+
+<body>
+
+<main layout:fragment="main">
+  <script>
+    function LoginForm__submit(form) {
+      // username 이(가) 올바른지 체크
+
+      form.username.value = form.username.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
+
+      if (form.username.value.length == 0) {
+        toastWarning('아이디를 입력해주세요.');
+        form.username.focus();
+        return;
+      }
+
+      if (form.username.value.length < 4) {
+        toastWarning('아이디를 4자 이상 입력해주세요.');
+        form.username.focus();
+        return;
+      }
+
+      // password 이(가) 올바른지 체크
+
+      form.password.value = form.password.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
+
+      if (form.password.value.length == 0) {
+        form.password.focus();
+        toastWarning('비밀번호를 입력해주세요.');
+        return;
+      }
+
+      if (form.password.value.length < 4) {
+        toastWarning('비밀번호를 4자 이상 입력해주세요.');
+        form.password.focus();
+        return;
+      }
+
+      form.submit(); // 폼 발송
+    }
+  </script>
+
+  <form th:action method="POST" class="p-10 flex flex-col gap-4" onsubmit="LoginForm__submit(this); return false;">
+    <div>
+      <input type="text" name="username" maxlength="30" placeholder="아이디" class="input input-bordered">
+    </div>
+    <div>
+      <input type="password" name="password" maxlength="30" placeholder="비밀번호" class="input input-bordered">
+    </div>
+    <div>
+      <input type="submit" value="로그인" class="btn btn-primary">
+    </div>
+  </form>
+</main>
+</body>
+
+</html>
