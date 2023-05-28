@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
+import project.trendpick_pro.domain.delivery.entity.Delivery;
 
 @Entity
 @Getter
@@ -21,5 +22,7 @@ public class Orders extends BaseTimeEntity {
 //    @JoinColumn(name = "member_id")
     private String user;    // User
 
-
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "delivery_id")
+    private Delivery delivery;
 }
