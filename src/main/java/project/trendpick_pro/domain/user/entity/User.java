@@ -31,6 +31,7 @@ public class User {
 
     private Date birth;
 
+    @Enumerated(EnumType.STRING)
     private RoleType role;
 
     //@OneToMany(mappedBy = "user")
