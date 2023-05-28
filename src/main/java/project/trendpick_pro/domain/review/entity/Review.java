@@ -23,7 +23,7 @@ public class Review extends BaseTimeEntity {
     //@JoinColumn(name = "user_id")
     private Long user_id;   //User
 
-    //@ManyToOne
+//    @ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "product_id")
     private Long product_id;    //Product
 
