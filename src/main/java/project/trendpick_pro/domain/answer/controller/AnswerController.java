@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import project.trendpick_pro.domain.answer.entity.dto.AnswerRequestDto;
-import project.trendpick_pro.domain.ask.entity.Ask;
-
-import java.util.List;
+import project.trendpick_pro.domain.answer.entity.dto.request.AnswerRequest;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,7 +19,7 @@ public class AnswerController {
 
     @PostMapping("/{id}")
     public String addAnswer(@PathVariable Long askId,
-                            @Valid AnswerRequestDto answerRequestDto){
+                            @Valid AnswerRequest answerRequestDto){
 
         return "redirect:/ask/list";
     }

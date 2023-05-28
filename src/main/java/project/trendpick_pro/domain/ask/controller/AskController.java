@@ -4,8 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import project.trendpick_pro.domain.answer.entity.dto.AnswerRequestDto;
-import project.trendpick_pro.domain.ask.entity.dto.AskRequestDto;
+import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 
 @Controller
 @RequiredArgsConstructor
@@ -13,13 +12,13 @@ import project.trendpick_pro.domain.ask.entity.dto.AskRequestDto;
 public class AskController {
 
     @GetMapping("/list")
-    public String showAsks(){
+    public String showAllAsk(){
 
         return "/ask/list";
     }
 
-    @GetMapping("/detail/{id}")
-    public String showAsk(@PathVariable Long id){
+    @GetMapping("/{askId}}")
+    public String showAsk(@PathVariable Long askId){
 
         return "/ask/detail";
     }
@@ -37,7 +36,7 @@ public class AskController {
     }
 
     @PostMapping("/add/{brandId}")
-    public String addAsk(@Valid AskRequestDto askRequestDto, @PathVariable Long brandId){
+    public String addAsk(@Valid AskRequest askRequestDto, @PathVariable Long brandId){
 
         return "redirect:/ask/list";
     }
