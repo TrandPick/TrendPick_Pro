@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
-import project.trendpick_pro.domain.orders.entity.Orders;
+import project.trendpick_pro.domain.orders.entity.Order;
 
 @Entity
 @Getter
@@ -17,7 +17,7 @@ public class Delivery extends BaseTimeEntity {
     private Long id;
 
     @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY)
-    private Orders order;
+    private Order order;
     private String address;
     @Enumerated(EnumType.STRING)
     private DeliveryState state;
