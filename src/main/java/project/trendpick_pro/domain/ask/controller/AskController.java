@@ -11,7 +11,7 @@ import project.trendpick_pro.domain.ask.service.AskService;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("trendpick/asks")
+@RequestMapping("trendpick/customerservice/asks")
 public class AskController {
     private final AskService askService;
 

@@ -13,8 +13,8 @@ public class QAskResponse extends ConstructorExpression<AskResponse> {
 
     private static final long serialVersionUID = 1378042495L;
 
-    public QAskResponse(com.querydsl.core.types.Expression<Long> id, com.querydsl.core.types.Expression<String> author, com.querydsl.core.types.Expression<String> brand, com.querydsl.core.types.Expression<String> title, com.querydsl.core.types.Expression<String> content, com.querydsl.core.types.Expression<? extends java.util.List<project.trendpick_pro.domain.answer.entity.Answer>> answerList) {
-        super(AskResponse.class, new Class<?>[]{long.class, String.class, String.class, String.class, String.class, java.util.List.class}, id, author, brand, title, content, answerList);
+    public QAskResponse(com.querydsl.core.types.Expression<Long> id, com.querydsl.core.types.Expression<String> author, com.querydsl.core.types.Expression<String> brand, com.querydsl.core.types.Expression<String> title, com.querydsl.core.types.Expression<String> content, com.querydsl.core.types.Expression<? extends java.util.List<project.trendpick_pro.domain.answer.entity.Answer>> answerList, com.querydsl.core.types.Expression<java.time.LocalDateTime> createdDate, com.querydsl.core.types.Expression<java.time.LocalDateTime> modifiedDate) {
+        super(AskResponse.class, new Class<?>[]{long.class, String.class, String.class, String.class, String.class, java.util.List.class, java.time.LocalDateTime.class, java.time.LocalDateTime.class}, id, author, brand, title, content, answerList, createdDate, modifiedDate);
     }
 
 }

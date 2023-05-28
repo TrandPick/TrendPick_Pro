@@ -5,36 +5,34 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.answer.entity.dto.request.AnswerRequest;
+import project.trendpick_pro.domain.answer.service.AnswerService;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/answer")
+@RequestMapping("/trendpick/customerservice/asks/{askId}/answers")
 public class AnswerController {
+    private final AnswerService answerService;
 
-    @GetMapping("/list")
-    public String showAnswers(){
+    @PostMapping("/register")
+    public String registerAnswer(@PathVariable Long askId,
+                            @Valid AnswerRequest answerRequest){
+        String member = "member"; //Member
+        answerService.register(askId, member, answerRequest);
 
-        return "redirect:/ask/list";
+        return "redirect:trendpick/customerservice/asks/{askId}".formatted(askId);
     }
 
-    @PostMapping("/{id}")
-    public String addAnswer(@PathVariable Long askId,
-                            @Valid AnswerRequest answerRequestDto){
+    @PostMapping("/delete/{answerId}")
+    public String deleteAnswer(@PathVariable Long askId, @PathVariable Long answerId){
+        answerService.delete(answerId);
 
-        return "redirect:/ask/list";
+        return "redirect:trendpick/asks/detail".formatted(askId);
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteAnswer(@PathVariable Long id){
+    @PostMapping("/moidfy/{answerId}")
+    public String modifyAnswer(@PathVariable Long askId, @PathVariable Long answerId, @Valid AnswerRequest answerRequest){
+        answerService.modify(answerId, answerRequest);
 
-        return "redirect:/ask/list";
+        return "redirect:trendpick/asks/detail".formatted(askId);
     }
-
-    @PatchMapping("/{id}")
-    public String modifyAnswer(@PathVariable Long id){
-
-        return "redirect:/ask/list";
-    }
-
-
 }
