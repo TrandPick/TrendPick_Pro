@@ -23,7 +23,7 @@ public class Order extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "user_id")
     private Member member;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
