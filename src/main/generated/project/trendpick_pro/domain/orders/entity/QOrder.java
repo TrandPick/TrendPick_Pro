@@ -11,16 +11,16 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QOrders is a Querydsl query type for Orders
+ * QOrder is a Querydsl query type for Order
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QOrders extends EntityPathBase<Orders> {
+public class QOrder extends EntityPathBase<Order> {
 
-    private static final long serialVersionUID = -2056827462L;
+    private static final long serialVersionUID = 1734766041L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QOrders orders = new QOrders("orders");
+    public static final QOrder order = new QOrder("order1");
 
     public final project.trendpick_pro.domain.common.base.QBaseTimeEntity _super = new project.trendpick_pro.domain.common.base.QBaseTimeEntity(this);
 
@@ -34,31 +34,34 @@ public class QOrders extends EntityPathBase<Orders> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
 
-    public final StringPath status = createString("status");
+    public final ListPath<OrderItem, QOrderItem> orderItems = this.<OrderItem, QOrderItem>createList("orderItems", OrderItem.class, QOrderItem.class, PathInits.DIRECT2);
+
+    public final EnumPath<OrderStatus> status = createEnum("status", OrderStatus.class);
 
     public final NumberPath<Integer> totalPrice = createNumber("totalPrice", Integer.class);
 
-    public final StringPath user = createString("user");
+    public final project.trendpick_pro.domain.user.entity.QUser user;
 
-    public QOrders(String variable) {
-        this(Orders.class, forVariable(variable), INITS);
+    public QOrder(String variable) {
+        this(Order.class, forVariable(variable), INITS);
     }
 
-    public QOrders(Path<? extends Orders> path) {
+    public QOrder(Path<? extends Order> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
-    public QOrders(PathMetadata metadata) {
+    public QOrder(PathMetadata metadata) {
         this(metadata, PathInits.getFor(metadata, INITS));
     }
 
-    public QOrders(PathMetadata metadata, PathInits inits) {
-        this(Orders.class, metadata, inits);
+    public QOrder(PathMetadata metadata, PathInits inits) {
+        this(Order.class, metadata, inits);
     }
 
-    public QOrders(Class<? extends Orders> type, PathMetadata metadata, PathInits inits) {
+    public QOrder(Class<? extends Order> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.delivery = inits.isInitialized("delivery") ? new project.trendpick_pro.domain.delivery.entity.QDelivery(forProperty("delivery"), inits.get("delivery")) : null;
+        this.user = inits.isInitialized("user") ? new project.trendpick_pro.domain.user.entity.QUser(forProperty("user")) : null;
     }
 
 }
