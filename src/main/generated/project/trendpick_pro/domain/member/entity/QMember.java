@@ -1,4 +1,4 @@
-package project.trendpick_pro.domain.user.entity;
+package project.trendpick_pro.domain.member.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -10,14 +10,14 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QUser is a Querydsl query type for User
+ * QMember is a Querydsl query type for Member
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QUser extends EntityPathBase<User> {
+public class QMember extends EntityPathBase<Member> {
 
-    private static final long serialVersionUID = 350707846L;
+    private static final long serialVersionUID = 1765768292L;
 
-    public static final QUser user = new QUser("user");
+    public static final QMember member = new QMember("member1");
 
     public final NumberPath<Long> account = createNumber("account", Long.class);
 
@@ -29,8 +29,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath name = createString("name");
-
     public final StringPath password = createString("password");
 
     public final StringPath phone_num = createString("phone_num");
@@ -39,16 +37,18 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Long> tag_id = createNumber("tag_id", Long.class);
 
-    public QUser(String variable) {
-        super(User.class, forVariable(variable));
+    public final StringPath username = createString("username");
+
+    public QMember(String variable) {
+        super(Member.class, forVariable(variable));
     }
 
-    public QUser(Path<? extends User> path) {
+    public QMember(Path<? extends Member> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QUser(PathMetadata metadata) {
-        super(User.class, metadata);
+    public QMember(PathMetadata metadata) {
+        super(Member.class, metadata);
     }
 
 }

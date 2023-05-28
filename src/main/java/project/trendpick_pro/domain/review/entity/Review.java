@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
-import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.user.entity.User;
 
 @Entity
 @NoArgsConstructor
@@ -20,7 +18,7 @@ public class Review extends BaseTimeEntity {
     private Long id;
 
     //@ManyToOne
-    //@JoinColumn(name = "user_id")
+    //@JoinColumn(name = "member_id")
     private Long user_id;   //User
 
 //    @ManyToOne(fetch = FetchType.LAZY)

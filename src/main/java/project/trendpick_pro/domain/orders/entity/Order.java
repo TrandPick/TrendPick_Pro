@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.delivery.entity.DeliveryState;
-import project.trendpick_pro.domain.user.entity.User;
+import project.trendpick_pro.domain.member.entity.Member;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class Order extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Member member;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
@@ -39,8 +39,8 @@ public class Order extends BaseTimeEntity {
     @Column(name = "total_price", nullable = false)
     private int totalPrice;
 
-    public void connectUser(User user) {
-        this.user = user;
+    public void connectUser(Member member) {
+        this.member = member;
     }
 
     public void connectDelivery(Delivery delivery) {
@@ -52,9 +52,9 @@ public class Order extends BaseTimeEntity {
         orderItem.connectOrder(this);
     }
 
-    public static Order createOrder(User user, Delivery delivery, OrderStatus status, List<OrderItem> orderItems) {
+    public static Order createOrder(Member member, Delivery delivery, OrderStatus status, List<OrderItem> orderItems) {
         Order order = new Order();
-        order.connectUser(user);
+        order.connectUser(member);
         order.connectDelivery(delivery);
         for (OrderItem orderItem : orderItems) {
             order.addOrderItem(orderItem);
