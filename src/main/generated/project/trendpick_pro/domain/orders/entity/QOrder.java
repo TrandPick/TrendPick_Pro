@@ -31,8 +31,6 @@ public class QOrder extends EntityPathBase<Order> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final project.trendpick_pro.domain.member.entity.QMember member;
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedDate = _super.modifiedDate;
 
@@ -41,6 +39,8 @@ public class QOrder extends EntityPathBase<Order> {
     public final EnumPath<OrderStatus> status = createEnum("status", OrderStatus.class);
 
     public final NumberPath<Integer> totalPrice = createNumber("totalPrice", Integer.class);
+
+    public final project.trendpick_pro.domain.user.entity.QUser user;
 
     public QOrder(String variable) {
         this(Order.class, forVariable(variable), INITS);
@@ -61,7 +61,7 @@ public class QOrder extends EntityPathBase<Order> {
     public QOrder(Class<? extends Order> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.delivery = inits.isInitialized("delivery") ? new project.trendpick_pro.domain.delivery.entity.QDelivery(forProperty("delivery"), inits.get("delivery")) : null;
-        this.member = inits.isInitialized("member") ? new project.trendpick_pro.domain.member.entity.QMember(forProperty("member")) : null;
+        this.user = inits.isInitialized("user") ? new project.trendpick_pro.domain.user.entity.QUser(forProperty("user")) : null;
     }
 
 }

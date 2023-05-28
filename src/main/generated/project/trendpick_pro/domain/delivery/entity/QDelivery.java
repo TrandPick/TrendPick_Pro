@@ -24,7 +24,7 @@ public class QDelivery extends EntityPathBase<Delivery> {
 
     public final project.trendpick_pro.domain.common.base.QBaseTimeEntity _super = new project.trendpick_pro.domain.common.base.QBaseTimeEntity(this);
 
-    public final StringPath address = createString("address");
+    public final project.trendpick_pro.domain.delivery.entity.embaded.QAddress address;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdDate = _super.createdDate;
@@ -56,6 +56,7 @@ public class QDelivery extends EntityPathBase<Delivery> {
 
     public QDelivery(Class<? extends Delivery> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.address = inits.isInitialized("address") ? new project.trendpick_pro.domain.delivery.entity.embaded.QAddress(forProperty("address")) : null;
         this.order = inits.isInitialized("order") ? new project.trendpick_pro.domain.orders.entity.QOrder(forProperty("order"), inits.get("order")) : null;
     }
 

@@ -4,6 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.trendpick_pro.domain.brand.entity.Brand;
+import project.trendpick_pro.domain.brand.repository.BrandRepository;
+import project.trendpick_pro.domain.category.entity.MainCategory;
+import project.trendpick_pro.domain.category.entity.SubCategory;
+import project.trendpick_pro.domain.category.repository.MainCategoryRepository;
+import project.trendpick_pro.domain.category.repository.SubCategoryRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
@@ -18,11 +24,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final MainCategoryRepository mainCategoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
+    private final BrandRepository brandRepository;
 
     @Transactional
     public ProductResponse register(ProductSaveRequest productSaveRequest) {
-        Product product = Product.of(productSaveRequest);
+
+        MainCategory mainCategory = mainCategoryRepository.findByName(productSaveRequest.getMainCategory());
+        SubCategory subCategory = subCategoryRepository.findByName(productSaveRequest.getSubCategory());
+        Brand brand = brandRepository.findByName(productSaveRequest.getBrand());
+
+        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand);
         productRepository.save(product);
         return ProductResponse.of(product);
     }
