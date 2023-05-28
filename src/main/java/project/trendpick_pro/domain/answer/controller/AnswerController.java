@@ -19,20 +19,20 @@ public class AnswerController {
         String member = "member"; //Member
         answerService.register(askId, member, answerRequest);
 
-        return "redirect:trendpick/customerservice/asks/{askId}".formatted(askId);
+        return "redirect:/trendpick/customerservice/asks/{askId}".formatted(askId);
     }
 
     @PostMapping("/delete/{answerId}")
     public String deleteAnswer(@PathVariable Long askId, @PathVariable Long answerId){
         answerService.delete(answerId);
 
-        return "redirect:trendpick/asks/detail".formatted(askId);
+        return "redirect:/trendpick/customerservice/asks/%s".formatted(askId);
     }
 
     @PostMapping("/moidfy/{answerId}")
     public String modifyAnswer(@PathVariable Long askId, @PathVariable Long answerId, @Valid AnswerRequest answerRequest){
         answerService.modify(answerId, answerRequest);
 
-        return "redirect:trendpick/asks/detail".formatted(askId);
+        return "redirect:/trendpick/customerservice/asks/%s".formatted(askId);
     }
 }

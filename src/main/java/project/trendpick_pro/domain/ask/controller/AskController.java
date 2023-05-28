@@ -18,20 +18,20 @@ public class AskController {
     @GetMapping("/list")
     public String showAllAsk(Model model) {
         model.addAttribute("askResponse", askService.showAll());
-        return "trendpick/customerservice/ask/list";
+        return "trendpick/customerservice/asks/list";
     }
 
     @GetMapping("/{askId}}")
     public String showAsk(@PathVariable Long askId, Model model) {
         model.addAttribute("askResponse", askService.show(askId));
-        return "trendpick/customerservice/ask/detail";
+        return "trendpick/customerservice/asks/detail";
     }
 
     @PostMapping("/delete/{askId}")
     public String deleteAsk(@PathVariable Long askId) {
         askService.delete(askId);
 
-        return "redirect:/trendpick/asks/list";
+        return "redirect:/trendpick/customerservice/asks/list";
     }
 
     @PostMapping("/edit/{askId}")
@@ -39,7 +39,7 @@ public class AskController {
         AskResponse askResponse = askService.modify(askId, askRequest);
 
         model.addAttribute("askResponse", askResponse);
-        return "redirect:/trendpick/asks/%s".formatted(askId);
+        return "redirect:/trendpick/customerservice/asks/%s".formatted(askId);
     }
 
     @PostMapping("/register")
@@ -47,6 +47,6 @@ public class AskController {
         AskResponse askResponse = askService.register(askRequest);
 
         model.addAttribute("askResponse", askResponse);
-        return "redirect:/trendpick/asks/%s".formatted(askResponse.getId());
+        return "redirect:/trendpick/customerservice/asks/%s".formatted(askResponse.getId());
     }
 }
