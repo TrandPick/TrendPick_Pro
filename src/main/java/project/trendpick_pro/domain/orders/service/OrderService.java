@@ -4,9 +4,11 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
+import project.trendpick_pro.domain.delivery.entity.embaded.Address;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
@@ -37,12 +39,12 @@ public class OrderService {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 입니다."));// 임시 exception 설정 나중에 할 수도 있고 아닐수도
 
-        Delivery delivery = new Delivery();
+        Delivery delivery = new Delivery(Address.of("서울시", "강남대로", "222")); // 임의로 작성
 
         List<OrderItem> orderItemList = new ArrayList<>();
         for (OrderSaveRequest request: orderSaveRequests) {
             Product product = productRepository.findById(request.getProductId()).orElseThrow(() ->  new EntityNotFoundException("product is not found"));
-            if (product.getStock() < 0) {
+            if (product.getStock() < request.getQuantity()) {
                 throw new RuntimeException("stock is not enough");   // 임시. 나중에 사용자 exception 널을까말까 생각
             }
             orderItemList.add(new OrderItem(product, product.getPrice(), request.getQuantity()));
@@ -58,8 +60,13 @@ public class OrderService {
         order.cancel();
     }
 
-    public Page<OrderResponse> findAll(OrderSearchCond cond) {
-        return orderRepository.findAll(cond.getUserId());
+    //임시 작성
+    public Page<Order> findAll(OrderSearchCond cond) {
+        User user = userRepository.findById(cond.getUserId()).orElseThrow();
+
+        Page<Order> orderPage = orderRepository.findAllByUser(user, PageRequest.of(0, 10));
+
+        return orderPage;
     }
 
 
