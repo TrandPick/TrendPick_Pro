@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import project.trendpick_pro.domain.answer.entity.Answer;
+import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
+import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,17 +20,20 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
-@EntityListeners(AuditingEntityListener.class)
-public class Ask {
+public class Ask extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ask_id")
     private Long id;
-    private String author; //멤버 엔티티로 수정 필요
-    private String brand; //브랜드 엔티티로 수정 필요
-    @CreatedDate
-    private LocalDateTime createDate;
+
+    //    @ManyToOne(fetch = FetchType.LAZY)
+    //    @JoinColumn(name = "member_id")
+    private String author; //Member
+
+    //    @ManyToOne(fetch = FetchType.LAZY)
+    //    @JoinColumn(name = "brand_id")
+    private String brand; //Brand
 
     private String title;
     private String content;
@@ -37,4 +42,18 @@ public class Ask {
     @Builder.Default
     private List<Answer> answerList = new ArrayList<>();
 
+    public static Ask of(String member, String brand, AskRequest askRequest) {
+        return Ask.builder()
+                .author(member)
+                .brand(brand)
+                .title(askRequest.getTitle())
+                .content(askRequest.getTitle())
+                .build()
+                ;
+    }
+
+    public void update(AskRequest askRequest) {
+        this.title = askRequest.getTitle();
+        this.content = askRequest.getContent();
+    }
 }
