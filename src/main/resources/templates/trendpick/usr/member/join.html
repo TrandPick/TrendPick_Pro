@@ -41,6 +41,19 @@
                 return;
             }
 
+            form.password.value = form.password.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
+
+            if (form.password.value.length == 0) {
+                form.password.focus();
+                toastWarning('비밀번호를 입력해주세요.');
+                return;
+            }
+
+            if (form.password.value.length < 4) {
+                toastWarning('비밀번호를 4자 이상 입력해주세요.');
+                form.password.focus();
+                return;
+            }
             form.submit(); // 폼 발송
         }
     </script>

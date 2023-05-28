@@ -11,18 +11,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import project.trendpick_pro.domain.common.base.rq.Rq;
-import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
 
 @Controller
-@RequestMapping("/member")
+@RequestMapping("/trendpick/usr")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
 
     @PreAuthorize("isAnonymous()")
-    @GetMapping("/join")
+    @GetMapping("/register")
     public String showJoin() {
         return "trendpick/usr/member/join";
     }
@@ -39,26 +37,26 @@ public class MemberController {
     }
 
     @PreAuthorize("isAnonymous()")
-    @PostMapping("/join")
-    public String join(@Valid JoinForm joinForm) {
+    @PostMapping("/register")
+    public String register(@Valid JoinForm joinForm) {
         if ( memberService.findByUsername(joinForm.getUsername()).isPresent() ) {
             return "해당 아이디는 이미 사용중입니다.";
         }
 
-        memberService.join(joinForm.getUsername(), joinForm.getPassword());
+        memberService.register(joinForm.getUsername(), joinForm.getPassword());
 
         return "회원가입이 완료되었습니다";
     }
 
-    @PreAuthorize("isAnonymous()")
+//    @PreAuthorize("isAnonymous()")
     @GetMapping("/login")
     public String showLogin() {
-        return "trendpick/usr/member/login";
+        return "로그인에 성공하셨습니다";
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/me")
+    @GetMapping("/info")
     public String showMe() {
-        return "trendpick/usr/member/me";
+        return "trendpick/usr/member/info";
     }
 }

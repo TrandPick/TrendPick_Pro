@@ -22,7 +22,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Member join(String username, String password) {
+    public Member register(String username, String password) {
 
         Member member = Member
                 .builder()
