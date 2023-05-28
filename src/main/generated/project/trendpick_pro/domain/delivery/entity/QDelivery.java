@@ -56,7 +56,7 @@ public class QDelivery extends EntityPathBase<Delivery> {
 
     public QDelivery(Class<? extends Delivery> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.order = inits.isInitialized("order") ? new project.trendpick_pro.domain.orders.entity.QOrders(forProperty("order")) : null;
+        this.order = inits.isInitialized("order") ? new project.trendpick_pro.domain.orders.entity.QOrders(forProperty("order"), inits.get("order")) : null;
     }
 
 }
