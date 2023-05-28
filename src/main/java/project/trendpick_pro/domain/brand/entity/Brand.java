@@ -14,5 +14,6 @@ public class Brand {
     @Column(name = "brand_id")
     private Long id;
 
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 }

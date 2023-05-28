@@ -17,13 +17,13 @@ public class ProductSaveRequest {
     private String description;
 
     @NotBlank(message = "메인 카테고리를 정하세요.")
-    private String mainCategory;  // Category
+    private String mainCategory;
 
     @NotBlank(message = "서브 카테고리를 정하세요.")
-    private List<String> subCategory;   // Category
+    private String subCategory;
 
     @NotBlank(message = "브랜드를 입력해주세요.")
-    private String brand;   // Brand
+    private String brand;
 
     @NotBlank(message = "메인 사진을 입력해주세요.")
     private MultipartFile mainFile;
