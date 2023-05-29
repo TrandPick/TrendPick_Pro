@@ -49,8 +49,9 @@ public class ProductController {
     }
 
     @GetMapping("/list")
-    public String showAllProduct(Model model) {
-        model.addAttribute("productResponse", productService.showAll());
+    public String showAllProduct(@RequestParam("page") int offset, @RequestParam("main-category") String mainCategory,
+                                 @RequestParam("sub-category") String subCategory, Model model) {
+        model.addAttribute("productResponse", productService.showAll(offset, mainCategory, mainCategory));
         return "/trendpick/products/detailpage";
     }
 }

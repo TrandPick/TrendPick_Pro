@@ -2,6 +2,9 @@ package project.trendpick_pro.domain.product.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.brand.entity.Brand;
@@ -12,6 +15,8 @@ import project.trendpick_pro.domain.category.repository.MainCategoryRepository;
 import project.trendpick_pro.domain.category.repository.SubCategoryRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 
@@ -63,16 +68,14 @@ public class ProductService {
         return ProductResponse.of(product);
     }
 
-    public List<ProductResponse> showAll() {
+    public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory) {
 
-        List<Product> all = productRepository.findAll();// 임시. 나중에 테스트
         List<ProductResponse> responses = new ArrayList<>();
 
-        for (Product product : all) {
-            responses.add(ProductResponse.of(product));
-        }
+        ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
+        PageRequest pageable = PageRequest.of(offset, 18);
 
-        return responses;
+        return productRepository.findAllByCategoryId(cond, pageable);
     }
 
 }

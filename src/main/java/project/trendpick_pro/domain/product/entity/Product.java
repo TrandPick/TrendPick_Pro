@@ -29,16 +29,16 @@ public class Product extends BaseTimeEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "main_category_id")
+    @JoinColumn(name = "main_category_id", nullable = false)
     private MainCategory mainCategory;    // Category
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sub_category_id")
+    @JoinColumn(name = "sub_category_id", nullable = false)
     private SubCategory subCategory;   // Category
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
     @Column(name = "description", nullable = false)
