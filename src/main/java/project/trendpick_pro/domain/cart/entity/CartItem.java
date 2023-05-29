@@ -3,7 +3,10 @@ package project.trendpick_pro.domain.cart.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import project.trendpick_pro.domain.product.entity.ProductOption;
+import project.trendpick_pro.domain.tag.entity.Tag;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -19,7 +22,6 @@ public class CartItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_id")
     private ProductOption productOption;
@@ -29,12 +31,11 @@ public class CartItem {
     private int price; // 해당 상품 금액
 
     @Builder
-    public CartItem(Cart cart, ProductOption productOption, int count) {
+    public CartItem(Cart cart,  ProductOption productOption, int count) {
         this.cart = cart;
         this.productOption = productOption;
         this.count = count;
         this.price = productOption.getProduct().getPrice();
     }
-
 
 }

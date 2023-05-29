@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import project.trendpick_pro.domain.cart.service.CartService;
+import project.trendpick_pro.domain.member.entity.Member;
+
 
 @Slf4j
 @Controller
@@ -22,16 +24,16 @@ public class CartController {
     public String addItemToCart(@RequestParam("productOptionId") Long productOptionId,
                                 @RequestParam("count") int count,
                                 HttpSession session) {
-       // User user = (User) session.getAttribute("user");
-        cartService.addItemToCart(user, productOptionId, count);
+       Member member = (Member) session.getAttribute("member");
+        cartService.addItemToCart(member, productOptionId, count);
         return "redirect:/trendpick/cart";
     }
 
     @PostMapping("/remove")
     public String removeItemFromCart(@RequestParam("cartItemId") Long cartItemId,
                                      HttpSession session) {
-        // User user = (User) session.getAttribute("user");
-        cartService.removeItemFromCart(user, cartItemId);
+        Member member = (Member) session.getAttribute("member");
+        cartService.removeItemFromCart(member, cartItemId);
         return "redirect:/trendpick/cart";
     }
 
@@ -39,8 +41,8 @@ public class CartController {
     public String updateCartItemQuantity(@RequestParam("cartItemId") Long cartItemId,
                                          @RequestParam("count") int count,
                                          HttpSession session) {
-      //  User user = (User) session.getAttribute("user");
-        cartService.updateItemCount(user, cartItemId, count);
+        Member member = (Member) session.getAttribute("member");
+        cartService.updateItemCount(member, cartItemId, count);
         return "redirect:/trendpick/cart";
     }
 }

@@ -16,7 +16,8 @@ public class ProductOption {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn Product product;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     private String color; // 색상
 

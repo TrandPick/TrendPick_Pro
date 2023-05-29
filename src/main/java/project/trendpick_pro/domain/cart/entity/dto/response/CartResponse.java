@@ -4,26 +4,40 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import project.trendpick_pro.domain.cart.entity.Cart;
+import project.trendpick_pro.domain.cart.entity.CartItem;
+
+import java.util.List;
 
 @Getter
 public class CartResponse {
     private Long id;
 
-    private Long cartItemId;
+    private Long memberId;
 
-    private Long productOptionId;
+    private int totalCount;
 
-    private int count;
-    private int price;
+    private int totalPrice;
+
+    private List<CartItem> cartItems;
+
 
     @Builder
     @QueryProjection
-    public CartResponse(Long id, Long cartItemId, long productOptionId, int price, int count) {
+    public CartResponse(Long id, Long memberId, int totalCount, int totalPrice, List<CartItem> cartItems) {
         this.id = id;
-        this.cartItemId = cartItemId;
-        this.productOptionId=productOptionId;
-        this.price=price;
-        this.count = count;
+        this.memberId = memberId;
+        this.totalCount=totalCount;
+        this.totalPrice=totalPrice;
+        this.cartItems=cartItems;
     }
 
+    public static CartResponse of (Cart cart) {
+        return CartResponse.builder()
+                .id(cart.getId())
+                .memberId(cart.getMember().getId())
+                .totalCount(cart.getTotalCount())
+                .totalPrice(cart.getTotalPrice())
+                .cartItems(cart.getCartItems())
+                .build();
+    }
 }
