@@ -74,4 +74,12 @@ public class MemberController {
         return "trendpick/usr/member/info";
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/info/account")
+    public String manageAccount(String bank_name, Long account) {
+        Member actor = rq.getMember();
+        memberService.manageAccount(actor, bank_name, account);
+
+        return "trendpick/usr/member/info";
+    }
 }
