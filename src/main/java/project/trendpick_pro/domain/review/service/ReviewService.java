@@ -3,19 +3,21 @@ package project.trendpick_pro.domain.review.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.review.entity.Review;
+import project.trendpick_pro.domain.review.entity.dto.request.ReviewRequest;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+
+
 
     public ReviewResponse showReview(Long productId) {
         Review review = reviewRepository.findById(productId).orElseThrow();
@@ -24,5 +26,15 @@ public class ReviewService {
     }
 
 
+    public void delete(Long reviewId) {
+        reviewRepository.deleteById(reviewId);
+    }
 
+    public ReviewResponse createReview(Member actor, ReviewRequest reviewRequest) {
+        String username = actor.getUsername();
+        Long productId = 1L;
+
+        Review review = Review.of(username, productId, reviewRequest);
+        return ReviewResponse.of(review);
+    }
 }

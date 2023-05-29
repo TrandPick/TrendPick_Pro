@@ -15,8 +15,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewResponse {
     private Long id;
-    private Member member;   //User
-    private Long product_id;    //Product
+    private String username;   //User
+    private Long productId;    //Product
     @Lob
     private String content;
 
@@ -24,10 +24,10 @@ public class ReviewResponse {
 
     @Builder
     @QueryProjection
-    public ReviewResponse(Long id, Member member, Long product_id, String content, int rating) {
+    public ReviewResponse(Long id, String username, Long productId, String content, int rating) {
         this.id = id;
-        this.member = member;
-        this.product_id = product_id;
+        this.username = username;
+        this.productId = productId;
         this.content = content;
         this.rating = rating;
     }
@@ -35,8 +35,8 @@ public class ReviewResponse {
     public static ReviewResponse of(Review review) {
         return ReviewResponse.builder()
                 .id(review.getId())
-                .member(review.getMember())
-                .product_id(review.getProduct_id())
+                .username(review.getUsername())
+                .productId(review.getProductId())
                 .content(review.getContent())
                 .rating(review.getRating())
                 .build();
