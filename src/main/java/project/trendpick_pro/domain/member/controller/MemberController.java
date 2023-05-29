@@ -11,13 +11,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
+
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/trendpick/usr")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final Rq rq;
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/register")
@@ -48,15 +53,33 @@ public class MemberController {
         return "회원가입이 완료되었습니다";
     }
 
-//    @PreAuthorize("isAnonymous()")
+    @PreAuthorize("isAnonymous()")
     @GetMapping("/login")
     public String showLogin() {
-        return "로그인에 성공하셨습니다";
+        return "/trendpick/usr/member/login";
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/info")
     public String showMe() {
+        return "trendpick/usr/member/info";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/info/address-edit")
+    public String manageAddress(String address) {
+        Member actor = rq.getMember();
+        memberService.manageAddress(actor, address);
+
+        return "trendpick/usr/member/info";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/info/account")
+    public String manageAccount(String bank_name, Long account) {
+        Member actor = rq.getMember();
+        memberService.manageAccount(actor, bank_name, account);
+
         return "trendpick/usr/member/info";
     }
 }
