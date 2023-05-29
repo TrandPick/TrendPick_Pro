@@ -1,21 +1,45 @@
 package project.trendpick_pro.domain.notification.entity;
 
+import com.querydsl.core.types.Order;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
+import project.trendpick_pro.domain.answer.entity.Answer;
+import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.notification.entity.dto.request.NotificationRequest;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notification {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-        private LocalDateTime creatDate; // 생성일
 
-        private String title; // 알림명
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "answer_id")
+        private Answer answer;
 
-        private String content; // 알림내용
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "member_id")
+        private Member member;
+
+        //@ManyToOne(fetch = FetchType.LAZY)
+       // @JoinColumn(name = "order_id")
+        private Order order;
+
+        private String title; // 제목
+
+        private String content; // 내용
+
+        public static Notification of(Member member, NotificationRequest notificationRequest) {
+                return Notification.builder()
+                        .member(member)
+                        .title(notificationRequest.getTitle())
+                        .content(notificationRequest.getContent())
+                        .build()
+                        ;
+        }
 }
