@@ -7,6 +7,9 @@ import project.trendpick_pro.domain.ask.entity.Ask;
 import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 import project.trendpick_pro.domain.ask.repository.AskRepository;
+import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.repository.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +20,13 @@ import java.util.List;
 public class AskService {
 
     private final AskRepository askRepository;
+    private final ProductRepository productRepository;
 
     public List<AskResponse> showAll() {
         List<Ask> askList = askRepository.findAll();
         List<AskResponse> responses = new ArrayList<>();
 
-        for(Ask ask : askList){
+        for (Ask ask : askList) {
             responses.add(AskResponse.of(ask));
         }
 
@@ -49,11 +53,10 @@ public class AskService {
     }
 
     @Transactional
-    public AskResponse register(AskRequest askRequest) {
-        String member = "member"; //Member
-        String brand = "brand"; //Brand
+    public AskResponse register(Member member, Long productId, AskRequest askRequest) {
+        Product product = productRepository.findById(productId).orElseThrow();
 
-        Ask ask = Ask.of(member, brand, askRequest);
+        Ask ask = Ask.of(member, product, askRequest);
 
         askRepository.save(ask);
         return AskResponse.of(ask);

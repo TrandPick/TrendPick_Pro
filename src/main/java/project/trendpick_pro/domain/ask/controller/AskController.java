@@ -45,8 +45,8 @@ public class AskController {
     }
 
     @PostMapping("/register")
-    public String registerAsk(@Valid AskRequest askRequest, @RequestParam(value = "brand") Long brandId, Model model) {
-        AskResponse askResponse = askService.register(askRequest);
+    public String registerAsk(@RequestParam(value = "product") Long productId, @Valid AskRequest askRequest, Model model) {
+        AskResponse askResponse = askService.register(rq.getMember(), productId, askRequest);
 
         model.addAttribute("askResponse", askResponse);
         return "redirect:/trendpick/customerservice/asks/%s".formatted(askResponse.getId());
