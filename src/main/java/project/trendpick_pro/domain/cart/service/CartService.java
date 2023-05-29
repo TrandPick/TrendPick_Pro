@@ -1,6 +1,8 @@
 package project.trendpick_pro.domain.cart.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
@@ -11,15 +13,12 @@ import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
 
 
 @Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class CartService {
 
     private final CartRepository cartRepository;
     private final ProductOptionRepository productOptionRepository;
-
-    public CartService(CartRepository cartRepository, ProductOptionRepository productOptionRepository) {
-        this.cartRepository = cartRepository;
-        this.productOptionRepository = productOptionRepository;
-    }
 
     public Cart createCart(Member member) {
         Cart cart = new Cart(member);
