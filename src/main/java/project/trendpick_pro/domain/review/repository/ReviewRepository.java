@@ -6,5 +6,4 @@ import project.trendpick_pro.domain.review.entity.Review;
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    List<Review> findAll(Long productId);
 }

@@ -30,9 +30,8 @@ public class ReviewService {
         reviewRepository.deleteById(reviewId);
     }
 
-    public ReviewResponse createReview(Member actor, ReviewRequest reviewRequest) {
+    public ReviewResponse createReview(Member actor, Long productId, ReviewRequest reviewRequest) {
         String username = actor.getUsername();
-        Long productId = 1L;
 
         Review review = Review.of(username, productId, reviewRequest);
         return ReviewResponse.of(review);
