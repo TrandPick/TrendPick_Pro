@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 import project.trendpick_pro.domain.ask.service.AskService;
+import project.trendpick_pro.domain.common.base.rq.Rq;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("trendpick/customerservice/asks")
 public class AskController {
     private final AskService askService;
+    private final Rq rq;
 
     @GetMapping("/list")
     public String showAllAsk(Model model) {

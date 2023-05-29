@@ -10,6 +10,7 @@ import project.trendpick_pro.domain.ask.entity.Ask;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 import project.trendpick_pro.domain.ask.repository.AskRepository;
 import project.trendpick_pro.domain.ask.service.AskService;
+import project.trendpick_pro.domain.member.entity.Member;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,10 +20,10 @@ public class AnswerService {
     private final AskRepository askRepository;
 
     @Transactional
-    public void register(Long askId, String member, AnswerRequest answerRequest) {
+    public void register(Long askId, Member member, AnswerRequest answerRequest) {
         Ask ask = askRepository.findById(askId).orElseThrow();
 
-        Answer answer = Answer.write(ask, member, answerRequest);
+        Answer answer = Answer.write(ask, answerRequest);
 
         answerRepository.save(answer);
     }

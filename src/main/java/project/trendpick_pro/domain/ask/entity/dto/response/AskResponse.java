@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.answer.entity.Answer;
 import project.trendpick_pro.domain.ask.entity.Ask;
-
-import java.time.LocalDate;
+import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.product.entity.Product;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +18,8 @@ import java.util.List;
 public class AskResponse {
 
     private Long id;
-    private String author; //Member
-    private String brand; //Brand
-
+    private Member author;
+    private Product product;
     private String title;
     private String content;
     private List<Answer> answerList = new ArrayList<>();
@@ -30,10 +29,10 @@ public class AskResponse {
 
     @Builder
     @QueryProjection
-    public AskResponse(Long id, String author, String brand, String title, String content, List<Answer> answerList, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public AskResponse(Long id, Member author, Product product, String title, String content, List<Answer> answerList, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.author = author;
-        this.brand = brand;
+        this.product = product;
         this.title = title;
         this.content = content;
         this.answerList = answerList;
@@ -45,7 +44,7 @@ public class AskResponse {
         return AskResponse.builder()
                 .id(ask.getId())
                 .author(ask.getAuthor())
-                .brand(ask.getBrand())
+                .product(ask.getProduct())
                 .title(ask.getTitle())
                 .content(ask.getContent())
                 .answerList(ask.getAnswerList())

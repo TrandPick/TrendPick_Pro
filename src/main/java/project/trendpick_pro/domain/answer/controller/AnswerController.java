@@ -6,17 +6,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.answer.entity.dto.request.AnswerRequest;
 import project.trendpick_pro.domain.answer.service.AnswerService;
+import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.member.entity.Member;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/trendpick/customerservice/asks/{askId}/answers")
 public class AnswerController {
     private final AnswerService answerService;
+    private final Rq rq;
 
     @PostMapping("/register")
     public String registerAnswer(@PathVariable Long askId,
                             @Valid AnswerRequest answerRequest){
-        String member = "member"; //Member
+        Member member = rq.getMember();
         answerService.register(askId, member, answerRequest);
 
         return "redirect:/trendpick/customerservice/asks/{askId}".formatted(askId);
