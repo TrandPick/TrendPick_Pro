@@ -1,0 +1,37 @@
+package project.trendpick_pro.domain.cart.entity.dto.response;
+
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
+import lombok.Getter;
+import project.trendpick_pro.domain.cart.entity.CartItem;
+
+
+
+@Getter
+public class CartItemResponse {
+    private Long id;
+    private Long cartId;
+    private Long productOptionId;
+    private String productName;
+    private int count;
+
+    @Builder
+    @QueryProjection
+    public CartItemResponse(Long id, Long cartId, Long productOptionId, String productName, int count) {
+        this.id = id;
+        this.cartId = cartId;
+        this.productOptionId = productOptionId;
+        this.productName = productName;
+        this.count = count;
+    }
+
+    public static CartItemResponse of (CartItem cartItem) {
+        return CartItemResponse.builder()
+                .id(cartItem.getId())
+                .cartId(cartItem.getCart().getId())
+                .productOptionId(cartItem.getProductOption().getId())
+                .productName(cartItem.getProductOption().getProduct().getName())
+                .count(cartItem.getCount())
+                .build();
+    }
+}
