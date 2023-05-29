@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
+import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.review.entity.dto.request.ReviewRequest;
+import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 
 @Entity
 @NoArgsConstructor
@@ -17,16 +20,28 @@ public class Review extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //@ManyToOne
-    //@JoinColumn(name = "member_id")
-    private Long user_id;   //User
+    private String username;   //User
 
 //    @ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "product_id")
-    private Long product_id;    //Product
+    private Long productId;    //Product
 
     @Lob
     private String content;
 
     private int rating;
+
+    public static Review of(String username, Long productId, ReviewRequest reviewRequest) {
+        return Review.builder()
+                .username(username)
+                .productId(productId)
+                .content(reviewRequest.getContent())
+                .rating(reviewRequest.getRating())
+                .build();
+    }
+
+    public void update(ReviewRequest reviewRequest) {
+        this.content = reviewRequest.getContent();
+        this.rating = reviewRequest.getRating();
+    }
 }
