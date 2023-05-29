@@ -32,4 +32,10 @@ public class MemberService {
 
         return memberRepository.save(member);
     }
+    @Transactional
+
+    public void manageAddress(Member actor, String address){
+        Member member = memberRepository.findByUsername(actor.getUsername()).orElseThrow();
+        member.setAddress(address);
+    }
 }
