@@ -23,10 +23,10 @@ public class ReviewController {
     @PostMapping("/write")
     public String createReview(@Valid ReviewRequest reviewRequest, @RequestParam(value = "productId") Long productId, Model model) {
         Member actor = rq.getMember();
-        ReviewResponse reviewResponse = reviewService.createReview(actor, reviewRequest);
+        ReviewResponse reviewResponse = reviewService.createReview(actor, productId, reviewRequest);
 
         model.addAttribute("reviewResponse", reviewResponse);
-        return "";
+        return "redirect:/trendpick/review";
 
     }
 
@@ -34,14 +34,14 @@ public class ReviewController {
     public String showReview(@PathVariable Long reviewId, Model model){
         ReviewResponse reviewResponse = reviewService.showReview(reviewId);
         model.addAttribute("reviewResponse", reviewResponse);
-        return "";
+        return "redirect:/trendpick/review";
     }
 
     @PostMapping("/delete/{reviewId}")
     public String deleteReview(@PathVariable Long reviewId) {
         reviewService.delete(reviewId);
 
-        return "";
+        return "redirect:/trendpick/review";
     }
 
     @PostMapping("/edit/{reviewId}")
@@ -49,6 +49,6 @@ public class ReviewController {
         ReviewResponse reviewResponse = reviewService.modify(reviewId, reviewRequest);
 
         model.addAttribute("reviewResponse", reviewResponse);
-        return "";
+        return "redirect:/trendpick/review";
     }
 }
