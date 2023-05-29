@@ -20,19 +20,19 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/order")
-    public String order(@Valid OrderSaveRequest... orderSaveRequests){
+//    @PostMapping("/order")
+//    public String order(@Valid OrderSaveRequest... orderSaveRequests){
+//
+//        orderService.order(1L, orderSaveRequests);
+//        return "redirect:/orders";
+//    }
 
-        orderService.order(1L, orderSaveRequests);
-        return "redirect:/orders";
-    }
-
-    @GetMapping("/list")
-    public String orderList(Model model) {
-        Page<OrderResponse> responses = orderService.findAll(1L);
-        model.addAttribute("orders", responses);
-        return "trendpick/usr/member/orders";
-    }
+//    @GetMapping("/list")
+//    public String orderList(Model model) {
+//        Page<OrderResponse> responses = orderService.findAll(1L);
+//        model.addAttribute("orders", responses);
+//        return "trendpick/usr/member/orders";
+//    }
 
     @PostMapping("/orders/{orderId}/cancel")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
