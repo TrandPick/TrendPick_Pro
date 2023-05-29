@@ -11,7 +11,6 @@ import project.trendpick_pro.domain.orders.entity.dto.request.OrderSaveRequest;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
 
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -28,17 +27,16 @@ public class OrderController {
         return "redirect:/orders";
     }
 
-    @GetMapping("/orders")
+    @GetMapping("/list")
     public String orderList(Model model) {
         Page<OrderResponse> responses = orderService.findAll(1L);
         model.addAttribute("orders", responses);
-        return "order/orderList";
+        return "trendpick/usr/member/orders";
     }
 
     @PostMapping("/orders/{orderId}/cancel")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
         orderService.cancel(orderId);
-        return "redirect:/orders";
+        return "redirect:trendpick/usr/member/orders";
     }
-
 }
