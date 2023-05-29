@@ -1,13 +1,14 @@
 package project.trendpick_pro.domain.ask.entity.dto.response;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
-
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AskByProductResponse {
     Long id;
     String state;
@@ -15,6 +16,7 @@ public class AskByProductResponse {
     String username;
     String date;
 
+    @QueryProjection
     public AskByProductResponse(Long id, String state, String title, String username, LocalDateTime localDateTime) {
         this.id = id;
         this.state = state;

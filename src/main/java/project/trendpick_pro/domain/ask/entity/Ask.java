@@ -14,6 +14,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class Ask extends BaseTimeEntity {
 
     private String title;
     private String content;
+    private String state;
 
     @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL)
     @Builder.Default
@@ -50,6 +52,7 @@ public class Ask extends BaseTimeEntity {
                 .product(product)
                 .title(askRequest.getTitle())
                 .content(askRequest.getTitle())
+                .state("답변예정")
                 .build()
                 ;
     }
