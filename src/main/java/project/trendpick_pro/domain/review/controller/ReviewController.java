@@ -45,7 +45,7 @@ public class ReviewController {
     }
 
     @PostMapping("/edit/{reviewId}")
-    public String modifyAsk(@PathVariable Long reviewId, @Valid ReviewRequest reviewRequest, Model model) {
+    public String modifyReview(@PathVariable Long reviewId, @Valid ReviewRequest reviewRequest, Model model) {
         ReviewResponse reviewResponse = reviewService.modify(reviewId, reviewRequest);
 
         model.addAttribute("reviewResponse", reviewResponse);

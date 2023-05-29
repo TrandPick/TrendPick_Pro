@@ -16,7 +16,7 @@ import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 @Builder
 @Getter
 public class Review extends BaseTimeEntity {
-    @Id
+    @Id @Column(name = "review_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
