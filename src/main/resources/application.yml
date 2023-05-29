@@ -6,15 +6,15 @@ spring:
       matching-strategy: ant_path_matcher
   datasource:
 #        H2
-#    driver-class-name: org.h2.Driver
-#    url: jdbc:h2:tcp://localhost/~/db/TrendPick
-#    username: sa
-#    password:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/db/TrendPick
+    username: sa
+    password:
 #          mariaDB
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://127.0.0.1:${maria.port}/TrendPick__dev?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
-    username: ${maria.username}
-    password: ${maria.password}
+#    driver-class-name: org.mariadb.jdbc.Driver
+#    url: jdbc:mariadb://127.0.0.1:${maria.port}/TrendPick__dev?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
+#    username: ${maria.username}
+#    password: ${maria.password}
   jpa:
     hibernate:
       ddl-auto: create

@@ -25,7 +25,6 @@ public class Answer extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "answer_id")
     private Long id;
-    private String author; //멤버 엔티티와 맵핑 해줘야 한다. (임시 String)
 
     @ManyToOne
     @JoinColumn(name = "ask_id")
@@ -33,10 +32,9 @@ public class Answer extends BaseTimeEntity {
 
     private String content;
 
-    public static Answer write(Ask ask, String member, AnswerRequest answerRequest) {
+    public static Answer write(Ask ask, AnswerRequest answerRequest) {
         Answer answer = Answer
                 .builder()
-                .author(member) //Member
                 .ask(ask)
                 .content(answerRequest.getContent())
                 .build()
