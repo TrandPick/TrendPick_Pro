@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 public class CartItemRequest {
     @NotBlank
+    private Long cartId;
+    @NotBlank
     private Long productOptionId;
-
     @Min(1)
     private int count;
-
 }

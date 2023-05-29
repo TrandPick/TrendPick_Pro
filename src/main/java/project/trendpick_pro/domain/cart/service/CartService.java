@@ -1,12 +1,13 @@
 package project.trendpick_pro.domain.cart.service;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
+
 
 
 @Service
@@ -20,13 +21,13 @@ public class CartService {
         this.productOptionRepository = productOptionRepository;
     }
 
-    public Cart createCart(User user) {
-        Cart cart = new Cart(user);
+    public Cart createCart(Member member) {
+        Cart cart = new Cart(member);
         return cartRepository.save(cart);
     }
 
-    public void addItemToCart(User user, Long productOptionId, int count) {
-        Cart cart = getCartByUser(user);
+    public void addItemToCart(Member member, Long productOptionId, int count) {
+        Cart cart = getCartByUser(member);
         ProductOption productOption = getProductOptionById(productOptionId);
 
         CartItem cartItem = cart.findCartItemByProductOption(productOption);
@@ -43,22 +44,23 @@ public class CartService {
     }
 
     // 상품을 장바구니에서 제거
-    public void removeItemFromCart(User user, Long cartItemId) {
-        Cart cart = getCartByUser(user);
+    public void removeItemFromCart(Member member, Long cartItemId) {
+        Cart cart = getCartByUser(member);
         cart.removeItem(cartItemId);
     }
 
     // 상품의 수량 업데이트
-    public void updateItemCount(User user, Long cartItemId, int count) {
-        Cart cart = getCartByUser(user);
+    public void updateItemCount(Member member, Long cartItemId, int count) {
+        Cart cart = getCartByUser(member);
         cart.updateItemCount(cartItemId, count);
     }
 
-    public Cart getCartByUser(User user) {
-       // return cartRepository.findByUser(user);
+    public Cart getCartByUser(Member member) {
+        return cartRepository.findByUser(member.getId());
     }
 
     private ProductOption getProductOptionById(Long productOptionId) {
-       // return productOptionRepository.findById(productOptionId);
+        return productOptionRepository.findById(productOptionId)
+                .orElseThrow(() -> new IllegalArgumentException("Product option not found"));
     }
 }

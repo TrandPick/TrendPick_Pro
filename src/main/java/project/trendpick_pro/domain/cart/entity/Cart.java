@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.userdetails.User;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 
 import java.util.ArrayList;
@@ -22,9 +22,9 @@ public class Cart {
     @Column(name = "cart_id")
     private Long id;
 
-    //@OneToOne(fetch = FetchType.LAZY)
-   // @JoinColumn(name = "user_id")
-     // private User user;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+      private Member member;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
@@ -35,8 +35,8 @@ public class Cart {
     // 총 가격 필드
     private int totalPrice;
 
-    public Cart(User user) {
-        //this.user = user;
+    public Cart(Member member) {
+        this.member = member;
     }
 
     // CartItem 추가
