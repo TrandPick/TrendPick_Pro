@@ -18,8 +18,8 @@ public class AskController {
     private final Rq rq;
 
     @GetMapping("/list")
-    public String showAllAsk(Model model) {
-        model.addAttribute("askResponse", askService.showAll());
+    public String showAsksByProduct(@RequestParam("page") int offset, @RequestParam("product") Long productId, Model model) {
+        model.addAttribute("askResponse", askService.showAsksByProduct(offset, productId));
         return "trendpick/customerservice/asks/list";
     }
 

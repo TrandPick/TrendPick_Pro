@@ -1,6 +1,8 @@
 package project.trendpick_pro.domain.ask.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.ask.entity.Ask;
@@ -22,13 +24,10 @@ public class AskService {
     private final AskRepository askRepository;
     private final ProductRepository productRepository;
 
-    public List<AskResponse> showAll() {
-        List<Ask> askList = askRepository.findAll();
-        List<AskResponse> responses = new ArrayList<>();
+    public List<AskResponse> showAsksByProduct(int offset, Long productId) {
+        Pageable pageable = PageRequest.of(offset, 10);
 
-        for (Ask ask : askList) {
-            responses.add(AskResponse.of(ask));
-        }
+        List<AskResponse> responses = new ArrayList<>();
 
         return responses;
     }

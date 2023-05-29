@@ -6,6 +6,5 @@ import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 
 public interface ProductRepositoryCustom {
-
-    Page<ProductListResponse> findAllByCategoryId(ProductSearchCond cond, Pageable pageable);
+    public Page<ProductListResponse> findAllByCategoryId(ProductSearchCond cond, Pageable pageable);
 }
