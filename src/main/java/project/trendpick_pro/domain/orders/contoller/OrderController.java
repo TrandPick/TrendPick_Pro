@@ -26,21 +26,21 @@ public class OrderController {
     public String order(@Valid OrderSaveRequest... orderSaveRequests) throws IllegalAccessException {
 
         orderService.order(1L, orderSaveRequests);
-        return "redirect:/orders";
+        return "redirect:trendpick/usr/member/orders";
     }
 
-    @GetMapping("/orders")
+    @GetMapping("/list")
     public String orderList(Model model, @Valid OrderSearchCond orderSearchCond) {
         Page<Order> responses = orderService.findAll(orderSearchCond);
 
         model.addAttribute("orders", responses);
-        return "order/orderList";
+        return "trendpick/usr/member/orders";
     }
 
     @PostMapping("/orders/{orderId}/cancel")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
         orderService.cancel(orderId);
-        return "redirect:/orders";
+        return "redirect:trendpick/usr/member/orders";
     }
 
 }

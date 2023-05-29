@@ -9,16 +9,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.delivery.entity.embaded.Address;
+import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSaveRequest;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.member.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +30,13 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
 
     @Transactional
     public void order(Long userId, OrderSaveRequest... orderSaveRequests) throws IllegalAccessException {
 
-        Member member = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 입니다."));// 임시 exception 설정 나중에 할 수도 있고 아닐수도
+        Member member = memberRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저 입니다."));// 임시 exception 설정 나중에 할 수도 있고 아닐수도
 
         Delivery delivery = new Delivery(Address.of("서울시", "강남대로", "222")); // 임의로 작성
 
@@ -61,9 +61,9 @@ public class OrderService {
 
     //임시 작성
     public Page<Order> findAll(OrderSearchCond cond) {
-        User user = userRepository.findById(cond.getUserId()).orElseThrow();
+        Member member = memberRepository.findById(cond.getUserId()).orElseThrow();
 
-        Page<Order> orderPage = orderRepository.findAllByUser(user, PageRequest.of(0, 10));
+        Page<Order> orderPage = orderRepository.findAllByUser(member, PageRequest.of(0, 10));
 
         return orderPage;
     }
