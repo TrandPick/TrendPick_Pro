@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -39,6 +40,14 @@ public class ReviewController {
     public String deleteReview(@PathVariable Long reviewId) {
         reviewService.delete(reviewId);
 
+        return "";
+    }
+
+    @PostMapping("/edit/{reviewId}")
+    public String modifyAsk(@PathVariable Long reviewId, @Valid ReviewRequest reviewRequest, Model model) {
+        ReviewResponse reviewResponse = reviewService.modify(reviewId, reviewRequest);
+
+        model.addAttribute("reviewResponse", reviewResponse);
         return "";
     }
 }

@@ -37,4 +37,11 @@ public class ReviewService {
         Review review = Review.of(username, productId, reviewRequest);
         return ReviewResponse.of(review);
     }
+
+    public ReviewResponse modify(Long reviewId, ReviewRequest reviewRequest) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+
+        review.update(reviewRequest);
+        return ReviewResponse.of(review);
+    }
 }
