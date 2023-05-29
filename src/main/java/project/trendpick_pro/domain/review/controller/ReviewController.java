@@ -32,7 +32,8 @@ public class ReviewController {
 
     @GetMapping("/list/{reviewId}")
     public String showReview(@PathVariable Long reviewId, Model model){
-        model.addAttribute("reviewRes", reviewService.showReview(reviewId));
+        ReviewResponse reviewResponse = reviewService.showReview(reviewId);
+        model.addAttribute("reviewResponse", reviewResponse);
         return "";
     }
 
