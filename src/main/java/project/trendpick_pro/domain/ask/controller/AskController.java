@@ -2,6 +2,7 @@ package project.trendpick_pro.domain.ask.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,21 +30,24 @@ public class AskController {
         return "trendpick/customerservice/asks/detail";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{askId}")
     public String deleteAsk(@PathVariable Long askId) {
-        askService.delete(askId);
+        askService.delete(rq.getMember(), askId);
 
         return "redirect:/trendpick/customerservice/asks/list";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/edit/{askId}")
     public String modifyAsk(@PathVariable Long askId, @Valid AskRequest askRequest, Model model) {
-        AskResponse askResponse = askService.modify(askId, askRequest);
+        AskResponse askResponse = askService.modify(rq.getMember(), askId, askRequest);
 
         model.addAttribute("askResponse", askResponse);
         return "redirect:/trendpick/customerservice/asks/%s".formatted(askId);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/register")
     public String registerAsk(@RequestParam(value = "product") Long productId, @Valid AskRequest askRequest, Model model) {
         AskResponse askResponse = askService.register(rq.getMember(), productId, askRequest);

@@ -39,13 +39,21 @@ public class AskService {
     }
 
     @Transactional
-    public void delete(Long askId) {
-        askRepository.deleteById(askId);
+    public void delete(Member member, Long askId) {
+        Ask ask = askRepository.findById(askId).orElseThrow();
+
+        if(validateAccess(member, ask))
+            throw new RuntimeException("해당 문의에 대한 삭제 권한이 없습니다.");
+
+        askRepository.delete(ask);
     }
 
     @Transactional
-    public AskResponse modify(Long askId, AskRequest askRequest) {
+    public AskResponse modify(Member member, Long askId, AskRequest askRequest) {
         Ask ask = askRepository.findById(askId).orElseThrow();
+
+        if(validateAccess(member, ask))
+            throw new RuntimeException("해당 문의에 대한 수정 권한이 없습니다.");
 
         ask.update(askRequest);
         return AskResponse.of(ask);
@@ -59,5 +67,12 @@ public class AskService {
 
         askRepository.save(ask);
         return AskResponse.of(ask);
+    }
+
+
+    private boolean validateAccess(Member member, Ask ask) {
+        if(ask.getAuthor().getId() == member.getId())
+            return true;
+        return false;
     }
 }
