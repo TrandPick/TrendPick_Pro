@@ -61,11 +61,8 @@ public class OrderService {
 
     //임시 작성
     public Page<Order> findAll(OrderSearchCond cond) {
-        Member member = memberRepository.findById(cond.getUserId()).orElseThrow();
-
-        Page<Order> orderPage = orderRepository.findAllByUser(member, PageRequest.of(0, 10));
-
-        return orderPage;
+        Member member = memberRepository.findById(cond.getMemberId()).orElseThrow();
+        return orderRepository.findAllByMember(member, PageRequest.of(0, 10));
     }
 
 

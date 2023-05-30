@@ -23,14 +23,14 @@ public class OrderController {
     @PostMapping("/order")
     public String order(@Valid OrderSaveRequest... orderSaveRequests){
 
-        orderService.order(1L, orderSaveRequests);
+//        orderService.order(1L, orderSaveRequests);
         return "redirect:/orders";
     }
 
     @GetMapping("/list")
     public String orderList(Model model) {
-        Page<OrderResponse> responses = orderService.findAll(1L);
-        model.addAttribute("orders", responses);
+//        Page<OrderResponse> responses = orderService.findAll(1L);
+//        model.addAttribute("orders", responses);
         return "trendpick/usr/member/orders";
     }
 
