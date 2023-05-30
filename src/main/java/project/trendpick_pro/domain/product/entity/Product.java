@@ -12,6 +12,7 @@ import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.file.ProductFile;
 import project.trendpick_pro.domain.tag.entity.Tag;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class Product extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
     @JoinColumn(name = "common_file_id")
-    private CommonFile commonFile;
+    private ProductFile productFile;
 
     @Column(name = "price", nullable = false)
     private int price;
@@ -59,26 +60,27 @@ public class Product extends BaseTimeEntity {
 
     @Builder
     public Product(String name, MainCategory mainCategory, SubCategory subCategory, Brand brand,
-                   String description, CommonFile commonFile, int price, int stock, List<Tag> tags) {
+                   String description, ProductFile productFile, int price, int stock, List<Tag> tags) {
         this.name = name;
         this.mainCategory = mainCategory;
         this.subCategory = subCategory;
         this.brand = brand;
         this.description = description;
-        this.commonFile = commonFile;
+        this.productFile = productFile;
         this.price = price;
         this.stock = stock;
         this.tags = tags;
     }
 
-    public static Product of(ProductSaveRequest request, MainCategory mainCategory, SubCategory subCategory, Brand brand) {
+    public static Product of(ProductSaveRequest request, MainCategory mainCategory
+            , SubCategory subCategory, Brand brand,ProductFile productFile) {
         return Product.builder()
                 .name(request.getName())
                 .mainCategory(mainCategory)
                 .subCategory(subCategory)
                 .brand(brand)
                 .description(request.getDescription())
-                .commonFile(makeFiles(request.getMainFile(), request.getSubFiles()))
+                .productFile(productFile)
                 .price(request.getPrice())
                 .stock(request.getStock())
                 .tags(request.getTags())
@@ -103,9 +105,5 @@ public class Product extends BaseTimeEntity {
         // 여기서 파일 지지고 볶고 할 예정
     }
 
-    private static CommonFile makeFiles(MultipartFile mainFile, List<MultipartFile> subFiles) {
-        return null;
 
-        // 여기서 파일 지지고 볶고 할 예정
-    }
 }

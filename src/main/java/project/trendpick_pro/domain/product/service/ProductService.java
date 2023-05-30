@@ -13,13 +13,16 @@ import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.repository.MainCategoryRepository;
 import project.trendpick_pro.domain.category.repository.SubCategoryRepository;
+import project.trendpick_pro.domain.common.base.fileterminator.FileTerminator;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
+import project.trendpick_pro.domain.product.entity.file.ProductFile;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,15 +36,23 @@ public class ProductService {
     private final MainCategoryRepository mainCategoryRepository;
     private final SubCategoryRepository subCategoryRepository;
     private final BrandRepository brandRepository;
+    private final FileTerminator fileTerminator;
 
     @Transactional
-    public ProductResponse register(ProductSaveRequest productSaveRequest) {
+    public ProductResponse register(ProductSaveRequest productSaveRequest) throws IOException {
+
+        ProductFile mainFile = fileTerminator.terminateFile(productSaveRequest.getMainFile());
+        List<ProductFile> subFiles = fileTerminator.terminateFileList(productSaveRequest.getSubFiles());
+
+        for(ProductFile productFile : subFiles){
+            mainFile.connectFile(productFile);
+        }
 
         MainCategory mainCategory = mainCategoryRepository.findByName(productSaveRequest.getMainCategory());
         SubCategory subCategory = subCategoryRepository.findByName(productSaveRequest.getSubCategory());
         Brand brand = brandRepository.findByName(productSaveRequest.getBrand());
 
-        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand);
+        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile);
         productRepository.save(product);
         return ProductResponse.of(product);
     }

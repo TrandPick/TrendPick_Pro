@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.file.ProductFile;
 import project.trendpick_pro.domain.tag.entity.Tag;
 
 import java.util.ArrayList;
@@ -54,19 +55,19 @@ public class ProductResponse {
 //                .subCategory(product.getSubCategory().getName())
                 .brand(product.getBrand().getName())
                 .description(product.getDescription())
-                .mainFile(product.getCommonFile().getFileName())
-                .subFiles(subFiles(product.getCommonFile().getChild()))
+                .mainFile(product.getProductFile().getOriginalFileName())
+                .subFiles(subFiles(product.getProductFile().getSubFiles()))
                 .price(product.getPrice())
                 .stock(product.getStock())
                 .tags(product.getTags())
                 .build();
     }
 
-    private static List<String> subFiles(List<CommonFile> subFiles) {
+    private static List<String> subFiles(List<ProductFile> subFiles) {
         List<String> tmpList = new ArrayList<>();
 
-        for (CommonFile subFile : subFiles) {
-            tmpList.add(subFile.getFileName());
+        for (ProductFile subFile : subFiles) {
+            tmpList.add(subFile.getOriginalFileName());
         }
         return tmpList;
     }
