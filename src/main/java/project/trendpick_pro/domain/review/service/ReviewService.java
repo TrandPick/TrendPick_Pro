@@ -44,7 +44,10 @@ public class ReviewService {
 
 
     public void delete(Long reviewId) {
-        reviewRepository.deleteById(reviewId);
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+
+        review.getReviewImage().deleteImage(filePath);
+        reviewRepository.delete(review);
     }
 
     public ReviewResponse createReview(Member actor, Long productId, ReviewCreateRequest reviewCreateRequest, MultipartFile mainFile, List<MultipartFile> subFiles) throws Exception {
