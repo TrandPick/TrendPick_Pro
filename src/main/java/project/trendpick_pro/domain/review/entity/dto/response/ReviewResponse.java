@@ -45,22 +45,13 @@ public class ReviewResponse {
     public static ReviewResponse of(Review review) {
         return ReviewResponse.builder()
                 .id(review.getId())
-                .writer(review.getWriter().getUsername())
+                .writer(review.getWriter())
                 .productId(review.getProduct().getId())
                 .title(review.getTitle())
                 .content(review.getContent())
-                .mainFile(review.getCommonFile().getFileName())
-                .subFiles(subFiles(review.getCommonFile().getChild()))
+                .mainFile(review.getReviewImage().getMainFileName())
+                .subFiles(review.getReviewImage().getSubFileNames())
                 .rating(review.getRating())
                 .build();
-    }
-
-    private static List<String> subFiles(List<CommonFile> subFiles) {
-        List<String> tmpList = new ArrayList<>();
-
-        for (CommonFile subFile : subFiles) {
-            tmpList.add(subFile.getFileName());
-        }
-        return tmpList;
     }
 }
