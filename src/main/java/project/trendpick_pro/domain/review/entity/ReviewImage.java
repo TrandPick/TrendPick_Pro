@@ -46,4 +46,21 @@ public class ReviewImage {
     public void saveSubFileNames(List<String> subFileNames) {
         this.subFileNames = subFileNames;
     }
+
+    public void changeMainFile(String filePath, String mainFilePath, MultipartFile mainFile) throws IOException {
+        File file = new File(filePath + mainFileName);
+        file.delete();  //원래 있던거 삭제
+
+        this.mainFileName = mainFilePath;
+        mainFile.transferTo(new File(filePath + mainFilePath));
+    }
+
+    public void changeSubFile(String filePath, List<String> subFileNames) {
+        //음 우선 돌면서 지워야겠지??
+        for(String subFile: subFileNames){
+            File file = new File(filePath + subFile);
+            file.delete();
+        }
+        this.subFileNames = subFileNames;
+    }
 }

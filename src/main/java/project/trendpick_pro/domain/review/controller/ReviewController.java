@@ -1,6 +1,7 @@
 package project.trendpick_pro.domain.review.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,7 @@ import project.trendpick_pro.domain.review.entity.dto.request.ReviewUpdateReques
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.service.ReviewService;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -48,8 +50,9 @@ public class ReviewController {
     }
 
     @PostMapping("/edit/{reviewId}")
-    public String modifyReview(@PathVariable Long reviewId, ReviewUpdateRequest reviewUpdateRequest, Model model) {
-        ReviewResponse reviewResponse = reviewService.modify(reviewId, reviewUpdateRequest);
+    public String updateReview(@PathVariable Long reviewId, ReviewUpdateRequest reviewUpdateRequest,
+                               @RequestPart("main-file") @NotBlank MultipartFile mainImage, @RequestPart("sub-file") List<MultipartFile> subImages, Model model) throws IOException {
+        ReviewResponse reviewResponse = reviewService.update(reviewId, reviewUpdateRequest, mainImage, subImages);
 
         model.addAttribute("reviewResponse", reviewResponse);
         return "redirect:/trendpick/review";

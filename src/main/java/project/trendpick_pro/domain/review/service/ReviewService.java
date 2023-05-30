@@ -68,8 +68,19 @@ public class ReviewService {
         return ReviewResponse.of(review);
     }
 
-    public ReviewResponse modify(Long reviewId, ReviewUpdateRequest reviewUpdateRequest) {
+    public ReviewResponse update(Long reviewId, ReviewUpdateRequest reviewUpdateRequest, MultipartFile mainFile, List<MultipartFile> subFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
+        ReviewImage reviewImage = review.getReviewImage();
+
+        //메인 파일 이름을 아예 있던거 없애고 바꿔버리기!
+        reviewImage.changeMainFile(filePath, createStoreFileName(mainFile.getOriginalFilename()), mainFile);
+
+        //서브 파일도 같은 방식으로
+        //비어있는 경우도 생각.,,?
+        //ReviewImage 엔티티에서 가능하니까 거기 메소드를 만들어보쟈
+        //reviewImage.changeSubFile(filePath, subFiles); => List<String>으로 만들어 보내야함
+        List<String> fileList = saveSubImages(filePath, subFiles);
+        reviewImage.changeSubFile(filePath, fileList);
 
         review.update(reviewUpdateRequest);
         return ReviewResponse.of(review);
