@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.1.0'
+    id 'org.springframework.boot' version '3.0.7'
     id 'io.spring.dependency-management' version '1.1.0'
 }
 
@@ -32,12 +32,16 @@ dependencies {
 
     // thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation group: 'com.github.zhanhb', name: 'thymeleaf-layout-dialect', version: '3.2.0'
 
     // lombok
     annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'
+
+    // spring security
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    testImplementation 'org.springframework.security:spring-security-test'
 
     // 카카오 로그인, 구글 로그인, 네이버 로그인
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
