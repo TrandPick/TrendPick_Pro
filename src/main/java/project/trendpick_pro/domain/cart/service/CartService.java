@@ -55,7 +55,7 @@ public class CartService {
     }
 
     public Cart getCartByUser(Member member) {
-        return cartRepository.findByUser(member.getId());
+        return cartRepository.findByMemberId(member.getId());
     }
 
     private ProductOption getProductOptionById(Long productOptionId) {

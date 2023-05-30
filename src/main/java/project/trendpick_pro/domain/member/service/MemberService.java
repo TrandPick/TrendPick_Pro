@@ -5,8 +5,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.form.JoinForm;
+import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -22,26 +26,40 @@ public class MemberService {
     }
 
     @Transactional
-    public Member register(String username, String password) {
+    public void register(JoinForm joinForm) {
+
+        if (memberRepository.findByUsername(joinForm.emailtext()).isPresent()) {
+            throw new MemberAlreadyExistException("이미 존재하는 이름입니다.");
+        }
+
+        RoleType roleType;
+        if (Objects.equals(joinForm.state(), RoleType.ADMIN.getValue())) {
+            roleType = RoleType.ADMIN;
+        } else if (joinForm.state().equals(RoleType.BRAND_ADMIN.getValue())) {
+            roleType = RoleType.BRAND_ADMIN;
+        } else {
+            roleType = RoleType.MEMBER;
+        }
 
         Member member = Member
                 .builder()
-                .username(username)
-                .password(passwordEncoder.encode(password))
+                .email(joinForm.emailtext())
+                .password(passwordEncoder.encode(joinForm.password()))
+                .username(joinForm.username())
+                .phoneNumber(joinForm.phoneNumber())
+                .role(roleType)
                 .build();
 
-        return memberRepository.save(member);
+        memberRepository.save(member);
     }
     @Transactional
-
     public void manageAddress(Member actor, String address){
         Member member = memberRepository.findByUsername(actor.getUsername()).orElseThrow();
-        member.setAddress(address);
+        member.connectAddress(address);
     }
 
-    public void manageAccount(Member actor, String bank_name, Long account){
+    public void manageAccount(Member actor, String bank_name, String account){
         Member member = memberRepository.findByUsername(actor.getUsername()).orElseThrow();
-        member.setBank_name(bank_name);
-        member.setAccount(account);
+        member.connectBank(bank_name, account);
     }
 }

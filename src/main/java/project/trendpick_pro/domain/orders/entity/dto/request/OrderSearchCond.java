@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public class OrderSearchCond {
 
-    private Long userId;
+    private Long memberId;
 
 }
