@@ -10,6 +10,8 @@ import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveReques
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.service.ProductService;
 
+import java.io.IOException;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("/register")
-    public String registerProduct(@Valid ProductSaveRequest productSaveRequest, Model model) {
+    public String registerProduct(@Valid ProductSaveRequest productSaveRequest, Model model) throws IOException {
 
         ProductResponse productResponse = productService.register(productSaveRequest);
         model.addAttribute("productResponse", productResponse);
