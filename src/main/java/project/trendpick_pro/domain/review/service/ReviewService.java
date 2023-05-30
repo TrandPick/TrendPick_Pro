@@ -3,10 +3,12 @@ package project.trendpick_pro.domain.review.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.review.entity.Review;
-import project.trendpick_pro.domain.review.entity.dto.request.ReviewRequest;
+import project.trendpick_pro.domain.review.entity.dto.request.ReviewCreateRequest;
+import project.trendpick_pro.domain.review.entity.dto.request.ReviewUpdateRequest;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
 
@@ -16,7 +18,7 @@ import project.trendpick_pro.domain.review.repository.ReviewRepository;
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-
+    private final ProductRepository productRepository;
 
 
     public ReviewResponse showReview(Long productId) {
@@ -30,17 +32,17 @@ public class ReviewService {
         reviewRepository.deleteById(reviewId);
     }
 
-    public ReviewResponse createReview(Member actor, Long productId, ReviewRequest reviewRequest) {
-        String username = actor.getUsername();
+    public ReviewResponse createReview(Member actor, Long productId, ReviewCreateRequest reviewCreateRequest) {
+        Product product = productRepository.findById(productId).orElseThrow();
 
-        Review review = Review.of(username, productId, reviewRequest);
+        Review review = Review.of(reviewCreateRequest, actor, product);
         return ReviewResponse.of(review);
     }
 
-    public ReviewResponse modify(Long reviewId, ReviewRequest reviewRequest) {
+    public ReviewResponse modify(Long reviewId, ReviewUpdateRequest reviewUpdateRequest) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
-        review.update(reviewRequest);
+        review.update(reviewUpdateRequest);
         return ReviewResponse.of(review);
     }
 }
