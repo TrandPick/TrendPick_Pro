@@ -7,5 +7,5 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    Page<Order> findAllByUser(Member member, Pageable pageable);
+    Page<Order> findAllByMember(Member member, Pageable pageable);
 }

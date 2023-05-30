@@ -2,40 +2,49 @@ package project.trendpick_pro.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import project.trendpick_pro.domain.tag.entity.Tag;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
 @Builder
-@Getter @Setter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
+    @Column(name = "email",unique = true, nullable = false)
     private String email;
 
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "username", nullable = false)
     private String username;
 
-    private String phone_num;
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
 
-    private Date birth;
+    private LocalDate birth;
 
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
-    //@OneToMany(mappedBy = "user")
-    private Long tag_id;    //private List<Tag> tags= new ArrayList<>(); Tag가 N쪽인데 연관관계를 어떻게 잡아야할까용...Tag가 User를 가지고 있을 필요는 없을 것 같은데 쓰읍
-    private String bank_name;
-    private Long account;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "member_id")
+    private List<Tag> tags;
+
+    private String bankName;
+    private String bankAccount;
 
     private String address;
 
@@ -54,5 +63,12 @@ public class Member {
         return grantedAuthorities;
     }
 
+    public void connectAddress(String address) {
+        this.address = address;
+    }
 
+    public void connectBank(String bankName, String bankAccount) {
+        this.bankName = bankName;
+        this.bankAccount = bankAccount;
+    }
 }
