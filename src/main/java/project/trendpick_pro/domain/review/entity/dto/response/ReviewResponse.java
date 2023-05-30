@@ -6,38 +6,51 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.review.entity.Review;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewResponse {
     private Long id;
-    private String username;   //User
+    private String writer;   //User
     private Long productId;    //Product
-    @Lob
+    private String mainFile;
+    private List<String> subFiles;
+    private String title;
+
     private String content;
 
     private int rating;
 
     @Builder
     @QueryProjection
-    public ReviewResponse(Long id, String username, Long productId, String content, int rating) {
+    public ReviewResponse(Long id, String writer, Long productId, String title, String content,
+                          String mainFile, List<String> subFiles, int rating) {
         this.id = id;
-        this.username = username;
+        this.writer = writer;
         this.productId = productId;
+        this.title = title;
         this.content = content;
+        this.mainFile = mainFile;
+        this.subFiles = subFiles;
         this.rating = rating;
     }
 
     public static ReviewResponse of(Review review) {
         return ReviewResponse.builder()
                 .id(review.getId())
-                .username(review.getUsername())
-                .productId(review.getProductId())
+                .writer(review.getWriter())
+                .productId(review.getProduct().getId())
+                .title(review.getTitle())
                 .content(review.getContent())
+                .mainFile(review.getReviewImage().getMainFileName())
+                .subFiles(review.getReviewImage().getSubFileNames())
                 .rating(review.getRating())
                 .build();
     }
