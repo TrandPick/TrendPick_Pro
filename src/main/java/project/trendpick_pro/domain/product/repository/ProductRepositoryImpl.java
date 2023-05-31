@@ -85,9 +85,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     private static OrderSpecifier<?> orderSelector(Integer sortCode) {
         return switch (sortCode) {
             case 2 -> product.id.asc();
-//            case 3 -> product.getRateAvg.desc(); //평점
-//            case 4 -> product.getRateAvg.asc();;
-//            case 5 -> product.totalSales.desc();
+            case 3 -> product.rateAvg.desc(); //평점
+            case 4 -> product.rateAvg.asc();
+            case 5 -> product.reviewCount.desc(); //리뷰수
             default -> product.id.desc();
         };
     }
