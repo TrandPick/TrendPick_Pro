@@ -1,5 +1,7 @@
 package project.trendpick_pro.domain.product.repository;
 
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -30,11 +32,17 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     @Override
     public Page<ProductListResponse> findAllByCategoryId(ProductSearchCond cond, Pageable pageable) {
         List<ProductListResponse> result = queryFactory
+//                .select(Projections.constructor(ProductListResponse.class,
+//                        product.id,
+//                        product.name,
+//                        brand.name,
+//                        product.file.translatedFileName,
+//                        product.price))
                 .select(new QProductListResponse(
                         product.id,
                         product.name,
                         brand.name,
-                        product.file.translatedFileName,
+                        commonFile.translatedFileName,
                         product.price
                 ))
                 .from(product)
@@ -43,12 +51,12 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(product.brand, brand)
                 .leftJoin(product.file, commonFile)
                 .where(
-                        mainCategoryEq(cond),
-                        subCategoryEq(cond)
-
+                        mainCategoryEq(cond)
+                                .and(subCategoryEq(cond))
                 )
                 .offset(0)
                 .limit(18)
+                .orderBy(orderSelector(cond.getSortCode())) //정렬추가
                 .fetch();
 
         JPAQuery<Long> count = queryFactory
@@ -72,5 +80,15 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private static BooleanExpression subCategoryEq(ProductSearchCond cond) {
         return subCategory.name.eq(cond.getSubCategory());
+    }
+
+    private static OrderSpecifier<?> orderSelector(Integer sortCode) {
+        return switch (sortCode) {
+            case 2 -> product.id.asc();
+//            case 3 -> product.getRatingAvg.desc(); //평점
+//            case 4 -> product.getRatingAvg.asc();;
+//            case 5 -> product.totalSales.desc();
+            default -> product.id.desc();
+        };
     }
 }
