@@ -7,14 +7,8 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.brand.entity.QBrand;
-import project.trendpick_pro.domain.category.entity.QMainCategory;
-import project.trendpick_pro.domain.category.entity.QSubCategory;
-import project.trendpick_pro.domain.common.file.QCommonFile;
-import project.trendpick_pro.domain.product.entity.QProduct;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
 
 import java.util.List;
@@ -23,7 +17,7 @@ import static project.trendpick_pro.domain.brand.entity.QBrand.*;
 import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
-import static project.trendpick_pro.domain.product.entity.QProduct.*;
+import static project.trendpick_pro.domain.product.entity.QProduct.product;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
@@ -79,5 +73,4 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     private static BooleanExpression subCategoryEq(ProductSearchCond cond) {
         return subCategory.name.eq(cond.getSubCategory());
     }
-
 }
