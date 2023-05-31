@@ -1,21 +1,15 @@
 package project.trendpick_pro.domain.cart.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
-import project.trendpick_pro.domain.cart.entity.dto.request.CartRequest;
-import project.trendpick_pro.domain.cart.entity.dto.response.CartResponse;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
 
-import java.util.List;
 
 
 @Service
@@ -26,9 +20,6 @@ public class CartService {
     private final CartRepository cartRepository;
     private final ProductOptionRepository productOptionRepository;
 
-    public List<Cart> findByCartMember(Member member){
-        return cartRepository.findByCartMemberId(member);
-    }
     public Cart createCart(Member member) {
         Cart cart = new Cart(member);
         return cartRepository.save(cart);
@@ -69,6 +60,6 @@ public class CartService {
 
     private ProductOption getProductOptionById(Long productOptionId) {
         return productOptionRepository.findById(productOptionId)
-                .orElseThrow(() -> new IllegalArgumentException("상품 옵션을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("Product option not found"));
     }
 }
