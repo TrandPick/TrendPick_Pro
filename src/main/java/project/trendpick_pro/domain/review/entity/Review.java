@@ -51,15 +51,6 @@ public class Review extends BaseTimeEntity {
     private int rating;
 
     @Builder
-    public Review(Member member, Product product, String title, String content, int rating){
-        this.writer = member.getUsername();
-        this.product = product;
-        this.title = title;
-        this.content = content;
-        this.rating = rating;
-    }
-
-    @Builder
     public Review(Member member, Product product, ReviewCreateRequest reviewCreateRequest){
         this.writer = member.getUsername();
         this.product = product;

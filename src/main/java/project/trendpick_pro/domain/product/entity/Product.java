@@ -57,6 +57,9 @@ public class Product extends BaseTimeEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Tag> tags = new ArrayList<>();
 
+    public long reviewCount = 0;
+    public double rateAvg = 0;
+
     @Builder
     public Product(String name, MainCategory mainCategory, SubCategory subCategory, Brand brand,
                    String description, CommonFile file, int price, int stock, List<Tag> tags) {
@@ -96,6 +99,13 @@ public class Product extends BaseTimeEntity {
             throw new IllegalAccessException("need more stock");
         }
         this.stock = restStock;
+    }
+
+    public void addReview(int rating){
+        double total = getRateAvg() * getReviewCount() + rating;
+
+        this.reviewCount++;
+        this.rateAvg = Math.round(total / reviewCount * 10) / 10.0;
     }
 
     public void update(ProductSaveRequest request) {
