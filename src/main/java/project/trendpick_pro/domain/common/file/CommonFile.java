@@ -16,7 +16,8 @@ public class CommonFile {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String FileName;
+    private String originalFileName; //
+    private String translatedFileName; //실제 저장 경로, 업로드할때 이 경로로 이미지 불러옴.
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ID")
