@@ -23,6 +23,7 @@ import java.util.List;
 public class CartController {
     private final CartService cartService;
     private final Rq rq;
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showCart(Model model) {
