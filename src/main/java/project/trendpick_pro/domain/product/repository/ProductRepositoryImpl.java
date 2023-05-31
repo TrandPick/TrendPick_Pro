@@ -40,17 +40,18 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.id,
                         product.name,
                         brand.name,
-                        product.commonFile.FileName,
+                        product.file.translatedFileName,
                         product.price
                 ))
                 .from(product)
                 .leftJoin(product.mainCategory, mainCategory)
                 .leftJoin(product.subCategory, subCategory)
                 .leftJoin(product.brand, brand)
-                .leftJoin(product.commonFile, commonFile)
+                .leftJoin(product.file, commonFile)
                 .where(
                         mainCategoryEq(cond),
                         subCategoryEq(cond)
+
                 )
                 .offset(0)
                 .limit(18)
@@ -62,7 +63,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(product.mainCategory, mainCategory)
                 .leftJoin(product.subCategory, subCategory)
                 .leftJoin(product.brand, brand)
-                .leftJoin(product.commonFile, commonFile)
+                .leftJoin(product.file, commonFile)
                 .where(
                         mainCategoryEq(cond),
                         subCategoryEq(cond)
@@ -78,4 +79,5 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     private static BooleanExpression subCategoryEq(ProductSearchCond cond) {
         return subCategory.name.eq(cond.getSubCategory());
     }
+
 }

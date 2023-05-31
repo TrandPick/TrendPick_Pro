@@ -46,8 +46,8 @@ public class Product extends BaseTimeEntity {
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
-    @JoinColumn(name = "common_file_id")
-    private ProductFile productFile;
+    @JoinColumn(name = "file_id")
+    private CommonFile file;
 
     @Column(name = "price", nullable = false)
     private int price;
@@ -60,27 +60,27 @@ public class Product extends BaseTimeEntity {
 
     @Builder
     public Product(String name, MainCategory mainCategory, SubCategory subCategory, Brand brand,
-                   String description, ProductFile productFile, int price, int stock, List<Tag> tags) {
+                   String description, CommonFile file, int price, int stock, List<Tag> tags) {
         this.name = name;
         this.mainCategory = mainCategory;
         this.subCategory = subCategory;
         this.brand = brand;
         this.description = description;
-        this.productFile = productFile;
+        this.file = file;
         this.price = price;
         this.stock = stock;
         this.tags = tags;
     }
 
     public static Product of(ProductSaveRequest request, MainCategory mainCategory
-            , SubCategory subCategory, Brand brand,ProductFile productFile) {
+            , SubCategory subCategory, Brand brand,CommonFile file) {
         return Product.builder()
                 .name(request.getName())
                 .mainCategory(mainCategory)
                 .subCategory(subCategory)
                 .brand(brand)
                 .description(request.getDescription())
-                .productFile(productFile)
+                .file(file)
                 .price(request.getPrice())
                 .stock(request.getStock())
                 .tags(request.getTags())

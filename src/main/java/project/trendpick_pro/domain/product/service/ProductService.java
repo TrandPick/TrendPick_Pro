@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.brand.entity.Brand;
@@ -13,7 +12,8 @@ import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.repository.MainCategoryRepository;
 import project.trendpick_pro.domain.category.repository.SubCategoryRepository;
-import project.trendpick_pro.domain.common.base.fileterminator.FileTerminator;
+import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
+import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
@@ -36,16 +36,16 @@ public class ProductService {
     private final MainCategoryRepository mainCategoryRepository;
     private final SubCategoryRepository subCategoryRepository;
     private final BrandRepository brandRepository;
-    private final FileTerminator fileTerminator;
+    private final FileTranslator fileTranslator;
 
     @Transactional
     public ProductResponse register(ProductSaveRequest productSaveRequest) throws IOException {
 
-        ProductFile mainFile = fileTerminator.terminateFile(productSaveRequest.getMainFile());
-        List<ProductFile> subFiles = fileTerminator.terminateFileList(productSaveRequest.getSubFiles());
+        CommonFile mainFile = fileTranslator.translateFile(productSaveRequest.getMainFile());
+        List<CommonFile> subFiles = fileTranslator.translateFileList(productSaveRequest.getSubFiles());
 
-        for(ProductFile productFile : subFiles){
-            mainFile.connectFile(productFile);
+        for(CommonFile subFile : subFiles){
+            mainFile.connectFile(subFile);
         }
 
         MainCategory mainCategory = mainCategoryRepository.findByName(productSaveRequest.getMainCategory());

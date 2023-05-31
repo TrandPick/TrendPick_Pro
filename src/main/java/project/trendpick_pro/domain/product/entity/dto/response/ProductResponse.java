@@ -55,18 +55,18 @@ public class ProductResponse {
 //                .subCategory(product.getSubCategory().getName())
                 .brand(product.getBrand().getName())
                 .description(product.getDescription())
-                .mainFile(product.getProductFile().getOriginalFileName())
-                .subFiles(subFiles(product.getProductFile().getSubFiles()))
+                .mainFile(product.getFile().getOriginalFileName())
+                .subFiles(subFiles(product.getFile().getChild()))
                 .price(product.getPrice())
                 .stock(product.getStock())
                 .tags(product.getTags())
                 .build();
     }
 
-    private static List<String> subFiles(List<ProductFile> subFiles) {
+    private static List<String> subFiles(List<CommonFile> subFiles) {
         List<String> tmpList = new ArrayList<>();
 
-        for (ProductFile subFile : subFiles) {
+        for (CommonFile subFile : subFiles) {
             tmpList.add(subFile.getOriginalFileName());
         }
         return tmpList;
