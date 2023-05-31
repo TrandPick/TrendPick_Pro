@@ -31,12 +31,7 @@ public class FileTranslator {
         String translatedFileName = translateFileName(originalFilename);
         multipartFile.transferTo(new File(getFilePath(translatedFileName)));
 
-        return CommonFile
-                .builder()
-                .originalFileName(originalFilename)
-                .translatedFileName(translatedFileName)
-                .build()
-                ;
+        return CommonFile.of(originalFilename, translatedFileName);
     }
 
     //파일 여러개를 한 번에 묶어서 변환할때
