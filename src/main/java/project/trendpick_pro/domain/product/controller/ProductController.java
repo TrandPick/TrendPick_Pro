@@ -66,9 +66,12 @@ public class ProductController {
     }
 
     @GetMapping("/list")
-    public String showAllProduct(@RequestParam("page") int offset, @RequestParam("main-category") String mainCategory,
-                                 @RequestParam("sub-category") String subCategory, Model model) {
-        model.addAttribute("productResponse", productService.showAll(offset, mainCategory, mainCategory));
+    public String showAllProduct(@RequestParam(value = "page", defaultValue = "0") int offset,
+                                 @RequestParam(value = "main-category") String mainCategory,
+                                 @RequestParam(value = "sub-category") String subCategory,
+                                 @RequestParam(value = "sort", defaultValue = "1") Integer sortCode,
+                                 Model model) {
+        model.addAttribute("productResponse", productService.showAll(offset, mainCategory, subCategory, sortCode));
         return "/trendpick/products/detailpage";
     }
 }
