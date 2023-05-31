@@ -20,6 +20,10 @@ public class CartService {
     private final CartRepository cartRepository;
     private final ProductOptionRepository productOptionRepository;
 
+    public List<Cart> findByCartMember(Member member){
+        return cartRepository.findByCartMemberId(member);
+    }
+  
     public Cart createCart(Member member) {
         Cart cart = new Cart(member);
         return cartRepository.save(cart);

@@ -6,6 +6,7 @@ import lombok.Getter;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 
 
+
 @Getter
 public class CartItemResponse {
     private Long id;
