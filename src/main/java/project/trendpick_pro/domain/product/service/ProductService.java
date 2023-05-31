@@ -19,7 +19,6 @@ import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveReques
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
-import project.trendpick_pro.domain.product.entity.file.ProductFile;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 
 import java.io.IOException;
