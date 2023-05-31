@@ -2,14 +2,14 @@ package project.trendpick_pro.domain.common.file;
 
 import jakarta.persistence.*;
 import lombok.*;
-import project.trendpick_pro.domain.product.entity.file.ProductFile;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @Setter
 public class CommonFile {
 
@@ -37,21 +37,6 @@ public class CommonFile {
 
     private void setParent(CommonFile parent) {
         this.parent = parent;
-    }
-
-    @Builder
-    private CommonFile(String originalFileName, String translatedFileName){
-        this.originalFileName = originalFileName;
-        this.translatedFileName = translatedFileName;
-    }
-
-    public static CommonFile of(String originalFileName, String translatedFileName){
-        return CommonFile
-                .builder()
-                .originalFileName(originalFileName)
-                .translatedFileName(translatedFileName)
-                .build()
-                ;
     }
 
 }
