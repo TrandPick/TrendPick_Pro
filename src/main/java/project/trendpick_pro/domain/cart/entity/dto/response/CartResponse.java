@@ -7,6 +7,7 @@ import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class CartResponse {

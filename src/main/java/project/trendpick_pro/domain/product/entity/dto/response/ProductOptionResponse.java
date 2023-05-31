@@ -12,7 +12,7 @@ import project.trendpick_pro.domain.product.entity.ProductOption;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductOptionResponse {
+public class  ProductOptionResponse {
     Product product;
     private String color;
 
