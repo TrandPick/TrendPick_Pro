@@ -12,7 +12,6 @@ import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.product.entity.file.ProductFile;
 import project.trendpick_pro.domain.tag.entity.Tag;
 
 import java.util.ArrayList;

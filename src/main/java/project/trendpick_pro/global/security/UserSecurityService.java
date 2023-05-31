@@ -29,16 +29,15 @@ public class UserSecurityService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws MemberNotFoundException {
         Optional<Member> member = this.memberRepository.findByEmail(username);
-        log.info("username : {}", username);
-        log.info("member : {}", member);
+
         if (member.isEmpty()) {
             throw new MemberNotFoundException("사용자를 찾을수 없습니다.");
         }
         Member siteUser = member.get();
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if ("admin".equals(siteUser.getUsername())) {
+        if ("admin".equals(siteUser.getUsername().substring(0,5))) {
             authorities.add(new SimpleGrantedAuthority(RoleType.ADMIN.getValue()));
-        } else if ("brand". equals(siteUser.getUsername())) {
+        } else if ("brand". equals(siteUser.getUsername().substring(0,5))) {
             authorities.add(new SimpleGrantedAuthority(RoleType.BRAND_ADMIN.getValue()));
         } else {
             authorities.add(new SimpleGrantedAuthority(RoleType.MEMBER.getValue()));
