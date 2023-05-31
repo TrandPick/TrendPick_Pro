@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.file.ProductFile;
 import project.trendpick_pro.domain.tag.entity.Tag;
 
 import java.util.ArrayList;
