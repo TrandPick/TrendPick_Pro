@@ -53,7 +53,9 @@ public class ReviewService {
     public ReviewResponse createReview(Member actor, Long productId, ReviewCreateRequest reviewCreateRequest, MultipartFile mainFile, List<MultipartFile> subFiles) throws Exception {
         Product product = productRepository.findById(productId).orElseThrow();
         //사진 없는 리뷰만 일단 저장
-        Review review = new Review(actor, product, reviewCreateRequest);
+
+        Review review = Review.of(reviewCreateRequest, actor, product);
+        product.addReview(review.getRating()); //상품 리뷰수, 상품 평균 평점을 계산해서 저장
         reviewRepository.save(review);
 
         //메인 이미지 파일 저장

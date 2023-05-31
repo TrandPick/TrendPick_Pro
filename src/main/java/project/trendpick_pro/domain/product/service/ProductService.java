@@ -78,11 +78,11 @@ public class ProductService {
         return ProductResponse.of(product);
     }
 
-    public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory) {
+    public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory, Integer sortCode) {
 
         List<ProductResponse> responses = new ArrayList<>();
 
-        ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
+        ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory, sortCode);
         PageRequest pageable = PageRequest.of(offset, 18);
 
         return productRepository.findAllByCategoryId(cond, pageable);
