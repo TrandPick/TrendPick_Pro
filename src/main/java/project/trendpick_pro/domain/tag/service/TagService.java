@@ -8,6 +8,7 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.tag.entity.Tag;
 import project.trendpick_pro.domain.tag.entity.dto.response.TagListResponse;
 import project.trendpick_pro.domain.tag.entity.dto.response.TagResponse;
+import project.trendpick_pro.domain.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tag.repository.TagRepository;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class TagService {
     }
 
     @Transactional
-    public void updateTag(Member member, Product product, int type) {
+    public void updateTag(Member member, Product product, TagType type) {
         List<Tag> tagList = product.getTags();
         List<Tag> tags = member.getTags();
 
@@ -32,7 +33,7 @@ public class TagService {
             boolean hasTag = false;
             for(Tag tagByMember : tags){
                 if(tagByProduct.getName().equals(tagByMember)){ //기존에 가지고 있던 태그에는 점수 부여
-                    tagByMember.increaseScore(2);
+                    tagByMember.increaseScore(type);
                     hasTag = true;
                     break;
                 }

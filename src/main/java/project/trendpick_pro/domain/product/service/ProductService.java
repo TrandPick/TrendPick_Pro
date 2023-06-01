@@ -23,6 +23,7 @@ import project.trendpick_pro.domain.product.entity.dto.response.ProductListRespo
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tag.repository.TagRepository;
 import project.trendpick_pro.domain.tag.service.TagService;
 
@@ -88,7 +89,7 @@ public class ProductService {
         Product product = productRepository.findById(product_id).orElseThrow(null);// 임시. 나중에 테스트
 
         if(member != null){
-            tagService.updateTag(member, product, 3);
+            tagService.updateTag(member, product, TagType.SHOW);
         }
 
         return ProductResponse.of(product);
