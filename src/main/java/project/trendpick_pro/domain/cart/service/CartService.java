@@ -13,6 +13,7 @@ import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
 import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final MemberRepository memberRepository;
     private final ProductOptionRepository productOptionRepository;
+    private final TagService tagService;
 
     public List<Cart> findByCartMember(Member member){
         return cartRepository.findByCartMember(member);
@@ -39,25 +41,9 @@ public class CartService {
     public void addItemToCart(Member member, Long productOptionId, int count) {
         Cart cart = getCartByUser(member);
         ProductOption productOption = getProductOptionById(productOptionId);
-
         CartItem cartItem = cart.findCartItemByProductOption(productOption);
 
-        List<Tag> tagList = productOption.getProduct().getTags();
-        List<Tag> tags = member.getTags();
-
-        //장바구니는 2유형이라고 가정
-        for(Tag tagByProduct : tagList){
-            boolean hasTag = false;
-            for(Tag tagByMember : tags){
-                if(tagByProduct.getName().equals(tagByMember)){ //기존에 가지고 있던 태그에는 점수 부여
-                    tagByMember.increaseScore(2);
-                    hasTag = true;
-                    break;
-                }
-            }
-            if(!hasTag) //태그를 가지고 있지 않다면 추가해준다.
-                tags.add(new Tag(tagByProduct.getName()));
-        }
+        tagService.updateTag(member, productOption.getProduct(), 2); //장바구니에 넣었으니 해당 상품이 가진 태그점수 올리기
 
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가

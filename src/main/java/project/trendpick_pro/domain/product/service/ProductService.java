@@ -24,6 +24,7 @@ import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tag.entity.Tag;
 import project.trendpick_pro.domain.tag.repository.TagRepository;
+import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,8 +41,8 @@ public class ProductService {
     private final SubCategoryRepository subCategoryRepository;
     private final BrandRepository brandRepository;
     private final FileTranslator fileTranslator;
-
     private final TagRepository tagRepository;
+    private final TagService tagService;
 
     @Transactional
     public ProductResponse register(ProductSaveRequest productSaveRequest) throws IOException {
@@ -87,22 +88,7 @@ public class ProductService {
         Product product = productRepository.findById(product_id).orElseThrow(null);// 임시. 나중에 테스트
 
         if(member != null){
-            List<Tag> tagList = product.getTags();
-            List<Tag> tags = member.getTags();
-
-            //일반 조회는 3유형이라고 가정
-            for(Tag tagByProduct : tagList){
-                boolean hasTag = false;
-                for(Tag tagByMember : tags){
-                    if(tagByProduct.getName().equals(tagByMember)){ //기존에 가지고 있던 태그에는 점수 부여
-                        tagByMember.increaseScore(2);
-                        hasTag = true;
-                        break;
-                    }
-                }
-                if(!hasTag) //태그를 가지고 있지 않다면 추가해준다.
-                    tags.add(new Tag(tagByProduct.getName()));
-            }
+            tagService.updateTag(member, product, 3);
         }
 
         return ProductResponse.of(product);
