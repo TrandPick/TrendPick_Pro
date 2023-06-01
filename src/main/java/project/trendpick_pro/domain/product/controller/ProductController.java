@@ -61,7 +61,11 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public String showProduct(@PathVariable Long productId, Model model) {
-         model.addAttribute("productResponse", productService.show(productId));
+        Member member = null;
+        if(rq.isLogin())
+            member = rq.getMember();
+
+        model.addAttribute("productResponse", productService.show(member, productId));
         return "/trendpick/products/detailpage";
     }
 

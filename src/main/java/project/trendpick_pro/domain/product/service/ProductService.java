@@ -15,6 +15,7 @@ import project.trendpick_pro.domain.category.repository.MainCategoryRepository;
 import project.trendpick_pro.domain.category.repository.SubCategoryRepository;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.file.CommonFile;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
@@ -82,9 +83,27 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public ProductResponse show(Long product_id) {
-
+    public ProductResponse show(Member member, Long product_id) {
         Product product = productRepository.findById(product_id).orElseThrow(null);// 임시. 나중에 테스트
+
+        if(member != null){
+            List<Tag> tagList = product.getTags();
+            List<Tag> tags = member.getTags();
+
+            //일반 조회는 3유형이라고 가정
+            for(Tag tagByProduct : tagList){
+                boolean hasTag = false;
+                for(Tag tagByMember : tags){
+                    if(tagByProduct.getName().equals(tagByMember)){ //기존에 가지고 있던 태그에는 점수 부여
+                        tagByMember.increaseScore(2);
+                        hasTag = true;
+                        break;
+                    }
+                }
+                if(!hasTag) //태그를 가지고 있지 않다면 추가해준다.
+                    tags.add(new Tag(tagByProduct.getName()));
+            }
+        }
 
         return ProductResponse.of(product);
     }
