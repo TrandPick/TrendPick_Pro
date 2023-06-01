@@ -29,6 +29,7 @@ public class MemberController {
     @GetMapping("/register")
     public String register(JoinForm joinForm, Model model) {
         model.addAttribute("joinForm", joinForm);
+//        model.addAttribute(memberService.)
         return "trendpick/usr/member/join";
     }
 

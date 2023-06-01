@@ -8,8 +8,14 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
+import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.entity.dto.request.TagRequest;
+import project.trendpick_pro.domain.tag.repository.TagRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -17,9 +23,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
+
     private final PasswordEncoder passwordEncoder;
 
     private final MemberRepository memberRepository;
+    private final TagRepository tagRepository;
 
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
@@ -41,6 +49,11 @@ public class MemberService {
             roleType = RoleType.MEMBER;
         }
 
+        List<Tag> tags = new ArrayList<>();
+        for (String tag : joinForm.tags()) {
+            tagRepository.findByName(tag).ifPresent(tags::add);
+        }
+
         Member member = Member
                 .builder()
                 .email(joinForm.emailtext())
@@ -48,10 +61,23 @@ public class MemberService {
                 .username(joinForm.username())
                 .phoneNumber(joinForm.phoneNumber())
                 .role(roleType)
+                .tags(tags)
                 .build();
 
         memberRepository.save(member);
     }
+
+    @Transactional
+    public void manageTag(String username, TagRequest tagRequest){
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+
+        List<Tag> tags = new ArrayList<>();
+        for (String s : tagRequest.getTags()) {
+            tagRepository.findByName(s).ifPresent(tags::add);
+        }
+        member.changeTags(tags);
+    }
+
     @Transactional
     public void manageAddress(Member actor, String address){
         Member member = memberRepository.findByUsername(actor.getUsername()).orElseThrow();
