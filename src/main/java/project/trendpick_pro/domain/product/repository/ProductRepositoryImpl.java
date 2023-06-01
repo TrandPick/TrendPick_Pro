@@ -16,6 +16,7 @@ import project.trendpick_pro.domain.product.entity.RecommendProductEx;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.RecommendProductExResponse;
 
 import java.util.List;
 
@@ -81,10 +82,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public List<RecommendProductEx> findAllRecommendProductEx(Member member) {
-        List<RecommendProductEx> list =
+    public List<RecommendProductExResponse> findAllRecommendProductEx(Member member) {
+        List<RecommendProductExResponse> list =
                 queryFactory
-                .select(Projections.fields(RecommendProductEx.class,
+                .select(Projections.fields(RecommendProductExResponse.class,
                         product
                         )
                 )
