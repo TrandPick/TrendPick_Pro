@@ -22,6 +22,7 @@ import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.domain.tag.entity.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +50,29 @@ public class OrderService {
             if (product.getStock() < request.getQuantity()) {
                 throw new ProductStockOutException("재고가 부족합니다.");   // 임시. 나중에 사용자 exception 널을까말까 생각
             }
+
+            List<Tag> tagList = product.getTags();
+            List<Tag> tags = member.getTags();
+
+            //주문은 1유형이라고 가정
+            for(Tag tagByProduct : tagList){
+                boolean hasTag = false;
+                for(Tag tagByMember : tags){
+                    if(tagByProduct.getName().equals(tagByMember)){ //기존에 가지고 있던 태그에는 점수 부여
+                        tagByMember.increaseScore(1);
+                        hasTag = true;
+                    }
+                }
+                if(!hasTag) //태그를 가지고 있지 않다면 추가해준다.
+                    tags.add(new Tag(tagByProduct.getName()));
+            }
+
             orderItemList.add(new OrderItem(product, product.getPrice(), request.getQuantity()));
         }
+
+
+
+
 
         Order order = Order.createOrder(member, delivery, OrderStatus.ORDERED, orderItemList);
         orderRepository.save(order);
