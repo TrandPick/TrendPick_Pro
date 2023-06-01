@@ -75,7 +75,7 @@ public class Product extends BaseTimeEntity {
     }
 
     public static Product of(ProductSaveRequest request, MainCategory mainCategory
-            , SubCategory subCategory, Brand brand,CommonFile file) {
+            , SubCategory subCategory, Brand brand,CommonFile file,List<Tag> tags) {
         return Product.builder()
                 .name(request.getName())
                 .mainCategory(mainCategory)
@@ -85,7 +85,7 @@ public class Product extends BaseTimeEntity {
                 .file(file)
                 .price(request.getPrice())
                 .stock(request.getStock())
-                .tags(request.getTags())
+                .tags(tags)
                 .build();
     }
 
