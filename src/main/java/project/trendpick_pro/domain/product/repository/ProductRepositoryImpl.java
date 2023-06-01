@@ -3,6 +3,7 @@ package project.trendpick_pro.domain.product.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -10,12 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.product.entity.QRecommendProductEx;
+import project.trendpick_pro.domain.member.entity.QMember;
 import project.trendpick_pro.domain.product.entity.RecommendProductEx;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
-import project.trendpick_pro.domain.tag.entity.QTag;
 
 import java.util.List;
 
@@ -23,8 +23,9 @@ import static project.trendpick_pro.domain.brand.entity.QBrand.*;
 import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
+import static project.trendpick_pro.domain.member.entity.QMember.*;
 import static project.trendpick_pro.domain.product.entity.QProduct.product;
-import static project.trendpick_pro.domain.tag.entity.QTag.*;
+import static project.trendpick_pro.domain.tag.entity.QTag.tag;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
@@ -81,28 +82,26 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     @Override
     public List<RecommendProductEx> findAllRecommendProductEx(Member member) {
-        List<RecommendProductEx> list = queryFactory
+        List<RecommendProductEx> list =
+                queryFactory
                 .select(Projections.fields(RecommendProductEx.class,
-                        product,
-                        calcTotalScore()
+                        product
                         )
                 )
-                .from(queryFactory.
-                                select(
-                                tag.score, tag.name)
-                        .from(tag)
-                        .leftJoin(tag, )
-
+                        .distinct()
+                .from(product)
+                .where(product.id.in(
+                                JPAExpressions
+                                        .select(tag.product.id)
+                                        .from(tag)
+                                        .where(tag.member.id.eq(member.getId()))
+                        )
                 )
-                .where()
                 .fetch();
 
         return list;
     }
 
-    private int calcTotalScore() {
-        return 0;
-    }
 
     private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {
         return mainCategory.name.eq(cond.getMainCategory());
