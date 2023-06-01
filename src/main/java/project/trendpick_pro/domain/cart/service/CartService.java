@@ -9,8 +9,10 @@ import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
+import project.trendpick_pro.domain.tag.entity.Tag;
 
 import java.util.List;
 
@@ -33,12 +35,29 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
+    @Transactional
     public void addItemToCart(Member member, Long productOptionId, int count) {
         Cart cart = getCartByUser(member);
         ProductOption productOption = getProductOptionById(productOptionId);
 
         CartItem cartItem = cart.findCartItemByProductOption(productOption);
 
+        List<Tag> tagList = productOption.getProduct().getTags();
+        List<Tag> tags = member.getTags();
+
+        //장바구니는 2유형이라고 가정
+        for(Tag tagByProduct : tagList){
+            boolean hasTag = false;
+            for(Tag tagByMember : tags){
+                if(tagByProduct.getName().equals(tagByMember)){ //기존에 가지고 있던 태그에는 점수 부여
+                    tagByMember.increaseScore(2);
+                    hasTag = true;
+                    break;
+                }
+            }
+            if(!hasTag) //태그를 가지고 있지 않다면 추가해준다.
+                tags.add(new Tag(tagByProduct.getName()));
+        }
 
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가
