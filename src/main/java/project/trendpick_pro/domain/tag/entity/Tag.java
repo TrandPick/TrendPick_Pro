@@ -20,7 +20,27 @@ public class Tag {
         this.name = name;
     }
 
+    public int score; //선호도 점수
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    public void increaseScore(int type){
+        //유형에 따라 가중치
+        switch (type){
+            case 1 : score += 10;
+                break;
+            case 2: score += 7;
+                break;
+            case 3: score += 5;
+                break;
+            default: score += 1;
+                break;
+        }
+    }
+
+    public void decreaseScore(){
+
+    }
 }

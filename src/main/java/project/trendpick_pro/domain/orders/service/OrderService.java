@@ -66,13 +66,8 @@ public class OrderService {
                 if(!hasTag) //태그를 가지고 있지 않다면 추가해준다.
                     tags.add(new Tag(tagByProduct.getName()));
             }
-
             orderItemList.add(new OrderItem(product, product.getPrice(), request.getQuantity()));
         }
-
-
-
-
 
         Order order = Order.createOrder(member, delivery, OrderStatus.ORDERED, orderItemList);
         orderRepository.save(order);
