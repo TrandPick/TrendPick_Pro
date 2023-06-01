@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.tag.entity.type.TagType;
 
 @Entity
 @Getter
@@ -26,14 +27,12 @@ public class Tag {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    public void increaseScore(int type){
+    public void increaseScore(TagType type){
         //유형에 따라 가중치
         switch (type){
-            case 1 : score += 10;
+            case ORDER: score += 10;
                 break;
-            case 2: score += 7;
-                break;
-            case 3: score += 5;
+            case CART: score += 5;
                 break;
             default: score += 1;
                 break;

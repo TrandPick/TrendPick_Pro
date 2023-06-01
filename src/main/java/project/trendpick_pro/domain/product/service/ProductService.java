@@ -15,6 +15,7 @@ import project.trendpick_pro.domain.category.repository.MainCategoryRepository;
 import project.trendpick_pro.domain.category.repository.SubCategoryRepository;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.file.CommonFile;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
@@ -22,7 +23,9 @@ import project.trendpick_pro.domain.product.entity.dto.response.ProductListRespo
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tag.repository.TagRepository;
+import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,8 +42,8 @@ public class ProductService {
     private final SubCategoryRepository subCategoryRepository;
     private final BrandRepository brandRepository;
     private final FileTranslator fileTranslator;
-
     private final TagRepository tagRepository;
+    private final TagService tagService;
 
     @Transactional
     public ProductResponse register(ProductSaveRequest productSaveRequest) throws IOException {
@@ -82,9 +85,12 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public ProductResponse show(Long product_id) {
-
+    public ProductResponse show(Member member, Long product_id) {
         Product product = productRepository.findById(product_id).orElseThrow(null);// 임시. 나중에 테스트
+
+        if(member != null){
+            tagService.updateTag(member, product, TagType.SHOW);
+        }
 
         return ProductResponse.of(product);
     }
