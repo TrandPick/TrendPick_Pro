@@ -15,6 +15,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
 import project.trendpick_pro.domain.member.service.MemberService;
+import project.trendpick_pro.domain.tag.service.TagService;
 
 @Slf4j
 @Controller
@@ -23,13 +24,15 @@ import project.trendpick_pro.domain.member.service.MemberService;
 public class MemberController {
 
     private final MemberService memberService;
+    private final TagService tagService;
+
     private final Rq rq;
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/register")
     public String register(JoinForm joinForm, Model model) {
         model.addAttribute("joinForm", joinForm);
-//        model.addAttribute(memberService.)
+        model.addAttribute(tagService.getAllTags());
         return "trendpick/usr/member/join";
     }
 
