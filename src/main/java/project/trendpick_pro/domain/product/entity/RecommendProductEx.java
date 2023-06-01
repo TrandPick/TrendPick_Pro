@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 
 //임시
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 public class RecommendProductEx {
 
@@ -21,4 +19,10 @@ public class RecommendProductEx {
     private Product product;
 
     private int totalScore;
+
+    public RecommendProductEx(Product product, int totalScore) {
+        this.product = product;
+        this.totalScore = totalScore;
+
+    }
 }

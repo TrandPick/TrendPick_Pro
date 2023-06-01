@@ -15,6 +15,7 @@ import project.trendpick_pro.domain.product.entity.RecommendProductEx;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
+import project.trendpick_pro.domain.tag.entity.QTag;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
 import static project.trendpick_pro.domain.product.entity.QProduct.product;
+import static project.trendpick_pro.domain.tag.entity.QTag.*;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
@@ -46,8 +48,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.name,
                         brand.name,
                         commonFile.translatedFileName,
-                        product.price
-                ))
+                        product.price)
+                )
                 .from(product)
                 .leftJoin(product.mainCategory, mainCategory)
                 .leftJoin(product.subCategory, subCategory)
@@ -79,7 +81,27 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     @Override
     public List<RecommendProductEx> findAllRecommendProductEx(Member member) {
+        List<RecommendProductEx> list = queryFactory
+                .select(Projections.fields(RecommendProductEx.class,
+                        product,
+                        calcTotalScore()
+                        )
+                )
+                .from(queryFactory.
+                                select(
+                                tag.score, tag.name)
+                        .from(tag)
+                        .leftJoin(tag, )
 
+                )
+                .where()
+                .fetch();
+
+        return list;
+    }
+
+    private int calcTotalScore() {
+        return 0;
     }
 
     private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {

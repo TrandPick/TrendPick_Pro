@@ -55,6 +55,7 @@ public class Product extends BaseTimeEntity {
     private int stock;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Tag> tags = new ArrayList<>();
 
     public long reviewCount = 0;

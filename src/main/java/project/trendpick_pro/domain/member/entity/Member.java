@@ -37,9 +37,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "member_id")
-    private List<Tag> tags;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Tag> tags = new ArrayList<>();
 
     private String bankName;
     private String bankAccount;
