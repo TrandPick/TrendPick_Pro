@@ -32,13 +32,9 @@ public class Review extends BaseTimeEntity {
 
     private String writer;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "review_image_id")
-    private ReviewImage reviewImage;
-
-//    @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
-//    @JoinColumn(name = "common_file_id")
-//    private CommonFile commonFile;
+    @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    @JoinColumn(name = "file_id")
+    private CommonFile file;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -51,19 +47,20 @@ public class Review extends BaseTimeEntity {
     private int rating;
 
     @Builder
-    public Review(Member member, Product product, ReviewCreateRequest reviewCreateRequest){
+    public Review(Member member, Product product, CommonFile file, String title, String content, int rating){
         this.writer = member.getUsername();
         this.product = product;
-        this.title = reviewCreateRequest.getTitle();
-        this.content = reviewCreateRequest.getContent();
-        this.rating = reviewCreateRequest.getRating();
+        this.file = file;
+        this.title = title;
+        this.content = content;
+        this.rating = rating;
     }
 
-    public static Review of(ReviewCreateRequest reviewCreateRequest, Member member, Product product) {
+    public static Review of(ReviewCreateRequest reviewCreateRequest, Member member, Product product, CommonFile file) {
         return Review.builder()
                 .writer(member.getUsername())
                 .product(product)
-                //.commonFile(makeFile(reviewCreateRequest.getMainFile(), reviewCreateRequest.getSubFiles()));
+                .file(file)
                 .content(reviewCreateRequest.getContent())
                 .rating(reviewCreateRequest.getRating())
                 .build();
@@ -76,38 +73,20 @@ public class Review extends BaseTimeEntity {
         this.rating = reviewUpdateRequest.getRating();
     }
 
-    public void matchReviewImage(ReviewImage reviewImage){
-        this.reviewImage = reviewImage;
-    }
-
-//    @Value("${file.dir}")
-//    private static String filePath;
+//    public void changeMainFile(String filePath, String mainFilePath, MultipartFile mainFile) throws IOException {
+//        File file = new File(filePath + mainFileName);
+//        file.delete();  //원래 있던거 삭제
 //
-//    private static String createStoreFileName(String originFileName){
-//        String ext = extractExt(originFileName);
-//        String uuid = UUID.randomUUID().toString();
-//        return uuid + "." + ext;
+//        this.mainFileName = mainFilePath;
+//        mainFile.transferTo(new File(filePath + mainFilePath));
 //    }
 //
-//    private static String extractExt(String originFileName) {
-//        int pos = originFileName.lastIndexOf(".");
-//        return originFileName.substring(pos + 1);
-//    }
-
-//    private static CommonFile makeFile(MultipartFile mainFile, List<MultipartFile> subFiles) throws IOException {
-//        String mainFileName = createStoreFileName(mainFile.getOriginalFilename());
-//        List<String> subFileName = new ArrayList<>();
-//
-//        mainFile.transferTo(new File(filePath + mainFileName));
-//
-//        for(MultipartFile subFile : subFiles){
-//            String savePath = createStoreFileName(subFile.getOriginalFilename());
-//            subFileName.add(savePath);
-//            subFile.transferTo(new File(filePath + savePath));
+//    public void changeSubFile(String filePath, List<String> subFileNames) {
+//        //음 우선 돌면서 지워야겠지??
+//        for(String subFile: subFileNames){
+//            File file = new File(filePath + subFile);
+//            file.delete();
 //        }
-//
-//        return null;
-//
-//
+//        this.subFileNames = subFileNames;
 //    }
 }

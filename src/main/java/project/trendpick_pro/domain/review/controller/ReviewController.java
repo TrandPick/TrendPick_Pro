@@ -26,9 +26,9 @@ public class ReviewController {
 
     @PostMapping("/write")
     public String createReview(@Valid ReviewCreateRequest reviewCreateRequest, @RequestParam(value = "product") Long productId,
-                               @RequestPart("main-file") MultipartFile mainFile, @RequestPart("sub-file") List<MultipartFile> subFileList, Model model) throws Exception {
+                                Model model) throws Exception {
         Member actor = rq.getMember();
-        ReviewResponse reviewResponse = reviewService.createReview(actor, productId, reviewCreateRequest, mainFile, subFileList);
+        ReviewResponse reviewResponse = reviewService.createReview(actor, productId, reviewCreateRequest);
 
         model.addAttribute("reviewResponse", reviewResponse);
         return "redirect:/trendpick/review";
@@ -51,8 +51,8 @@ public class ReviewController {
 
     @PostMapping("/edit/{reviewId}")
     public String updateReview(@PathVariable Long reviewId, ReviewUpdateRequest reviewUpdateRequest,
-                               @RequestPart("main-file") @NotBlank MultipartFile mainImage, @RequestPart("sub-file") List<MultipartFile> subImages, Model model) throws IOException {
-        ReviewResponse reviewResponse = reviewService.update(reviewId, reviewUpdateRequest, mainImage, subImages);
+                               Model model) throws IOException {
+        ReviewResponse reviewResponse = reviewService.update(reviewId, reviewUpdateRequest);
 
         model.addAttribute("reviewResponse", reviewResponse);
         return "redirect:/trendpick/review";
