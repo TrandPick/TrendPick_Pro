@@ -31,7 +31,7 @@ public class OrderItem {
     @Column(name = "count", nullable = false)
     private int count;
 
-    public OrderItem(Product product, int orderPrice, int count) throws IllegalAccessException {
+    public OrderItem(Product product, int orderPrice, int count) {
         this.product = product;
         this.orderPrice = orderPrice;
         this.count = count;

@@ -2,12 +2,12 @@ package project.trendpick_pro.global.exception;
 
 import org.springframework.http.HttpStatus;
 
-public abstract class baseException extends RuntimeException {
+public abstract class BaseException extends RuntimeException {
 
     private final ErrorCode errorCode;
     private final HttpStatus httpStatus;
 
-    protected baseException(ErrorCode errorCode, HttpStatus httpStatus, String message) {
+    protected BaseException(ErrorCode errorCode, HttpStatus httpStatus, String message) {
         super(message);
         this.errorCode = errorCode;
         this.httpStatus = httpStatus;

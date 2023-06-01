@@ -7,9 +7,12 @@ import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
+import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
 
+import java.util.List;
 
 
 @Service
@@ -18,10 +21,11 @@ import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
 public class CartService {
 
     private final CartRepository cartRepository;
+    private final MemberRepository memberRepository;
     private final ProductOptionRepository productOptionRepository;
 
     public List<Cart> findByCartMember(Member member){
-        return cartRepository.findByCartMemberId(member);
+        return cartRepository.findByCartMember(member);
     }
   
     public Cart createCart(Member member) {
