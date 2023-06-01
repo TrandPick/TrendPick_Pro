@@ -5,12 +5,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
+import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.tag.entity.Tag;
 
@@ -93,10 +93,10 @@ public class Product extends BaseTimeEntity {
         this.stock += quantity;
     }
 
-    public void removeStock(int quantity) throws IllegalAccessException {
+    public void removeStock(int quantity) {
         int restStock = this.stock - quantity;
         if (restStock < 0) {
-            throw new IllegalAccessException("need more stock");
+            throw new ProductStockOutException("재고가 부족합니다.");
         }
         this.stock = restStock;
     }

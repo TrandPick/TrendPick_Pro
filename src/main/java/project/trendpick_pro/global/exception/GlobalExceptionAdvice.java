@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
+import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -30,6 +31,14 @@ public class GlobalExceptionAdvice {
 
     @ExceptionHandler(MemberAlreadyExistException.class)
     public ResponseEntity<ErrorResponse> MemberAlreadyExistHandleException(MemberAlreadyExistException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        log.error("[exceptionHandle] ex", e);
+        ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), e.getMessage());
+        return ResponseEntity.status(errorCode.getStatus()).body(errorResponse);
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse> ProductNotFoundHandleException(ProductNotFoundException e) {
         ErrorCode errorCode = e.getErrorCode();
         log.error("[exceptionHandle] ex", e);
         ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), e.getMessage());
