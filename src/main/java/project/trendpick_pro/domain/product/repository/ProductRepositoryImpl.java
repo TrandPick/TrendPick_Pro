@@ -16,6 +16,7 @@ import project.trendpick_pro.domain.product.entity.RecommendProductEx;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.QRecommendProductExResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.RecommendProductExResponse;
 
 import java.util.List;
@@ -81,23 +82,18 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
     }
 
+    //    select distinct T.product_id from tag T
+    //    where T.member_id = 1;
     @Override
     public List<RecommendProductExResponse> findAllRecommendProductEx(Member member) {
-        List<RecommendProductExResponse> list =
-                queryFactory
-                .select(Projections.fields(RecommendProductExResponse.class,
-                        product
+        List<RecommendProductExResponse> list = queryFactory
+                .select(new QRecommendProductExResponse(
+                                tag.product.id
                         )
                 )
-                        .distinct()
-                .from(product)
-                .where(product.id.in(
-                                JPAExpressions
-                                        .select(tag.product.id)
-                                        .from(tag)
-                                        .where(tag.member.id.eq(member.getId()))
-                        )
-                )
+                .from(tag)
+                .where(tag.member.id.eq(member.getId()))
+                .distinct()
                 .fetch();
 
         return list;
