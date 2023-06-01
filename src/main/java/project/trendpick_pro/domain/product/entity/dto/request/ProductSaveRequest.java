@@ -38,6 +38,6 @@ public class ProductSaveRequest {
     private int stock;
 
     @NotBlank(message = "포함될 태그들을 추가해주세요.")
-    private List<Tag> tags;
+    private List<String> tags;
 
 }

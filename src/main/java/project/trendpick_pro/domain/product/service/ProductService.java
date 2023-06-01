@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.product.service;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,8 @@ import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.repository.TagRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,21 +40,29 @@ public class ProductService {
     private final BrandRepository brandRepository;
     private final FileTranslator fileTranslator;
 
+    private final TagRepository tagRepository;
+
     @Transactional
     public ProductResponse register(ProductSaveRequest productSaveRequest) throws IOException {
 
         CommonFile mainFile = fileTranslator.translateFile(productSaveRequest.getMainFile());
         List<CommonFile> subFiles = fileTranslator.translateFileList(productSaveRequest.getSubFiles());
 
-        for(CommonFile subFile : subFiles){
+        for (CommonFile subFile : subFiles) {
             mainFile.connectFile(subFile);
+        }
+
+        List<Tag> tags = new ArrayList<>();  // 상품에 포함시킬 태크 선택하여 저장
+        for (String tag : productSaveRequest.getTags()) {
+            tags.add(tagRepository.findByName(tag).orElseThrow());
         }
 
         MainCategory mainCategory = mainCategoryRepository.findByName(productSaveRequest.getMainCategory());
         SubCategory subCategory = subCategoryRepository.findByName(productSaveRequest.getSubCategory());
         Brand brand = brandRepository.findByName(productSaveRequest.getBrand());
 
-        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile);
+        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile,tags);
+
         productRepository.save(product);
         return ProductResponse.of(product);
     }
