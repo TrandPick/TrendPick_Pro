@@ -9,8 +9,11 @@ import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
+import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.util.List;
 
@@ -23,6 +26,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final MemberRepository memberRepository;
     private final ProductOptionRepository productOptionRepository;
+    private final TagService tagService;
 
     public List<Cart> findByCartMember(Member member){
         return cartRepository.findByCartMember(member);
@@ -33,12 +37,13 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
+    @Transactional
     public void addItemToCart(Member member, Long productOptionId, int count) {
         Cart cart = getCartByUser(member);
         ProductOption productOption = getProductOptionById(productOptionId);
-
         CartItem cartItem = cart.findCartItemByProductOption(productOption);
 
+        tagService.updateTag(member, productOption.getProduct(), 2); //장바구니에 넣었으니 해당 상품이 가진 태그점수 올리기
 
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가

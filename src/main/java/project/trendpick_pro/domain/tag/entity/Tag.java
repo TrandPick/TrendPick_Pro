@@ -31,9 +31,7 @@ public class Tag {
         switch (type){
             case 1 : score += 10;
                 break;
-            case 2: score += 7;
-                break;
-            case 3: score += 5;
+            case 2: score += 5;
                 break;
             default: score += 1;
                 break;
