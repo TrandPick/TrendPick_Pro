@@ -9,6 +9,9 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.product.entity.QRecommendProductEx;
+import project.trendpick_pro.domain.product.entity.RecommendProductEx;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
@@ -54,8 +57,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         mainCategoryEq(cond)
                                 .and(subCategoryEq(cond))
                 )
-                .offset(0)
-                .limit(18)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .orderBy(orderSelector(cond.getSortCode())) //정렬추가
                 .fetch();
 
@@ -72,6 +75,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 );
 
         return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
+    }
+
+    @Override
+    public List<RecommendProductEx> findAllRecommendProductEx(Member member) {
+
     }
 
     private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {
