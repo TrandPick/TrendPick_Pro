@@ -13,6 +13,7 @@ import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
 import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class CartService {
         ProductOption productOption = getProductOptionById(productOptionId);
         CartItem cartItem = cart.findCartItemByProductOption(productOption);
 
-        tagService.updateTag(member, productOption.getProduct(), 2); //장바구니에 넣었으니 해당 상품이 가진 태그점수 올리기
+        tagService.updateTag(member, productOption.getProduct(), TagType.CART); //장바구니에 넣었으니 해당 상품이 가진 태그점수 올리기
 
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가

@@ -23,6 +23,7 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class OrderService {
                 throw new ProductStockOutException("재고가 부족합니다.");   // 임시. 나중에 사용자 exception 널을까말까 생각
             }
 
-            tagService.updateTag(member, product, 1);
+            tagService.updateTag(member, product, TagType.ORDER);
             orderItemList.add(new OrderItem(product, product.getPrice(), request.getQuantity()));
         }
 
