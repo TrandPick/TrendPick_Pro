@@ -1,7 +1,7 @@
 spring:
   profiles:
     active: dev
-    include: secret
+    include: secret, tag
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

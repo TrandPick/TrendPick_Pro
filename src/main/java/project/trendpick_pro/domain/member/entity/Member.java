@@ -34,8 +34,6 @@ public class Member {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    private LocalDate birth;
-
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
@@ -70,5 +68,9 @@ public class Member {
     public void connectBank(String bankName, String bankAccount) {
         this.bankName = bankName;
         this.bankAccount = bankAccount;
+    }
+
+    public void changeTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }
