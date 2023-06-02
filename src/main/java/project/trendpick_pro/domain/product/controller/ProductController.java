@@ -39,7 +39,7 @@ public class ProductController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/edit/{productId}")
-    public String modifyProduct(@PathVariable Long productId, @Valid ProductSaveRequest productSaveRequest, Model model) {
+    public String modifyProduct(@PathVariable Long productId, @Valid ProductSaveRequest productSaveRequest, Model model) throws IOException {
         if(!rq.getMember().getRole().equals(RoleType.BRAND_ADMIN)) //추가로 해당 상품 브랜드 관리자인지도 체크
             throw new RuntimeException("상품 수정 권한이 없습니다.");
 
