@@ -5,20 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.review.entity.dto.request.ReviewCreateRequest;
-import project.trendpick_pro.domain.review.entity.dto.request.ReviewUpdateRequest;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 
 @Entity
 @NoArgsConstructor
@@ -56,7 +47,7 @@ public class Review extends BaseTimeEntity {
         this.rating = rating;
     }
 
-    public static Review of(ReviewCreateRequest reviewCreateRequest, Member member, Product product, CommonFile file) {
+    public static Review of(ReviewSaveRequest reviewCreateRequest, Member member, Product product, CommonFile file) {
         return Review.builder()
                 .writer(member.getUsername())
                 .product(product)
@@ -66,12 +57,10 @@ public class Review extends BaseTimeEntity {
                 .build();
     }
 
-    public void update(ReviewUpdateRequest reviewUpdateRequest){
-        this.title = reviewUpdateRequest.getTitle();
-        this.content = reviewUpdateRequest.getContent();
-        //this.commonFile = reviewUpdateRequest.getMainFile();
-        this.rating = reviewUpdateRequest.getRating();
+    public void update(ReviewSaveRequest reviewSaveRequest) {
+
     }
+
 
 //    public void changeMainFile(String filePath, String mainFilePath, MultipartFile mainFile) throws IOException {
 //        File file = new File(filePath + mainFileName);
