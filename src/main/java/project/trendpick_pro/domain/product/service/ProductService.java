@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -117,42 +116,37 @@ public class ProductService {
         List<Tag> memberTags = member.getTags();
 
 
-        //일단 추천상품으로 뽑힌것들 중복제거 (한 상품이 여러 태그에 포함되있을 수 있다.)
-        Map<String, List<Long>> map = new HashMap<>();
-        Map<Long, RecommendProductExResponse> map2 = new HashMap<>();
+        //태그명에 따라 가지고 있는 product_id
+        // : 멤버 태그명에 따라 해당 상품에 점수를 부여해야 하기 때문에
+        Map<String, List<Long>> productIdListByTagName = new HashMap<>();
+
+        //상품 id 중복을 없애기 위함
+        //맴버의 태그명과 여러개가 겹쳐서 여러개의 추천상품이 반환되었을것 그 중복을 없애야 한다.
+        Map<Long, RecommendProductExResponse> recommendProductByProductId = new HashMap<>();
 
         for (RecommendProductExResponse response : recommendProductExList) {
-            logger.info(response.getTagName());
-            if(!map.containsKey(response.getTagName()))
-                map.put(response.getTagName(), new ArrayList<Long>());
+            if(!productIdListByTagName.containsKey(response.getTagName()))
+                productIdListByTagName.put(response.getTagName(), new ArrayList<Long>());
 
-            map.get(response.getTagName()).add(response.getProductId());
+            productIdListByTagName.get(response.getTagName()).add(response.getProductId());
         }
 
         for (RecommendProductExResponse response : recommendProductExList) {
-            if(map2.containsKey(response.getProductId()))
+            if(recommendProductByProductId.containsKey(response.getProductId()))
                 continue;
 
-            map2.put(response.getProductId(), response);
+            recommendProductByProductId.put(response.getProductId(), response);
         }
-        logger.info("점수 상승=============================================================");
+
         for (Tag memberTag : memberTags) {
-            if(map.containsKey(memberTag.getName())){
-                List<Long> productIdList = map.get(memberTag.getName());
+            if(productIdListByTagName.containsKey(memberTag.getName())){
+                List<Long> productIdList = productIdListByTagName.get(memberTag.getName());
                 for (Long id : productIdList) {
-                    logger.info("---------------------------------------");
-                    logger.info(String.valueOf(map2.get(id).getTotalScore()));
-                    map2.get(id).plusTotalScore(memberTag.getScore());
-                    logger.info(String.valueOf(map2.get(id).getTotalScore()));
-                    logger.info("---------------------------------------");
+                    recommendProductByProductId.get(id).plusTotalScore(memberTag.getScore());
                 }
             }
         }
-        logger.info("점수 상승=============================================================");
 
-        return new ArrayList(map2.values());
+        return new ArrayList(recommendProductByProductId.values());
     }
-
-
-
 }

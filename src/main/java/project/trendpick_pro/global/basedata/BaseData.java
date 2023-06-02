@@ -42,7 +42,6 @@ public class BaseData {
                 //상품1은 태그1을 가지고 있다
                 //상품2는 태그1, 태그2를 가지고 있다
                 //상품3은 태그1, 태그2 태그3 모두 가지고 있다.
-                //상품4는 아무것도 가지고 있지 않다.
 
                 Member member1 = memberRepository.save(Member.builder().username("member1").build());
                 Product product1 = Product.builder().name("상품1").build();
