@@ -109,8 +109,10 @@ public class Product extends BaseTimeEntity {
     }
 
     public void update(ProductSaveRequest request) {
-
-        // 여기서 파일 지지고 볶고 할 예정
+        this.name=request.getName();
+        this.description=request.getDescription();
+        this.price=request.getPrice();
+        this.stock=request.getStock();
     }
 
 

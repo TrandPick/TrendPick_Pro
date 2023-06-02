@@ -1,6 +1,7 @@
 package project.trendpick_pro.domain.product.service;
 
 
+import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ import project.trendpick_pro.domain.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tag.repository.TagRepository;
 import project.trendpick_pro.domain.tag.service.TagService;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,9 +78,33 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse modify(Long productId, ProductSaveRequest productSaveRequest) {
+    public ProductResponse modify(Long productId, ProductSaveRequest productSaveRequest) throws IOException {
 
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
+        CommonFile mainFile=product.getFile();
+        List<CommonFile> subFiles=product.getFile().getChild();
+
+        if(productSaveRequest.getMainFile()!=null){
+            //  기존 이미지 삭제
+            if(mainFile!=null){
+                FileUtils.delete(new File(mainFile.getTranslatedFileName()));
+            }
+        }
+        // 이미지 업데이트
+        mainFile = fileTranslator.translateFile(productSaveRequest.getMainFile());
+
+        if(productSaveRequest.getSubFiles()!=null ){
+            // 기존 이미지 삭제
+            for(CommonFile subFile:subFiles){
+                FileUtils.delete(new File(subFile.getTranslatedFileName()));
+            }
+        }
+        // 이미지 업데이트
+        subFiles=fileTranslator.translateFileList(productSaveRequest.getSubFiles());
+
+        for (CommonFile subFile : subFiles) {
+            mainFile.connectFile(subFile);
+        }
         product.update(productSaveRequest);
 
         return ProductResponse.of(product);
