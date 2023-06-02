@@ -10,11 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.service.ProductService;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -22,6 +25,7 @@ import java.io.IOException;
 @RequestMapping("trendpick/products")
 public class ProductController {
 
+    private final MemberRepository memberRepository;
     private final Rq rq;
     private final ProductService productService;
 
@@ -77,5 +81,11 @@ public class ProductController {
                                  Model model) {
         model.addAttribute("productResponse", productService.showAll(offset, mainCategory, subCategory, sortCode));
         return "/trendpick/products/detailpage";
+    }
+
+    @GetMapping("/test")
+    @ResponseBody
+    public List<ProductByRecommended> test(){
+        return productService.getRecommendProduct(memberRepository.findById(1L).get());
     }
 }
