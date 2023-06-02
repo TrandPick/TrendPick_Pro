@@ -141,7 +141,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         JPAExpressions.select(tagByMember.name)
                                 .from(tagByMember)
                                 .where(tagByMember.member.id.eq(member.getId()))
-                ))
+                )
+                        .and(tagByProduct.product.id.isNotNull()))
                 .distinct()
                 .fetch();
 
