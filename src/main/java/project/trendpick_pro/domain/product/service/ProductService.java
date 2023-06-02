@@ -4,6 +4,7 @@ package project.trendpick_pro.domain.product.service;
 import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
@@ -30,14 +32,14 @@ import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProductService {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     private final ProductRepository productRepository;
     private final MainCategoryRepository mainCategoryRepository;
@@ -131,4 +133,49 @@ public class ProductService {
         return productRepository.findAllByCategoryId(cond, pageable);
     }
 
+    @Transactional
+    public List<ProductByRecommended> getRecommendProduct(Member member){
+        List<ProductByRecommended> productByRecommendedList = productRepository.findProductByRecommended(member);
+        List<Tag> memberTags = member.getTags();
+
+
+        //태그명에 따라 가지고 있는 product_id
+        // : 멤버 태그명에 따라 해당 상품에 점수를 부여해야 하기 때문에
+        Map<String, List<Long>> productIdListByTagName = new HashMap<>();
+
+        //상품 id 중복을 없애기 위함
+        //맴버의 태그명과 여러개가 겹쳐서 여러개의 추천상품이 반환되었을것 그 중복을 없애야 한다.
+        Map<Long, ProductByRecommended> recommendProductByProductId = new HashMap<>();
+
+        for (ProductByRecommended response : productByRecommendedList) {
+            if(!productIdListByTagName.containsKey(response.getTagName()))
+                productIdListByTagName.put(response.getTagName(), new ArrayList<Long>());
+
+            productIdListByTagName.get(response.getTagName()).add(response.getProductId());
+        }
+
+        for (ProductByRecommended response : productByRecommendedList) {
+            if(recommendProductByProductId.containsKey(response.getProductId()))
+                continue;
+
+            recommendProductByProductId.put(response.getProductId(), response);
+        }
+
+        for (Tag memberTag : memberTags) {
+            if(productIdListByTagName.containsKey(memberTag.getName())){
+                List<Long> productIdList = productIdListByTagName.get(memberTag.getName());
+                for (Long id : productIdList) {
+                    recommendProductByProductId.get(id).plusTotalScore(memberTag.getScore());
+                }
+            }
+        }
+
+        List<ProductByRecommended> list = new ArrayList(recommendProductByProductId.values());
+
+        list = list.stream()
+                .sorted(Comparator.comparing(ProductByRecommended :: getTotalScore).reversed())
+                .toList();
+
+        return list;
+    }
 }
