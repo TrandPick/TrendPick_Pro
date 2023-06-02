@@ -1,16 +1,18 @@
 package project.trendpick_pro.domain.tag.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.tag.entity.type.TagType;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
 public class Tag {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +22,14 @@ public class Tag {
 
     public Tag(String name) {
         this.name = name;
+    }
+    public Tag(String name, Product product) {
+        this.name = name;
+        this.product = product;
+    }
+    public Tag(String name, Member member) {
+        this.name = name;
+        this.member = member;
     }
 
     private int score; //선호도 점수

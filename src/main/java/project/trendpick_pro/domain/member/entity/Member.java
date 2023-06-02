@@ -22,16 +22,16 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "email",unique = true, nullable = false)
+    @Column(name = "email",unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)

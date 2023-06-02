@@ -3,6 +3,7 @@ package project.trendpick_pro.domain.product.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,12 +13,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.QMember;
-import project.trendpick_pro.domain.product.entity.RecommendProductEx;
+import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.QProduct;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QRecommendProductExResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.RecommendProductExResponse;
+import project.trendpick_pro.domain.tag.entity.QTag;
 
 import java.util.List;
 
@@ -26,26 +30,20 @@ import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
 import static project.trendpick_pro.domain.member.entity.QMember.*;
-import static project.trendpick_pro.domain.product.entity.QProduct.product;
-import static project.trendpick_pro.domain.tag.entity.QTag.tag;
+import static project.trendpick_pro.domain.product.entity.QProduct.*;
+import static project.trendpick_pro.domain.tag.entity.QTag.*;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    public ProductRepositoryImpl(EntityManager em) {
+    public ProductRepositoryImpl(EntityManager em, MemberRepository memberRepository) {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
     @Override
     public Page<ProductListResponse> findAllByCategoryId(ProductSearchCond cond, Pageable pageable) {
         List<ProductListResponse> result = queryFactory
-//                .select(Projections.constructor(ProductListResponse.class,
-//                        product.id,
-//                        product.name,
-//                        brand.name,
-//                        product.file.translatedFileName,
-//                        product.price))
                 .select(new QProductListResponse(
                         product.id,
                         product.name,
@@ -82,17 +80,68 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
     }
 
-    //    select distinct T.product_id from tag T
-    //    where T.member_id = 1;
+    //        select distinct T.product_id from tag T
+//        where T.member_id = 1;
+//    @Override
+//    public List<RecommendProductExResponse> findAllRecommendProductEx(Member member) {
+//
+//        List<RecommendProductExResponse> list = queryFactory
+//                .select(new QRecommendProductExResponse(
+//                                tag.product.id,
+//                                tag.name
+//                        )
+//                )
+//                .from(tag)
+//                .where(tag.member.id.eq(member.getId()))
+//                .fetch();
+//
+//        return list;
+//    }
+
+    @Override
+    public List<Product> findByTag(String username) {
+
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq(username))
+                .fetchOne();
+
+        NumberExpression<Integer> sum = tag.score.sum();
+
+        assert findMember != null;
+        return queryFactory
+                .selectFrom(product)
+                .leftJoin(product.tags, tag)
+                .where(tag.in(findMember.getTags()))
+                .groupBy(product)
+                .orderBy(sum.desc())
+                .fetch();
+    }
+
+//    select T_P.product_id
+//    from Tag T_P
+//    where T_P.name in(
+//        select T_M.name
+//        from Tag T_M
+//        where T_M.member_id = 1
+//    )
     @Override
     public List<RecommendProductExResponse> findAllRecommendProductEx(Member member) {
+        QTag tagByMember = new QTag("tagByMember");
+        QTag tagByProduct = new QTag("tagByProduct");
+
         List<RecommendProductExResponse> list = queryFactory
                 .select(new QRecommendProductExResponse(
-                                tag.product.id
+                                tagByProduct.product.id,
+                                tagByProduct.name
                         )
                 )
-                .from(tag)
-                .where(tag.member.id.eq(member.getId()))
+                .from(tagByProduct)
+                .where(tagByProduct.name.in(
+                        JPAExpressions.select(tagByMember.name)
+                                .from(tagByMember)
+                                .where(tagByMember.member.id.eq(member.getId()))
+                ))
                 .distinct()
                 .fetch();
 
