@@ -11,13 +11,19 @@ import lombok.NoArgsConstructor;
 public class RecommendProductExResponse {
 
     private Long productId;
+    private String tagName;
 
     private int totalScore;
 
     @QueryProjection
-    public RecommendProductExResponse(Long productId){
+    public RecommendProductExResponse(Long productId, String tagName){
         this.productId = productId;
+        this.tagName = tagName;
         totalScore = 0;
+    }
+
+    public void plusTotalScore(int score){
+        this.totalScore += score;
     }
 
 }

@@ -21,6 +21,7 @@ import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveReques
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.RecommendProductExResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tag.entity.Tag;
 import project.trendpick_pro.domain.tag.entity.type.TagType;
@@ -104,5 +105,24 @@ public class ProductService {
 
         return productRepository.findAllByCategoryId(cond, pageable);
     }
+
+//    @Transactional
+//    public List<RecommendProductExResponse> extractRecommendProductExResponse(Member member){
+//        List<RecommendProductExResponse> recommendProductExList = productRepository.findAllRecommendProductEx(member);
+//
+//        List<Tag> memberTags = member.getTags();
+//
+//        //회원의 선호태그가 하나라도 속한 상품 모두 뽑아와서 점수 부여
+//        for (RecommendProductExResponse response : recommendProductExList) {
+//            for(Tag tag : memberTags){
+//                if(tag.getName().equals(response.getTagName())){
+//                    response.plusTotalScore(tag.getScore());
+//                }
+//            }
+//        }
+//        return recommendProductExList;
+//    }
+
+
 
 }
