@@ -32,10 +32,7 @@ import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -173,6 +170,12 @@ public class ProductService {
             }
         }
 
-        return new ArrayList(recommendProductByProductId.values());
+        List<ProductByRecommended> list = new ArrayList(recommendProductByProductId.values());
+
+        list = list.stream()
+                .sorted(Comparator.comparing(ProductByRecommended :: getTotalScore).reversed())
+                .toList();
+
+        return list;
     }
 }

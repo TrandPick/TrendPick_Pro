@@ -83,9 +83,9 @@ public class ProductController {
         return "/trendpick/products/detailpage";
     }
 
-//    @GetMapping("/test")
-//    @ResponseBody
-//    public List<ProductByRecommended> test(){
-//        return productService.extractRecommendProductExResponse(memberRepository.findById(1L).get());
-//    }
+    @GetMapping("/test")
+    @ResponseBody
+    public List<ProductByRecommended> test(){
+        return productService.getRecommendProduct(memberRepository.findById(1L).get());
+    }
 }
