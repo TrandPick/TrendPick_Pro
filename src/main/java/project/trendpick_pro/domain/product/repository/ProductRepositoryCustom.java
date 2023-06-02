@@ -14,5 +14,4 @@ import java.util.List;
 public interface ProductRepositoryCustom {
     public Page<ProductListResponse> findAllByCategoryId(ProductSearchCond cond, Pageable pageable);
     public List<RecommendProductExResponse> findAllRecommendProductEx(Member member);
-    public List<Product> findByTag(String username);
 }

@@ -80,51 +80,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
     }
 
-    //        select distinct T.product_id from tag T
-//        where T.member_id = 1;
-//    @Override
-//    public List<RecommendProductExResponse> findAllRecommendProductEx(Member member) {
-//
-//        List<RecommendProductExResponse> list = queryFactory
-//                .select(new QRecommendProductExResponse(
-//                                tag.product.id,
-//                                tag.name
-//                        )
-//                )
-//                .from(tag)
-//                .where(tag.member.id.eq(member.getId()))
-//                .fetch();
-//
-//        return list;
-//    }
-
-    @Override
-    public List<Product> findByTag(String username) {
-
-        Member findMember = queryFactory
-                .selectFrom(member)
-                .where(member.username.eq(username))
-                .fetchOne();
-
-        NumberExpression<Integer> sum = tag.score.sum();
-
-        assert findMember != null;
-        return queryFactory
-                .selectFrom(product)
-                .leftJoin(product.tags, tag)
-                .where(tag.in(findMember.getTags()))
-                .groupBy(product)
-                .orderBy(sum.desc())
-                .fetch();
-    }
-
-//    select T_P.product_id
-//    from Tag T_P
-//    where T_P.name in(
-//        select T_M.name
-//        from Tag T_M
-//        where T_M.member_id = 1
-//    )
     @Override
     public List<RecommendProductExResponse> findAllRecommendProductEx(Member member) {
         QTag tagByMember = new QTag("tagByMember");
@@ -148,7 +103,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         return list;
     }
-
 
     private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {
         return mainCategory.name.eq(cond.getMainCategory());
