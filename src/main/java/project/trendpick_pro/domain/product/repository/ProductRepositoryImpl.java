@@ -1,9 +1,7 @@
 package project.trendpick_pro.domain.product.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,15 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.QMember;
-import project.trendpick_pro.domain.member.repository.MemberRepository;
-import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.QProduct;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.QProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.QRecommendProductExResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.RecommendProductExResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.tag.entity.QTag;
 
 import java.util.List;
@@ -29,15 +23,13 @@ import static project.trendpick_pro.domain.brand.entity.QBrand.*;
 import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
-import static project.trendpick_pro.domain.member.entity.QMember.*;
 import static project.trendpick_pro.domain.product.entity.QProduct.*;
-import static project.trendpick_pro.domain.tag.entity.QTag.*;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    public ProductRepositoryImpl(EntityManager em, MemberRepository memberRepository) {
+    public ProductRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
@@ -81,12 +73,12 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public List<RecommendProductExResponse> findAllRecommendProductEx(Member member) {
+    public List<ProductByRecommended> findProductByRecommended(Member member) {
         QTag tagByMember = new QTag("tagByMember");
         QTag tagByProduct = new QTag("tagByProduct");
 
-        List<RecommendProductExResponse> list = queryFactory
-                .select(new QRecommendProductExResponse(
+        List<ProductByRecommended> list = queryFactory
+                .select(new QProductByRecommended(
                                 tagByProduct.product.id,
                                 tagByProduct.name
                         )

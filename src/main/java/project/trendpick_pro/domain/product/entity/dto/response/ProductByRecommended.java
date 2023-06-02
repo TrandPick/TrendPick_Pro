@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecommendProductExResponse {
+public class ProductByRecommended {
 
     private Long productId;
     private String tagName;
@@ -16,7 +16,7 @@ public class RecommendProductExResponse {
     private int totalScore;
 
     @QueryProjection
-    public RecommendProductExResponse(Long productId, String tagName){
+    public ProductByRecommended(Long productId, String tagName){
         this.productId = productId;
         this.tagName = tagName; //리턴할때는 불필요한 데이터
         totalScore = 0;

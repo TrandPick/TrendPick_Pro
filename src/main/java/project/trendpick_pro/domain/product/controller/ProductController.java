@@ -11,11 +11,9 @@ import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
-import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.RecommendProductExResponse;
-import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.service.ProductService;
 
 import java.io.IOException;
@@ -85,9 +83,9 @@ public class ProductController {
         return "/trendpick/products/detailpage";
     }
 
-    @GetMapping("/test")
-    @ResponseBody
-    public List<RecommendProductExResponse> test(){
-        return productService.extractRecommendProductExResponse(memberRepository.findById(1L).get());
-    }
+//    @GetMapping("/test")
+//    @ResponseBody
+//    public List<ProductByRecommended> test(){
+//        return productService.extractRecommendProductExResponse(memberRepository.findById(1L).get());
+//    }
 }

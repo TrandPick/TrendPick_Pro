@@ -21,9 +21,9 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.RecommendProductExResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tag.entity.Tag;
 import project.trendpick_pro.domain.tag.entity.type.TagType;
@@ -137,8 +137,8 @@ public class ProductService {
     }
 
     @Transactional
-    public List<RecommendProductExResponse> extractRecommendProductExResponse(Member member){
-        List<RecommendProductExResponse> recommendProductExList = productRepository.findAllRecommendProductEx(member);
+    public List<ProductByRecommended> getRecommendProduct(Member member){
+        List<ProductByRecommended> productByRecommendedList = productRepository.findProductByRecommended(member);
         List<Tag> memberTags = member.getTags();
 
 
@@ -148,16 +148,16 @@ public class ProductService {
 
         //상품 id 중복을 없애기 위함
         //맴버의 태그명과 여러개가 겹쳐서 여러개의 추천상품이 반환되었을것 그 중복을 없애야 한다.
-        Map<Long, RecommendProductExResponse> recommendProductByProductId = new HashMap<>();
+        Map<Long, ProductByRecommended> recommendProductByProductId = new HashMap<>();
 
-        for (RecommendProductExResponse response : recommendProductExList) {
+        for (ProductByRecommended response : productByRecommendedList) {
             if(!productIdListByTagName.containsKey(response.getTagName()))
                 productIdListByTagName.put(response.getTagName(), new ArrayList<Long>());
 
             productIdListByTagName.get(response.getTagName()).add(response.getProductId());
         }
 
-        for (RecommendProductExResponse response : recommendProductExList) {
+        for (ProductByRecommended response : productByRecommendedList) {
             if(recommendProductByProductId.containsKey(response.getProductId()))
                 continue;
 
