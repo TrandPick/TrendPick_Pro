@@ -3,6 +3,7 @@ package project.trendpick_pro.domain.product.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,17 @@ import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProductService {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     private final ProductRepository productRepository;
     private final MainCategoryRepository mainCategoryRepository;
@@ -106,22 +111,47 @@ public class ProductService {
         return productRepository.findAllByCategoryId(cond, pageable);
     }
 
-//    @Transactional
-//    public List<RecommendProductExResponse> extractRecommendProductExResponse(Member member){
-//        List<RecommendProductExResponse> recommendProductExList = productRepository.findAllRecommendProductEx(member);
-//
-//        List<Tag> memberTags = member.getTags();
-//
-//        //회원의 선호태그가 하나라도 속한 상품 모두 뽑아와서 점수 부여
-//        for (RecommendProductExResponse response : recommendProductExList) {
-//            for(Tag tag : memberTags){
-//                if(tag.getName().equals(response.getTagName())){
-//                    response.plusTotalScore(tag.getScore());
-//                }
-//            }
-//        }
-//        return recommendProductExList;
-//    }
+    @Transactional
+    public List<RecommendProductExResponse> extractRecommendProductExResponse(Member member){
+        List<RecommendProductExResponse> recommendProductExList = productRepository.findAllRecommendProductEx(member);
+        List<Tag> memberTags = member.getTags();
+
+
+        //일단 추천상품으로 뽑힌것들 중복제거 (한 상품이 여러 태그에 포함되있을 수 있다.)
+        Map<String, List<Long>> map = new HashMap<>();
+        Map<Long, RecommendProductExResponse> map2 = new HashMap<>();
+
+        for (RecommendProductExResponse response : recommendProductExList) {
+            logger.info(response.getTagName());
+            if(!map.containsKey(response.getTagName()))
+                map.put(response.getTagName(), new ArrayList<Long>());
+
+            map.get(response.getTagName()).add(response.getProductId());
+        }
+
+        for (RecommendProductExResponse response : recommendProductExList) {
+            if(map2.containsKey(response.getProductId()))
+                continue;
+
+            map2.put(response.getProductId(), response);
+        }
+        logger.info("점수 상승=============================================================");
+        for (Tag memberTag : memberTags) {
+            if(map.containsKey(memberTag.getName())){
+                List<Long> productIdList = map.get(memberTag.getName());
+                for (Long id : productIdList) {
+                    logger.info("---------------------------------------");
+                    logger.info(String.valueOf(map2.get(id).getTotalScore()));
+                    map2.get(id).plusTotalScore(memberTag.getScore());
+                    logger.info(String.valueOf(map2.get(id).getTotalScore()));
+                    logger.info("---------------------------------------");
+                }
+            }
+        }
+        logger.info("점수 상승=============================================================");
+
+        return new ArrayList(map2.values());
+    }
 
 
 

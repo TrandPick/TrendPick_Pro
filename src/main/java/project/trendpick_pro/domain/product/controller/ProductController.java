@@ -28,7 +28,6 @@ import java.util.List;
 public class ProductController {
 
     private final MemberRepository memberRepository;
-    private final ProductRepository productRepository;
     private final Rq rq;
     private final ProductService productService;
 
@@ -89,7 +88,6 @@ public class ProductController {
     @GetMapping("/test")
     @ResponseBody
     public List<RecommendProductExResponse> test(){
-        return productRepository.findAllRecommendProductEx(memberRepository.findById(1L).get()
-        );
+        return productService.extractRecommendProductExResponse(memberRepository.findById(1L).get());
     }
 }
