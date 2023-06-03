@@ -16,4 +16,8 @@ public class Brand {
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
+
+    public Brand(String name){
+        this.name = name;
+    }
 }
