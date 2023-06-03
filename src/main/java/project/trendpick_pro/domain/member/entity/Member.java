@@ -2,44 +2,37 @@ package project.trendpick_pro.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.validator.constraints.Range;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import project.trendpick_pro.domain.FavoriteTag;
-import project.trendpick_pro.domain.tag.entity.Tag;
-
-import java.time.LocalDate;
+import project.trendpick_pro.domain.favoritetag.entity.FavoriteTag;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "email",unique = true)
+    @Column(name = "email",unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "username")
+    @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private RoleType role;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<FavoriteTag> tags = new ArrayList<>();
 
     private String bankName;
@@ -47,7 +40,6 @@ public class Member {
 
     private String address;
 
-    // 이 함수 자체는 만들어야 한다. 스프링 시큐리티 규격
     public List<? extends GrantedAuthority> getGrantedAuthorities() {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
@@ -60,6 +52,15 @@ public class Member {
         }
 
         return grantedAuthorities;
+    }
+
+    @Builder
+    public Member(String email, String password, String username, String phoneNumber, RoleType role) {
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
     }
 
     public void connectAddress(String address) {

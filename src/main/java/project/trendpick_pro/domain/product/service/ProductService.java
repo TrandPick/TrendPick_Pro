@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import project.trendpick_pro.domain.FavoriteTag;
 import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.brand.repository.BrandRepository;
 import project.trendpick_pro.domain.category.entity.MainCategory;
@@ -29,11 +28,9 @@ import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.recommend.entity.Recommend;
 import project.trendpick_pro.domain.tag.entity.Tag;
 import project.trendpick_pro.domain.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tag.repository.TagRepository;
@@ -42,7 +39,6 @@ import project.trendpick_pro.domain.tag.service.TagService;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -100,7 +96,7 @@ public class ProductService {
 
         if(requestMainFile!=null){
             //  기존 이미지 삭제
-            FileUtils.delete(new File(mainFile.getTranslatedFileName()));
+            FileUtils.delete(new File(mainFile.getFileName()));
         }
         // 이미지 업데이트
         mainFile = fileTranslator.translateFile(requestMainFile);
@@ -108,7 +104,7 @@ public class ProductService {
         if(requestSubFiles!=null ){
             // 기존 이미지 삭제
             for(CommonFile subFile:subFiles){
-                FileUtils.delete(new File(subFile.getTranslatedFileName()));
+                FileUtils.delete(new File(subFile.getFileName()));
             }
         }
         // 이미지 업데이트

@@ -19,11 +19,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import static project.trendpick_pro.domain.QFavoriteTag.*;
 import static project.trendpick_pro.domain.brand.entity.QBrand.*;
 import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
+import static project.trendpick_pro.domain.favoritetag.entity.QFavoriteTag.favoriteTag;
 import static project.trendpick_pro.domain.member.entity.QMember.*;
 import static project.trendpick_pro.domain.product.entity.QProduct.*;
 import static project.trendpick_pro.domain.tag.entity.QTag.*;
@@ -45,7 +45,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.id,
                         product.name,
                         brand.name,
-                        commonFile.translatedFileName,
+                        commonFile.fileName,
                         product.price)
                 )
                 .from(product)
@@ -83,8 +83,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         List<Tuple> sortProducts = queryFactory
                 .select(product.id, favoriteTag.score.sum())
                 .from(product)
-                .leftJoin(member.tags, favoriteTag)
-                .leftJoin(product.tags, tag)
                 .leftJoin(favoriteTag.member, member)
                 .where(favoriteTag.name.in(
                         JPAExpressions.select(tag.name)

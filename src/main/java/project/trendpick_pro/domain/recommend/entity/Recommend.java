@@ -58,7 +58,7 @@ public class Recommend {
         return Recommend.builder()
                 .name(product.getName())
                 .brand(product.getBrand())
-                .mainFile(product.getFile().getTranslatedFileName())
+                .mainFile(product.getFile().getFileName())
                 .price(product.getPrice())
                 .build();
     }

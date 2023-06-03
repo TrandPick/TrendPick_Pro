@@ -2,12 +2,8 @@ package project.trendpick_pro.domain.tag.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import project.trendpick_pro.domain.FavoriteTag;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.tag.entity.type.TagType;
-
-import java.util.List;
 
 @Entity
 @Getter

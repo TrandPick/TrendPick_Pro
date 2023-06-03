@@ -3,12 +3,10 @@ package project.trendpick_pro.domain.tag.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.domain.FavoriteTag;
+import project.trendpick_pro.domain.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.tag.entity.Tag;
-import project.trendpick_pro.domain.tag.entity.dto.response.TagListResponse;
-import project.trendpick_pro.domain.tag.entity.dto.response.TagResponse;
 import project.trendpick_pro.domain.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tag.repository.TagRepository;
 

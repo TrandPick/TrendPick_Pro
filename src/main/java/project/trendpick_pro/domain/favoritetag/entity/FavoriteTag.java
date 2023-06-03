@@ -1,4 +1,4 @@
-package project.trendpick_pro.domain;
+package project.trendpick_pro.domain.favoritetag.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

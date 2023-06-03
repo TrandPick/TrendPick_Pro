@@ -35,7 +35,7 @@ public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
                         product.id,
                         product.name,
                         brand.name,
-                        commonFile.translatedFileName,
+                        commonFile.fileName,
                         product.price
                 ))
                 .from(recommend)

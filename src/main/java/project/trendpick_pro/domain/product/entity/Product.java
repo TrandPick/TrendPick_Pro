@@ -41,17 +41,17 @@ public class Product extends BaseTimeEntity {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
     private CommonFile file;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "stock")
+    @Column(name = "stock", nullable = false)
     private int stock;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

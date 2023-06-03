@@ -20,7 +20,7 @@ public class ProductResponse {
     private Long id;
     private String name;
     private String mainCategory;    // Category
-    private List<String> subCategory;   // Category
+    private String subCategory;   // Category
     private String brand;   // Brand
     private String description;
     private String mainFile;
@@ -31,7 +31,7 @@ public class ProductResponse {
 
     @Builder
     @QueryProjection
-    public ProductResponse(Long id, String name, String mainCategory, List<String> subCategory, String brand, String description,
+    public ProductResponse(Long id, String name, String mainCategory, String subCategory, String brand, String description,
                            String mainFile, List<String> subFiles, int price, int stock, List<Tag> tags) {
         this.id = id;
         this.name = name;
@@ -51,10 +51,10 @@ public class ProductResponse {
                 .id(product.getId())
                 .name(product.getName())
                 .mainCategory(product.getMainCategory().getName())
-//                .subCategory(product.getSubCategory().getName())
+                .subCategory(product.getSubCategory().getName())
                 .brand(product.getBrand().getName())
                 .description(product.getDescription())
-                .mainFile(product.getFile().getOriginalFileName())
+                .mainFile(product.getFile().getFileName())
                 .subFiles(subFiles(product.getFile().getChild()))
                 .price(product.getPrice())
                 .stock(product.getStock())
@@ -66,7 +66,7 @@ public class ProductResponse {
         List<String> tmpList = new ArrayList<>();
 
         for (CommonFile subFile : subFiles) {
-            tmpList.add(subFile.getOriginalFileName());
+            tmpList.add(subFile.getFileName());
         }
         return tmpList;
     }

@@ -16,7 +16,6 @@ public class FileTranslator {
     @Value("${file.dir}")
     private String filePath; //저장경로
 
-    //이미지 업로드할때 url경로
     public String getFilePath(String filename) {
         return filePath + filename;
     }
@@ -27,16 +26,12 @@ public class FileTranslator {
             return null;
         }
 
-        String originalFilename = multipartFile.getOriginalFilename();
-        String translatedFileName = translateFileName(originalFilename);
+        String translatedFileName = translateFileName(multipartFile.getOriginalFilename());
         multipartFile.transferTo(new File(getFilePath(translatedFileName)));
 
-        return CommonFile
-                .builder()
-                .originalFileName(originalFilename)
-                .translatedFileName(translatedFileName)
-                .build()
-                ;
+        return CommonFile.builder()
+                .fileName(translatedFileName)
+                .build();
     }
 
     //파일 여러개를 한 번에 묶어서 변환할때
