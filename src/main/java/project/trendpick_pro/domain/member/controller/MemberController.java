@@ -32,22 +32,18 @@ public class MemberController {
     @GetMapping("/register")
     public String register(JoinForm joinForm, Model model) {
         model.addAttribute("joinForm", joinForm);
-        model.addAttribute(tagService.getAllTags());
+        model.addAttribute("allTags", tagService.getAllTags());
         return "trendpick/usr/member/join";
     }
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/register")
-    public String register(@Valid JoinForm joinForm, BindingResult bindingResult) {
+    public String register(@Valid JoinForm joinForm, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("allTags", tagService.getAllTags());
             return "trendpick/usr/member/join";
         }
-        try {
-            memberService.register(joinForm);
-        } catch(MemberAlreadyExistException e) {
-            bindingResult.reject(e.getErrorCode().getCode(), e.getMessage());
-            return "trendpick/usr/member/join";
-        }
+        memberService.register(joinForm);
         return "redirect:/trendpick/member/login";
     }
 

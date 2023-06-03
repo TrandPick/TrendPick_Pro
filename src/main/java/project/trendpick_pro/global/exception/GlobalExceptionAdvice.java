@@ -1,47 +1,43 @@
 package project.trendpick_pro.global.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 
 @Slf4j
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionAdvice {
 
     @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<ErrorResponse> MEmberNotFoundHandleException(MemberNotFoundException e) {
-        ErrorCode errorCode = e.getErrorCode();
+    public String MemberNotFoundHandleException(MemberNotFoundException e, Model model) {
         log.error("[exceptionHandle] ex", e);
-        ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), e.getMessage());
-        return ResponseEntity.status(errorCode.getStatus()).body(errorResponse);
+        model.addAttribute("errorMessage", e.getMessage());
+        return "trendpick/usr/member/join";
     }
 
     @ExceptionHandler(MemberNotMatchException.class)
-    public ResponseEntity<ErrorResponse> MemberNotMatchHandleException(MemberNotMatchException e) {
-        ErrorCode errorCode = e.getErrorCode();
+    public String MemberNotMatchHandleException(MemberNotMatchException e, Model model) {
         log.error("[exceptionHandle] ex", e);
-        ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), e.getMessage());
-        return ResponseEntity.status(errorCode.getStatus()).body(errorResponse);
+        model.addAttribute("errorMessage", e.getMessage());
+        return "trendpick/usr/member/join";
     }
 
     @ExceptionHandler(MemberAlreadyExistException.class)
-    public ResponseEntity<ErrorResponse> MemberAlreadyExistHandleException(MemberAlreadyExistException e) {
-        ErrorCode errorCode = e.getErrorCode();
+    public String MemberAlreadyExistHandleException(MemberAlreadyExistException e, Model model) {
         log.error("[exceptionHandle] ex", e);
-        ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), e.getMessage());
-        return ResponseEntity.status(errorCode.getStatus()).body(errorResponse);
+        model.addAttribute("errorMessage", e.getMessage());
+        return "trendpick/usr/member/join";
     }
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorResponse> ProductNotFoundHandleException(ProductNotFoundException e) {
-        ErrorCode errorCode = e.getErrorCode();
+    public String ProductNotFoundHandleException(ProductNotFoundException e, Model model) {
         log.error("[exceptionHandle] ex", e);
-        ErrorResponse errorResponse = new ErrorResponse(errorCode.getCode(), e.getMessage());
-        return ResponseEntity.status(errorCode.getStatus()).body(errorResponse);
+        model.addAttribute("errorMessage", e.getMessage());
+        return "trendpick/usr/member/join";
     }
 }

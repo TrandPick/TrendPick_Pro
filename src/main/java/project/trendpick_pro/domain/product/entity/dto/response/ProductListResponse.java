@@ -2,11 +2,12 @@ package project.trendpick_pro.domain.product.entity.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.file.CommonFile;
 
-@Getter
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductListResponse {
 
