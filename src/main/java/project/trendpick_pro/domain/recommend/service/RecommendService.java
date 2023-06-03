@@ -1,6 +1,7 @@
 package project.trendpick_pro.domain.recommend.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -9,19 +10,18 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
-import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.entity.Recommend;
 import project.trendpick_pro.domain.recommend.repository.RecommendRepository;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -35,8 +35,8 @@ public class RecommendService {
     //recommend -> 태그 기반 추천 상품들이 있어야 함
 
     @Transactional
-    @Scheduled(cron = "* * * 4 * *")    //새벽 4시에 한 번씩 작동
-    public void select(){ // 둘다 테스트 해보기
+    @Scheduled(cron = "0 0 4 * * *")
+    public void select(){
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
         Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
@@ -45,6 +45,7 @@ public class RecommendService {
 
         //추천상품 ID값을 가지고 있는 ProductByRecommended 가져오기 (전달용)
         List<Product> products = productService.getRecommendProduct(member);
+
 
         for (Product product : products) {
             Recommend recommend = Recommend.of(product);

@@ -79,7 +79,7 @@ public class ProductService {
         SubCategory subCategory = subCategoryRepository.findByName(productSaveRequest.subCategory());
         Brand brand = brandRepository.findByName(productSaveRequest.brand());
 
-        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile,tags);
+        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile, tags);
 
         productRepository.save(product);
         return ProductResponse.of(product);
@@ -190,6 +190,7 @@ public class ProductService {
 //        return new ArrayList<>(recommendProductByProductId.values()).stream()
 //                .sorted(Comparator.comparing(ProductByRecommended :: getTotalScore).reversed())
 //                .toList();
+        log.debug("member : {}", member);
         return productRepository.findProductByRecommended(member.getUsername());
     }
 

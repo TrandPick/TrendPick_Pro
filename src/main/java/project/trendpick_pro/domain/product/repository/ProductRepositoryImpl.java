@@ -82,7 +82,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         List<Tuple> sortProducts = queryFactory
                 .select(product.id, favoriteTag.score.sum())
-                .from(product)
+                .from(favoriteTag, product)
                 .leftJoin(favoriteTag.member, member)
                 .where(favoriteTag.name.in(
                         JPAExpressions.select(tag.name)

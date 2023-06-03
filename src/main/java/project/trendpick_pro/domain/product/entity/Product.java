@@ -114,4 +114,13 @@ public class Product extends BaseTimeEntity {
         this.price=request.price();
         this.stock=request.stock();
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                '}';
+    }
 }
