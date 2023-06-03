@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.product.repository;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -9,28 +10,32 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.QProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
-import project.trendpick_pro.domain.tag.entity.QTag;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
+import static project.trendpick_pro.domain.QFavoriteTag.*;
 import static project.trendpick_pro.domain.brand.entity.QBrand.*;
 import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
+import static project.trendpick_pro.domain.member.entity.QMember.*;
 import static project.trendpick_pro.domain.product.entity.QProduct.*;
+import static project.trendpick_pro.domain.tag.entity.QTag.*;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final JPAQuery<Long> subQuery;
 
     public ProductRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
+        this.subQuery = new JPAQuery<>(em);
     }
 
     @Override
@@ -73,27 +78,33 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public List<ProductByRecommended> findProductByRecommended(Member member) {
-        QTag tagByMember = new QTag("tagByMember");
-        QTag tagByProduct = new QTag("tagByProduct");
+    public List<Product> findProductByRecommended(String username) {
 
-        List<ProductByRecommended> list = queryFactory
-                .select(new QProductByRecommended(
-                                tagByProduct.product.id,
-                                tagByProduct.name
-                        )
-                )
-                .from(tagByProduct)
-                .where(tagByProduct.name.in(
-                        JPAExpressions.select(tagByMember.name)
-                                .from(tagByMember)
-                                .where(tagByMember.member.id.eq(member.getId()))
-                )
-                        .and(tagByProduct.product.id.isNotNull()))
-                .distinct()
+        List<Tuple> sortProducts = queryFactory
+                .select(product.id, favoriteTag.score.sum())
+                .from(product)
+                .leftJoin(member.tags, favoriteTag)
+                .leftJoin(product.tags, tag)
+                .leftJoin(favoriteTag.member, member)
+                .where(favoriteTag.name.in(
+                        JPAExpressions.select(tag.name)
+                        .from(tag)
+                        .where(tag.product.eq(product)
+                        )),
+                        member.username.eq(username))
+                .groupBy(product.id)
+                .orderBy(favoriteTag.score.sum().desc())
                 .fetch();
 
-        return list;
+        return sortProducts.stream()
+                .sorted(Comparator.comparing(
+                        tuple -> Optional.ofNullable(tuple.get(1, Long.class)).orElse(Long.MIN_VALUE),
+                        Comparator.nullsLast(Comparator.naturalOrder())))
+                .map(tuple -> queryFactory
+                        .selectFrom(product)
+                        .where(product.id.eq(tuple.get(0, Long.class)))
+                        .fetchOne())
+                .toList();
     }
 
     private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {
@@ -101,7 +112,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     private static BooleanExpression subCategoryEq(ProductSearchCond cond) {
-        return subCategory.name.eq(cond.getSubCategory());
+        if (cond.getSubCategory().equals("전체")) {
+            return null;
+        } else {
+            return subCategory.name.eq(cond.getSubCategory());
+        }
     }
 
     private static OrderSpecifier<?> orderSelector(Integer sortCode) {

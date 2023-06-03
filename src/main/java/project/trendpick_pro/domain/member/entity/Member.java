@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import project.trendpick_pro.domain.FavoriteTag;
 import project.trendpick_pro.domain.tag.entity.Tag;
 
 import java.time.LocalDate;
@@ -39,7 +40,7 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Tag> tags = new ArrayList<>();
+    private List<FavoriteTag> tags = new ArrayList<>();
 
     private String bankName;
     private String bankAccount;
@@ -70,7 +71,7 @@ public class Member {
         this.bankAccount = bankAccount;
     }
 
-    public void changeTags(List<Tag> tags) {
+    public void changeTags(List<FavoriteTag> tags) {
         this.tags = tags;
     }
 }

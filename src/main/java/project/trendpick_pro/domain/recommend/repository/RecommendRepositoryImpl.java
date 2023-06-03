@@ -1,20 +1,15 @@
 package project.trendpick_pro.domain.recommend.repository;
 
-import com.querydsl.core.QueryFactory;
+import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.brand.entity.QBrand;
-import project.trendpick_pro.domain.common.file.QCommonFile;
-import project.trendpick_pro.domain.member.entity.QMember;
-import project.trendpick_pro.domain.product.entity.QProduct;
-import project.trendpick_pro.domain.recommend.entity.QRecommend;
-import project.trendpick_pro.domain.recommend.entity.Recommend;
-import project.trendpick_pro.domain.recommend.entity.dto.QRecommendResponse;
-import project.trendpick_pro.domain.recommend.entity.dto.RecommendResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
 
 import java.util.List;
 
@@ -33,10 +28,10 @@ public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
     }
 
     @Override
-    public Page<RecommendResponse> findAllByMemberName(String username, Pageable pageable) {
+    public Page<ProductListResponse> findAllByMemberName(String username, Pageable pageable) {
 
-        List<RecommendResponse> result = queryFactory
-                .select(new QRecommendResponse(
+        List<ProductListResponse> result = queryFactory
+                .select(new QProductListResponse(
                         product.id,
                         product.name,
                         brand.name,

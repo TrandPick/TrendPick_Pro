@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,6 +17,10 @@ public class MainCategory {
     private String name;
 
     public MainCategory(String name) {
+        this.name = name;
+    }
+
+    public void modify(String name) {
         this.name = name;
     }
 }

@@ -5,6 +5,7 @@ import project.trendpick_pro.global.exception.ErrorCode;
 import project.trendpick_pro.global.exception.BaseException;
 
 public class MemberNotMatchException extends BaseException {
+
     private static final ErrorCode code = ErrorCode.MEMBER_NOT_MATCH;
 
     public MemberNotMatchException(String message) {

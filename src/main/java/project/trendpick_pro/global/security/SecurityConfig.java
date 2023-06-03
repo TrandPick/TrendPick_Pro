@@ -21,7 +21,7 @@ public class SecurityConfig {
                         formLogin -> formLogin
                                 .loginPage("/trendpick/member/login")
                                 .loginProcessingUrl("/login_proc")
-                                .defaultSuccessUrl("/trendpick/product/list")
+                                .defaultSuccessUrl("/trendpick/products/list")
                 )
                 .logout(
                         logout -> logout
