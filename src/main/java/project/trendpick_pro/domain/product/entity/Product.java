@@ -25,20 +25,20 @@ public class Product extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "main_category_id", nullable = false)
+    @JoinColumn(name = "main_category_id")
     private MainCategory mainCategory;    // Category
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sub_category_id", nullable = false)
+    @JoinColumn(name = "sub_category_id")
     private SubCategory subCategory;   // Category
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id", nullable = false)
+    @JoinColumn(name = "brand_id")
     private Brand brand;
 
     @Column(name = "description", nullable = false)
@@ -75,17 +75,17 @@ public class Product extends BaseTimeEntity {
     }
 
     public static Product of(ProductSaveRequest request, MainCategory mainCategory
-            , SubCategory subCategory, Brand brand,CommonFile file) {
+            , SubCategory subCategory, Brand brand,CommonFile file,List<Tag> tags) {
         return Product.builder()
-                .name(request.getName())
+                .name(request.name())
                 .mainCategory(mainCategory)
                 .subCategory(subCategory)
                 .brand(brand)
-                .description(request.getDescription())
+                .description(request.description())
                 .file(file)
-                .price(request.getPrice())
-                .stock(request.getStock())
-                .tags(request.getTags())
+                .price(request.price())
+                .stock(request.stock())
+                .tags(tags)
                 .build();
     }
 
@@ -109,9 +109,18 @@ public class Product extends BaseTimeEntity {
     }
 
     public void update(ProductSaveRequest request) {
-
-        // 여기서 파일 지지고 볶고 할 예정
+        this.name=request.name();
+        this.description=request.description();
+        this.price=request.price();
+        this.stock=request.stock();
     }
 
-
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                '}';
+    }
 }

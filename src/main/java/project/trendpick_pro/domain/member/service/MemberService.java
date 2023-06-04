@@ -1,25 +1,33 @@
 package project.trendpick_pro.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.trendpick_pro.domain.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
+import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.entity.dto.request.TagRequest;
+import project.trendpick_pro.domain.tag.repository.TagRepository;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
+
     private final PasswordEncoder passwordEncoder;
 
     private final MemberRepository memberRepository;
+    private final TagRepository tagRepository;
 
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
@@ -28,7 +36,7 @@ public class MemberService {
     @Transactional
     public void register(JoinForm joinForm) {
 
-        if (memberRepository.findByUsername(joinForm.emailtext()).isPresent()) {
+        if (memberRepository.findByEmail(joinForm.email()).isPresent()) {
             throw new MemberAlreadyExistException("이미 존재하는 이름입니다.");
         }
 
@@ -43,15 +51,40 @@ public class MemberService {
 
         Member member = Member
                 .builder()
-                .email(joinForm.emailtext())
+                .email(joinForm.email())
                 .password(passwordEncoder.encode(joinForm.password()))
                 .username(joinForm.username())
                 .phoneNumber(joinForm.phoneNumber())
                 .role(roleType)
                 .build();
 
+        List<FavoriteTag> tags = new ArrayList<>();
+        for (String tag : joinForm.tags()) {
+            Tag findTag = tagRepository.findByName(tag).orElseThrow();
+            FavoriteTag favoriteTag = new FavoriteTag(findTag, findTag.getName());
+            favoriteTag.connectMember(member);
+            tags.add(favoriteTag);
+        }
+        member.changeTags(tags);
+
         memberRepository.save(member);
     }
+
+    @Transactional
+    public void manageTag(String username, TagRequest tagRequest){
+
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+
+        List<FavoriteTag> tags = new ArrayList<>();
+        for (String s : tagRequest.getTags()) {
+            Tag tag = tagRepository.findByName(s).orElseThrow();
+            FavoriteTag favoriteTag = new FavoriteTag(tag, tag.getName());
+            favoriteTag.connectMember(member);
+            tags.add(favoriteTag);
+        }
+        member.changeTags(tags);
+    }
+
     @Transactional
     public void manageAddress(Member actor, String address){
         Member member = memberRepository.findByUsername(actor.getUsername()).orElseThrow();

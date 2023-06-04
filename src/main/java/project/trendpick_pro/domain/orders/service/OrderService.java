@@ -22,6 +22,9 @@ import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tag.service.TagService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final TagService tagService;
 
     @Transactional
     public synchronized void order(Long userId, OrderSaveRequest... orderSaveRequests) {
@@ -49,6 +53,8 @@ public class OrderService {
             if (product.getStock() < request.getQuantity()) {
                 throw new ProductStockOutException("재고가 부족합니다.");   // 임시. 나중에 사용자 exception 널을까말까 생각
             }
+
+            tagService.updateTag(member, product, TagType.ORDER);
             orderItemList.add(new OrderItem(product, product.getPrice(), request.getQuantity()));
         }
 

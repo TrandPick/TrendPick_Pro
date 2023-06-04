@@ -8,11 +8,12 @@
 <body>
 <div class="container">
     <h1>회원 가입</h1>
+    <p th:if="${errorMessage}" th:text="${errorMessage}">Error Message</p>
     <form th:action="@{/trendpick/member/register}" th:object="${joinForm}" method="post">
         <div class="form-group">
-            <label for="emailtext">이메일</label>
-            <input type="text" th:field="*{emailtext}" class="form-control" id="emailtext" placeholder="이메일을 입력해주세요">
-            <p class="text-danger" th:if="${#fields.hasErrors('emailtext')}" th:errors="*{emailtext}"></p>
+            <label for="email">이메일</label>
+            <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="이메일을 입력해주세요">
+            <p class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
         </div>
         <div class="form-group">
             <label for="password">비밀번호</label>
@@ -30,9 +31,25 @@
             <p class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></p>
         </div>
         <div class="form-group">
-            <label for="phoneNumber">권한</label>
-            <input type="text" th:field="*{state}" class="form-control" id="state" placeholder="권한을 입력해주세요.">
+            <label>어떤 용도로 사용하시나요?</label>
+            <div>
+                <input type="radio" th:field="*{state}" value="ADMIN" id="stateAdmin"> <label for="stateAdmin">관리자</label>
+            </div>
+            <div>
+                <input type="radio" th:field="*{state}" value="BRAND_ADMIN" id="stateBrandAdmin"> <label for="stateBrandAdmin">브랜드판매자</label>
+            </div>
+            <div>
+                <input type="radio" th:field="*{state}" value="MEMBER" id="stateMember"> <label for="stateMember">사용자</label>
+            </div>
             <p class="text-danger" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></p>
+        </div>
+        <div class="form-group">
+            <label><H3>본인이 선호하는 태그를 선택 해주세요!</H3></label>
+            <div th:each="tags : ${allTags}">
+                <input type="checkbox" th:field="*{tags}" th:value="${tags.name}" />
+                <label th:text="${tags.name}"></label>
+            </div>
+            <p class="text-danger" th:if="${#fields.hasErrors('tags')}" th:errors="*{tags}"></p>
         </div>
         <button type="submit" class="btn btn-primary">회원가입</button>
     </form>
