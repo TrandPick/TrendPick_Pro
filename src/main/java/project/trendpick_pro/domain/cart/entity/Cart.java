@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 
 import java.util.ArrayList;
@@ -34,6 +35,13 @@ public class Cart {
 
     // 총 가격 필드
     private int totalPrice;
+
+    public static Cart createCart(Member member){
+        Cart cart = new Cart();
+        cart.member= member;
+        cart.totalCount = 0;
+        return cart;
+    }
 
     public Cart(Member member) {
         this.member = member;
@@ -73,19 +81,10 @@ public class Cart {
     }
 
     private void updateTotalCountAndPrice() {
-        totalCount = cartItems.stream()
-                .mapToInt(CartItem::getCount)
-                .sum();
-
-        totalPrice = cartItems.stream()
-                .mapToInt(CartItem::getPrice)
-                .sum();
+        for(CartItem cartItem:cartItems){
+            totalPrice+=(cartItem.getProduct().getPrice()*cartItem.getCount());
+        }
     }
 
-    public CartItem findCartItemByProductOption(ProductOption productOption) {
-        return cartItems.stream()
-                .filter(item -> item.getProductOption().equals(productOption))
-                .findFirst()
-                .orElse(null);
-    }
+
 }
