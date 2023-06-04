@@ -24,16 +24,8 @@ public class FavoriteTag {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id")
-    private Tag tag;
-
-    public FavoriteTag(Tag tag, String name) {
-        this.tag = tag;
+    public FavoriteTag(Member member, String name) {
         this.name = name;
-    }
-
-    public void connectMember(Member member) {
         this.member = member;
     }
 

@@ -6,7 +6,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import project.trendpick_pro.domain.favoritetag.entity.FavoriteTag;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -33,7 +35,7 @@ public class Member {
     private RoleType role;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FavoriteTag> tags = new ArrayList<>();
+    private Set<FavoriteTag> tags = new LinkedHashSet<>();
 
     private String bankName;
     private String bankAccount;
@@ -58,7 +60,7 @@ public class Member {
         this.bankAccount = bankAccount;
     }
 
-    public void changeTags(List<FavoriteTag> tags) {
+    public void changeTags(Set<FavoriteTag> tags) {
         this.tags = tags;
     }
 }

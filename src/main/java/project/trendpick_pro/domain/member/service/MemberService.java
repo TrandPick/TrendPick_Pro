@@ -58,15 +58,14 @@ public class MemberService {
                 .role(roleType)
                 .build();
 
-        List<FavoriteTag> tags = new ArrayList<>();
+        Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();
         for (String tag : joinForm.tags()) {
-            Tag findTag = tagRepository.findByName(tag).orElseThrow();
-            FavoriteTag favoriteTag = new FavoriteTag(findTag, findTag.getName());
-            favoriteTag.connectMember(member);
-            tags.add(favoriteTag);
+//            Tag findTag = tagRepository.findByName(tag).orElseThrow();
+//            favoriteTag.connectMember(member);
+            FavoriteTag favoriteTag = new FavoriteTag(member, tag);
+            favoriteTags.add(favoriteTag);
         }
-        member.changeTags(tags);
-
+        member.changeTags(favoriteTags);
         memberRepository.save(member);
     }
 
@@ -75,11 +74,11 @@ public class MemberService {
 
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
-        List<FavoriteTag> tags = new ArrayList<>();
-        for (String s : tagRequest.getTags()) {
-            Tag tag = tagRepository.findByName(s).orElseThrow();
-            FavoriteTag favoriteTag = new FavoriteTag(tag, tag.getName());
-            favoriteTag.connectMember(member);
+        Set<FavoriteTag> tags = new LinkedHashSet<>();
+        for (String tag : tagRequest.getTags()) {
+//            Tag tag = tagRepository.findByName(s).orElseThrow();
+//            favoriteTag.connectMember(member);
+            FavoriteTag favoriteTag = new FavoriteTag(member, tag);
             tags.add(favoriteTag);
         }
         member.changeTags(tags);
