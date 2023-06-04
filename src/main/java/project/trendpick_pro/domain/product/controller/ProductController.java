@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.product.controller;
 
+import io.swagger.v3.core.util.Json;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,14 +13,21 @@ import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
+import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -34,6 +42,7 @@ public class ProductController {
     private final SubCategoryService subCategoryService;
     private final BrandService brandService;
     private final RecommendService recommendService;
+    private final MemberRepository memberRepository;
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("/register")
@@ -97,5 +106,35 @@ public class ProductController {
         } else {
             model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory, sortCode));
         } return "/trendpick/products/list";
+    }
+
+    //테스트용
+    @GetMapping("/test1")
+    @ResponseBody
+    public List<ProductByRecommended> showTest1(){
+        Member member = memberRepository.findById(1L).orElseThrow();
+        return productService.getRecommendProductTest1(member);
+    }
+
+    @GetMapping("/test2")
+    @ResponseBody
+    public List<ProductByRecommended> showTest2(){
+        Member member = memberRepository.findById(1L).orElseThrow();
+        return productService.getRecommendProductTest2(member);
+    }
+
+    @GetMapping("/test3")
+    @ResponseBody
+    public Map<Long, String> showTest3(){
+        Member member = memberRepository.findById(1L).orElseThrow();
+        Map<Long, String> testMap = new LinkedHashMap<>();
+
+        List<Product> products = productService.getRecommendProduct(member);
+
+        for (Product product : products) {
+            testMap.put(product.getId(), product.getName()+" "+product.getPrice()+" "+product.getStock());
+        }
+
+        return testMap;
     }
 }

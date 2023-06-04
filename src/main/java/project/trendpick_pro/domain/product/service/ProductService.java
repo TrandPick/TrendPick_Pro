@@ -219,8 +219,56 @@ public class ProductService {
                     () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
             ));
         }
-
         return products;
+    }
+
+    public List<ProductByRecommended> getRecommendProductTest1(Member member) {
+        return productRepository.findRecommendProduct(member.getUsername());
+    }
+
+    public List<ProductByRecommended> getRecommendProductTest2(Member member){
+
+        List<ProductByRecommended> tags = productRepository.findRecommendProduct(member.getUsername());
+        Set<FavoriteTag> memberTags = member.getTags();
+
+        //태그명에 따라 가지고 있는 product_id
+        // : 멤버 태그명에 따라 해당 상품에 점수를 부여해야 하기 때문에
+        Map<String, List<Long>> productIdListByTagName = new HashMap<>();
+
+        //상품 id 중복을 없애기 위함
+        //맴버의 태그명과 여러개가 겹쳐서 여러개의 추천상품이 반환되었을것 그 중복을 없애야 한다.
+        Map<Long, ProductByRecommended> recommendProductByProductId = new HashMap<>();
+
+        //같은 태그명을 가지고 있지만 제각각 상품을 가르키는 productId는 다를 것이다. 그래서 태그명 별로 어떤 상품들을 가르키는지 모아보자
+        for (ProductByRecommended tag : tags) {
+            if(!productIdListByTagName.containsKey(tag.getTagName()))
+                productIdListByTagName.put(tag.getTagName(), new ArrayList<>());
+            productIdListByTagName.get(tag.getTagName()).add(tag.getProductId());
+        }
+
+        //마찬가지로 같은 상품을 가르키고 있지만 태그명은 제각각일 것이다. 우리가 뽑아내길 원하는 것은 추천상품이다. 즉 같은 상품이 중복되면 안된다.
+        //그래서 상품Id에 대한 중복을 없애서 하나에 몰아넣는 코드이다.
+        for (ProductByRecommended response : tags) {
+            if(recommendProductByProductId.containsKey(response.getProductId()))
+                continue;
+            recommendProductByProductId.put(response.getProductId(), response);
+        }
+
+        //실제로직! member 선호태그에는 점수가 있을 것이다.
+        //그러니까  우리가 반환하려고 하는 추천상품이 점수가 몇점인지 갱신하는 코드이다.
+        for (FavoriteTag memberTag : memberTags) {
+            if(productIdListByTagName.containsKey(memberTag.getName())){
+                List<Long> productIdList = productIdListByTagName.get(memberTag.getName());
+                for (Long id : productIdList) {
+                    recommendProductByProductId.get(id).plusTotalScore(memberTag.getScore());
+                }
+            }
+        }
+
+        List<ProductByRecommended> recommendProductList = new ArrayList<>(recommendProductByProductId.values()).stream()
+                .sorted(Comparator.comparing(ProductByRecommended::getTotalScore).reversed())
+                .toList();
+        return recommendProductList;
     }
 
 }

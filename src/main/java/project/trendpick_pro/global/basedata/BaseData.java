@@ -78,7 +78,7 @@ public class BaseData {
 //
                 Member member1 = memberRepository.save(Member.builder().username("member1").email("jjj@naver.com").phoneNumber("01099999999").role(RoleType.MEMBER).password("111111").build());
                 FavoriteTag favorTag1 = new FavoriteTag("시티보이룩");
-                favorTag1.increaseScore(TagType.ORDER);//주문해서 10점 누적.
+                favorTag1.increaseScore(TagType.SHOW);//상품클릭해서 1점 누적.
                 member1.addTag(favorTag1);
 
                 FavoriteTag favorTag2 = new FavoriteTag("빈티지룩");
@@ -86,7 +86,7 @@ public class BaseData {
                 member1.addTag(favorTag2);
 
                 FavoriteTag favorTag3 = new FavoriteTag("로멘틱룩");
-                favorTag3.increaseScore(TagType.ORDER);//상품 클릭해서 1점 누적.
+                favorTag3.increaseScore(TagType.ORDER);//상품 주문해서 10점 누적.
                 member1.addTag(favorTag3);
 
 //                상품1은 시티보이룩을 가지고 있다
@@ -98,16 +98,26 @@ public class BaseData {
                 Set<Tag> tags2 = new LinkedHashSet<>();
                 Product product2 = Product.builder().name("상품2").tags(tags2).description("설명2").price(500).stock(100).build();
                 product2.addTag(new Tag("시티보이룩"));
-                product2.addTag(new Tag("빈지티룩"));
+                product2.addTag(new Tag("빈티지룩"));
 
                 Set<Tag> tags3 = new LinkedHashSet<>();
                 Product product3 = Product.builder().name("상품3").tags(tags3).description("설명3").price(500).stock(100).build();
                 product3.addTag(new Tag("시티보이룩"));
-                product3.addTag(new Tag("빈지티룩"));
+                product3.addTag(new Tag("빈티지룩"));
                 product3.addTag(new Tag("로멘틱룩"));
                 productRepository.save(product1);
                 productRepository.save(product2);
                 productRepository.save(product3);
+
+                Set<Tag> tags4 = new LinkedHashSet<>();
+                Product product4 = Product.builder().name("상품4").tags(tags4).description("설명4").price(500).stock(100).build();
+                product4.addTag(new Tag("원숭이룩"));
+                productRepository.save(product1);
+                productRepository.save(product2);
+                productRepository.save(product3);
+                productRepository.save(product4);
+                //member1의 추천상품을 가져오면 로멘틱룩, 빈티지룩, 시티보이룩 순서대로 가져와야 한다.
+                //상품 4는 member의 선호태그를 가지고 있지 않으므로 추천되지 않아야 한다.
 
 //                상품3은 시티보이룩, 빈티지룩, 로멘틱룩을 모두 가지고 있다.
 //                Set<Tag> tags3 = new LinkedHashSet<>();
