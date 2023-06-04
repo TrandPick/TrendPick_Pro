@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Data
-public class ReviewCreateRequest {
+public class ReviewSaveRequest {
     @NotBlank(message = "제목을 입력해주세요")
     private String title;
     @NotBlank(message = "내용을 입력해주세요")
