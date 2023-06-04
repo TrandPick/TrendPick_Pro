@@ -61,7 +61,7 @@ public class MemberService {
         for (String tag : joinForm.tags()) {
 //            Tag findTag = tagRepository.findByName(tag).orElseThrow();
 //            favoriteTag.connectMember(member);
-            FavoriteTag favoriteTag = new FavoriteTag(member, tag);
+            FavoriteTag favoriteTag = new FavoriteTag(tag);
             favoriteTags.add(favoriteTag);
         }
         member.changeTags(favoriteTags);
@@ -75,9 +75,10 @@ public class MemberService {
 
         Set<FavoriteTag> tags = new LinkedHashSet<>();
         for (String tag : tagRequest.getTags()) {
+            //기존에 선택했던 태그들에 대한 가중치를 마이너스 (만약 0점 이하로 떨어지면 삭제)
 //            Tag tag = tagRepository.findByName(s).orElseThrow();
 //            favoriteTag.connectMember(member);
-            FavoriteTag favoriteTag = new FavoriteTag(member, tag);
+            FavoriteTag favoriteTag = new FavoriteTag(tag);
             tags.add(favoriteTag);
         }
         member.changeTags(tags);

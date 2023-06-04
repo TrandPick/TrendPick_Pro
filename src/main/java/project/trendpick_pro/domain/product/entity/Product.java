@@ -123,4 +123,9 @@ public class Product extends BaseTimeEntity {
                 ", stock=" + stock +
                 '}';
     }
+
+    public void addTag(Tag tag){
+        getTags().add(tag);
+        tag.connectProduct(this);
+    }
 }

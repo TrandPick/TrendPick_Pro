@@ -39,9 +39,9 @@ public class FavoriteTagService {
                 }
             }
             if(!hasTag){ //태그를 가지고 있지 않다면 추가해준다.
-                FavoriteTag favoriteTag = new FavoriteTag(member, tagByProduct.getName());
+                FavoriteTag favoriteTag = new FavoriteTag(tagByProduct.getName());
                 favoriteTag.increaseScore(type);
-                tags.add(favoriteTag);
+                member.addTag(favoriteTag);
             }
         }
     }

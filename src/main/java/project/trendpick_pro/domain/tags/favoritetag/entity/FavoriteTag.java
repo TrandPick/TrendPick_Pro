@@ -23,8 +23,12 @@ public class FavoriteTag {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public FavoriteTag(Member member, String name) {
+    public FavoriteTag(String name) {
         this.name = name;
+    }
+
+    //양방향 메서드
+    public void connectMember(Member member){
         this.member = member;
     }
 

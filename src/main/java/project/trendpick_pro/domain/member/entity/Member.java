@@ -59,5 +59,13 @@ public class Member {
 
     public void changeTags(Set<FavoriteTag> tags) {
         this.tags = tags;
+        for(FavoriteTag tag : tags)
+            tag.connectMember(this);
+    }
+
+    //양방향 메서드
+    public void addTag(FavoriteTag tag){
+        getTags().add(tag);
+        tag.connectMember(this);
     }
 }

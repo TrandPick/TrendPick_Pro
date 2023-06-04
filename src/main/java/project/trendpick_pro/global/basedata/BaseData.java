@@ -10,11 +10,19 @@ import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
+import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
+import project.trendpick_pro.domain.tags.tag.entity.Tag;
+import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Configuration
 @Profile({"dev", "test"})
@@ -45,9 +53,10 @@ public class BaseData {
             @Override
             @Transactional
             public void run(String... args) {
-                for (String tag : tags) {
-                    tagService.save(tag);
-                }
+                //원활한 테스트를 위해 잠깐 주석처리
+//                for (String tag : tags) {
+//                    tagService.save(tag);
+//                }
 
                 for (String mainCategory : mainCategories) {
                     mainCategoryService.save(mainCategory);
@@ -62,49 +71,53 @@ public class BaseData {
                     brandService.save(brand);
                 }
 
-                //member1은 태그1, 태그2, 태그3 을 각각 10점 5점 1점 가지고 있다
-                //상품1은 태그1을 가지고 있다
-                //상품2는 태그1, 태그2를 가지고 있다
-                //상품3은 태그1, 태그2 태그3 모두 가지고 있다.
+//                member1은 시티보이룩(10점), 빈티지룩(5점), 로멘틱룩(1점)을 선호 태그로 가지고 있다.
+//                상품1은 시티보이룩을 가지고 있다
+//                상품2는 시티보이룩, 빈티지룩을 가지고 있다
+//                상품3은 시티보이룩, 빈티지룩, 로멘틱룩을 모두 가지고 있다.
 //
-//                Member member1 = memberRepository.save(Member.builder().username("member1").build());
-//                Product product1 = Product.builder().name("상품1").build();
-//                Product product2 = Product.builder().name("상품2").build();
-//                Product product3 = Product.builder().name("상품3").build();
-//                Product product4 = Product.builder().name("상품4").build();
-//                productRepository.save(product1);
-//                productRepository.save(product2);
-//                productRepository.save(product3);
-//                productRepository.save(product4);
+                Member member1 = memberRepository.save(Member.builder().username("member1").email("jjj@naver.com").phoneNumber("01099999999").role(RoleType.MEMBER).password("111111").build());
+                FavoriteTag favorTag1 = new FavoriteTag("시티보이룩");
+                favorTag1.increaseScore(TagType.ORDER);//주문해서 10점 누적.
+                member1.addTag(favorTag1);
+
+                FavoriteTag favorTag2 = new FavoriteTag("빈티지룩");
+                favorTag2.increaseScore(TagType.CART);//장바구니 담아서 5점 누적.
+                member1.addTag(favorTag2);
+
+                FavoriteTag favorTag3 = new FavoriteTag("로멘틱룩");
+                favorTag3.increaseScore(TagType.ORDER);//상품 클릭해서 1점 누적.
+                member1.addTag(favorTag3);
+
+//                상품1은 시티보이룩을 가지고 있다
+                Set<Tag> tags1 = new LinkedHashSet<>();
+                Product product1 = Product.builder().name("상품1").tags(tags1).description("설명1").price(500).stock(100).build();
+                product1.addTag(new Tag("시티보이룩"));
+
+//                상품2는 시티보이룩, 빈티지룩을 가지고 있다
+                Set<Tag> tags2 = new LinkedHashSet<>();
+                Product product2 = Product.builder().name("상품2").tags(tags2).description("설명2").price(500).stock(100).build();
+                product2.addTag(new Tag("시티보이룩"));
+                product2.addTag(new Tag("빈지티룩"));
+
+                Set<Tag> tags3 = new LinkedHashSet<>();
+                Product product3 = Product.builder().name("상품3").tags(tags3).description("설명3").price(500).stock(100).build();
+                product3.addTag(new Tag("시티보이룩"));
+                product3.addTag(new Tag("빈지티룩"));
+                product3.addTag(new Tag("로멘틱룩"));
+                productRepository.save(product1);
+                productRepository.save(product2);
+                productRepository.save(product3);
+
+//                상품3은 시티보이룩, 빈티지룩, 로멘틱룩을 모두 가지고 있다.
+//                Set<Tag> tags3 = new LinkedHashSet<>();
+//                tags3.add(new Tag("시티보이룩"));
+//                tags3.add(new Tag("빈티지룩"));
+//                tags3.add(new Tag("로멘틱룩"));
+//                Product product3 = Product.builder().name("상품3").tags(tags3).description("설명3").price(500).stock(100).build();
 //
-//
-//                Tag tag1 = new Tag("태그1", member1);
-//                tag1.changeScore(10);
-//                tagRepository.save(tag1);
-//                Tag tag2 = new Tag("태그2", member1);
-//                tag2.changeScore(5);
-//                tagRepository.save(tag2);
-//                Tag tag3 = new Tag("태그3", member1);
-//                tag3.changeScore(1);
-//                tagRepository.save(tag3);
-//
-//                //상품1은 태그1을 가지고 있다
-//                Tag tag1ByProduct1 = new Tag("태그1", product1);
-//                tagRepository.save(tag1ByProduct1);
-//
-//                //상품2는 태그1, 태그2를 가지고 있다
-//                Tag tag2ByProduct1 = new Tag("태그1", product2);
-//                Tag tag2ByProduct2 = new Tag("태그2", product2);
-//                tagRepository.save(tag2ByProduct1);
-//                tagRepository.save(tag2ByProduct2);
-//
-//                //상품3은 태그1, 태그2 태그3 모두 가지고 있다.
-//                Tag tag3ByProduct1 = new Tag("태그1", product3);
-//                Tag tag3ByProduct2 = new Tag("태그2", product3);
-//                Tag tag3ByProduct3 = new Tag("태그3", product3);
-//                tagRepository.save(tag3ByProduct1);
-//                tagRepository.save(tag3ByProduct2);
-//                tagRepository.save(tag3ByProduct3);
+
+//                T
             }
         };
     }

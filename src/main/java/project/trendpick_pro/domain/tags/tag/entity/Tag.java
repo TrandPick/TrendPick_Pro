@@ -17,12 +17,8 @@ public class Tag {
     public Tag(String name) {
         this.name = name;
     }
-    public Tag(Product product, String name) {
-        this.name = name;
-        this.product = product;
-    }
 
-    public void connectProduct(Product product) {
+    public void connectProduct(Product product){
         this.product = product;
     }
 
