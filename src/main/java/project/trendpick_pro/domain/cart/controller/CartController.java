@@ -1,18 +1,18 @@
 package project.trendpick_pro.domain.cart.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import project.trendpick_pro.domain.cart.entity.Cart;
+import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.orders.entity.dto.request.OrderSaveRequest;
 
 import java.util.List;
 
@@ -33,11 +33,9 @@ public class CartController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/add")
-    public String addItemToCart(@RequestParam("productOptionId") Long productOptionId,
-                                @RequestParam("count") int count) {
-        Member member = rq.getMember();
-        cartService.addItemToCart(member, productOptionId, count);
+    @GetMapping("/add/{productId}")
+    public String addItemToCart(@PathVariable("productId") Long productId, @Valid CartItemRequest cartItemRequests) {
+        cartService.addItemToCart(rq.getMember(),productId,cartItemRequests);
        // 쇼핑을 계속 하시겠습니까? 띄우고 yes이면 main no면 cart로
         return "redirect:/trendprick/list";
     }
