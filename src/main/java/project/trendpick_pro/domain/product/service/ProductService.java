@@ -165,45 +165,46 @@ public class ProductService {
         return member;
     }
 
-    public List<Product> getRecommendProduct(Member member){
-//
-//        List<Product> tags = productRepository.findProductByRecommended(member.getUsername());
-//        List<FavoriteTag> memberTags = member.getTags();
-//
-//
-//        //태그명에 따라 가지고 있는 product_id
-//        // : 멤버 태그명에 따라 해당 상품에 점수를 부여해야 하기 때문에
-//        Map<String, List<Long>> productIdListByTagName = new HashMap<>();
-//
-//        //상품 id 중복을 없애기 위함
-//        //맴버의 태그명과 여러개가 겹쳐서 여러개의 추천상품이 반환되었을것 그 중복을 없애야 한다.
-//        Map<Long, ProductByRecommended> recommendProductByProductId = new HashMap<>();
-//
-//        for (FavoriteTag tag : tags) {
-//            if(!productIdListByTagName.containsKey(tag.getName()))
-//                productIdListByTagName.put(tag.getName(), new ArrayList<>());
-//            productIdListByTagName.get(tag.getName()).add(tag.get);
-//        }
-//
-//        for (ProductByRecommended response : tags) {
-//            if(recommendProductByProductId.containsKey(response.getProductId()))
-//                continue;
-//            recommendProductByProductId.put(response.getProductId(), response);
-//        }
-//
-//        for (FavoriteTag memberTag : memberTags) {
-//            if(productIdListByTagName.containsKey(memberTag.getName())){
-//                List<Long> productIdList = productIdListByTagName.get(memberTag.getName());
-//                for (Long id : productIdList) {
-//                    recommendProductByProductId.get(id).plusTotalScore(memberTag.getScore());
-//                }
-//            }
-//        }
-//
-//        return new ArrayList<>(recommendProductByProductId.values()).stream()
-//                .sorted(Comparator.comparing(ProductByRecommended :: getTotalScore).reversed())
-//                .toList();
-        log.debug("member : {}", member);
-        return productRepository.findProductByRecommended(member.getUsername());
-    }
+//    public List<Product> getRecommendProduct(Member member){
+////
+////        List<Product> tags = productRepository.findProductByRecommended(member.getUsername());
+////        List<FavoriteTag> memberTags = member.getTags();
+////
+////
+////        //태그명에 따라 가지고 있는 product_id
+////        // : 멤버 태그명에 따라 해당 상품에 점수를 부여해야 하기 때문에
+////        Map<String, List<Long>> productIdListByTagName = new HashMap<>();
+////
+////        //상품 id 중복을 없애기 위함
+////        //맴버의 태그명과 여러개가 겹쳐서 여러개의 추천상품이 반환되었을것 그 중복을 없애야 한다.
+////        Map<Long, ProductByRecommended> recommendProductByProductId = new HashMap<>();
+////
+////        for (FavoriteTag tag : tags) {
+////            if(!productIdListByTagName.containsKey(tag.getName()))
+////                productIdListByTagName.put(tag.getName(), new ArrayList<>());
+////            productIdListByTagName.get(tag.getName()).add(tag.get);
+////        }
+////
+////        for (ProductByRecommended response : tags) {
+////            if(recommendProductByProductId.containsKey(response.getProductId()))
+////                continue;
+////            recommendProductByProductId.put(response.getProductId(), response);
+////        }
+////
+////        for (FavoriteTag memberTag : memberTags) {
+////            if(productIdListByTagName.containsKey(memberTag.getName())){
+////                List<Long> productIdList = productIdListByTagName.get(memberTag.getName());
+////                for (Long id : productIdList) {
+////                    recommendProductByProductId.get(id).plusTotalScore(memberTag.getScore());
+////                }
+////            }
+////        }
+////
+////        return new ArrayList<>(recommendProductByProductId.values()).stream()
+////                .sorted(Comparator.comparing(ProductByRecommended :: getTotalScore).reversed())
+////                .toList();
+//        log.debug("member : {}", member);
+//        return productRepository.findProductByRecommended(member.getUsername());
+//    }
+
 }

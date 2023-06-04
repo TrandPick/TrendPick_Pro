@@ -20,7 +20,7 @@ public class RecommendController {
 
     @GetMapping("/admin/caculate")
     public String caculate(){
-        recommendService.select();
+//        recommendService.select();
         return "redirect:/trendpick/products/list";
     }
 
