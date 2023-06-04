@@ -18,12 +18,13 @@ public class Tag {
     public Tag(String name) {
         this.name = name;
     }
-    public Tag(String name, Product product) {
+    public Tag(Product product, String name) {
         this.name = name;
         this.product = product;
     }
-    public Tag(String name, Member member) {
-        this.name = name;
+
+    public void connectProduct(Product product) {
+        this.product = product;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

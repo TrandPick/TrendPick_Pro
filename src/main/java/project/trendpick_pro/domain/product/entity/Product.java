@@ -15,7 +15,9 @@ import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveReques
 import project.trendpick_pro.domain.tag.entity.Tag;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -55,14 +57,14 @@ public class Product extends BaseTimeEntity {
     private int stock;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Tag> tags = new ArrayList<>();
+    private Set<Tag> tags = new LinkedHashSet<>();
 
     public long reviewCount = 0;
     public double rateAvg = 0;
 
     @Builder
     public Product(String name, MainCategory mainCategory, SubCategory subCategory, Brand brand,
-                   String description, CommonFile file, int price, int stock, List<Tag> tags) {
+                   String description, CommonFile file, int price, int stock, Set<Tag> tags) {
         this.name = name;
         this.mainCategory = mainCategory;
         this.subCategory = subCategory;
@@ -75,7 +77,7 @@ public class Product extends BaseTimeEntity {
     }
 
     public static Product of(ProductSaveRequest request, MainCategory mainCategory
-            , SubCategory subCategory, Brand brand,CommonFile file,List<Tag> tags) {
+            , SubCategory subCategory, Brand brand,CommonFile file,Set<Tag> tags) {
         return Product.builder()
                 .name(request.name())
                 .mainCategory(mainCategory)

@@ -58,7 +58,7 @@ public class ProductResponse {
                 .subFiles(subFiles(product.getFile().getChild()))
                 .price(product.getPrice())
                 .stock(product.getStock())
-                .tags(product.getTags())
+                .tags(new ArrayList<>(product.getTags()))
                 .build();
     }
 

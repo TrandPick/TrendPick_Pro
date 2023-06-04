@@ -70,9 +70,10 @@ public class ProductService {
             mainFile.connectFile(subFile);
         }
 
-        List<Tag> tags = new ArrayList<>();  // 상품에 포함시킬 태크 선택하여 저장
-        for (String tag : productSaveRequest.tags()) {
-            tags.add(tagRepository.findByName(tag).orElseThrow());
+        Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+        for (String tagName : productSaveRequest.tags()) {
+//            tags.add(tagRepository.findByName(tag).orElseThrow());
+            tags.add(new Tag(tagName));
         }
 
         MainCategory mainCategory = mainCategoryRepository.findByName(productSaveRequest.mainCategory());

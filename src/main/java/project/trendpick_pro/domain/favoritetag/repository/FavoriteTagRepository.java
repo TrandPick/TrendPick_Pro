@@ -1,7 +1,13 @@
 package project.trendpick_pro.domain.favoritetag.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import project.trendpick_pro.domain.favoritetag.entity.FavoriteTag;
+import project.trendpick_pro.domain.member.entity.Member;
+
+import java.util.List;
 
 public interface FavoriteTagRepository extends JpaRepository<FavoriteTag, Long> {
+    @Query("select t from FavoriteTag t where t.member = :member")
+    List<FavoriteTag> findAllByMember(Member member);
 }
