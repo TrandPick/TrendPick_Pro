@@ -1,9 +1,11 @@
 package project.trendpick_pro.domain.review.service;
 
+import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -15,6 +17,7 @@ import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.repository.ReviewImageRepository;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -41,8 +44,6 @@ public class ReviewService {
 
     public void delete(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
-
-        //review.getReviewImage().deleteImage(filePath);
         reviewRepository.delete(review);
     }
 
@@ -63,21 +64,34 @@ public class ReviewService {
         return ReviewResponse.of(review);
     }
 
-    public ReviewResponse update(Long reviewId, ReviewSaveRequest reviewSaveRequest) throws IOException {
+    public ReviewResponse update(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
-//        ReviewImage reviewImage = review.getReviewImage();
-//
-//        //메인 파일 이름을 아예 있던거 없애고 바꿔버리기!
-//        reviewImage.changeMainFile(filePath, createStoreFileName(mainFile.getOriginalFilename()), mainFile);
-//
-//        //서브 파일도 같은 방식으로
-//        //비어있는 경우도 생각.,,?
-//        //ReviewImage 엔티티에서 가능하니까 거기 메소드를 만들어보쟈
-//        //reviewImage.changeSubFile(filePath, subFiles); => List<String>으로 만들어 보내야함
-//        List<String> fileList = saveSubImages(filePath, subFiles);
-//        reviewImage.changeSubFile(filePath, fileList);
+
+        CommonFile mainFile = review.getFile();
+        List<CommonFile> subFiles = review.getFile().getChild();
+
+        if(requestMainFile!=null){
+            //  기존 이미지 삭제
+            FileUtils.delete(new File(mainFile.getFileName()));
+        }
+        // 이미지 업데이트
+        mainFile = fileTranslator.translateFile(requestMainFile);
+
+        if(requestSubFiles!=null ){
+            // 기존 이미지 삭제
+            for(CommonFile subFile:subFiles){
+                FileUtils.delete(new File(subFile.getFileName()));
+            }
+        }
+        // 이미지 업데이트
+        subFiles=fileTranslator.translateFileList(requestSubFiles);
+
+        for (CommonFile subFile : subFiles) {
+            mainFile.connectFile(subFile);
+        }
 
         review.update(reviewSaveRequest);
+
         return ReviewResponse.of(review);
     }
 }
