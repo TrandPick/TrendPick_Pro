@@ -1,8 +1,7 @@
-package project.trendpick_pro.domain.tag.entity;
+package project.trendpick_pro.domain.tags.tag.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 
 @Entity
@@ -18,12 +17,9 @@ public class Tag {
     public Tag(String name) {
         this.name = name;
     }
-    public Tag(String name, Product product) {
-        this.name = name;
+
+    public void connectProduct(Product product){
         this.product = product;
-    }
-    public Tag(String name, Member member) {
-        this.name = name;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

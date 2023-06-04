@@ -5,11 +5,6 @@ import lombok.*;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.ProductOption;
-import project.trendpick_pro.domain.tag.entity.Tag;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Getter

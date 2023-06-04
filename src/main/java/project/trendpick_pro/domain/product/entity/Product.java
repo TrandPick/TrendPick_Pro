@@ -12,10 +12,10 @@ import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -55,14 +55,14 @@ public class Product extends BaseTimeEntity {
     private int stock;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Tag> tags = new ArrayList<>();
+    private Set<Tag> tags = new LinkedHashSet<>();
 
     public long reviewCount = 0;
     public double rateAvg = 0;
 
     @Builder
     public Product(String name, MainCategory mainCategory, SubCategory subCategory, Brand brand,
-                   String description, CommonFile file, int price, int stock, List<Tag> tags) {
+                   String description, CommonFile file, int price, int stock, Set<Tag> tags) {
         this.name = name;
         this.mainCategory = mainCategory;
         this.subCategory = subCategory;
@@ -75,7 +75,7 @@ public class Product extends BaseTimeEntity {
     }
 
     public static Product of(ProductSaveRequest request, MainCategory mainCategory
-            , SubCategory subCategory, Brand brand,CommonFile file,List<Tag> tags) {
+            , SubCategory subCategory, Brand brand,CommonFile file) {
         return Product.builder()
                 .name(request.name())
                 .mainCategory(mainCategory)
@@ -85,7 +85,6 @@ public class Product extends BaseTimeEntity {
                 .file(file)
                 .price(request.price())
                 .stock(request.stock())
-                .tags(tags)
                 .build();
     }
 
@@ -108,11 +107,12 @@ public class Product extends BaseTimeEntity {
         this.rateAvg = Math.round(total / reviewCount * 10) / 10.0;
     }
 
-    public void update(ProductSaveRequest request) {
-        this.name=request.name();
-        this.description=request.description();
-        this.price=request.price();
-        this.stock=request.stock();
+    public void update(ProductSaveRequest request, CommonFile file) {
+        this.name = request.name();
+        this.description = request.description();
+        this.price = request.price();
+        this.stock = request.stock();
+        this.file = file;
     }
 
     @Override
@@ -122,5 +122,10 @@ public class Product extends BaseTimeEntity {
                 ", price=" + price +
                 ", stock=" + stock +
                 '}';
+    }
+
+    public void addTag(Tag tag){
+        getTags().add(tag);
+        tag.connectProduct(this);
     }
 }

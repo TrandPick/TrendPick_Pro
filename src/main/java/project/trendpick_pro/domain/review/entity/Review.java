@@ -1,15 +1,19 @@
 package project.trendpick_pro.domain.review.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -57,8 +61,11 @@ public class Review extends BaseTimeEntity {
                 .build();
     }
 
-    public void update(ReviewSaveRequest reviewSaveRequest) {
-
+    public void update(ReviewSaveRequest reviewSaveRequest, CommonFile file) {
+        this.title = reviewSaveRequest.getTitle();
+        this.content = reviewSaveRequest.getContent();
+        this.file = file;
+        this.rating = reviewSaveRequest.getRating();
     }
 
 

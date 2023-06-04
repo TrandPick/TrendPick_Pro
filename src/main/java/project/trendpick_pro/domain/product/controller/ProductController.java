@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.product.controller;
 
+import io.swagger.v3.core.util.Json;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,26 +8,26 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.brand.service.BrandService;
-import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
-import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
-import project.trendpick_pro.domain.tag.service.TagService;
+import project.trendpick_pro.domain.tags.tag.service.TagService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -41,6 +42,7 @@ public class ProductController {
     private final SubCategoryService subCategoryService;
     private final BrandService brandService;
     private final RecommendService recommendService;
+    private final MemberRepository memberRepository;
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("/register")

@@ -6,21 +6,19 @@ import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
-import project.trendpick_pro.domain.cart.entity.dto.request.CartRequest;
 import project.trendpick_pro.domain.cart.repository.CartItemRepository;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
-import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.ProductOption;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.tag.entity.Tag;
-import project.trendpick_pro.domain.tag.entity.type.TagType;
-import project.trendpick_pro.domain.tag.service.TagService;
+import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
+import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
+import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.tag.service.TagService;
 
 import java.util.List;
 
@@ -36,6 +34,7 @@ public class CartService {
     private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
     private final TagService tagService;
+    private final FavoriteTagService favoriteTagService;
 
     public List<Cart> findByCartMember(Member member){
         return cartRepository.findByCartMember(member);
@@ -54,7 +53,7 @@ public class CartService {
         }
         CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
 
-        tagService.updateTag(member, product, TagType.CART); //장바구니에 넣었으니 해당 상품이 가진 태그점수 올리기
+        favoriteTagService.updateTag(member, product, TagType.CART); //장바구니에 넣었으니 해당 상품이 가진 태그점수 올리기
 
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가

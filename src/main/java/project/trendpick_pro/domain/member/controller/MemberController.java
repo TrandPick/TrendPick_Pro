@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
-import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
 import project.trendpick_pro.domain.member.service.MemberService;
-import project.trendpick_pro.domain.tag.service.TagService;
+import project.trendpick_pro.domain.tags.tag.service.TagService;
 
 @Slf4j
 @Controller

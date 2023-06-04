@@ -14,11 +14,14 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
+import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.entity.Recommend;
 import project.trendpick_pro.domain.recommend.repository.RecommendRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -43,9 +46,7 @@ public class RecommendService {
 
         recommendRepository.deleteAllByMemberId(member.getId());
 
-        //추천상품 ID값을 가지고 있는 ProductByRecommended 가져오기 (전달용)
         List<Product> products = productService.getRecommendProduct(member);
-
 
         for (Product product : products) {
             Recommend recommend = Recommend.of(product);
