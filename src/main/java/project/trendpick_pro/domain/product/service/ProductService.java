@@ -21,6 +21,7 @@ import project.trendpick_pro.domain.category.repository.SubCategoryRepository;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
+import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -167,7 +168,7 @@ public class ProductService {
         return member;
     }
 
-    public List<ProductByRecommended> getRecommendProduct(Member member){
+    public List<Product> getRecommendProduct(Member member){
 
         List<ProductByRecommended> tags = productRepository.findRecommendProduct(member.getUsername());
         Set<FavoriteTag> memberTags = member.getTags();
@@ -207,9 +208,19 @@ public class ProductService {
             }
         }
 
-        return new ArrayList<>(recommendProductByProductId.values()).stream()
-                .sorted(Comparator.comparing(ProductByRecommended :: getTotalScore).reversed())
+        List<ProductByRecommended> recommendProductList = new ArrayList<>(recommendProductByProductId.values()).stream()
+                .sorted(Comparator.comparing(ProductByRecommended::getTotalScore).reversed())
                 .toList();
+
+        //Product 변환해서 리턴
+        List<Product> products = new ArrayList<>();
+        for(ProductByRecommended recommendProduct : recommendProductList){
+            products.add(productRepository.findById(recommendProduct.getProductId()).orElseThrow(
+                    () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
+            ));
+        }
+
+        return products;
     }
 
 }
