@@ -64,33 +64,33 @@ public class ReviewService {
         return ReviewResponse.of(review);
     }
 
-    public ReviewResponse update(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public ReviewResponse update(Long reviewId, ReviewSaveRequest reviewSaveRequest) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
         CommonFile mainFile = review.getFile();
         List<CommonFile> subFiles = review.getFile().getChild();
 
-        if(requestMainFile!=null){
+        if(reviewSaveRequest.getMainFile() != null){
             //  기존 이미지 삭제
             FileUtils.delete(new File(mainFile.getFileName()));
         }
         // 이미지 업데이트
-        mainFile = fileTranslator.translateFile(requestMainFile);
+        mainFile = fileTranslator.translateFile(reviewSaveRequest.getMainFile());
 
-        if(requestSubFiles!=null ){
+        if(reviewSaveRequest.getSubFiles() != null){
             // 기존 이미지 삭제
-            for(CommonFile subFile:subFiles){
+            for(CommonFile subFile : subFiles){
                 FileUtils.delete(new File(subFile.getFileName()));
             }
         }
         // 이미지 업데이트
-        subFiles=fileTranslator.translateFileList(requestSubFiles);
+        subFiles = fileTranslator.translateFileList(reviewSaveRequest.getSubFiles());
 
         for (CommonFile subFile : subFiles) {
             mainFile.connectFile(subFile);
         }
 
-        review.update(reviewSaveRequest);
+        review.update(reviewSaveRequest, mainFile);
 
         return ReviewResponse.of(review);
     }

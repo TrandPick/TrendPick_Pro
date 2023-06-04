@@ -75,7 +75,6 @@ public class ProductService {
 
         Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
         for (String tagName : productSaveRequest.tags()) {
-//            tags.add(tagRepository.findByName(tag).orElseThrow());
             tags.add(new Tag(tagName));
         }
 
@@ -83,7 +82,9 @@ public class ProductService {
         SubCategory subCategory = subCategoryRepository.findByName(productSaveRequest.subCategory());
         Brand brand = brandRepository.findByName(productSaveRequest.brand());
 
-        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile, tags);
+        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile);
+        for(Tag tag : tags)
+            product.addTag(tag);
 
         productRepository.save(product);
         return ProductResponse.of(product);
@@ -101,23 +102,25 @@ public class ProductService {
         if(requestMainFile!=null){
             //  기존 이미지 삭제
             FileUtils.delete(new File(mainFile.getFileName()));
+            // 이미지 업데이트
         }
-        // 이미지 업데이트
+
         mainFile = fileTranslator.translateFile(requestMainFile);
 
-        if(requestSubFiles!=null ){
+        if(requestSubFiles!=null){
             // 기존 이미지 삭제
             for(CommonFile subFile:subFiles){
                 FileUtils.delete(new File(subFile.getFileName()));
             }
         }
         // 이미지 업데이트
-        subFiles=fileTranslator.translateFileList(requestSubFiles);
+        subFiles = fileTranslator.translateFileList(requestSubFiles);
 
         for (CommonFile subFile : subFiles) {
             mainFile.connectFile(subFile);
         }
-        product.update(productSaveRequest);
+
+        product.update(productSaveRequest, mainFile);
 
         return ProductResponse.of(product);
     }
@@ -131,8 +134,8 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public ProductResponse show(Long product_id) {
-        Product product = productRepository.findById(product_id).orElseThrow(null);// 임시. 나중에 테스트
+    public ProductResponse show(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
 
         Member member = CheckMember();
         favoriteTagService.updateTag(member, product, TagType.SHOW);

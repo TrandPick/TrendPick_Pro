@@ -75,7 +75,7 @@ public class Product extends BaseTimeEntity {
     }
 
     public static Product of(ProductSaveRequest request, MainCategory mainCategory
-            , SubCategory subCategory, Brand brand,CommonFile file,Set<Tag> tags) {
+            , SubCategory subCategory, Brand brand,CommonFile file) {
         return Product.builder()
                 .name(request.name())
                 .mainCategory(mainCategory)
@@ -85,7 +85,6 @@ public class Product extends BaseTimeEntity {
                 .file(file)
                 .price(request.price())
                 .stock(request.stock())
-                .tags(tags)
                 .build();
     }
 
@@ -108,11 +107,12 @@ public class Product extends BaseTimeEntity {
         this.rateAvg = Math.round(total / reviewCount * 10) / 10.0;
     }
 
-    public void update(ProductSaveRequest request) {
-        this.name=request.name();
-        this.description=request.description();
-        this.price=request.price();
-        this.stock=request.stock();
+    public void update(ProductSaveRequest request, CommonFile file) {
+        this.name = request.name();
+        this.description = request.description();
+        this.price = request.price();
+        this.stock = request.stock();
+        this.file = file;
     }
 
     @Override

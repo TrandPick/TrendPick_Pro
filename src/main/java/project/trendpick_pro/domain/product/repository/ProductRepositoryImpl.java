@@ -1,6 +1,5 @@
 package project.trendpick_pro.domain.product.repository;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -10,24 +9,18 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
-import project.trendpick_pro.domain.tags.favoritetag.entity.QFavoriteTag;
-import project.trendpick_pro.domain.tags.tag.entity.QTag;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import static project.trendpick_pro.domain.brand.entity.QBrand.*;
 import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
-import static project.trendpick_pro.domain.member.entity.QMember.*;
 import static project.trendpick_pro.domain.product.entity.QProduct.*;
 import static project.trendpick_pro.domain.tags.favoritetag.entity.QFavoriteTag.favoriteTag;
 import static project.trendpick_pro.domain.tags.tag.entity.QTag.tag;
@@ -100,34 +93,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .fetch();
 
         return list;
-    }
-
-    @Override
-    public List<Product> findProductByRecommended(String username) {
-
-        List<Tuple> sortProducts = queryFactory
-                .select(product.id, favoriteTag.score.sum())
-                .from(favoriteTag, product)
-                .leftJoin(favoriteTag.member, member)
-                .where(favoriteTag.name.in(
-                                JPAExpressions.select(tag.name)
-                                        .from(tag)
-                                        .where(tag.product.eq(product)
-                                        )),
-                        member.username.eq(username))
-                .groupBy(product.id)
-                .orderBy(favoriteTag.score.sum().desc())
-                .fetch();
-
-        return sortProducts.stream()
-                .sorted(Comparator.comparing(
-                        tuple -> Optional.ofNullable(tuple.get(1, Long.class)).orElse(Long.MIN_VALUE),
-                        Comparator.nullsLast(Comparator.naturalOrder())))
-                .map(tuple -> queryFactory
-                        .selectFrom(product)
-                        .where(product.id.eq(tuple.get(0, Long.class)))
-                        .fetchOne())
-                .toList();
     }
 
     private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {

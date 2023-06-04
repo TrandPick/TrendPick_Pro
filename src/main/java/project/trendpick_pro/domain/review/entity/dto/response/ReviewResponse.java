@@ -49,9 +49,18 @@ public class ReviewResponse {
                 .productId(review.getProduct().getId())
                 .title(review.getTitle())
                 .content(review.getContent())
-                .mainFile(review.getReviewImage().getMainFileName())
-                .subFiles(review.getReviewImage().getSubFileNames())
+                .mainFile(review.getFile().getFileName())
+                .subFiles(subFiles(review.getFile().getChild()))
                 .rating(review.getRating())
                 .build();
+    }
+
+    private static List<String> subFiles(List<CommonFile> subFiles) {
+        List<String> tmpList = new ArrayList<>();
+
+        for (CommonFile subFile : subFiles) {
+            tmpList.add(subFile.getFileName());
+        }
+        return tmpList;
     }
 }
