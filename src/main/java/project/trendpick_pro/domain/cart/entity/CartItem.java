@@ -3,11 +3,6 @@ package project.trendpick_pro.domain.cart.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import project.trendpick_pro.domain.product.entity.ProductOption;
-import project.trendpick_pro.domain.tag.entity.Tag;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Getter

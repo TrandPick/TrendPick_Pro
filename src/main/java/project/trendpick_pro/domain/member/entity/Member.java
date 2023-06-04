@@ -2,12 +2,9 @@ package project.trendpick_pro.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import project.trendpick_pro.domain.favoritetag.entity.FavoriteTag;
-import java.util.ArrayList;
+import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
+
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity

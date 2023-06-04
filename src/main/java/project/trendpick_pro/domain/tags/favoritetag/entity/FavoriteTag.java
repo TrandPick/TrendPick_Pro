@@ -1,12 +1,11 @@
-package project.trendpick_pro.domain.favoritetag.entity;
+package project.trendpick_pro.domain.tags.favoritetag.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.tag.entity.Tag;
-import project.trendpick_pro.domain.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 
 @Entity
 @Getter
@@ -46,4 +45,5 @@ public class FavoriteTag {
             default -> score -= 1;
         }
     }
+
 }

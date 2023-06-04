@@ -6,15 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
+import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
-import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.product.entity.ProductOption;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
-import project.trendpick_pro.domain.tag.entity.Tag;
-import project.trendpick_pro.domain.tag.entity.type.TagType;
-import project.trendpick_pro.domain.tag.service.TagService;
+import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 
 import java.util.List;
 
@@ -27,7 +24,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final MemberRepository memberRepository;
     private final ProductOptionRepository productOptionRepository;
-    private final TagService tagService;
+    private final FavoriteTagService favoriteTagService;
 
     public List<Cart> findByCartMember(Member member){
         return cartRepository.findByCartMember(member);
@@ -44,7 +41,7 @@ public class CartService {
         ProductOption productOption = getProductOptionById(productOptionId);
         CartItem cartItem = cart.findCartItemByProductOption(productOption);
 
-        tagService.updateTag(member, productOption.getProduct(), TagType.CART); //장바구니에 넣었으니 해당 상품이 가진 태그점수 올리기
+        favoriteTagService.updateTag(member, productOption.getProduct(), TagType.CART); //장바구니에 넣었으니 해당 상품이 가진 태그점수 올리기
 
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가

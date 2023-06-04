@@ -46,7 +46,6 @@ public class RecommendService {
         //추천상품 ID값을 가지고 있는 ProductByRecommended 가져오기 (전달용)
         List<Product> products = productService.getRecommendProduct(member);
 
-
         for (Product product : products) {
             Recommend recommend = Recommend.of(product);
             recommend.connectProduct(product);

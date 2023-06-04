@@ -1,14 +1,14 @@
-package project.trendpick_pro.domain.tag.service;
+package project.trendpick_pro.domain.tags.favoritetag.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.domain.favoritetag.entity.FavoriteTag;
+import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
+import project.trendpick_pro.domain.tags.favoritetag.repository.FavoriteTagRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.tag.entity.Tag;
-import project.trendpick_pro.domain.tag.entity.type.TagType;
-import project.trendpick_pro.domain.tag.repository.TagRepository;
+import project.trendpick_pro.domain.tags.tag.entity.Tag;
+import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 
 import java.util.List;
 import java.util.Set;
@@ -16,20 +16,12 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TagService {
+public class FavoriteTagService {
+    private final FavoriteTagRepository favoriteTagRepository;
 
-    private final TagRepository tagRepository;
-
-    public void save(String name) {
-        tagRepository.save(new Tag(name));
-    }
-
-    public void save(String name, Product product) {
-        tagRepository.save(new Tag(product, name));
-    }
-
-    public List<Tag> getAllTags() {
-        return tagRepository.findAll();
+    public Set<FavoriteTag> getAllTags(Member member) {
+        List<FavoriteTag> list = favoriteTagRepository.findAll();
+        return Set.copyOf(list);
     }
 
     @Transactional

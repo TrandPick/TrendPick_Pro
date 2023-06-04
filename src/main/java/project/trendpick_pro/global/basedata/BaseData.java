@@ -12,9 +12,8 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.tag.service.TagService;
+import project.trendpick_pro.domain.tags.tag.service.TagService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Configuration

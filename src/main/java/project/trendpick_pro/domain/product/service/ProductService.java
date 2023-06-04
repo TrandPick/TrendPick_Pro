@@ -20,6 +20,7 @@ import project.trendpick_pro.domain.category.repository.MainCategoryRepository;
 import project.trendpick_pro.domain.category.repository.SubCategoryRepository;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.file.CommonFile;
+import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
@@ -31,10 +32,9 @@ import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.tag.entity.Tag;
-import project.trendpick_pro.domain.tag.entity.type.TagType;
-import project.trendpick_pro.domain.tag.repository.TagRepository;
-import project.trendpick_pro.domain.tag.service.TagService;
+import project.trendpick_pro.domain.tags.tag.entity.Tag;
+import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.tag.service.TagService;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class ProductService {
     private final SubCategoryRepository subCategoryRepository;
     private final BrandRepository brandRepository;
     private final FileTranslator fileTranslator;
-    private final TagRepository tagRepository;
+    private final FavoriteTagService favoriteTagService;
     private final TagService tagService;
 
     @Value("${file.dir}")
@@ -92,8 +92,8 @@ public class ProductService {
         CheckMember();
 
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
-        CommonFile mainFile=product.getFile();
-        List<CommonFile> subFiles=product.getFile().getChild();
+        CommonFile mainFile = product.getFile();
+        List<CommonFile> subFiles = product.getFile().getChild();
 
         if(requestMainFile!=null){
             //  기존 이미지 삭제
@@ -132,7 +132,7 @@ public class ProductService {
         Product product = productRepository.findById(product_id).orElseThrow(null);// 임시. 나중에 테스트
 
         Member member = CheckMember();
-        tagService.updateTag(member, product, TagType.SHOW);
+        favoriteTagService.updateTag(member, product, TagType.SHOW);
 
         return ProductResponse.of(product);
     }
@@ -151,6 +151,18 @@ public class ProductService {
                 }).toList();
 
         return new PageImpl<>(list, pageable, listResponses.getTotalElements());
+    }
+
+
+    private Member CheckMember() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
+        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+
+        if (member.getRole().equals(RoleType.MEMBER)) {
+            throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+        }
+        return member;
     }
 
     public List<Product> getRecommendProduct(Member member){
@@ -193,16 +205,5 @@ public class ProductService {
 //                .toList();
         log.debug("member : {}", member);
         return productRepository.findProductByRecommended(member.getUsername());
-    }
-
-    private Member CheckMember() {
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-
-        if (member.getRole().equals(RoleType.MEMBER)) {
-            throw new MemberNotMatchException("허용된 권한이 아닙니다.");
-        }
-        return member;
     }
 }

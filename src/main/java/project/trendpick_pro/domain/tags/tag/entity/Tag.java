@@ -1,8 +1,7 @@
-package project.trendpick_pro.domain.tag.entity;
+package project.trendpick_pro.domain.tags.tag.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 
 @Entity

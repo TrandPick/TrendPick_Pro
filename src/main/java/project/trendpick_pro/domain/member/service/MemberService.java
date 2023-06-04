@@ -5,16 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.domain.favoritetag.entity.FavoriteTag;
+import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
-import project.trendpick_pro.domain.tag.entity.Tag;
-import project.trendpick_pro.domain.tag.entity.dto.request.TagRequest;
-import project.trendpick_pro.domain.tag.repository.TagRepository;
+import project.trendpick_pro.domain.tags.tag.entity.dto.request.TagRequest;
+import project.trendpick_pro.domain.tags.tag.repository.TagRepository;
 
 import java.util.*;
 

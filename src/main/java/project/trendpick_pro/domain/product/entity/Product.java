@@ -12,11 +12,9 @@ import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
