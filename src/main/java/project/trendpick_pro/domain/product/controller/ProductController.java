@@ -107,34 +107,4 @@ public class ProductController {
             model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory, sortCode));
         } return "/trendpick/products/list";
     }
-
-    //테스트용
-    @GetMapping("/test1")
-    @ResponseBody
-    public List<ProductByRecommended> showTest1(){
-        Member member = memberRepository.findById(1L).orElseThrow();
-        return productService.getRecommendProductTest1(member);
-    }
-
-    @GetMapping("/test2")
-    @ResponseBody
-    public List<ProductByRecommended> showTest2(){
-        Member member = memberRepository.findById(1L).orElseThrow();
-        return productService.getRecommendProductTest2(member);
-    }
-
-    @GetMapping("/test3")
-    @ResponseBody
-    public Map<Long, String> showTest3(){
-        Member member = memberRepository.findById(1L).orElseThrow();
-        Map<Long, String> testMap = new LinkedHashMap<>();
-
-        List<Product> products = productService.getRecommendProduct(member);
-
-        for (Product product : products) {
-            testMap.put(product.getId(), product.getName()+" "+product.getPrice()+" "+product.getStock());
-        }
-
-        return testMap;
-    }
 }
