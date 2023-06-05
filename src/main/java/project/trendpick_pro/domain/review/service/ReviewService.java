@@ -40,6 +40,7 @@ public class ReviewService {
     }
 
 
+    @Transactional
     public void delete(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
         reviewRepository.delete(review);

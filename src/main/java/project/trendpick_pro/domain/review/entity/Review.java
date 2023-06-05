@@ -56,6 +56,7 @@ public class Review extends BaseTimeEntity {
                 .writer(member.getUsername())
                 .product(product)
                 .file(file)
+                .title(reviewCreateRequest.title())
                 .content(reviewCreateRequest.content())
                 .rating(reviewCreateRequest.rating())
                 .build();
