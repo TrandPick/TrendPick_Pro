@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 폼</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+<h1>주문서</h1>
+<h2>회원 정보</h2>
+<form th:action="@{/trendpick/orders/order}" th:object="${orderForm}" method="post">
+    <p>회원 이름: <input type="text" name="orderForm.memberInfo.name" th:value="*{memberInfo.name}" /></p>
+    <p>이메일: <input type="text" name="orderForm.memberInfo.email" th:value="*{memberInfo.email}" /></p>
+    <p>번호: <input type="text" name="orderForm.memberInfo.phone" th:value="*{memberInfo.phone}" /></p>
+    <p>주소: <input type="text" name="orderForm.memberInfo.address" th:value="*{memberInfo.address}" /></p>
+
+    <h2>주문 아이템 목록</h2>
+    <table>
+        <tr>
+            <th>상품명</th>
+            <th>수량</th>
+            <th>가격</th>
+        </tr>
+        <tr th:each="orderItem, itemStat : *{orderItems}">
+            <td><input type="text" name="orderForm.orderItems[__${itemStat.index}__].productName" th:value="${orderItem.productName}" /></td>
+            <td><input type="number" name="orderForm.orderItems[__${itemStat.index}__].count" th:value="${orderItem.count}" /></td>
+            <td><input type="number" name="orderForm.orderItems[__${itemStat.index}__].price" th:value="${orderItem.price}" /></td>
+        </tr>
+    </table>
+
+    <h2>결제 수단 선택</h2>
+    <select name="paymentMethod">
+        <option value="creditCard">신용카드</option>
+        <option value="bankTransfer">계좌이체</option>
+        <option value="cash">현금</option>
+        <option value="toss">토스페이먼트</option>
+    </select>
+
+    <button type="submit" value="주문하기"></button>
+</form>
+</body>
+</html>

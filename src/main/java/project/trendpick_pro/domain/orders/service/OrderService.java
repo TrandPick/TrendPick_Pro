@@ -38,11 +38,10 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
-    private final TagService tagService;
     private final FavoriteTagService favoriteTagService;
 
     @Transactional
-    public synchronized void order(Long userId, OrderSaveRequest... orderSaveRequests) {
+    public void order(Long userId, OrderSaveRequest... orderSaveRequests) {
 
         Member member = memberRepository.findById(userId).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 유저 입니다."));// 임시 exception 설정 나중에 할 수도 있고 아닐수도
 
