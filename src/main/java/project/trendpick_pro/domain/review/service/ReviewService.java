@@ -98,8 +98,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public Page<Review> showAll(Pageable pageable) {
-        return reviewRepository.findAll(pageable);
+    public Page<ReviewResponse> showAll(Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findAll(pageable);
+        return reviewPage.map(ReviewResponse::of);
     }
 
 //    public Page<ReviewResponse> showAll(int offset) {

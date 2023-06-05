@@ -11,8 +11,8 @@
         <div th:onclick="${'\'#' + reviewResponse.id + '\''}.submit()">
             <h2 th:text="${reviewResponse.title}"></h2>
             <p>작성자: <span th:text="${reviewResponse.writer}"></span></p>
-<!--            <p>상품명: <span th:text="${reviewResponse.productName}"></span></p>-->
-<!--            <p>메인 파일: <span th:text="${reviewResponse.mainFile}"></span></p>-->
+            <p>상품명: <span th:text="${reviewResponse.productName}"></span></p>
+            <p>메인 파일: <span th:text="${reviewResponse.mainFile}"></span></p>
             <p>내용: <span th:text="${reviewResponse.content}"></span></p>
             <p>평점: <span th:text="${reviewResponse.rating}"></span></p>
         </div>

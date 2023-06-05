@@ -2,6 +2,7 @@ package project.trendpick_pro.domain.review.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,8 +80,9 @@ public class ReviewController {
 //    }
 
     @GetMapping("/list")
-    public String showAllReview(@PageableDefault(size = 8)Pageable pageable, Model model){
-        model.addAttribute("reviewResponses", reviewService.showAll(pageable));
+    public String showAllReview(Pageable pageable, Model model){
+        Page<ReviewResponse> reviewResponses = reviewService.showAll(pageable);
+        model.addAttribute("reviewResponses", reviewResponses);
         return "/trendpick/review/list";
     }
 }
