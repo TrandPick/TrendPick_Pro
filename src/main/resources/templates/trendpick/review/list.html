@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>게시물 목록</title>
+</head>
+<body>
+
+리뷰리스트입니다
+<div th:each="reviewResponse : ${reviewResponses.content}">
+    <form th:action="@{/trendpick/review/{id}(id=${reviewResponse.id})}" th:method="post">
+        <div th:onclick="${'\'#' + reviewResponse.id + '\''}.submit()">
+            <h2 th:text="${reviewResponse.title}"></h2>
+            <p>작성자: <span th:text="${reviewResponse.writer}"></span></p>
+<!--            <p>상품명: <span th:text="${reviewResponse.productName}"></span></p>-->
+<!--            <p>메인 파일: <span th:text="${reviewResponse.mainFile}"></span></p>-->
+            <p>내용: <span th:text="${reviewResponse.content}"></span></p>
+            <p>평점: <span th:text="${reviewResponse.rating}"></span></p>
+        </div>
+    </form>
+</div>
+
+<!-- 페이지네이션 -->
+<div>
+    <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
+    <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}">
+        <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponses.number == i ? 'current-page' : ''}"></a>
+    </span>
+    <a th:if="${reviewResponses.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number+1})}">Next</a>
+</div>
+
+</body>
+</html>
+
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>게시물 목록</title>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--리뷰리스트입니다-->
+<!--<div th:each="reviewResponse : ${reviewResponses.content}">-->
+<!--    <form th:action="@{/trendpick/review/{id}(id=${reviewResponse.id})}" th:method="post">-->
+<!--        <div th:onclick="${'#' + reviewResponse.id}.submit()">-->
+<!--            <h2 th:text="${reviewResponse.title}"></h2>-->
+<!--            <p>productName: <span th:text="${reviewResponse.productName}"></span></p>-->
+<!--            <p>Main File: <span th:text="${reviewResponse.content}"></span></p>-->
+<!--            <p>rating: <span th:text="${reviewResponse.rating}"></span></p>-->
+<!--        </div>-->
+<!--    </form>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 페이지네이션 &ndash;&gt;-->
+<!--<div>-->
+<!--    <a th:if="${reviewResponse.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponse.number})}">Previous</a>-->
+<!--    <span th:each="i : ${#numbers.sequence(0, reviewResponse.totalPages)}">-->
+<!--        <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponse.number == i ? 'current-page' : ''}"></a>-->
+<!--    </span>-->
+<!--    <a th:if="${reviewResponse.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponse.number+1})}">Next</a>-->
+<!--</div>-->
+
+<!--</body>-->
+<!--</html>-->

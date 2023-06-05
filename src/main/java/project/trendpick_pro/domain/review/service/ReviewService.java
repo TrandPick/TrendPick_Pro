@@ -3,6 +3,9 @@ package project.trendpick_pro.domain.review.service;
 import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,4 +96,15 @@ public class ReviewService {
 
         return ReviewResponse.of(review);
     }
+
+    @Transactional
+    public Page<Review> showAll(Pageable pageable) {
+        return reviewRepository.findAll(pageable);
+    }
+
+//    public Page<ReviewResponse> showAll(int offset) {
+//        Pageable pageable = PageRequest.of(offset, 20);
+//        Page<Review> reviews = reviewRepository.findAllByPage(pageable);
+//        return reviews.map(ReviewResponse::of);
+//    }
 }

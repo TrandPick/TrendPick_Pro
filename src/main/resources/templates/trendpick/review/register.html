@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>리뷰 등록 폼</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+<form th:action="@{/trendpick/review/write}" th:object="${reviewSaveRequest}" method="post" enctype="multipart/form-data">
+  <div>
+    <label for="title">제목</label>
+    <input type="text" id="title" name="title" required>
+  </div>
+
+  <div>
+    <label for="content">내용</label>
+    <textarea id="content" name="content" required></textarea>
+    <div class="error-message" data-error-message="content"></div>
+  </div>
+
+  <div>
+    <label for="mainFile">메인 사진</label>
+    <input type="file" id="mainFile" name="mainFile" required>
+  </div>
+
+  <div>
+    <label for="subFiles">서브 사진들</label>
+    <input type="file" id="subFiles" name="subFiles" multiple="multiple" required>
+  </div>
+
+  <div>
+    <label for="rating">별점</label>
+    <input type="number" id="rating" name="rating" required>
+  </div>
+
+  <button type="submit">리뷰 등록</button>
+</form>
+</body>
+</html>

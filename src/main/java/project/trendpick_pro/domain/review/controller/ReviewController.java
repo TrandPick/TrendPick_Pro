@@ -2,6 +2,8 @@ package project.trendpick_pro.domain.review.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,7 +44,7 @@ public class ReviewController {
         ReviewResponse reviewResponse = reviewService.createReview(member, 1L, reviewCreateRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
-        return "redirect:/trendpick/review/list";
+        return "/trendpick/review/list";
 
     }
 
@@ -68,5 +70,17 @@ public class ReviewController {
 
         model.addAttribute("reviewResponse", reviewResponse);
         return "redirect:/trendpick/review";
+    }
+
+//    @GetMapping("/list")
+//    public String showAllReview(@RequestParam(value = "page", defaultValue = "0")int offset, Model model){
+//        model.addAttribute("reviewListResponse", reviewService.showAll(offset));
+//        return "/trendpick/review/list";
+//    }
+
+    @GetMapping("/list")
+    public String showAllReview(@PageableDefault(size = 8)Pageable pageable, Model model){
+        model.addAttribute("reviewResponses", reviewService.showAll(pageable));
+        return "/trendpick/review/list";
     }
 }

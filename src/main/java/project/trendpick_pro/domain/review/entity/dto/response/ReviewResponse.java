@@ -19,7 +19,7 @@ import java.util.Optional;
 public class ReviewResponse {
     private Long id;
     private String writer;   //User
-    private Long productId;    //Product
+    private String productName;    //Product
     private String mainFile;
     private List<String> subFiles;
     private String title;
@@ -30,11 +30,11 @@ public class ReviewResponse {
 
     @Builder
     @QueryProjection
-    public ReviewResponse(Long id, String writer, Long productId, String title, String content,
+    public ReviewResponse(Long id, String writer, String productName, String title, String content,
                           String mainFile, List<String> subFiles, int rating) {
         this.id = id;
         this.writer = writer;
-        this.productId = productId;
+        this.productName = productName;
         this.title = title;
         this.content = content;
         this.mainFile = mainFile;
@@ -46,7 +46,7 @@ public class ReviewResponse {
         return ReviewResponse.builder()
                 .id(review.getId())
                 .writer(review.getWriter())
-                .productId(review.getProduct().getId())
+                .productName(review.getProduct().getName())
                 .title(review.getTitle())
                 .content(review.getContent())
                 .mainFile(review.getFile().getFileName())
