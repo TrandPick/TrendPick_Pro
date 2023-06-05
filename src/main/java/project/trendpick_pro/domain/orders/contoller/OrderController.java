@@ -2,17 +2,18 @@ package project.trendpick_pro.domain.orders.contoller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
-import project.trendpick_pro.domain.orders.entity.Order;
-import project.trendpick_pro.domain.orders.entity.OrderItem;
+import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.service.OrderService;
+import project.trendpick_pro.domain.product.repository.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,14 +27,16 @@ public class OrderController {
 
     private final OrderService orderService;
     private final Rq rq;
+    private final MemberService memberService;
+    private final ProductRepository productRepository;
 
     @GetMapping("/order")
     public  String order(OrderForm orderForm, Model model){
-        MemberInfoDto memberInfo = new MemberInfoDto("member1", "email", "000", "서울");
+        MemberInfoDto memberInfo = new MemberInfoDto(2L, "admin", "admin@naver.com", "000", "서울");
         List<OrderItemDto> orderItems = new ArrayList<>();
-        orderItems.add(new OrderItemDto("상품1", 5, 500));
-        orderItems.add(new OrderItemDto("상품2", 1, 100));
-        orderItems.add(new OrderItemDto("상품3", 2, 200));
+        orderItems.add(new OrderItemDto(1L, "상품1", 5, 500));
+        orderItems.add(new OrderItemDto(2L, "상품2", 1, 100));
+        orderItems.add(new OrderItemDto(3L, "상품3", 2, 200));
 
         orderForm = new OrderForm(memberInfo, orderItems);
         model.addAttribute("orderForm", orderForm);
@@ -43,8 +46,7 @@ public class OrderController {
 
     @PostMapping("/order")
     @ResponseBody
-    public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm,
-                                            @RequestParam("paymentMethod") String paymentMethod) {
+    public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
 
 
         System.out.println("회원 이름: " + orderForm.getMemberInfo().getName());
@@ -55,8 +57,19 @@ public class OrderController {
             System.out.println("수량: " + orderItem.getCount());
             System.out.println("가격: " + orderItem.getPrice());
         }
-        System.out.println("결제 수단: " + paymentMethod);
+        System.out.println("결제 수단: " + orderForm.getPaymentMethod());
 
+        Member member = memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+//        if(member.getId() != orderForm.getMemberInfo().getMemberId())
+//            throw new RuntimeException("잘못된 접근입니다.");
+
+        log.info(member.getUsername());
+        log.info(String.valueOf(member.getId()));
+        log.info(orderForm.getMemberInfo().getName());
+        log.info(orderForm.getOrderItems().get(0).getProductName());
+        log.info(String.valueOf(orderForm.getOrderItems().get(0).getProductId()));
+
+        orderService.order(member, orderForm);
         return "주문성공";
     }
 

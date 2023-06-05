@@ -32,6 +32,11 @@ public class MemberService {
         return memberRepository.findByUsername(username);
     }
 
+    public Member findByEmail(String username){
+        return memberRepository.findByEmail(username)
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+    }
+
     @Transactional
     public void register(JoinForm joinForm) {
 

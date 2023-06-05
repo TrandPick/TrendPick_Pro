@@ -32,6 +32,8 @@ public class Order extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
+    @Column(name = "payment_method", nullable = false)
+    private String paymentMethod;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -52,7 +54,7 @@ public class Order extends BaseTimeEntity {
         orderItem.connectOrder(this);
     }
 
-    public static Order createOrder(Member member, Delivery delivery, OrderStatus status, List<OrderItem> orderItems) {
+    public static Order createOrder(Member member, Delivery delivery, OrderStatus status, List<OrderItem> orderItems, String paymentMethod) {
         Order order = new Order();
         order.connectUser(member);
         order.connectDelivery(delivery);
@@ -61,6 +63,7 @@ public class Order extends BaseTimeEntity {
             order.totalPrice += orderItem.getTotalPrice();
         }
         order.status = status;
+        order.paymentMethod = paymentMethod;
 
         return order;
     }
