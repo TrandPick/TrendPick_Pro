@@ -16,9 +16,13 @@ public class OrderForm {
 
     private MemberInfoDto memberInfo;
     private List<OrderItemDto> orderItems;
+    private String paymentMethod;
 
     public OrderForm(MemberInfoDto memberInfo, List<OrderItemDto> orderItems) {
         this.memberInfo = memberInfo;
         this.orderItems = orderItems;
+    }
+
+    public OrderForm() {
     }
 }

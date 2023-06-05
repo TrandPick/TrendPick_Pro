@@ -11,10 +11,11 @@
 <h1>주문서</h1>
 <h2>회원 정보</h2>
 <form th:action="@{/trendpick/orders/order}" th:object="${orderForm}" method="post">
-    <p>회원 이름: <input type="text" name="orderForm.memberInfo.name" th:value="*{memberInfo.name}" /></p>
-    <p>이메일: <input type="text" name="orderForm.memberInfo.email" th:value="*{memberInfo.email}" /></p>
-    <p>번호: <input type="text" name="orderForm.memberInfo.phone" th:value="*{memberInfo.phone}" /></p>
-    <p>주소: <input type="text" name="orderForm.memberInfo.address" th:value="*{memberInfo.address}" /></p>
+    <input type="hidden" th:field="*{memberInfo.name}" th:value="${orderForm.memberInfo.name}"/></p>
+    <p>회원 이름: <input type="text" th:field="*{memberInfo.name}" th:value="${orderForm.memberInfo.name}" readonly="readonly"/></p>
+    <p>이메일: <input type="text" th:field="*{memberInfo.email}" th:value="${orderForm.memberInfo.email}" readonly="readonly"/></p>
+    <p>번호: <input type="text" th:field="*{memberInfo.phone}" th:value="${orderForm.memberInfo.phone}" readonly="readonly"/></p>
+    <p>주소: <input type="text" th:field="*{memberInfo.address}" th:value="${orderForm.memberInfo.address}"/></p>
 
     <h2>주문 아이템 목록</h2>
     <table>
@@ -23,10 +24,11 @@
             <th>수량</th>
             <th>가격</th>
         </tr>
-        <tr th:each="orderItem, itemStat : *{orderItems}">
-            <td><input type="text" name="orderForm.orderItems[__${itemStat.index}__].productName" th:value="${orderItem.productName}" /></td>
-            <td><input type="number" name="orderForm.orderItems[__${itemStat.index}__].count" th:value="${orderItem.count}" /></td>
-            <td><input type="number" name="orderForm.orderItems[__${itemStat.index}__].price" th:value="${orderItem.price}" /></td>
+        <tr th:each="orderItem, itemStat : ${orderForm.orderItems}">
+            <td><input type="hidden" th:field="*{orderItems[__${itemStat.index}__].productId}" th:value="${orderItem.productId}" /></td>
+            <td><input type="text" th:field="*{orderItems[__${itemStat.index}__].productName}" th:value="${orderItem.productName}" readonly="readonly"/></td>
+            <td><input type="number" th:field="*{orderItems[__${itemStat.index}__].count}" th:value="${orderItem.count}" readonly="readonly"/></td>
+            <td><input type="number" th:field="*{orderItems[__${itemStat.index}__].price}" th:value="${orderItem.price}" readonly="readonly"/></td>
         </tr>
     </table>
 
@@ -38,7 +40,7 @@
         <option value="toss">토스페이먼트</option>
     </select>
 
-    <button type="submit" value="주문하기"></button>
+    <button type="submit">주문하기</button>
 </form>
 </body>
 </html>

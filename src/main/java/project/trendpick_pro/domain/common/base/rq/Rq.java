@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.service.MemberService;
 
 import java.util.Date;
@@ -52,11 +53,11 @@ public class Rq {
 
     // 로그인 된 회원의 객체
     public Member getMember() {
-        if (isLogout()) return null;
 
         // 데이터가 없는지 체크
         if (member == null) {
-            member = memberService.findByUsername(user.getUsername()).orElseThrow();
+            Member member =
+                    memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         }
 
         return member;
