@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.file.CommonFile;
@@ -15,7 +14,6 @@ import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
-import project.trendpick_pro.domain.review.repository.ReviewImageRepository;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
 
 import java.io.File;
@@ -29,7 +27,6 @@ import java.util.List;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
-    private final ReviewImageRepository reviewImageRepository;
     private final FileTranslator fileTranslator;
 
     @Value("${file.dir}")
