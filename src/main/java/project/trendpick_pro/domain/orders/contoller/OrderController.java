@@ -1,29 +1,42 @@
 package project.trendpick_pro.domain.orders.contoller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import project.trendpick_pro.domain.orders.entity.dto.request.OrderSaveRequest;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
+import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
+import project.trendpick_pro.domain.orders.entity.OrderItem;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.service.OrderService;
+
+import java.util.List;
 
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("trendpick/order")
+@RequestMapping("trendpick/orders")
 public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/order")
-    public String order(@Valid OrderSaveRequest... orderSaveRequests){
+    @GetMapping("/order")
+    public  String order(@ModelAttribute MemberInfoDto memberInfo,
+                         @ModelAttribute List<OrderItemDto> orderItems,
+                         Model model){
 
-//        orderService.order(1L, orderSaveRequests);
+
+        model.addAttribute("orderItems", orderItems);
+        model.addAttribute("memberInfo", memberInfo);
+
+        return "trendpick/orders/order";
+    }
+
+    @PostMapping("/order")
+    public synchronized String order(){
+
+
         return "redirect:/orders";
     }
 
@@ -34,7 +47,7 @@ public class OrderController {
         return "trendpick/usr/member/orders";
     }
 
-    @PostMapping("/orders/{orderId}/cancel")
+    @PostMapping("/{orderId}/cancel")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
         orderService.cancel(orderId);
         return "redirect:trendpick/usr/member/orders";

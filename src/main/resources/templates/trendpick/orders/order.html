@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 폼</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+<h1>주문서</h1>
+<h2>회원 정보</h2>
+<p>회원 이름: <span th:text="${memberInfo.name}"></span></p>
+<p>이메일: <span th:text="${memberInfo.email}"></span></p>
+<p>번호: <span th:text="${memberInfo.phone}"></span></p>
+<p>주소: <span th:text="${memberInfo.address}"></span></p>
+
+<h2>주문 아이템 목록</h2>
+<table>
+    <tr>
+        <th>상품명</th>
+        <th>수량</th>
+        <th>가격</th>
+    </tr>
+    <tr th:each="orderItem : ${orderItems}">
+        <td th:text="${orderItem.productName}"></td>
+        <td th:text="${orderItem.count}"></td>
+        <td th:text="${orderItem.price}"></td>
+    </tr>
+</table>
+
+<h2>결제 수단 선택</h2>
+<form action="/trendpick/orders/order" method="post">
+    <select name="paymentMethod">
+        <option value="creditCard">신용카드</option>
+        <option value="bankTransfer">계좌이체</option>
+        <option value="cash">현금</option>
+        <option value="cash">토스페이먼트</option>
+    </select>
+    <input type="submit" value="주문하기">
+</form>
+</body>
+</html>
