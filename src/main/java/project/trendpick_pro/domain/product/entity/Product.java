@@ -77,14 +77,14 @@ public class Product extends BaseTimeEntity {
     public static Product of(ProductSaveRequest request, MainCategory mainCategory
             , SubCategory subCategory, Brand brand,CommonFile file) {
         return Product.builder()
-                .name(request.name())
+                .name(request.getName())
                 .mainCategory(mainCategory)
                 .subCategory(subCategory)
                 .brand(brand)
-                .description(request.description())
+                .description(request.getDescription())
                 .file(file)
-                .price(request.price())
-                .stock(request.stock())
+                .price(request.getPrice())
+                .stock(request.getStock())
                 .build();
     }
 
@@ -108,10 +108,10 @@ public class Product extends BaseTimeEntity {
     }
 
     public void update(ProductSaveRequest request, CommonFile file) {
-        this.name = request.name();
-        this.description = request.description();
-        this.price = request.price();
-        this.stock = request.stock();
+        this.name = request.getName();
+        this.description = request.getDescription();
+        this.price = request.getPrice();
+        this.stock = request.getStock();
         this.file = file;
     }
 
@@ -124,8 +124,10 @@ public class Product extends BaseTimeEntity {
                 '}';
     }
 
-    public void addTag(Tag tag){
-        getTags().add(tag);
-        tag.connectProduct(this);
+    public void addTag(Set<Tag> tags){
+        this.tags = tags;
+        for (Tag tag : tags) {
+            tag.connectProduct(this);
+        }
     }
 }

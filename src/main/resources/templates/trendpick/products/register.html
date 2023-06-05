@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
 <body>
-    <form th:action="@{/trendpick/products/register}" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data">
+    <form id="productSaveRequest" th:action="@{/trendpick/products/register}" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data">
         <div>
             <label for="name">제목</label>
             <input type="text" id="name" name="name" required>
@@ -24,11 +24,11 @@
 
         <label>메인 카테고리</label>
         <div>
+            <input id="all" type="radio" name="mainCategory" value="전체" th:text="'전체'">
             <div th:each="mainCategory : ${mainCategories}">
                 <input type="radio" name="mainCategory" th:value="${mainCategory.name}" th:text="${mainCategory.name}" required>
             </div>
         </div>
-
 
         <label>서브 카테고리</label>
         <div>
@@ -68,8 +68,12 @@
 
         <div class="form-group">
             <label>태그들</label>
-            <div th:each="tag : ${tags}">
-                <input type="checkbox" name="tags" th:value="${tag.name}" /> <span th:text="${tag.name}"></span>
+            <div class="row">
+                <div th:each="tag, iterStat : ${tags}" class="col-md-2">
+                    <input type="checkbox" name="tags" th:value="${tag.name}" />
+                    <span th:text="${tag.name}"></span>
+                    <th:block th:if="${iterStat.count % 5 == 0}"><br/></th:block>
+                </div>
             </div>
             <p class="text-danger" th:if="${#fields.hasErrors('tags')}" th:errors="*{tags}"></p>
         </div>
@@ -77,4 +81,28 @@
         <button type="submit">상품 등록</button>
     </form>
 </body>
+<script>
+    const form = document.getElementById('productSaveRequest');
+
+    // form의 상태를 저장하고 불러오는 함수
+    function saveFormState() {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        localStorage.setItem('formState', JSON.stringify(data));
+    }
+
+    function loadFormState() {
+        const data = JSON.parse(localStorage.getItem('formState') || '{}');
+        for (const [name, value] of Object.entries(data)) {
+            const input = form.elements[name];
+            if (input) input.value = value;
+        }
+    }
+
+    // form 제출 전에 상태를 저장
+    form.addEventListener('submit', saveFormState);
+
+    // 페이지 로딩 시 저장된 상태 불러오기
+    loadFormState();
+</script>
 </html>

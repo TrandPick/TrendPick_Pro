@@ -1,5 +1,7 @@
 package project.trendpick_pro.global.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,10 +16,10 @@ import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 public class GlobalExceptionAdvice {
 
     @ExceptionHandler(MemberNotFoundException.class)
-    public String MemberNotFoundHandleException(MemberNotFoundException e, Model model) {
+    public String MemberNotFoundHandleException(HttpServletRequest request, MemberNotFoundException e, Model model) {
         log.error("[exceptionHandle] ex", e);
         model.addAttribute("errorMessage", e.getMessage());
-        return "trendpick/usr/member/join";
+        return request.getRequestURI();
     }
 
     @ExceptionHandler(MemberNotMatchException.class)
@@ -40,4 +42,6 @@ public class GlobalExceptionAdvice {
         model.addAttribute("errorMessage", e.getMessage());
         return "trendpick/usr/member/join";
     }
+
+
 }
