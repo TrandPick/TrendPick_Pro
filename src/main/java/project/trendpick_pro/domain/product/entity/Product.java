@@ -12,10 +12,10 @@ import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -41,28 +41,28 @@ public class Product extends BaseTimeEntity {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
     private CommonFile file;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "stock")
+    @Column(name = "stock", nullable = false)
     private int stock;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Tag> tags = new ArrayList<>();
+    private Set<Tag> tags = new LinkedHashSet<>();
 
     public long reviewCount = 0;
     public double rateAvg = 0;
 
     @Builder
     public Product(String name, MainCategory mainCategory, SubCategory subCategory, Brand brand,
-                   String description, CommonFile file, int price, int stock, List<Tag> tags) {
+                   String description, CommonFile file, int price, int stock, Set<Tag> tags) {
         this.name = name;
         this.mainCategory = mainCategory;
         this.subCategory = subCategory;
@@ -75,17 +75,16 @@ public class Product extends BaseTimeEntity {
     }
 
     public static Product of(ProductSaveRequest request, MainCategory mainCategory
-            , SubCategory subCategory, Brand brand,CommonFile file,List<Tag> tags) {
+            , SubCategory subCategory, Brand brand,CommonFile file) {
         return Product.builder()
-                .name(request.getName())
+                .name(request.name())
                 .mainCategory(mainCategory)
                 .subCategory(subCategory)
                 .brand(brand)
-                .description(request.getDescription())
+                .description(request.description())
                 .file(file)
-                .price(request.getPrice())
-                .stock(request.getStock())
-                .tags(tags)
+                .price(request.price())
+                .stock(request.stock())
                 .build();
     }
 
@@ -108,12 +107,25 @@ public class Product extends BaseTimeEntity {
         this.rateAvg = Math.round(total / reviewCount * 10) / 10.0;
     }
 
-    public void update(ProductSaveRequest request) {
-        this.name=request.getName();
-        this.description=request.getDescription();
-        this.price=request.getPrice();
-        this.stock=request.getStock();
+    public void update(ProductSaveRequest request, CommonFile file) {
+        this.name = request.name();
+        this.description = request.description();
+        this.price = request.price();
+        this.stock = request.stock();
+        this.file = file;
     }
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                '}';
+    }
 
+    public void addTag(Tag tag){
+        getTags().add(tag);
+        tag.connectProduct(this);
+    }
 }

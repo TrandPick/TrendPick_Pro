@@ -2,8 +2,8 @@ package project.trendpick_pro.domain.recommend.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import project.trendpick_pro.domain.recommend.entity.dto.RecommendResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 
 public interface RecommendRepositoryCustom {
-    Page<RecommendResponse> findAllByMemberName(String username, Pageable pageable);
+    Page<ProductListResponse> findAllByMemberName(String username, Pageable pageable);
 }

@@ -10,7 +10,6 @@ import project.trendpick_pro.domain.answer.entity.dto.response.AnswerResponse;
 import project.trendpick_pro.domain.answer.service.AnswerService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
 
 @Controller
 @RequiredArgsConstructor

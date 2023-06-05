@@ -1,10 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 등록 폼</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
 <body>
+    <form th:action="@{/trendpick/products/register}" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="name">제목</label>
+            <input type="text" id="name" name="name" required>
+            <p class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+        </div>
 
+        <div>
+            <label for="description">내용</label>
+            <textarea id="description" name="description" required></textarea>
+            <div class="error-message" data-error-message="description"></div>
+            <p class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+        </div>
+
+        <label>메인 카테고리</label>
+        <div>
+            <div th:each="mainCategory : ${mainCategories}">
+                <input type="radio" name="mainCategory" th:value="${mainCategory.name}" th:text="${mainCategory.name}" required>
+            </div>
+        </div>
+
+
+        <label>서브 카테고리</label>
+        <div>
+            <div th:each="subCategory : ${subCategories}">
+                <input type="radio" name="subCategory" th:value="${subCategory.name}" th:text="${subCategory.name}" required>
+            </div>
+        </div>
+
+        <label>브랜드</label>
+        <div>
+            <div th:each="brand : ${brands}">
+                <input type="radio" name="brand" th:value="${brand.name}" th:text="${brand.name}" required>
+            </div>
+        </div>
+
+        <div>
+            <label for="mainFile">메인 사진</label>
+            <input type="file" id="mainFile" name="mainFile" required>
+        </div>
+
+        <div>
+            <label for="subFiles">서브 사진들</label>
+            <input type="file" id="subFiles" name="subFiles" multiple="multiple" required>
+        </div>
+
+        <div>
+            <label for="price">가격</label>
+            <input type="number" id="price" name="price" required>
+            <p class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+        </div>
+
+        <div>
+            <label for="stock">수량</label>
+            <input type="number" id="stock" name="stock" required>
+            <p class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></p>
+        </div>
+
+        <div class="form-group">
+            <label>태그들</label>
+            <div th:each="tag : ${tags}">
+                <input type="checkbox" name="tags" th:value="${tag.name}" /> <span th:text="${tag.name}"></span>
+            </div>
+            <p class="text-danger" th:if="${#fields.hasErrors('tags')}" th:errors="*{tags}"></p>
+        </div>
+
+        <button type="submit">상품 등록</button>
+    </form>
 </body>
 </html>

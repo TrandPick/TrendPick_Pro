@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.delivery.entity.embaded.Address;
+import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
@@ -22,9 +23,8 @@ import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.tag.entity.Tag;
-import project.trendpick_pro.domain.tag.entity.type.TagType;
-import project.trendpick_pro.domain.tag.service.TagService;
+import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.tag.service.TagService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,7 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final TagService tagService;
+    private final FavoriteTagService favoriteTagService;
 
     @Transactional
     public synchronized void order(Long userId, OrderSaveRequest... orderSaveRequests) {
@@ -54,7 +55,7 @@ public class OrderService {
                 throw new ProductStockOutException("재고가 부족합니다.");   // 임시. 나중에 사용자 exception 널을까말까 생각
             }
 
-            tagService.updateTag(member, product, TagType.ORDER);
+            favoriteTagService.updateTag(member, product, TagType.ORDER);
             orderItemList.add(new OrderItem(product, product.getPrice(), request.getQuantity()));
         }
 

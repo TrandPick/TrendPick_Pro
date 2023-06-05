@@ -20,8 +20,12 @@ public class SubCategory {
     @JoinColumn(name = "category_id")
     private MainCategory mainCategory;
 
-    public SubCategory(String name,  MainCategory mainCategory) {
+    public SubCategory(String name, MainCategory mainCategory) {
         this.name = name;
         this.mainCategory = mainCategory;
+    }
+
+    public void modify(String name) {
+        this.name = name;
     }
 }

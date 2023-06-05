@@ -1,7 +1,7 @@
-package project.trendpick_pro.domain.tag.repository;
+package project.trendpick_pro.domain.tags.tag.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import project.trendpick_pro.domain.tag.entity.Tag;
+import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
 import java.util.Optional;
 

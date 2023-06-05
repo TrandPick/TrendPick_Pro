@@ -18,7 +18,13 @@ import project.trendpick_pro.domain.recommend.service.RecommendService;
 public class RecommendController {
     private final RecommendService recommendService;
 
-    @GetMapping("/adming/getrecommendset")
+    @GetMapping("/admin/caculate")
+    public String caculate(){
+//        recommendService.select();
+        return "redirect:/trendpick/products/list";
+    }
+
+    @GetMapping("/admin/getrecommendset")
     public String getRecommend(Model model, @RequestParam("page") int offset){
         model.addAttribute("recommend", recommendService.getFindAll(offset));
         return "/main";

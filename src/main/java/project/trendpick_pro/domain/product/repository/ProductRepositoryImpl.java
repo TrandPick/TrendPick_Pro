@@ -9,13 +9,11 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
-import project.trendpick_pro.domain.tag.entity.QTag;
 
 import java.util.List;
 
@@ -24,13 +22,17 @@ import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
 import static project.trendpick_pro.domain.product.entity.QProduct.*;
+import static project.trendpick_pro.domain.tags.favoritetag.entity.QFavoriteTag.favoriteTag;
+import static project.trendpick_pro.domain.tags.tag.entity.QTag.tag;
 
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final JPAQuery<Long> subQuery;
 
     public ProductRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
+        this.subQuery = new JPAQuery<>(em);
     }
 
     @Override
@@ -40,7 +42,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.id,
                         product.name,
                         brand.name,
-                        commonFile.translatedFileName,
+                        commonFile.fileName,
                         product.price)
                 )
                 .from(product)
@@ -73,23 +75,20 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public List<ProductByRecommended> findProductByRecommended(Member member) {
-        QTag tagByMember = new QTag("tagByMember");
-        QTag tagByProduct = new QTag("tagByProduct");
-
+    public List<ProductByRecommended> findRecommendProduct(String username) {
         List<ProductByRecommended> list = queryFactory
                 .select(new QProductByRecommended(
-                                tagByProduct.product.id,
-                                tagByProduct.name
+                                tag.product.id,
+                                tag.name
                         )
                 )
-                .from(tagByProduct)
-                .where(tagByProduct.name.in(
-                        JPAExpressions.select(tagByMember.name)
-                                .from(tagByMember)
-                                .where(tagByMember.member.id.eq(member.getId()))
+                .from(tag)
+                .where(tag.name.in(
+                                JPAExpressions.select(favoriteTag.name)
+                                        .from(favoriteTag)
+                                        .where(favoriteTag.member.username.eq(username))
+                        )
                 )
-                        .and(tagByProduct.product.id.isNotNull()))
                 .distinct()
                 .fetch();
 
@@ -101,7 +100,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     private static BooleanExpression subCategoryEq(ProductSearchCond cond) {
-        return subCategory.name.eq(cond.getSubCategory());
+        if (cond.getSubCategory().equals("전체")) {
+            return null;
+        } else {
+            return subCategory.name.eq(cond.getSubCategory());
+        }
     }
 
     private static OrderSpecifier<?> orderSelector(Integer sortCode) {
