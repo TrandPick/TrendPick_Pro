@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.file.CommonFile;
@@ -47,11 +48,11 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public ReviewResponse createReview(Member actor, Long productId, ReviewSaveRequest reviewSaveRequest) throws Exception {
+    public ReviewResponse createReview(Member actor, Long productId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws Exception {
         Product product = productRepository.findById(productId).orElseThrow();
 
-        CommonFile mainFile = fileTranslator.translateFile(reviewSaveRequest.getMainFile());
-        List<CommonFile> subFiles = fileTranslator.translateFileList(reviewSaveRequest.getSubFiles());
+        CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
+        List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
 
         for(CommonFile subFile : subFiles){
             mainFile.connectFile(subFile);
@@ -64,27 +65,27 @@ public class ReviewService {
         return ReviewResponse.of(review);
     }
 
-    public ReviewResponse update(Long reviewId, ReviewSaveRequest reviewSaveRequest) throws IOException {
+    public ReviewResponse modify(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
         CommonFile mainFile = review.getFile();
         List<CommonFile> subFiles = review.getFile().getChild();
 
-        if(reviewSaveRequest.getMainFile() != null){
+        if(requestMainFile != null){
             //  기존 이미지 삭제
             FileUtils.delete(new File(mainFile.getFileName()));
         }
         // 이미지 업데이트
-        mainFile = fileTranslator.translateFile(reviewSaveRequest.getMainFile());
+        mainFile = fileTranslator.translateFile(requestMainFile);
 
-        if(reviewSaveRequest.getSubFiles() != null){
+        if(requestSubFiles != null){
             // 기존 이미지 삭제
             for(CommonFile subFile : subFiles){
                 FileUtils.delete(new File(subFile.getFileName()));
             }
         }
         // 이미지 업데이트
-        subFiles = fileTranslator.translateFileList(reviewSaveRequest.getSubFiles());
+        subFiles = fileTranslator.translateFileList(requestSubFiles);
 
         for (CommonFile subFile : subFiles) {
             mainFile.connectFile(subFile);

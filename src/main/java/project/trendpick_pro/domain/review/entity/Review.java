@@ -56,33 +56,16 @@ public class Review extends BaseTimeEntity {
                 .writer(member.getUsername())
                 .product(product)
                 .file(file)
-                .content(reviewCreateRequest.getContent())
-                .rating(reviewCreateRequest.getRating())
+                .content(reviewCreateRequest.content())
+                .rating(reviewCreateRequest.rating())
                 .build();
     }
 
     public void update(ReviewSaveRequest reviewSaveRequest, CommonFile file) {
-        this.title = reviewSaveRequest.getTitle();
-        this.content = reviewSaveRequest.getContent();
+        this.title = reviewSaveRequest.title();
+        this.content = reviewSaveRequest.content();
+        this.rating = reviewSaveRequest.rating();
         this.file = file;
-        this.rating = reviewSaveRequest.getRating();
     }
 
-
-//    public void changeMainFile(String filePath, String mainFilePath, MultipartFile mainFile) throws IOException {
-//        File file = new File(filePath + mainFileName);
-//        file.delete();  //원래 있던거 삭제
-//
-//        this.mainFileName = mainFilePath;
-//        mainFile.transferTo(new File(filePath + mainFilePath));
-//    }
-//
-//    public void changeSubFile(String filePath, List<String> subFileNames) {
-//        //음 우선 돌면서 지워야겠지??
-//        for(String subFile: subFileNames){
-//            File file = new File(filePath + subFile);
-//            file.delete();
-//        }
-//        this.subFileNames = subFileNames;
-//    }
 }
