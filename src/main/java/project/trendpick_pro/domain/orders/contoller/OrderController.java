@@ -31,14 +31,15 @@ public class OrderController {
     private final ProductRepository productRepository;
 
     @GetMapping("/order")
-    public  String order(OrderForm orderForm, Model model){
-        MemberInfoDto memberInfo = new MemberInfoDto(2L, "admin", "admin@naver.com", "000", "서울");
-        List<OrderItemDto> orderItems = new ArrayList<>();
-        orderItems.add(new OrderItemDto(1L, "상품1", 5, 500));
-        orderItems.add(new OrderItemDto(2L, "상품2", 1, 100));
-        orderItems.add(new OrderItemDto(3L, "상품3", 2, 200));
+    public  String order(@ModelAttribute OrderForm orderForm, Model model){
+//        MemberInfoDto memberInfo = new MemberInfoDto(2L, "admin", "admin@naver.com", "000", "서울");
+//        List<OrderItemDto> orderItems = new ArrayList<>();
+//        orderItems.add(new OrderItemDto(1L, "상품1", 5, 500));
+//        orderItems.add(new OrderItemDto(2L, "상품2", 1, 100));
+//        orderItems.add(new OrderItemDto(3L, "상품3", 2, 200));
+//        orderForm = new OrderForm(memberInfo, orderItems);
 
-        orderForm = new OrderForm(memberInfo, orderItems);
+        //상품 상세 또는 장바구니에서 OrderForm으로 데이터가 날라오게끔
         model.addAttribute("orderForm", orderForm);
 
         return "trendpick/orders/order";
