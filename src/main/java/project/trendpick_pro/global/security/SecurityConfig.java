@@ -14,19 +14,40 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+//    @Bean
+//    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .formLogin(
+//                        formLogin -> formLogin
+//                                .loginPage("/trendpick/member/login")
+//                                .loginProcessingUrl("/login_proc")
+//                                .defaultSuccessUrl("/trendpick/products/list")
+//                )
+//                .logout(
+//                        logout -> logout
+//                                .logoutUrl("/trendpick/member/logout")
+//                );
+//        return http.build();
+//    }
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .formLogin(
-                        formLogin -> formLogin
-                                .loginPage("/trendpick/member/login")
-                                .loginProcessingUrl("/login_proc")
-                                .defaultSuccessUrl("/trendpick/products/list")
-                )
-                .logout(
-                        logout -> logout
-                                .logoutUrl("/trendpick/member/logout")
-                );
+                .csrf().disable()
+                .authorizeHttpRequests()
+                .requestMatchers("/register").hasAnyAuthority("ADMIN", "BRAND_ADMIN")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/trendpick/member/login")
+                .loginProcessingUrl("/login_proc")
+                .defaultSuccessUrl("/trendpick/products/list")
+                .permitAll()
+                .and()
+                .logout()
+                .logoutUrl("/trendpick/member/logout")
+                .permitAll();
         return http.build();
     }
 
