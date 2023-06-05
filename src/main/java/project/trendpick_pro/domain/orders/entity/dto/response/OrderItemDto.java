@@ -15,4 +15,7 @@ public class OrderItemDto {
         this.count = count;
         this.price = price;
     }
+
+    public OrderItemDto() {
+    }
 }

@@ -21,4 +21,7 @@ public class OrderForm {
         this.memberInfo = memberInfo;
         this.orderItems = orderItems;
     }
+
+    public OrderForm() {
+    }
 }

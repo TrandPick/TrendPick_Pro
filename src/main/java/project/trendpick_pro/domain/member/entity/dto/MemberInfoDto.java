@@ -10,6 +10,9 @@ public class MemberInfoDto {
     private String name;
     private String email;
 
+    public MemberInfoDto() {
+    }
+
     public MemberInfoDto(String name, String email, String phone, String address) {
         this.name = name;
         this.email = email;

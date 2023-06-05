@@ -2,9 +2,11 @@ package project.trendpick_pro.domain.orders.contoller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
@@ -23,6 +25,7 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final Rq rq;
 
     @GetMapping("/order")
     public  String order(OrderForm orderForm, Model model){
@@ -39,10 +42,11 @@ public class OrderController {
     }
 
     @PostMapping("/order")
-    public synchronized String processOrder(@ModelAttribute OrderForm orderForm,
+    @ResponseBody
+    public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm,
                                             @RequestParam("paymentMethod") String paymentMethod) {
 
-        // 예시: 주문 정보 출력
+
         System.out.println("회원 이름: " + orderForm.getMemberInfo().getName());
         System.out.println("이메일: " + orderForm.getMemberInfo().getEmail());
         System.out.println("주문 아이템 목록:");
