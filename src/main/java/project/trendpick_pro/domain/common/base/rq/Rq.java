@@ -60,11 +60,7 @@ public class Rq {
         Optional<Member> member = memberService.findByEmail(username);
 
         if (member.isPresent()) {
-            Member checkMember = member.get();
-            if (checkMember.getRole().equals(RoleType.MEMBER)) {
-                throw new MemberNotMatchException("허용된 권한이 아닙니다.");
-            }
-            return Optional.of(checkMember);
+            return member;
         }
         else {
             throw new MemberNotFoundException("존재하지 않는 회원입니다.");
