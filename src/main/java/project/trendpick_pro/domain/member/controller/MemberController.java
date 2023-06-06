@@ -15,6 +15,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
+import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
 @Slf4j
 @Controller
@@ -23,7 +24,7 @@ import project.trendpick_pro.domain.tags.tag.service.TagService;
 public class MemberController {
 
     private final MemberService memberService;
-    private final TagService tagService;
+    private final TagNameService tagNameService;
 
     private final Rq rq;
 
@@ -31,7 +32,7 @@ public class MemberController {
     @GetMapping("/register")
     public String register(JoinForm joinForm, Model model) {
         model.addAttribute("joinForm", joinForm);
-        model.addAttribute("allTags", tagService.getAllTags());
+        model.addAttribute("allTags", tagNameService.findAll());
         return "trendpick/usr/member/join";
     }
 
@@ -39,7 +40,7 @@ public class MemberController {
     @PostMapping("/register")
     public String register(@Valid JoinForm joinForm, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("allTags", tagService.getAllTags());
+            model.addAttribute("allTags", tagNameService.findAll());
             return "trendpick/usr/member/join";
         }
         memberService.register(joinForm);

@@ -13,7 +13,7 @@ import java.util.UUID;
 @Component
 public class FileTranslator {
 
-    @Value("${file.dir}")
+    @Value("${file.path}")
     private String filePath; //저장경로
 
     public String getFilePath(String filename) {

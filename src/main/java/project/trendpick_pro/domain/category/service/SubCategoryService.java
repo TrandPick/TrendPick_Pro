@@ -19,8 +19,6 @@ public class SubCategoryService {
 
     private final SubCategoryRepository subCategoryRepository;
 
-    private final MainCategoryService mainCategoryService;
-
     @Transactional
     public void save(String name, MainCategory mainCategory){
         subCategoryRepository.save(new SubCategory(name, mainCategory));
@@ -31,8 +29,14 @@ public class SubCategoryService {
         SubCategory subCategory = subCategoryRepository.findById(id).orElseThrow();
         subCategoryRepository.delete(subCategory);
     }
-    public List<SubCategoryResponse> findAll() {
-        return subCategoryRepository.findAllBy();
+    public List<SubCategoryResponse> findAll(String mainCategoryName) {
+        if (mainCategoryName.equals("전체")){
+            List<SubCategory> categories = subCategoryRepository.findAllBy();
+            return categories.stream().map(subCategory -> new SubCategoryResponse(subCategory.getName())).toList();
+        } else {
+            List<SubCategory> categories = subCategoryRepository.findAllByMainCategory(mainCategoryName);
+            return categories.stream().map(subCategory -> new SubCategoryResponse(subCategory.getName())).toList();
+        }
     }
 
     public SubCategoryResponse findById(Long id){

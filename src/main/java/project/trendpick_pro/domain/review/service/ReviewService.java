@@ -32,7 +32,7 @@ public class ReviewService {
     private final ProductRepository productRepository;
     private final FileTranslator fileTranslator;
 
-    @Value("${file.dir}")
+    @Value("${file.path}")
     private static String filePath;
 
 

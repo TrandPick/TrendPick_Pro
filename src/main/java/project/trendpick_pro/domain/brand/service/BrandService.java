@@ -30,4 +30,8 @@ public class BrandService {
     public List<BrandResponse> findAll(){
         return brandRepository.findAllBy();
     }
+
+    public Brand findByName(String name) {
+        return brandRepository.findByName(name);
+    }
 }
