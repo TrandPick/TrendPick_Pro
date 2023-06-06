@@ -31,6 +31,9 @@ public class OrderItem {
 
     @Column(name = "count", nullable = false)
     private int count;
+    @Column(name = "size", nullable = false)
+
+    private String size;
 
     private OrderItem(Product product, int orderPrice, int count) {
         this.product = product;
