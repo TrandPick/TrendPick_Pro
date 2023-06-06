@@ -22,6 +22,7 @@ import project.trendpick_pro.domain.review.repository.ReviewRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -40,6 +41,10 @@ public class ReviewService {
         Review review = reviewRepository.findById(productId).orElseThrow();
 
         return ReviewResponse.of(review);
+    }
+
+    public Review findById(Long id) {
+        return reviewRepository.findById(id).orElseThrow();
     }
 
 

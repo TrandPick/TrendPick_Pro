@@ -15,12 +15,14 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.service.ReviewService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -53,7 +55,7 @@ public class ReviewController {
     public String showReview(@PathVariable Long reviewId, Model model){
         ReviewResponse reviewResponse = reviewService.showReview(reviewId);
         model.addAttribute("reviewResponse", reviewResponse);
-        return "redirect:/trendpick/review";
+        return "/trendpick/review/detail";
     }
 
     @GetMapping("/delete/{reviewId}")
@@ -64,20 +66,31 @@ public class ReviewController {
         return "/trendpick/review/list";
     }
 
+//    @PostMapping("/edit/{reviewId}")
+//    public String updateReview(@PathVariable Long reviewId, ReviewSaveRequest reviewSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
+//                               @RequestParam("subFiles") List<MultipartFile> subFiles, Model model) throws IOException {
+//        Long id = reviewService.modify(reviewId, reviewSaveRequest, mainFile, subFiles);
+//
+//        return "redirect:/trendpick/review/list/" + id;
+//    }
+
+    @GetMapping("/edit/{reviewId}")
+    public String showUpdateReview(@PathVariable Long reviewId, Model model){
+        Review review = reviewService.findById(reviewId);
+        model.addAttribute("originReview", review);
+
+        return "trendpick/review/modify";
+    }
+
     @PostMapping("/edit/{reviewId}")
     public String updateReview(@PathVariable Long reviewId, ReviewSaveRequest reviewSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
                                @RequestParam("subFiles") List<MultipartFile> subFiles, Model model) throws IOException {
         ReviewResponse reviewResponse = reviewService.modify(reviewId, reviewSaveRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
-        return "redirect:/trendpick/review";
+        return "redirect:/trendpick/review/list/" + reviewId;
     }
 
-//    @GetMapping("/list")
-//    public String showAllReview(@RequestParam(value = "page", defaultValue = "0")int offset, Model model){
-//        model.addAttribute("reviewListResponse", reviewService.showAll(offset));
-//        return "/trendpick/review/list";
-//    }
 
     @GetMapping("/list")
     public String showAllReview(Pageable pageable, Model model){
