@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 폼</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+<h1>주문서</h1>
+<h2>회원 정보</h2>
+<form th:action="@{/trendpick/orders/order}" th:object="${orderForm}" method="post">
+    <input type="hidden" th:field="*{memberInfo.name}" th:value="${orderForm.memberInfo.name}"/></p>
+    <p>회원 이름: <input type="text" th:field="*{memberInfo.name}" th:value="${orderForm.memberInfo.name}" readonly="readonly"/></p>
+    <p>이메일: <input type="text" th:field="*{memberInfo.email}" th:value="${orderForm.memberInfo.email}" readonly="readonly"/></p>
+    <p>번호: <input type="text" th:field="*{memberInfo.phone}" th:value="${orderForm.memberInfo.phone}" readonly="readonly"/></p>
+    <p>주소: <input type="text" th:field="*{memberInfo.address}" th:value="${orderForm.memberInfo.address}"/></p>
+
+    <h2>주문 아이템 목록</h2>
+    <table>
+        <tr>
+            <th>상품명</th>
+            <th>수량</th>
+            <th>가격</th>
+        </tr>
+        <tr th:each="orderItem, itemStat : ${orderForm.orderItems}">
+            <td><input type="hidden" th:field="*{orderItems[__${itemStat.index}__].productId}" th:value="${orderItem.productId}" /></td>
+            <td><input type="text" th:field="*{orderItems[__${itemStat.index}__].productName}" th:value="${orderItem.productName}" readonly="readonly"/></td>
+            <td><input type="number" th:field="*{orderItems[__${itemStat.index}__].count}" th:value="${orderItem.count}" readonly="readonly"/></td>
+            <td><input type="number" th:field="*{orderItems[__${itemStat.index}__].price}" th:value="${orderItem.price}" readonly="readonly"/></td>
+        </tr>
+    </table>
+
+    <h2>결제 수단 선택</h2>
+    <select name="paymentMethod">
+        <option value="creditCard">신용카드</option>
+        <option value="bankTransfer">계좌이체</option>
+        <option value="cash">현금</option>
+        <option value="toss">토스페이먼트</option>
+    </select>
+
+    <button type="submit">주문하기</button>
+</form>
+</body>
+</html>

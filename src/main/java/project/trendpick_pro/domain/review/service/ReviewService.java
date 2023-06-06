@@ -14,7 +14,6 @@ import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
-import project.trendpick_pro.domain.review.repository.ReviewImageRepository;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
 
 import java.io.File;
@@ -28,10 +27,9 @@ import java.util.List;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
-    private final ReviewImageRepository reviewImageRepository;
     private final FileTranslator fileTranslator;
 
-    @Value("${file.dir}")
+    @Value("${file.path}")
     private static String filePath;
 
 
@@ -42,16 +40,17 @@ public class ReviewService {
     }
 
 
+    @Transactional
     public void delete(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
         reviewRepository.delete(review);
     }
 
-    public ReviewResponse createReview(Member actor, Long productId, ReviewSaveRequest reviewSaveRequest) throws Exception {
+    public ReviewResponse createReview(Member actor, Long productId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws Exception {
         Product product = productRepository.findById(productId).orElseThrow();
 
-        CommonFile mainFile = fileTranslator.translateFile(reviewSaveRequest.getMainFile());
-        List<CommonFile> subFiles = fileTranslator.translateFileList(reviewSaveRequest.getSubFiles());
+        CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
+        List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
 
         for(CommonFile subFile : subFiles){
             mainFile.connectFile(subFile);
@@ -64,27 +63,27 @@ public class ReviewService {
         return ReviewResponse.of(review);
     }
 
-    public ReviewResponse update(Long reviewId, ReviewSaveRequest reviewSaveRequest) throws IOException {
+    public ReviewResponse modify(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
         CommonFile mainFile = review.getFile();
         List<CommonFile> subFiles = review.getFile().getChild();
 
-        if(reviewSaveRequest.getMainFile() != null){
+        if(requestMainFile != null){
             //  기존 이미지 삭제
             FileUtils.delete(new File(mainFile.getFileName()));
         }
         // 이미지 업데이트
-        mainFile = fileTranslator.translateFile(reviewSaveRequest.getMainFile());
+        mainFile = fileTranslator.translateFile(requestMainFile);
 
-        if(reviewSaveRequest.getSubFiles() != null){
+        if(requestSubFiles != null){
             // 기존 이미지 삭제
             for(CommonFile subFile : subFiles){
                 FileUtils.delete(new File(subFile.getFileName()));
             }
         }
         // 이미지 업데이트
-        subFiles = fileTranslator.translateFileList(reviewSaveRequest.getSubFiles());
+        subFiles = fileTranslator.translateFileList(requestSubFiles);
 
         for (CommonFile subFile : subFiles) {
             mainFile.connectFile(subFile);

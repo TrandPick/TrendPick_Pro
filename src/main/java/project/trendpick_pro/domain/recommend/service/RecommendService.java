@@ -33,7 +33,7 @@ public class RecommendService {
     private final ProductService productService;
     private final MemberRepository memberRepository;
 
-    @Value("${file.dir}")
+    @Value("${file.path}")
     private String filePath;
     //recommend -> 태그 기반 추천 상품들이 있어야 함
 

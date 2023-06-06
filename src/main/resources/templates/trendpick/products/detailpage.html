@@ -1,10 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 상세 페이지</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/daisyui/1.14.0/full.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100">
+<div class="container mx-auto px-6 py-8">
+    <h2 class="text-4xl font-bold mb-8" th:text="${productResponse.name}">제품명</h2>
 
+    <div class="md:flex md:items-center">
+        <div class="md:w-1/2">
+            <img th:src="${productResponse.mainFile}" class="rounded" alt="메인 이미지">
+            <div class="mt-4 flex" th:each="image : ${productResponse.subFiles}">
+                <img th:src="${image}" class="rounded w-24 mr-2" alt="서브 이미지">
+            </div>
+        </div>
+
+        <div class="md:w-1/2 ml-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">상품 설명</h2>
+            <p class="mb-4" th:text="${productResponse.description}">상품 설명</p>
+
+            <h2 class="text-xl font-bold text-gray-800 mb-2">상세 정보</h2>
+            <ul class="mb-8">
+                <li>메인 카테고리: <span class="text-gray-700" th:text="${productResponse.mainCategory}">메인 카테고리</span></li>
+                <li>서브 카테고리: <span class="text-gray-700" th:text="${productResponse.subCategory}">서브 카테고리</span></li>
+                <li>브랜드: <span class="text-gray-700" th:text="${productResponse.brand}">브랜드</span></li>
+                <li>가격: <span class="text-gray-700" th:text="${productResponse.price}">가격</span></li>
+                <li>재고: <span class="text-gray-700" th:text="${productResponse.stock}">재고</span></li>
+                <li>태그:
+                    <ul th:each="tag : ${productResponse.tags}">
+                        <li class="text-gray-700" th:text="${tag.name}">태그</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <button th:if="${productResponse.role != 'MEMBER'}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none" type="button" onclick="location.href='@{/trendpick/cart/add/${productResponse.id}}'">장바구니에 추가</button>
+            <button th:if="${productResponse.role != 'MEMBER'}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 focus:outline-none ml-4" type="button" onclick="location.href='@{/trendpick/products/buy/${productResponse.id}}'">바로 구매하기</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -32,6 +32,10 @@ public class MemberService {
         return memberRepository.findByUsername(username);
     }
 
+    public Optional<Member> findByEmail(String username){
+        return memberRepository.findByEmail(username);
+    }
+
     @Transactional
     public void register(JoinForm joinForm) {
 
@@ -57,14 +61,17 @@ public class MemberService {
                 .role(roleType)
                 .build();
 
-        Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();
-        for (String tag : joinForm.tags()) {
+        if (joinForm.tags() != null) {
+            Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();
+            for (String tag : joinForm.tags()) {
 //            Tag findTag = tagRepository.findByName(tag).orElseThrow();
 //            favoriteTag.connectMember(member);
-            FavoriteTag favoriteTag = new FavoriteTag(tag);
-            favoriteTags.add(favoriteTag);
+                FavoriteTag favoriteTag = new FavoriteTag(tag);
+                favoriteTags.add(favoriteTag);
+            }
+            member.changeTags(favoriteTags);
         }
-        member.changeTags(favoriteTags);
+
         memberRepository.save(member);
     }
 

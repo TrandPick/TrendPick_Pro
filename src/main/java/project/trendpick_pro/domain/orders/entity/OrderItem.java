@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.product.entity.Product;
 
 @Entity
@@ -31,12 +32,16 @@ public class OrderItem {
     @Column(name = "count", nullable = false)
     private int count;
 
-    public OrderItem(Product product, int orderPrice, int count) {
+    private OrderItem(Product product, int orderPrice, int count) {
         this.product = product;
         this.orderPrice = orderPrice;
         this.count = count;
 
         product.removeStock(count);
+    }
+
+    public static OrderItem of(Product product, OrderItemDto orderItemDto) {
+        return new OrderItem(product, orderItemDto.getPrice(), orderItemDto.getCount());
     }
 
     public void connectOrder(Order order) {

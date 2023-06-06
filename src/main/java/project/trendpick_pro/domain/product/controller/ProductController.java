@@ -1,10 +1,8 @@
 package project.trendpick_pro.domain.product.controller;
 
-import io.swagger.v3.core.util.Json;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,21 +11,17 @@ import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
+import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.repository.MemberRepository;
-import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
-import project.trendpick_pro.domain.tags.tag.service.TagService;
+import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -36,23 +30,24 @@ import java.util.Map;
 public class ProductController {
 
     private final ProductService productService;
-    private final TagService tagService;
+    private final RecommendService recommendService;
+
+    private final TagNameService tagNameService;
+    private final BrandService brandService;
 
     private final MainCategoryService mainCategoryService;
     private final SubCategoryService subCategoryService;
-    private final BrandService brandService;
-    private final RecommendService recommendService;
-    private final MemberRepository memberRepository;
+
+    private final Rq rq;
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("/register")
-    public String registerProduct(ProductSaveRequest productSaveRequest, Model model) {
+    public String registerProduct(ProductSaveRequest productSaveRequest, @RequestParam("main-category") String mainCategory, Model model) {
         model.addAttribute("productSaveRequest", productSaveRequest);
-        model.addAttribute("tags", tagService.getAllTags());
+        model.addAttribute("tags", tagNameService.findAll());
         model.addAttribute("mainCategories", mainCategoryService.findAll());
-        model.addAttribute("subCategories", subCategoryService.findAll());
+        model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
         model.addAttribute("brands", brandService.findAll());
-        log.debug("gotoregister");
         return "/trendpick/products/register";
     }
 
@@ -60,29 +55,23 @@ public class ProductController {
     @PostMapping("/register")
     public String register(@ModelAttribute @Valid ProductSaveRequest productSaveRequest,
                            @RequestParam("mainFile") MultipartFile mainFile,
-                           @RequestParam("subFiles") List<MultipartFile> subFiles, @NotNull Model model) throws IOException {
+                           @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
         log.info("registerProduct: {}", productSaveRequest.toString());
-        ProductResponse productResponse = productService.register(productSaveRequest, mainFile, subFiles);
-        model.addAttribute("productResponse", productResponse);
-
-        return "redirect:/trendpick/products/detailpage";
+        Long id = productService.register(productSaveRequest, mainFile, subFiles);
+        return "redirect:/trendpick/products/" + id;
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @PostMapping("/edit/{productId}")
     public String modifyProduct(@PathVariable Long productId, @Valid ProductSaveRequest productSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
-                                @RequestParam("subFiles") List<MultipartFile> subFiles, Model model) throws IOException {
-
-        ProductResponse productResponse = productService.modify(productId, productSaveRequest, mainFile, subFiles   );
-        model.addAttribute("productResponse", productResponse);
-
-        return "redirect:/trendpick/products/" + productResponse.getId();
+                                @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
+        Long id = productService.modify(productId, productSaveRequest, mainFile, subFiles);
+        return "redirect:/trendpick/products/" + id;
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @DeleteMapping("/{productId}")
     public String deleteProduct(@PathVariable Long productId) {
-
         productService.delete(productId);
         return "redirect:/trendpick/products/list";
     }
@@ -101,10 +90,17 @@ public class ProductController {
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
                                  @RequestParam(value = "sort", defaultValue = "1") Integer sortCode,
                                  Model model) {
-        if (mainCategory.equals("추천")) {
-            model.addAttribute("productResponses", recommendService.getFindAll(offset));
+        Optional<Member> member = rq.CheckMember();
+
+        if (member.isPresent()) {
+            if (mainCategory.equals("추천")) {
+                model.addAttribute("productResponses", recommendService.getFindAll(offset));
+            } else {
+                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory, sortCode));
+            }
         } else {
             model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory, sortCode));
-        } return "/trendpick/products/list";
+        }
+        return "/trendpick/products/list";
     }
 }

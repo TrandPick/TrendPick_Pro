@@ -13,15 +13,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.brand.entity.Brand;
-import project.trendpick_pro.domain.brand.repository.BrandRepository;
+import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.entity.SubCategory;
-import project.trendpick_pro.domain.category.repository.MainCategoryRepository;
-import project.trendpick_pro.domain.category.repository.SubCategoryRepository;
+import project.trendpick_pro.domain.category.service.MainCategoryService;
+import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
+import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
+import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -37,7 +39,6 @@ import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
-import project.trendpick_pro.domain.tags.tag.service.TagService;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,21 +51,23 @@ import java.util.*;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final MemberRepository memberRepository;
-    private final MainCategoryRepository mainCategoryRepository;
-    private final SubCategoryRepository subCategoryRepository;
-    private final BrandRepository brandRepository;
+
+    private final MainCategoryService mainCategoryService;
+    private final SubCategoryService subCategoryService;
+    private final BrandService brandService;
+
     private final FileTranslator fileTranslator;
     private final FavoriteTagService favoriteTagService;
-    private final TagService tagService;
 
-    @Value("${file.dir}")
+    private final Rq rq;
+
+    @Value("${file.path}")
     private String filePath;
 
     @Transactional
-    public ProductResponse register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public Long register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        CheckMember();
+        rq.CheckMember();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
         List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
@@ -74,46 +77,42 @@ public class ProductService {
         }
 
         Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
-        for (String tagName : productSaveRequest.tags()) {
+        for (String tagName : productSaveRequest.getTags()) {
             tags.add(new Tag(tagName));
         }
 
-        MainCategory mainCategory = mainCategoryRepository.findByName(productSaveRequest.mainCategory());
-        SubCategory subCategory = subCategoryRepository.findByName(productSaveRequest.subCategory());
-        Brand brand = brandRepository.findByName(productSaveRequest.brand());
+        MainCategory mainCategory = mainCategoryService.findByName(productSaveRequest.getMainCategory());
+        SubCategory subCategory = subCategoryService.findByName(productSaveRequest.getSubCategory());
+        Brand brand = brandService.findByName(productSaveRequest.getBrand());
 
         Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile);
-        for(Tag tag : tags)
-            product.addTag(tag);
+        product.addTag(tags);
 
         productRepository.save(product);
-        return ProductResponse.of(product);
+        return product.getId();
     }
 
     @Transactional
-    public ProductResponse modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public Long modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        CheckMember();
+        rq.CheckMember();
 
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
         CommonFile mainFile = product.getFile();
         List<CommonFile> subFiles = product.getFile().getChild();
 
         if(requestMainFile!=null){
-            //  기존 이미지 삭제
             FileUtils.delete(new File(mainFile.getFileName()));
-            // 이미지 업데이트
         }
 
         mainFile = fileTranslator.translateFile(requestMainFile);
 
         if(requestSubFiles!=null){
-            // 기존 이미지 삭제
             for(CommonFile subFile:subFiles){
                 FileUtils.delete(new File(subFile.getFileName()));
             }
         }
-        // 이미지 업데이트
+
         subFiles = fileTranslator.translateFileList(requestSubFiles);
 
         for (CommonFile subFile : subFiles) {
@@ -121,15 +120,12 @@ public class ProductService {
         }
 
         product.update(productSaveRequest, mainFile);
-
-        return ProductResponse.of(product);
+        return product.getId();
     }
 
     @Transactional
     public void delete(Long productId) {
-
-        CheckMember();
-
+        rq.CheckMember();
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
         productRepository.delete(product);
     }
@@ -137,10 +133,15 @@ public class ProductService {
     public ProductResponse show(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
 
-        Member member = CheckMember();
-        favoriteTagService.updateTag(member, product, TagType.SHOW);
+        Optional<Member> member = rq.CheckMember();
 
-        return ProductResponse.of(product);
+        if (member.isPresent()){
+            Member checkMember = member.get();
+            favoriteTagService.updateTag(checkMember, product, TagType.SHOW);
+            return ProductResponse.of(filePath, product, checkMember.getRole().getValue());
+        } else {
+            throw new MemberNotFoundException("존재하지 않는 회원입니다.");
+        }
     }
 
     public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory, Integer sortCode) {
@@ -157,18 +158,6 @@ public class ProductService {
                 }).toList();
 
         return new PageImpl<>(list, pageable, listResponses.getTotalElements());
-    }
-
-
-    private Member CheckMember() {
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-
-        if (member.getRole().equals(RoleType.MEMBER)) {
-            throw new MemberNotMatchException("허용된 권한이 아닙니다.");
-        }
-        return member;
     }
 
     public List<Product> getRecommendProduct(Member member){
