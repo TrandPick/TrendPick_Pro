@@ -27,15 +27,22 @@ public class CartItem {
     private String size; // 해당 상품 사이즈
     private int count; // 해당 상품 수량
 
-
-    public static CartItem createCartItem(Cart cart, Product product, CartItemRequest cartItemRequest){
-        CartItem cartItem = new CartItem();
-        cartItem.setCart(cart);
-        cartItem.setProduct(product);
-        cartItem.setColor(cartItemRequest.getColor());
-        cartItem.setSize(cartItemRequest.getSize());
-        cartItem.setCount(cartItemRequest.getCount());
-        return cartItem;
+    @Builder
+    public CartItem(Cart cart, Product product, String color, String size, int count) {
+        this.cart = cart;
+        this.product = product;
+        this.color = color;
+        this.size = size;
+        this.count = count;
+    }
+    public static CartItem of(Cart cart, Product product, CartItemRequest cartItemRequest){
+        return CartItem.builder()
+                .cart(cart)
+                .product(product)
+                .color(cartItemRequest.getColor())
+                .size(cartItemRequest.getSize())
+                .count(cartItemRequest.getCount())
+                .build();
     }
     public void addCount(int count){
         this.count += count;

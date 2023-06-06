@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>장바구니</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+
+<h1>장바구니</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>상품명</th>
+        <th>색상</th>
+        <th>사이즈</th>
+        <th>수량</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${cartItems}">
+        <td th:text="${item.product.name}"></td>
+        <td th:text="${item.color}"></td>
+        <td th:text="${item.size}"></td>
+        <td th:text="${item.count}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

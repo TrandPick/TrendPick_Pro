@@ -63,6 +63,7 @@ public class BaseData {
 
     @Bean
     CommandLineRunner initData(
+            ProductRepository productRepository,
             TagNameService tagNameService,
             MemberService memberService,
             MainCategoryService mainCategoryService,
@@ -166,11 +167,12 @@ public class BaseData {
                 //상품 4는 member의 선호태그를 가지고 있지 않으므로 추천되지 않아야 한다.
 
 //                상품3은 시티보이룩, 빈티지룩, 로멘틱룩을 모두 가지고 있다.
-//                Set<Tag> tags3 = new LinkedHashSet<>();
-//                tags3.add(new Tag("시티보이룩"));
-//                tags3.add(new Tag("빈티지룩"));
-//                tags3.add(new Tag("로멘틱룩"));
-//                Product product3 = Product.builder().name("상품3").tags(tags3).description("설명3").price(500).stock(100).build();
+                Set<Tag> tags3 = new LinkedHashSet<>();
+                tags3.add(new Tag("시티보이룩"));
+                tags3.add(new Tag("빈티지룩"));
+                tags3.add(new Tag("로멘틱룩"));
+                Product product3 = Product.builder().name("상품3").tags(tags3).description("설명3").price(500).stock(100).build();
+                productRepository.save(product3);
             }
         };
     }
