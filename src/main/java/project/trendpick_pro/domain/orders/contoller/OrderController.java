@@ -13,6 +13,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.service.MemberService;
+import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
@@ -20,8 +21,10 @@ import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -83,11 +86,26 @@ public class OrderController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
-    public String orderListByMember(@RequestParam(value = "page", defaultValue = "0") int offset,
+    public String orderListByMember(
+//            @RequestParam(value = "page", defaultValue = "0") int offset,
                                     Model model) {
-        Member member = memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        Page<OrderResponse> orderList = orderService.findAllByMember(member, offset);
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
+//        Optional<Member> member = memberService.findByEmail(username);
+//
+//        Page<OrderResponse> orderList = orderService.findAllByMember(member.get(), offset);
+        List<OrderResponse> orderList = new ArrayList<>();
+        orderList.add(OrderResponse.builder()
+                .orderId(1L)
+                .brandName("나이키")
+                .productName("나이키모자")
+                .size("M")
+                .orderDate(LocalDateTime.now())
+                .totalPrice(5000)
+                .orderStatus("주문중")
+                .deliveryStatus("배송중")
+                .build());
+
         model.addAttribute("orderList", orderList);
         return "trendpick/usr/member/orders";
     }

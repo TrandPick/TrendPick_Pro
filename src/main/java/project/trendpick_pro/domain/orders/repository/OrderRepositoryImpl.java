@@ -38,8 +38,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.size,
                         order.createdDate,
                         order.totalPrice,
-                        order.status,
-                        delivery.state)
+                        order.status.stringValue(),
+                        delivery.state.stringValue())
                 )
                 .from(order)
                 .join(order.member, member)
