@@ -5,9 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.trendpick_pro.domain.delivery.entity.DeliveryState;
-import project.trendpick_pro.domain.orders.entity.Order;
-import project.trendpick_pro.domain.orders.entity.OrderItem;
 
 import java.time.LocalDateTime;
 

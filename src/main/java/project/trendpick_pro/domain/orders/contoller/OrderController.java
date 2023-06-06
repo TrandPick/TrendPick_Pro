@@ -31,7 +31,7 @@ public class OrderController {
     private final ProductRepository productRepository;
 
     @GetMapping("/order")
-    public  String order(@ModelAttribute OrderForm orderForm, Model model){
+    public  String orderForm(@ModelAttribute OrderForm orderForm, Model model){
 //        MemberInfoDto memberInfo = new MemberInfoDto(2L, "admin", "admin@naver.com", "000", "서울");
 //        List<OrderItemDto> orderItems = new ArrayList<>();
 //        orderItems.add(new OrderItemDto(1L, "상품1", 5, 500));
@@ -47,18 +47,18 @@ public class OrderController {
 
     @PostMapping("/order")
     @ResponseBody
-    public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
+    public synchronized String order(@ModelAttribute("orderForm") OrderForm orderForm) {
 
 
-        System.out.println("회원 이름: " + orderForm.getMemberInfo().getName());
-        System.out.println("이메일: " + orderForm.getMemberInfo().getEmail());
-        System.out.println("주문 아이템 목록:");
-        for (OrderItemDto orderItem : orderForm.getOrderItems()) {
-            System.out.println("상품명: " + orderItem.getProductName());
-            System.out.println("수량: " + orderItem.getCount());
-            System.out.println("가격: " + orderItem.getPrice());
-        }
-        System.out.println("결제 수단: " + orderForm.getPaymentMethod());
+//        System.out.println("회원 이름: " + orderForm.getMemberInfo().getName());
+//        System.out.println("이메일: " + orderForm.getMemberInfo().getEmail());
+//        System.out.println("주문 아이템 목록:");
+//        for (OrderItemDto orderItem : orderForm.getOrderItems()) {
+//            System.out.println("상품명: " + orderItem.getProductName());
+//            System.out.println("수량: " + orderItem.getCount());
+//            System.out.println("가격: " + orderItem.getPrice());
+//        }
+//        System.out.println("결제 수단: " + orderForm.getPaymentMethod());
 
         Member member = memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 //        if(member.getId() != orderForm.getMemberInfo().getMemberId())
