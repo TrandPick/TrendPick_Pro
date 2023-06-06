@@ -67,7 +67,7 @@ public class ProductService {
     @Transactional
     public Long register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        rq.CheckMember();
+        rq.CheckAdmin();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
         List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
@@ -95,7 +95,7 @@ public class ProductService {
     @Transactional
     public Long modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        rq.CheckMember();
+        rq.CheckAdmin();
 
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
         CommonFile mainFile = product.getFile();
@@ -125,7 +125,7 @@ public class ProductService {
 
     @Transactional
     public void delete(Long productId) {
-        rq.CheckMember();
+        rq.CheckAdmin();
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
         productRepository.delete(product);
     }
@@ -133,7 +133,7 @@ public class ProductService {
     public ProductResponse show(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
 
-        Optional<Member> member = rq.CheckMember();
+        Optional<Member> member = rq.CheckLogin();
 
         if (member.isPresent()){
             Member checkMember = member.get();
