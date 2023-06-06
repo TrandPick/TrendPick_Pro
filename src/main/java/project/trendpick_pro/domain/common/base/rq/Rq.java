@@ -10,13 +10,15 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
+import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.member.service.MemberService;
 
-import java.util.Date;
+import java.util.Optional;
 
 @Component
-@RequestScope   //매 요청마다 생성됨
+@RequestScope
 public class Rq {
     private final MemberService memberService;
     private final HttpServletRequest req;
@@ -41,26 +43,46 @@ public class Rq {
         }
     }
 
-    // 로그인 되어 있는지 체크
-    public boolean isLogin() {
-        return user != null;
-    }
-
-    // 로그아웃 되어 있는지 체크
-    public boolean isLogout() {
-        return !isLogin();
-    }
-
     // 로그인 된 회원의 객체
     public Member getMember() {
 
         // 데이터가 없는지 체크
         if (member == null) {
-            Member member =
-                    memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+            member = memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                            .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
         }
-
         return member;
     }
 
+    public Optional<Member> CheckAdmin() {
+        Optional<Member> member = CheckLogin();
+        Member checkMember = member.get();
+        if (checkMember.getRole().equals(RoleType.MEMBER)) {
+            throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+        }
+        return member;
+    }
+
+    public Optional<Member> CheckMember() {
+        Optional<Member> member = CheckLogin();
+        Member checkMember = member.get();
+        if (checkMember.getRole().equals(RoleType.MEMBER)) {
+            return member;
+
+        }
+        throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+    }
+
+    public Optional<Member> CheckLogin() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
+        Optional<Member> member = memberService.findByEmail(username);
+
+        if (member.isPresent()) {
+            return member;
+        }
+        else {
+            throw new MemberNotFoundException("존재하지 않는 회원입니다.");
+        }
+    }
 }

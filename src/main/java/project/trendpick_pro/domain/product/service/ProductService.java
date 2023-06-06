@@ -19,9 +19,11 @@ import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
+import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
+import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -50,7 +52,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    private final MemberRepository memberRepository;
     private final MainCategoryService mainCategoryService;
     private final SubCategoryService subCategoryService;
     private final BrandService brandService;
@@ -58,13 +59,15 @@ public class ProductService {
     private final FileTranslator fileTranslator;
     private final FavoriteTagService favoriteTagService;
 
+    private final Rq rq;
+
     @Value("${file.path}")
     private String filePath;
 
     @Transactional
     public Long register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        CheckMember();
+        rq.CheckMember();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
         List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
@@ -92,7 +95,7 @@ public class ProductService {
     @Transactional
     public Long modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        Member member = CheckMember();
+        rq.CheckMember();
 
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
         CommonFile mainFile = product.getFile();
@@ -122,7 +125,7 @@ public class ProductService {
 
     @Transactional
     public void delete(Long productId) {
-        CheckMember();
+        rq.CheckMember();
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
         productRepository.delete(product);
     }
@@ -130,10 +133,15 @@ public class ProductService {
     public ProductResponse show(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
 
-        Member member = CheckMember();
-        favoriteTagService.updateTag(member, product, TagType.SHOW);
+        Optional<Member> member = rq.CheckMember();
 
-        return ProductResponse.of(filePath, product, member.getRole().getValue());
+        if (member.isPresent()){
+            Member checkMember = member.get();
+            favoriteTagService.updateTag(checkMember, product, TagType.SHOW);
+            return ProductResponse.of(filePath, product, checkMember.getRole().getValue());
+        } else {
+            throw new MemberNotFoundException("존재하지 않는 회원입니다.");
+        }
     }
 
     public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory, Integer sortCode) {
@@ -150,18 +158,6 @@ public class ProductService {
                 }).toList();
 
         return new PageImpl<>(list, pageable, listResponses.getTotalElements());
-    }
-
-
-    private Member CheckMember() {
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-
-        if (member.getRole().equals(RoleType.MEMBER)) {
-            throw new MemberNotMatchException("허용된 권한이 아닙니다.");
-        }
-        return member;
     }
 
     public List<Product> getRecommendProduct(Member member){
