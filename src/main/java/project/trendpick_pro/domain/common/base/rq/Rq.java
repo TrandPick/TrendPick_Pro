@@ -54,7 +54,26 @@ public class Rq {
         return member;
     }
 
+    public Optional<Member> CheckAdmin() {
+        Optional<Member> member = CheckLogin();
+        Member checkMember = member.get();
+        if (checkMember.getRole().equals(RoleType.MEMBER)) {
+            throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+        }
+        return member;
+    }
+
     public Optional<Member> CheckMember() {
+        Optional<Member> member = CheckLogin();
+        Member checkMember = member.get();
+        if (checkMember.getRole().equals(RoleType.MEMBER)) {
+            return member;
+
+        }
+        throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+    }
+
+    public Optional<Member> CheckLogin() {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
         Optional<Member> member = memberService.findByEmail(username);
