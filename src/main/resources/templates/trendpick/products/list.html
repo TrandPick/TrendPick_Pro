@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>게시물 목록</title>
+    <title>상품 목록</title>
 </head>
 <body>
-<div th:each="productResponse : ${productResponses}">
-    <form th:action="@{/trendpick/products/{id}(id=${productResponse.id})}" th:method="post">
-        <div th:onclick="${'#' + productResponse.id}.submit()">
-            <h2 th:text="${productResponse.name}"></h2>
-            <p>Brand: <span th:text="${productResponse.brand}"></span></p>
-            <p>Main File: <span th:text="${productResponse.mainFile}"></span></p>
-            <p>Price: <span th:text="${productResponse.price}"></span></p>
-        </div>
-    </form>
+<div th:each="product : ${productResponses}">
+    <div>
+        <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
+            <h2 th:text="${product.name}"></h2>
+            <img th:src="${product.mainFile}" alt="Product Image"/>
+        </a>
+        <p>Brand: <span th:text="${product.brand}"></span></p>
+        <p>Price: <span th:text="${product.price}"></span></p>
+    </div>
 </div>
 
-<!-- 페이지네이션 -->
-<div>
-    <a th:if="${productResponses.hasPrevious()}" th:href="@{/trendpick/products/list(page=${productResponses.number})}">Previous</a>
-    <span th:each="i : ${#numbers.sequence(0, productResponses.totalPages)}">
-        <a th:href="@{/trendpick/products/list(page=${i})}" th:text="${i+1}" th:class="${productResponses.number == i ? 'current-page' : ''}"></a>
-    </span>
-    <a th:if="${productResponses.hasNext()}" th:href="@{/trendpick/products/list(page=${productResponses.number+1})}">Next</a>
+<div th:if="productResponses. != null">
+    <!-- 페이지네이션 -->
+    <div>
+        <a th:if="${productResponses.hasPrevious()}" th:href="@{/trendpick/products/list(page=${productResponses.number})}">Previous</a>
+        <span th:each="i : ${#numbers.sequence(0, productResponses.totalPages)}">
+            <a th:href="@{/trendpick/products/list(page=${i})}" th:text="${i+1}" th:class="${productResponses.number == i ? 'current-page' : ''}"></a>
+        </span>
+        <a th:if="${productResponses.hasNext()}" th:href="@{/trendpick/products/list(page=${productResponses.number+1})}">Next</a>
+    </div>
 </div>
-
 </body>
 </html>

@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
+import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -19,6 +21,7 @@ import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -34,6 +37,8 @@ public class ProductController {
 
     private final MainCategoryService mainCategoryService;
     private final SubCategoryService subCategoryService;
+
+    private final Rq rq;
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("/register")
@@ -85,10 +90,17 @@ public class ProductController {
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
                                  @RequestParam(value = "sort", defaultValue = "1") Integer sortCode,
                                  Model model) {
-        if (mainCategory.equals("추천")) {
-            model.addAttribute("productResponses", recommendService.getFindAll(offset));
+        Optional<Member> member = rq.CheckMember();
+
+        if (member.isPresent()) {
+            if (mainCategory.equals("추천")) {
+                model.addAttribute("productResponses", recommendService.getFindAll(offset));
+            } else {
+                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory, sortCode));
+            }
         } else {
             model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory, sortCode));
-        } return "/trendpick/products/list";
+        }
+        return "/trendpick/products/list";
     }
 }
