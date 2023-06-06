@@ -30,7 +30,7 @@ import java.util.Optional;
 public class ReviewController {
     private final ReviewService reviewService;
     private final MemberRepository memberRepository;
-
+    private final Rq rq;
 
     @GetMapping("/register")
     public String registerReview() {
@@ -41,9 +41,8 @@ public class ReviewController {
     public String createReview(@Valid ReviewSaveRequest reviewCreateRequest,
                                @RequestParam("mainFile") MultipartFile mainFile,
                                @RequestParam("subFiles") List<MultipartFile> subFiles, Model model) throws Exception {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-        //어떤 상품인지 받아와야 함
+        Member member = rq.getMember();
+
         ReviewResponse reviewResponse = reviewService.createReview(member, 1L, reviewCreateRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
@@ -79,7 +78,7 @@ public class ReviewController {
         ReviewResponse reviewResponse = reviewService.modify(reviewId, reviewSaveRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
-        return "redirect:/trendpick/review/list/" + reviewId;
+        return "redirect:/trendpick/review/" + reviewId;
     }
 
 
