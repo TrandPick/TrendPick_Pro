@@ -13,7 +13,9 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -62,8 +64,7 @@ public class BaseData {
     @Bean
     CommandLineRunner initData(
             TagNameService tagNameService,
-            ProductService productService,
-            MemberRepository memberRepository,
+            MemberService memberService,
             MainCategoryService mainCategoryService,
             SubCategoryService subCategoryService,
             BrandService brandService
@@ -87,6 +88,34 @@ public class BaseData {
                     brandService.save(brand);
                 }
 
+                JoinForm admin = JoinForm.builder()
+                        .email("admin@naver.com")
+                        .password("12345")
+                        .username("admin")
+                        .phoneNumber("010-1234-1234")
+                        .state("ADMIN")
+                        .build();
+
+                JoinForm brand_admin = JoinForm.builder()
+                        .email("brand@naver.com")
+                        .password("12345")
+                        .username("brand")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .build();
+
+                JoinForm member = JoinForm.builder()
+                        .email("trendpick@naver.com")
+                        .password("12345")
+                        .username("sooho")
+                        .phoneNumber("010-1234-1234")
+                        .state("MEMBER")
+                        .tags(List.of("오버핏청바지", "로맨틱룩"))
+                        .build();
+
+                memberService.register(admin);
+                memberService.register(brand_admin);
+                memberService.register(member);
 
 //                member1은 시티보이룩(10점), 빈티지룩(5점), 로멘틱룩(1점)을 선호 태그로 가지고 있다.
 //                상품1은 시티보이룩을 가지고 있다
