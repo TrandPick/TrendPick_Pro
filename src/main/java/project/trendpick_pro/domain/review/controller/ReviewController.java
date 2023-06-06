@@ -30,14 +30,14 @@ import java.util.Optional;
 public class ReviewController {
     private final ReviewService reviewService;
     private final MemberRepository memberRepository;
-    private final Rq rq;
+
 
     @GetMapping("/register")
     public String registerReview() {
         return "/trendpick/review/register";
     }
 
-    @PostMapping("/write")
+    @PostMapping("/register")
     public String createReview(@Valid ReviewSaveRequest reviewCreateRequest,
                                @RequestParam("mainFile") MultipartFile mainFile,
                                @RequestParam("subFiles") List<MultipartFile> subFiles, Model model) throws Exception {
@@ -47,11 +47,11 @@ public class ReviewController {
         ReviewResponse reviewResponse = reviewService.createReview(member, 1L, reviewCreateRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
-        return "/trendpick/review/list";
+        return "redirect:/trendpick/review/list";
 
     }
 
-    @GetMapping("/list/{reviewId}")
+    @GetMapping("/{reviewId}")
     public String showReview(@PathVariable Long reviewId, Model model){
         ReviewResponse reviewResponse = reviewService.showReview(reviewId);
         model.addAttribute("reviewResponse", reviewResponse);
@@ -62,17 +62,8 @@ public class ReviewController {
     public String deleteReview(@PathVariable Long reviewId) {
         reviewService.delete(reviewId);
 
-        //return "redirect:/trendpick/review/list";
-        return "/trendpick/review/list";
+        return "redirect:/trendpick/review/list";
     }
-
-//    @PostMapping("/edit/{reviewId}")
-//    public String updateReview(@PathVariable Long reviewId, ReviewSaveRequest reviewSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
-//                               @RequestParam("subFiles") List<MultipartFile> subFiles, Model model) throws IOException {
-//        Long id = reviewService.modify(reviewId, reviewSaveRequest, mainFile, subFiles);
-//
-//        return "redirect:/trendpick/review/list/" + id;
-//    }
 
     @GetMapping("/edit/{reviewId}")
     public String showUpdateReview(@PathVariable Long reviewId, Model model){

@@ -71,6 +71,7 @@ public class ReviewService {
         return ReviewResponse.of(review);
     }
 
+    @Transactional
     public ReviewResponse modify(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
