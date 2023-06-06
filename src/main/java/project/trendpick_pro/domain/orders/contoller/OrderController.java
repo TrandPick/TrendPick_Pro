@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
+import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
@@ -64,7 +65,8 @@ public class OrderController {
 //        }
 //        System.out.println("결제 수단: " + orderForm.getPaymentMethod());
 
-        Member member = memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Member member = memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 //        if(member.getId() != orderForm.getMemberInfo().getMemberId())
 //            throw new RuntimeException("잘못된 접근입니다.");
 
