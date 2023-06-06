@@ -62,7 +62,7 @@ public class MemberService {
                 .role(roleType)
                 .build();
 
-        if (!joinForm.tags().isEmpty()) {
+        if (joinForm.tags() != null) {
             Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();
             for (String tag : joinForm.tags()) {
 //            Tag findTag = tagRepository.findByName(tag).orElseThrow();
