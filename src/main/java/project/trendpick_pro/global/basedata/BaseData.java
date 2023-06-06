@@ -11,6 +11,7 @@ import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
+import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
@@ -22,10 +23,12 @@ import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +70,8 @@ public class BaseData {
             MemberService memberService,
             MainCategoryService mainCategoryService,
             SubCategoryService subCategoryService,
-            BrandService brandService
+            BrandService brandService,
+            ProductRepository productRepository
     ) {
         return new CommandLineRunner() {
             @Override
@@ -116,6 +120,42 @@ public class BaseData {
                 memberService.register(admin);
                 memberService.register(brand_admin);
                 memberService.register(member);
+
+                for(int n=1; n<=10; n++) {
+                    CommonFile mainFile = CommonFile.builder()
+                            .fileName("355d1034-90ac-420b-ae02-6656eeebd707.jpg")
+                            .build();
+                    List<CommonFile> subFiles = new ArrayList<>();
+                    subFiles.add(CommonFile.builder()
+                            .fileName("290ffec9-2da6-46dd-8779-86c27d48ef0c.jpg")
+                            .build());
+
+                    for (CommonFile subFile : subFiles) {
+                        mainFile.connectFile(subFile);
+                    }
+
+                    Product product = Product
+                            .builder()
+                            .name("멋쟁이 티셔츠"+n)
+                            .description("이 상품은 멋쟁이 티셔츠입니다."+n)
+                            .stock(50)
+                            .price(20000)
+                            .mainCategory(mainCategoryService.findByName("상의"))
+                            .subCategory(subCategoryService.findByName("반소매티셔츠"))
+                            .brand(brandService.findByName("나이키"))
+                            .file(mainFile)
+                            .build();
+
+                    Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+                    for (int i = 1; i <= 5; i++) {
+                        TagName tagName = tagNameService.findById(Long.valueOf(i+n));
+                        tags.add(new Tag(tagName.getName()));
+                    }
+
+                    product.addTag(tags);
+                    productRepository.save(product);
+                }
+
 
 //                member1은 시티보이룩(10점), 빈티지룩(5점), 로멘틱룩(1점)을 선호 태그로 가지고 있다.
 //                상품1은 시티보이룩을 가지고 있다

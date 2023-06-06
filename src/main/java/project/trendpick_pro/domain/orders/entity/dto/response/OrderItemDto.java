@@ -8,14 +8,16 @@ import lombok.Setter;
 public class OrderItemDto {
     private Long productId;
     private String productName;
+    private String size;
     private int count;
     private int price;
 
-    public OrderItemDto(Long productId, String productName, int count, int price) {
+    public OrderItemDto(Long productId, String productName, String size, int count, int price) {
         this.productName = productName;
         this.count = count;
         this.price = price;
         this.productId = productId;
+        this.size = size;
     }
 
     public OrderItemDto() {

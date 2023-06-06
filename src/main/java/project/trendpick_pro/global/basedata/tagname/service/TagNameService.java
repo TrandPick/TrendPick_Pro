@@ -26,4 +26,8 @@ public class TagNameService {
         List<TagName> tags = tagNameRepository.findAllBy();
         return tags.stream().map(tagName -> new TagNameResponse(tagName.getName())).toList();
     }
+
+    public TagName findById(Long id) {
+        return tagNameRepository.findById(id).get();
+    }
 }

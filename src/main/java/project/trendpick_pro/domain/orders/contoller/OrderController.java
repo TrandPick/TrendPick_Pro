@@ -19,6 +19,7 @@ import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
+import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 
 import java.time.LocalDateTime;
@@ -40,12 +41,17 @@ public class OrderController {
 
     @GetMapping("/order")
     public  String orderForm(@ModelAttribute OrderForm orderForm, Model model){
-//        MemberInfoDto memberInfo = new MemberInfoDto(2L, "admin", "admin@naver.com", "000", "서울");
-//        List<OrderItemDto> orderItems = new ArrayList<>();
-//        orderItems.add(new OrderItemDto(1L, "상품1", 5, 500));
-//        orderItems.add(new OrderItemDto(2L, "상품2", 1, 100));
-//        orderItems.add(new OrderItemDto(3L, "상품3", 2, 200));
-//        orderForm = new OrderForm(memberInfo, orderItems);
+        Member member = rq.CheckMember().get();
+        MemberInfoDto memberInfo = new MemberInfoDto(member.getId(), member.getUsername(), member.getEmail(), member.getPhoneNumber(), member.getAddress());
+        List<OrderItemDto> orderItems = new ArrayList<>();
+        Product product1 = productRepository.findById(1L).get();
+        Product product2 = productRepository.findById(2L).get();
+        Product product3 = productRepository.findById(3L).get();
+
+        orderItems.add(new OrderItemDto(product1.getId(), product1.getName(),"M", 5, product1.getPrice()));
+        orderItems.add(new OrderItemDto(product2.getId(), product2.getName(),"L", 1, product2.getPrice()));
+        orderItems.add(new OrderItemDto(product3.getId(), product3.getName(), "L", 7, product3.getPrice()));
+        orderForm = new OrderForm(memberInfo, orderItems);
 
         //상품 상세 또는 장바구니에서 OrderForm으로 데이터가 날라오게끔
         model.addAttribute("orderForm", orderForm);
@@ -68,10 +74,9 @@ public class OrderController {
 //        }
 //        System.out.println("결제 수단: " + orderForm.getPaymentMethod());
 
-        Member member = memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-//        if(member.getId() != orderForm.getMemberInfo().getMemberId())
-//            throw new RuntimeException("잘못된 접근입니다.");
+        Member member = rq.CheckMember().get();
+        if(member.getId()!=orderForm.getMemberInfo().getMemberId())
+            throw new RuntimeException("잘못된 접근입니다.");
 
         log.info(member.getUsername());
         log.info(String.valueOf(member.getId()));
@@ -79,6 +84,7 @@ public class OrderController {
         log.info(orderForm.getOrderItems().get(0).getProductName());
         log.info(String.valueOf(orderForm.getOrderItems().get(0).getProductId()));
 
+        //실제 상품이 없어서 오류
         orderService.order(member, orderForm);
         return "주문성공";
     }
