@@ -1,10 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>주문 목록</title>
 </head>
 <body>
+<h1>주문 목록</h1>
 
+<table>
+    <tr>
+        <th>주문 ID</th>
+        <th>상품 이미지</th>
+        <th>브랜드명</th>
+        <th>상품명</th>
+        <th>사이즈</th>
+        <th>주문일시</th>
+        <th>총 가격</th>
+        <th>주문 상태</th>
+        <th>배송 상태</th>
+    </tr>
+
+    <tr th:each="orderItem : ${orderList}">
+        <td th:text="${orderItem.orderId}"></td>
+        <td th:text="${orderItem.productFilePath}"></td>
+        <td th:text="${orderItem.brandName}"></td>
+        <td th:text="${orderItem.productName}"></td>
+        <td th:text="${orderItem.size}"></td>
+        <td th:text="${orderItem.orderDate}"></td>
+        <td th:text="${orderItem.totalPrice}"></td>
+        <td th:text="${orderItem.orderStatus}"></td>
+        <td th:text="${orderItem.deliveryStatus}"></td>
+    </tr>
+</table>
+
+<div th:if="${orderList.totalPages > 1}">
+    <ul>
+        <li th:each="pageNumber : ${#numbers.sequence(1, orderList.totalPages)}">
+            <a th:href="@{?page=${pageNumber}}">[[${pageNumber}]]</a>
+        </li>
+    </ul>
+</div>
 </body>
 </html>

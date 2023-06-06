@@ -2,6 +2,8 @@ package project.trendpick_pro.domain.orders.contoller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +13,9 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
+import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 
@@ -74,10 +78,15 @@ public class OrderController {
         return "주문성공";
     }
 
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
-    public String orderList(Model model) {
-//        Page<OrderResponse> responses = orderService.findAll(1L);
-//        model.addAttribute("orders", responses);
+    public String orderListByMember(@RequestParam(value = "page", defaultValue = "0") int offset,
+                                    Model model) {
+        Member member = memberService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        Page<OrderResponse> orderList = orderService.findAllByMember(member, offset);
+        model.addAttribute("orderList", orderList);
         return "trendpick/usr/member/orders";
     }
 
