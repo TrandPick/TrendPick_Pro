@@ -41,17 +41,17 @@ public class OrderController {
 
     @GetMapping("/order")
     public  String orderForm(@ModelAttribute OrderForm orderForm, Model model){
-        Member member = rq.CheckMember().get();
-        MemberInfoDto memberInfo = new MemberInfoDto(member.getId(), member.getUsername(), member.getEmail(), member.getPhoneNumber(), member.getAddress());
-        List<OrderItemDto> orderItems = new ArrayList<>();
-        Product product1 = productRepository.findById(1L).get();
-        Product product2 = productRepository.findById(2L).get();
-        Product product3 = productRepository.findById(3L).get();
-
-        orderItems.add(new OrderItemDto(product1.getId(), product1.getName(),"M", 5, product1.getPrice()));
-        orderItems.add(new OrderItemDto(product2.getId(), product2.getName(),"L", 1, product2.getPrice()));
-        orderItems.add(new OrderItemDto(product3.getId(), product3.getName(), "L", 7, product3.getPrice()));
-        orderForm = new OrderForm(memberInfo, orderItems);
+//        Member member = rq.CheckMember().get();
+//        MemberInfoDto memberInfo = new MemberInfoDto(member.getId(), member.getUsername(), member.getEmail(), member.getPhoneNumber(), member.getAddress());
+//        List<OrderItemDto> orderItems = new ArrayList<>();
+//        Product product1 = productRepository.findById(1L).get();
+//        Product product2 = productRepository.findById(2L).get();
+//        Product product3 = productRepository.findById(3L).get();
+//
+//        orderItems.add(new OrderItemDto(product1.getId(), product1.getName(),"M", 5, product1.getPrice()));
+//        orderItems.add(new OrderItemDto(product2.getId(), product2.getName(),"L", 1, product2.getPrice()));
+//        orderItems.add(new OrderItemDto(product3.getId(), product3.getName(), "L", 7, product3.getPrice()));
+//        orderForm = new OrderForm(memberInfo, orderItems);
 
         //상품 상세 또는 장바구니에서 OrderForm으로 데이터가 날라오게끔
         model.addAttribute("orderForm", orderForm);
@@ -62,31 +62,12 @@ public class OrderController {
     @PostMapping("/order")
     @ResponseBody
     public synchronized String order(@ModelAttribute("orderForm") OrderForm orderForm) {
-
-
-//        System.out.println("회원 이름: " + orderForm.getMemberInfo().getName());
-//        System.out.println("이메일: " + orderForm.getMemberInfo().getEmail());
-//        System.out.println("주문 아이템 목록:");
-//        for (OrderItemDto orderItem : orderForm.getOrderItems()) {
-//            System.out.println("상품명: " + orderItem.getProductName());
-//            System.out.println("수량: " + orderItem.getCount());
-//            System.out.println("가격: " + orderItem.getPrice());
-//        }
-//        System.out.println("결제 수단: " + orderForm.getPaymentMethod());
-
         Member member = rq.CheckMember().get();
         if(member.getId()!=orderForm.getMemberInfo().getMemberId())
             throw new RuntimeException("잘못된 접근입니다.");
 
-        log.info(member.getUsername());
-        log.info(String.valueOf(member.getId()));
-        log.info(orderForm.getMemberInfo().getName());
-        log.info(orderForm.getOrderItems().get(0).getProductName());
-        log.info(String.valueOf(orderForm.getOrderItems().get(0).getProductId()));
-
-        //실제 상품이 없어서 오류
         orderService.order(member, orderForm);
-        return "주문성공";
+        return "redirect:/trendpick/orders/list";
     }
 
 
@@ -96,23 +77,7 @@ public class OrderController {
 //            @RequestParam(value = "page", defaultValue = "0") int offset,
                                     Model model) {
 
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
-//        Optional<Member> member = memberService.findByEmail(username);
-//
-//        Page<OrderResponse> orderList = orderService.findAllByMember(member.get(), offset);
-        List<OrderResponse> orderList = new ArrayList<>();
-        orderList.add(OrderResponse.builder()
-                .orderId(1L)
-                .brandName("나이키")
-                .productName("나이키모자")
-                .size("M")
-                .orderDate(LocalDateTime.now())
-                .totalPrice(5000)
-                .orderStatus("주문중")
-                .deliveryStatus("배송중")
-                .build());
-
-        model.addAttribute("orderList", orderList);
+        model.addAttribute("orderList", orderService.findAllByMember(rq.CheckMember().get(), 0));
         return "trendpick/usr/member/orders";
     }
 

@@ -31,22 +31,23 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     public Page<OrderResponse> findAllByMember(OrderSearchCond orderSearchCond, Pageable pageable) {
         List<OrderResponse> result = queryFactory
                 .select(new QOrderResponse(
-                        product.id,
-                        product.file.fileName,
-                        product.brand.name,
-                        product.name,
+                        orderItem.product.id,
+                        orderItem.product.file.fileName,
+                        orderItem.product.brand.name,
+                        orderItem.product.name,
                         orderItem.size,
-                        order.createdDate,
-                        order.totalPrice,
-                        order.status.stringValue(),
-                        delivery.state.stringValue())
+                        orderItem.order.createdDate,
+                        orderItem.orderPrice,
+                        orderItem.order.status.stringValue(),
+                        orderItem.order.delivery.state.stringValue())
                 )
-                .from(order)
+                .from(orderItem)
+                .join(orderItem.order, order)
                 .join(order.member, member)
                 .on(member.id.eq(orderSearchCond.getMemberId()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(order.createdDate.asc())
+                .orderBy(orderItem.order.createdDate.asc())
                 .fetch();
 
         JPAQuery<Long> countQuery = queryFactory
