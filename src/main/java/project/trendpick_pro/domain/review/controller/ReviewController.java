@@ -32,18 +32,20 @@ public class ReviewController {
     private final MemberRepository memberRepository;
     private final Rq rq;
 
-    @GetMapping("/register")
-    public String registerReview() {
+    @GetMapping("/register/{productId}")
+    public String registerReview(@PathVariable("productId") Long productId, Model model) {
+        model.addAttribute("productId", productId);
         return "/trendpick/review/register";
     }
 
-    @PostMapping("/register")
+    @PostMapping("/register/{productId}")
     public String createReview(@Valid ReviewSaveRequest reviewCreateRequest,
                                @RequestParam("mainFile") MultipartFile mainFile,
-                               @RequestParam("subFiles") List<MultipartFile> subFiles, Model model) throws Exception {
+                               @RequestParam("subFiles") List<MultipartFile> subFiles,
+                               @PathVariable("productId") Long productId, Model model) throws Exception {
         Member member = rq.getMember();
 
-        ReviewResponse reviewResponse = reviewService.createReview(member, 1L, reviewCreateRequest, mainFile, subFiles);
+        ReviewResponse reviewResponse = reviewService.createReview(member, productId, reviewCreateRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
         return "redirect:/trendpick/review/list";

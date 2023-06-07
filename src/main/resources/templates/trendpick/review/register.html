@@ -8,11 +8,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
 <body>
-<form th:action="@{/trendpick/review/register}" th:object="${reviewSaveRequest}" method="post" enctype="multipart/form-data">
-<!--  <div class="form-control">-->
-<!--    <label class="label" for="title">제목</label>-->
-<!--    <input type="text" id="title" name="title" required>-->
-<!--  </div>-->
+<form th:action="@{|/trendpick/review/register/${productId}|}" th:object="${reviewSaveRequest}" method="post" enctype="multipart/form-data">
   <div class="form-control">
     <label class="label">
       <span class="label-text">제목</span>
@@ -20,11 +16,6 @@
     <input type="text" name="title" placeholder="제목" class="input input-bordered" autofocus/>
   </div>
 
-<!--  <div class="form-control">-->
-<!--    <label class="label" for="content">내용</label>-->
-<!--    <textarea id="content" name="content" required></textarea>-->
-<!--    <div class="error-message" data-error-message="content"></div>-->
-<!--  </div>-->
   <div class="form-control">
     <label class="label">
       <span class="label-text">내용</span>
@@ -32,10 +23,6 @@
     <input type="text" name="content" placeholder="내용" class="input input-bordered" autofocus/>
   </div>
 
-<!--  <div class="form-control">-->
-<!--    <label class="label"for="mainFile">메인 사진</label>-->
-<!--    <input type="file" id="mainFile" name="mainFile" required>-->
-<!--  </div>-->
   <div class="form-control">
     <label class="label">
       <span class="label-text">메인 사진</span>
@@ -62,7 +49,6 @@
       <option value="5">5</option>
     </select>
   </div>
-
 
   <button type="submit">리뷰 등록</button>
 </form>
