@@ -13,12 +13,10 @@ import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.cart.entity.dto.response.CartItemResponse;
-import project.trendpick_pro.domain.cart.entity.dto.response.CartResponse;
 import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.form.JoinForm;
-import project.trendpick_pro.domain.orders.entity.dto.request.OrderSaveRequest;
+import project.trendpick_pro.domain.member.service.MemberService;
 
 import java.util.List;
 
@@ -28,20 +26,30 @@ import java.util.List;
 @RequestMapping("/trendpick/usr/cart")
 public class CartController {
     private final CartService cartService;
+    private final MemberService memberService;
     private final Rq rq;
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showCart(Model model) {
-       List<Cart> carts=cartService.findByCartMember(rq.getMember());
-       model.addAttribute("carts",carts);
-        return "redirect:/trendpick/usr/cart/list";
+        Cart carts = cartService.getCartByUser(rq.getMember().getId());
+        List<CartItem> cartItems = cartService.CartView(carts);
+
+        int totalPrice = 0;
+        for (CartItem cartItem : cartItems) {
+            totalPrice += (cartItem.getProduct().getPrice() * cartItem.getCount());
+        }
+
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("totalPrice", totalPrice);
+        return "/trendPick/usr/cart/list";
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/add/{productId}")
-    public String addItemToCart(@PathVariable("productId") Long productId,CartItemRequest cartItemRequests,Model model) {
-        model.addAttribute("cartItemRequest",cartItemRequests);
+    public String addItemToCart(@PathVariable("productId") Long productId, CartItemRequest cartItemRequests, Model model) {
+        Member member = rq.getMember();
+        model.addAttribute("cartItemRequest", cartItemRequests);
         // 쇼핑을 계속 하시겠습니까? 띄우고 yes이면 main no면 cart로
         return "/trendpick/usr/cart/add";
     }
@@ -49,21 +57,23 @@ public class CartController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
-    public String addItem(Long productId, @ModelAttribute @Valid CartItemRequest cartItemRequests,Model model) {
-        CartItemResponse cartItemResponse=cartService.addItemToCart(productId,cartItemRequests);
-        model.addAttribute("cartItemResponse",cartItemResponse);
+    public String addItem(Long productId, @ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
+        CartItemResponse cartItemResponse = cartService.addItemToCart(productId, cartItemRequests);
+        model.addAttribute("cartItemResponse", cartItemResponse);
         // System.out.println(cartItemRequests.getCount());
         // System.out.println(cartItemRequests.getColor());
         // 쇼핑을 계속 하시겠습니까? 띄우고 yes이면 main no면 cart로
-        return "/trendpick/usr/cart/list";
+        return "redirect:/trendpick/usr/cart/list";
     }
 
+
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/remove")
-    public String removeItemFromCart(@RequestParam("cartItemId") Long cartItemId) {
-        Member member = rq.getMember();
-        cartService.removeItemFromCart(member, cartItemId);
-        return "redirect:/trendpick/list";
+    @GetMapping("{memberId}/{cartItemId}")
+    public String removeItem(@PathVariable("memberId") Long memberId,@PathVariable("cartItemId") Long cartItemId) {
+        Member member = memberService.findByMember(memberId);
+        member.getCart().setTotalCount(member.getCart().getTotalCount() - 1);
+        cartService.removeItemFromCart(cartItemId);
+        return "redirect:/trendpick/usr/cart/list";
     }
 
     @PreAuthorize("isAuthenticated()")
