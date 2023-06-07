@@ -41,32 +41,35 @@ import java.util.Set;
 @Profile({"dev", "test"})
 public class BaseData {
 
+    @Value("${file.path}")
+    private String filePath;
+
     @Value("${tag}")
-    List<String> tags;
+    private List<String> tags;
 
     @Value("${main-category}")
-    List<String> mainCategories;
+    private List<String> mainCategories;
 
     @Value("${top}")
-    List<String> tops;
+    private List<String> tops;
 
     @Value("${outer}")
-    List<String> outers;
+    private List<String> outers;
 
     @Value("${bottom}")
-    List<String> bottoms;
+    private List<String> bottoms;
 
     @Value("${shoes}")
-    List<String> shoes;
+    private List<String> shoes;
 
     @Value("${bag}")
-    List<String> bags;
+    private List<String> bags;
 
     @Value("${accessory}")
-    List<String> accessories;
+    private List<String> accessories;
 
     @Value("${brand}")
-    List<String> brands;
+    private List<String> brands;
 
     @Bean
     CommandLineRunner initData(
@@ -139,11 +142,11 @@ public class BaseData {
                 //==상품데이터==//
                 for (int n = 1; n <= 10; n++) {
                     CommonFile mainFile = CommonFile.builder()
-                            .fileName("355d1034-90ac-420b-ae02-6656eeebd707.jpg")
+                            .fileName("bamin.png")
                             .build();
                     List<CommonFile> subFiles = new ArrayList<>();
                     subFiles.add(CommonFile.builder()
-                            .fileName("290ffec9-2da6-46dd-8779-86c27d48ef0c.jpg")
+                            .fileName("dev-jeans.png")
                             .build());
 
                     for (CommonFile subFile : subFiles) {
