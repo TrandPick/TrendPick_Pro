@@ -11,7 +11,7 @@
 <h1>주문서</h1>
 <h2>회원 정보</h2>
 <form th:action="@{/trendpick/orders/order}" th:object="${orderForm}" method="post">
-    <input type="hidden" th:field="*{memberInfo.name}" th:value="${orderForm.memberInfo.name}"/></p>
+    <input type="hidden" th:field="*{memberInfo.memberId}" th:value="${orderForm.memberInfo.memberId}"/></p>
     <p>회원 이름: <input type="text" th:field="*{memberInfo.name}" th:value="${orderForm.memberInfo.name}" readonly="readonly"/></p>
     <p>이메일: <input type="text" th:field="*{memberInfo.email}" th:value="${orderForm.memberInfo.email}" readonly="readonly"/></p>
     <p>번호: <input type="text" th:field="*{memberInfo.phone}" th:value="${orderForm.memberInfo.phone}" readonly="readonly"/></p>
@@ -20,6 +20,7 @@
     <h2>주문 아이템 목록</h2>
     <table>
         <tr>
+            <th>비고</th>
             <th>상품명</th>
             <th>수량</th>
             <th>가격</th>

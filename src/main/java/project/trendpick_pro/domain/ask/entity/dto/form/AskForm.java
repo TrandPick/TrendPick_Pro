@@ -1,14 +1,14 @@
-package project.trendpick_pro.domain.ask.entity.dto.request;
-
+package project.trendpick_pro.domain.ask.entity.dto.form;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class AskRequest {
+public class AskForm {
+
+    private Long productId;
 
     @NotBlank
     private String title;

@@ -2,6 +2,9 @@ package project.trendpick_pro.domain.review.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,12 +15,14 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.service.ReviewService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,38 +32,48 @@ public class ReviewController {
     private final MemberRepository memberRepository;
     private final Rq rq;
 
-    @GetMapping("/register")
-    public String registerReview() {
+    @GetMapping("/register/{productId}")
+    public String registerReview(@PathVariable("productId") Long productId, Model model) {
+        model.addAttribute("productId", productId);
         return "/trendpick/review/register";
     }
 
-    @PostMapping("/write")
+    @PostMapping("/register/{productId}")
     public String createReview(@Valid ReviewSaveRequest reviewCreateRequest,
                                @RequestParam("mainFile") MultipartFile mainFile,
-                               @RequestParam("subFiles") List<MultipartFile> subFiles, Model model) throws Exception {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-        //어떤 상품인지 받아와야 함
-        ReviewResponse reviewResponse = reviewService.createReview(member, 1L, reviewCreateRequest, mainFile, subFiles);
+                               @RequestParam("subFiles") List<MultipartFile> subFiles,
+                               @PathVariable("productId") Long productId, Model model) throws Exception {
+        Member member = rq.getMember();
+
+        ReviewResponse reviewResponse = reviewService.createReview(member, productId, reviewCreateRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
         return "redirect:/trendpick/review/list";
 
     }
 
-    @GetMapping("/list/{reviewId}")
+    @GetMapping("/{reviewId}")
     public String showReview(@PathVariable Long reviewId, Model model){
         ReviewResponse reviewResponse = reviewService.showReview(reviewId);
+        String currentUser = rq.getMember().getUsername();
         model.addAttribute("reviewResponse", reviewResponse);
-        return "redirect:/trendpick/review";
+        model.addAttribute("currentUser", currentUser);
+        return "/trendpick/review/detail";
     }
 
     @GetMapping("/delete/{reviewId}")
     public String deleteReview(@PathVariable Long reviewId) {
         reviewService.delete(reviewId);
 
-        //return "redirect:/trendpick/review/list";
-        return "/trendpick/review/list";
+        return "redirect:/trendpick/review/list";
+    }
+
+    @GetMapping("/edit/{reviewId}")
+    public String showUpdateReview(@PathVariable Long reviewId, Model model){
+        Review review = reviewService.findById(reviewId);
+        model.addAttribute("originReview", review);
+
+        return "trendpick/review/modify";
     }
 
     @PostMapping("/edit/{reviewId}")
@@ -67,6 +82,24 @@ public class ReviewController {
         ReviewResponse reviewResponse = reviewService.modify(reviewId, reviewSaveRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
-        return "redirect:/trendpick/review";
+        return "redirect:/trendpick/review/" + reviewId;
+    }
+
+
+    @GetMapping("/list")
+    public String showAllReview(Pageable pageable, Model model){
+        Page<ReviewResponse> reviewResponses = reviewService.showAll(pageable);
+        String currentUser = rq.getMember().getUsername();
+        model.addAttribute("reviewResponses", reviewResponses);
+        model.addAttribute("currentUser", currentUser);
+        return "/trendpick/review/list";
+    }
+
+    @GetMapping("/user")
+    public String showOwnReview(Pageable pageable, Model model){
+        String writer = rq.getMember().getUsername();
+        Page<ReviewResponse> reviewResponses = reviewService.showOwnReview(writer, pageable);
+        model.addAttribute("reviewResponses", reviewResponses);
+        return "/trendpick/review/list";
     }
 }

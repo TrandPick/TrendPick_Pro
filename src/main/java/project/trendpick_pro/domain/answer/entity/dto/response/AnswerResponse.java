@@ -1,43 +1,43 @@
 package project.trendpick_pro.domain.answer.entity.dto.response;
 
-import lombok.Getter;
+import lombok.*;
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 import project.trendpick_pro.domain.answer.entity.Answer;
 import project.trendpick_pro.domain.ask.entity.Ask;
+import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnswerResponse {
 
-    private Long id;
-    private Ask ask;
+    private Long answerId;
+    private Long askId;
     private String content;
     private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
-
-    @Builder
-    @QueryProjection
-    public AnswerResponse(Long id, Ask ask, String content, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.id = id;
-        this.ask = ask;
-        this.content = content;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
 
     public static AnswerResponse of (Answer answer) {
         return AnswerResponse.builder()
-                .id(answer.getId())
-                .ask(answer.getAsk())
+                .answerId(answer.getId())
+                .askId(answer.getAsk().getId())
                 .content(answer.getContent())
                 .createdDate(answer.getCreatedDate())
-                .modifiedDate(answer.getModifiedDate())
                 .build();
     }
 
+    public static List<AnswerResponse> of(List<Answer> answers){
+        List<AnswerResponse> answerResponseList = new ArrayList<>();
+        for (Answer answer : answers) {
+            AnswerResponse answerResponse = AnswerResponse.of(answer);
+            answerResponseList.add(answerResponse);
+        }
+        return answerResponseList;
+    }
 }
 

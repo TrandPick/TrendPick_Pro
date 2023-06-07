@@ -1,11 +1,10 @@
 package project.trendpick_pro.domain.ask.entity.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.domain.Page;
 import project.trendpick_pro.domain.answer.entity.Answer;
+import project.trendpick_pro.domain.answer.entity.dto.response.AnswerResponse;
 import project.trendpick_pro.domain.ask.entity.Ask;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
@@ -15,42 +14,36 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 public class AskResponse {
 
-    private Long id;
-    private Member author;
-    private Product product;
+    private Long askId;
+    private Long productId;
+    private String memberName;
+    private Long memberId;
     private String title;
     private String content;
-    private List<Answer> answerList = new ArrayList<>();
+    private String status;
     private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
-
-
-    @Builder
-    @QueryProjection
-    public AskResponse(Long id, Member author, Product product, String title, String content, List<Answer> answerList, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.id = id;
-        this.author = author;
-        this.product = product;
-        this.title = title;
-        this.content = content;
-        this.answerList = answerList;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
+    private List<AnswerResponse> answerList;
 
     public static AskResponse of (Ask ask) {
         return AskResponse.builder()
-                .id(ask.getId())
-                .author(ask.getAuthor())
-                .product(ask.getProduct())
+                .askId(ask.getId())
+                .memberName(ask.getAuthor().getUsername())
+                .memberId(ask.getAuthor().getId())
+                .productId(ask.getProduct().getId())
                 .title(ask.getTitle())
                 .content(ask.getContent())
-                .answerList(ask.getAnswerList())
+                .status(ask.getStatus().getValue())
                 .createdDate(ask.getCreatedDate())
-                .modifiedDate(ask.getModifiedDate())
+                .answerList(AnswerResponse.of(ask.getAnswerList()))
                 .build();
+    }
+
+    public static Page<AskResponse> of(Page<Ask> asks){
+        return asks.map(ask -> AskResponse.of(ask));
     }
 
 }

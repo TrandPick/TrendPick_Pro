@@ -107,7 +107,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         }
     }
 
-    private static OrderSpecifier<?> orderSelector(Integer sortCode) {
+    private static OrderSpecifier<?>
+    orderSelector(Integer sortCode) {
         return switch (sortCode) {
             case 2 -> product.id.asc();
             case 3 -> product.rateAvg.desc(); //평점

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>리뷰 목록</title>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+        }
+
+        .grid-item {
+            /* 그리드 항목의 스타일 설정 */
+        }
+    </style>
+</head>
+<body>
+<div>
+    <a th:href="@{/trendpick/review/user}" class="btn btn-primary">내 리뷰만 보기</a>
+</div>
+<div class="grid-container">
+    <div th:each="reviewResponse : ${reviewResponses.content}" class="grid-item">
+        <form th:action="@{/trendpick/review/{id}(id=${reviewResponse.id})}" th:method="post">
+            <div th:onclick="${'\'#' + reviewResponse.id + '\''}.submit()">
+                <img th:src="|/images/${reviewResponse.mainFile}|" width="100" height="100"/></br>
+                <p>제목: <span th:text="${reviewResponse.title}"></span></p>
+                <p>상품명: <span th:text="${reviewResponse.productName}"></span></p>
+                <p>평점: <span th:text="${reviewResponse.rating}"></span></p>
+                <a th:if="${reviewResponse.writer == currentUser}" th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}">수정하기</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
+    <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}">
+        <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponses.number == i ? 'current-page' : ''}"></a>
+    </span>
+    <a th:if="${reviewResponses.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number+1})}">Next</a>
+</div>
+
+</body>
+</html>

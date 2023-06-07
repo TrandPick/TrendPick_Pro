@@ -2,7 +2,6 @@ package project.trendpick_pro.domain.orders.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>장바구니</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+
+<form th:action="@{/trendpick/usr/cart/add}" th:object="${cartItemRequest}" method="post">
+    <input type="hidden" name="productId" th:value="${productId}">
+    <div>
+        <label for="count">Count:</label>
+        <input type="number" th:field="*{count}" id="count" name="count" required>
+        <p class="text-danger" th:if="${#fields.hasErrors('count')}" th:errors="*{count}"></p>
+    </div>
+    <input type="submit" value="Add to Cart">
+</form>
+</body>
+</html>

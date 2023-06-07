@@ -3,6 +3,9 @@ package project.trendpick_pro.domain.review.service;
 import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +22,7 @@ import project.trendpick_pro.domain.review.repository.ReviewRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -37,6 +41,10 @@ public class ReviewService {
         Review review = reviewRepository.findById(productId).orElseThrow();
 
         return ReviewResponse.of(review);
+    }
+
+    public Review findById(Long id) {
+        return reviewRepository.findById(id).orElseThrow();
     }
 
 
@@ -63,6 +71,7 @@ public class ReviewService {
         return ReviewResponse.of(review);
     }
 
+    @Transactional
     public ReviewResponse modify(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
@@ -93,4 +102,22 @@ public class ReviewService {
 
         return ReviewResponse.of(review);
     }
+
+    @Transactional
+    public Page<ReviewResponse> showAll(Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findAll(pageable);
+        return reviewPage.map(ReviewResponse::of);
+    }
+
+    @Transactional
+    public Page<ReviewResponse> showOwnReview(String writer, Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findByWriter(writer, pageable);
+        return reviewPage.map(ReviewResponse::of);
+    }
+
+//    public Page<ReviewResponse> showAll(int offset) {
+//        Pageable pageable = PageRequest.of(offset, 20);
+//        Page<Review> reviews = reviewRepository.findAllByPage(pageable);
+//        return reviews.map(ReviewResponse::of);
+//    }
 }

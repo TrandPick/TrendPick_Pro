@@ -13,6 +13,7 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -76,24 +77,23 @@ public class ProductController {
         return "redirect:/trendpick/products/list";
     }
 
-    @PreAuthorize("isAnonymous()")
+    @PreAuthorize("permitAll()")
     @GetMapping("/{productId}")
     public String showProduct(@PathVariable Long productId, Model model) {
         model.addAttribute("productResponse", productService.show(productId));
         return "/trendpick/products/detailpage";
     }
 
-    @PreAuthorize("isAnonymous()")
+    @PreAuthorize("permitAll()")
     @GetMapping("/list")
     public String showAllProduct(@RequestParam(value = "page", defaultValue = "0") int offset,
-                                 @RequestParam(value = "main-category", defaultValue = "추천") String mainCategory,
+                                 @RequestParam(value = "main-category") String mainCategory,
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
                                  @RequestParam(value = "sort", defaultValue = "1") Integer sortCode,
                                  Model model) {
-        Optional<Member> member = rq.CheckMember();
-
-        if (member.isPresent()) {
-            if (mainCategory.equals("추천")) {
+        if (mainCategory.equals("추천")) {
+            Member member = rq.CheckLogin().orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+            if (member.getRole().getValue().equals("MEMBER")) {
                 model.addAttribute("productResponses", recommendService.getFindAll(offset));
             } else {
                 model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory, sortCode));
