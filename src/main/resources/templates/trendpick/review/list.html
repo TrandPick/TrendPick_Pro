@@ -15,6 +15,9 @@
     </style>
 </head>
 <body>
+<div>
+    <a th:href="@{/trendpick/review/user}" class="btn btn-primary">내 리뷰만 보기</a>
+</div>
 <div class="grid-container">
     <div th:each="reviewResponse : ${reviewResponses.content}" class="grid-item">
         <form th:action="@{/trendpick/review/{id}(id=${reviewResponse.id})}" th:method="post">
@@ -23,6 +26,7 @@
                 <p>제목: <span th:text="${reviewResponse.title}"></span></p>
                 <p>상품명: <span th:text="${reviewResponse.productName}"></span></p>
                 <p>평점: <span th:text="${reviewResponse.rating}"></span></p>
+                <a th:if="${reviewResponse.writer == currentUser}" th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}">수정하기</a>
             </div>
         </form>
     </div>
