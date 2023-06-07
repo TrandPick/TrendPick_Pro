@@ -55,7 +55,7 @@ public class ProductResponse {
                 .subCategory(product.getSubCategory().getName())
                 .brand(product.getBrand().getName())
                 .description(product.getDescription())
-                .mainFile(filePath + product.getFile().getFileName())
+                .mainFile(product.getFile().getFileName())
                 .subFiles(subFiles(filePath, product.getFile().getChild()))
                 .price(product.getPrice())
                 .stock(product.getStock())
@@ -68,7 +68,7 @@ public class ProductResponse {
         List<String> tmpList = new ArrayList<>();
 
         for (CommonFile subFile : subFiles) {
-            tmpList.add(filePath + subFile.getFileName());
+            tmpList.add(subFile.getFileName());
         }
         return tmpList;
     }

@@ -1,29 +1,34 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
-    <title>상품 목록</title>
+    <title th:text="'TrendPick | ' + ${mainCategoryName}"></title>
 </head>
 <body>
-<div th:each="product : ${productResponses}">
-    <div>
-        <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
-            <h2 th:text="${product.name}"></h2>
-            <img th:src="${product.mainFile}" alt="Product Image"/>
-        </a>
-        <p>Brand: <span th:text="${product.brand}"></span></p>
-        <p>Price: <span th:text="${product.price}"></span></p>
+<main layout:fragment="main" class="bg-white">
+    <div class="grid grid-flow-row-dense grid-cols-6 gap-4 m-4">
+        <div th:each="product : ${productResponses}" class="card bordered">
+            <figure>
+                <img th:src="|/images/${product.mainFile}|" alt="Product Image"/>
+            </figure>
+            <div class="card-body">
+                <h2 class="text-lg font-bold" th:text="${product.name}"></h2>
+                <div class="badge">Brand: <span th:text="${product.brand}"></span></div>
+                <div><span class="text-orange-600 font-bold" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span></div>
+                <div class="justify-end card-actions">
+                    <a th:href="@{/trendpick/products/{id}(id=${product.id})}" class="btn btn-accent">View More</a>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-
-<div th:if="productResponses. != null">
-    <!-- 페이지네이션 -->
-    <div>
-        <a th:if="${productResponses.hasPrevious()}" th:href="@{/trendpick/products/list(page=${productResponses.number})}">Previous</a>
-        <span th:each="i : ${#numbers.sequence(0, productResponses.totalPages)}">
-            <a th:href="@{/trendpick/products/list(page=${i})}" th:text="${i+1}" th:class="${productResponses.number == i ? 'current-page' : ''}"></a>
+    <div class="flex justify-center my-4" th:if="productResponses != null">
+        <div class="btn-group">
+            <a th:if="${productResponses.hasPrevious()}" th:href="@{/trendpick/products/list(page=${productResponses.number-1})}" class="btn">Previous</a>
+            <span th:each="i : ${#numbers.sequence(0, productResponses.totalPages)}">
+            <a th:href="@{/trendpick/products/list(page=${i})}" th:text="${i+1}" th:class="${productResponses.number == i ? 'btn btn-active' : 'btn'}"></a>
         </span>
-        <a th:if="${productResponses.hasNext()}" th:href="@{/trendpick/products/list(page=${productResponses.number+1})}">Next</a>
+            <a th:if="${productResponses.hasNext()}" th:href="@{/trendpick/products/list(page=${productResponses.number+1})}" class="btn">Next</a>
+        </div>
     </div>
-</div>
+</main>
 </body>
 </html>

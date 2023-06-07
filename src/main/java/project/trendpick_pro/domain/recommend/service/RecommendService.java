@@ -63,7 +63,7 @@ public class RecommendService {
 
         List<ProductListResponse> list = listResponses.getContent().stream()
                 .peek(product -> {
-                    String updatedMainFile = filePath + product.getMainFile();
+                    String updatedMainFile = product.getMainFile();
                     product.setMainFile(updatedMainFile);
                 }).toList();
 
