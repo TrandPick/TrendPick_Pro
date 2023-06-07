@@ -13,24 +13,18 @@ import project.trendpick_pro.domain.cart.entity.CartItem;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartItemResponse {
     private Long id;
-    private String color;
-    private String size;
     private int count;
 
     @Builder
     @QueryProjection
-    public CartItemResponse(Long id, String color, String size, int count) {
+    public CartItemResponse(Long id, int count) {
         this.id = id;
-        this.color = color;
-        this.size = size;
         this.count = count;
     }
 
     public static CartItemResponse of(CartItem cartItem) {
         return CartItemResponse.builder()
                 .id(cartItem.getId())
-                .color(cartItem.getColor())
-                .size(cartItem.getSize())
                 .count(cartItem.getCount())
                 .build();
     }

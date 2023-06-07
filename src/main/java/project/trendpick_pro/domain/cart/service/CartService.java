@@ -8,19 +8,16 @@ import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.cart.entity.dto.response.CartItemResponse;
-import project.trendpick_pro.domain.cart.entity.dto.response.CartResponse;
 import project.trendpick_pro.domain.cart.repository.CartItemRepository;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
-import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
-import project.trendpick_pro.domain.tags.tag.service.TagService;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +30,6 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final MemberRepository memberRepository;
-    private final ProductOptionRepository productOptionRepository;
     private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
     private final FavoriteTagService favoriteTagService;

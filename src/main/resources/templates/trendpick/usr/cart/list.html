@@ -15,8 +15,7 @@
         <th>번호</th>
         <th>상품ID</th>
         <th>상품명</th>
-        <th>색상</th>
-        <th>사이즈</th>
+        <th>가격</th>
         <th>수량</th>
         <th>삭제</th>
     </tr>
@@ -26,8 +25,7 @@
         <td th:text="${i.count}">1</td>
         <td th:text="${item.getProduct().getId()}"></td>
         <td th:text="${item.getProduct().getName()}"></td>
-        <td th:text="${item.getColor()}"></td>
-        <td th:text="${item.getSize()}"></td>
+        <td th:text="${item.getProduct().getPrice()}"></td>
         <td>
             <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
                 <input type="hidden" name="cartItemId" th:value="${item.getId()}">
