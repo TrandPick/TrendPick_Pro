@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.orders.contoller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
@@ -25,6 +28,7 @@ import project.trendpick_pro.domain.product.repository.ProductRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -40,42 +44,54 @@ public class OrderController {
     private final ProductRepository productRepository;
 
     @GetMapping("/order")
-    public  String orderForm(@ModelAttribute OrderForm orderForm, Model model){
+    public String orderForm(@RequestParam("orderForm") OrderForm orderForm,
+                            HttpServletRequest req,
+                            Model model) {
+//        Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(req);
+//        if (flashMap != null) {
+//            orderForm = (OrderForm) flashMap.get("orderForm");
+//            model.addAttribute("orderForm", orderForm);
+//        }
         model.addAttribute("orderForm", orderForm);
         return "trendpick/orders/order";
     }
 
     @PostMapping("/order")
-    @ResponseBody
     public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
         Member member = rq.CheckMember().get();
-        if(member.getId()!=orderForm.getMemberInfo().getMemberId())
+        log.info(member.getUsername());
+        log.info(orderForm.getMemberInfo().getName());
+        log.info(orderForm.getMemberInfo().getAddress());
+        log.info(orderForm.getMemberInfo().getEmail());
+        log.info(orderForm.getPaymentMethod());
+        log.info(orderForm.getOrderItems().get(0).getProductName());
+        if (member.getId() != orderForm.getMemberInfo().getMemberId())
             throw new RuntimeException("잘못된 접근입니다.");
 
         orderService.order(member, orderForm);
         return "redirect:/trendpick/orders/list";
     }
 
-    @GetMapping("/cart")
-    public  String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model){
+    @PostMapping("/cart")
+    public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model) {
         model.addAttribute("orderForm"
-                ,orderService.cartToOrder(rq.CheckMember().get(), selectedItems));
+                , orderService.cartToOrder(rq.CheckMember().get(), selectedItems));
 
-        return "redirect:/trendpick/orders/order";
+        return "trendpick/orders/order";
     }
 
     @GetMapping("/order/product")
     public String orderProduct(@RequestParam("product") Long productId,
-                                @RequestParam("count") int count, Model model){
+                               @RequestParam("count") int count, Model model) {
         model.addAttribute("orderForm", orderService.productToOrder(rq.CheckMember().get(), productId, count));
-        return "redirect:/trendpick/orders/order";
+        return "trendpick/orders/order";
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String orderListByMember(
             @RequestParam(value = "page", defaultValue = "0") int offset,
-                                    Model model) {
+            Model model) {
 
         model.addAttribute("orderList", orderService.findAllByMember(rq.CheckMember().get(), offset));
         return "trendpick/usr/member/orders";

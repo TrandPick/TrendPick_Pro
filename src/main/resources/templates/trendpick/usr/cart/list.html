@@ -8,52 +8,57 @@
 <body>
 
 <h1>장바구니</h1>
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>번호</th>
-        <th>상품ID</th>
-        <th>상품명</th>
-        <th>가격</th>
-        <th>수량</th>
-        <th>삭제</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item, i : ${cartItems}">
-        <td th:text="${i.count}">1</td>
-        <td th:text="${item.getProduct().getId()}"></td>
-        <td th:text="${item.getProduct().getName()}"></td>
-        <td th:text="${item.getProduct().getPrice()}"></td>
-        <td>
-            <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
-                <input type="hidden" name="cartItemId" th:value="${item.getId()}">
-                <div class="quantity_div">
-                    <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1)">-</button>
-                    <input type="number" name="count" th:value="${item.getCount()}" min="1" class="quantity_input" readonly>
-                    <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1)">+</button>
+<form th:action="@{/trendpick/orders/cart}" method="post" id="cartForm">
+    <table class="table">
+        <thead>
+        <tr>
+            <th><input type="checkbox" id="selectAllCheckbox"></th>
+            <th>번호</th>
+            <th>상품ID</th>
+            <th>상품명</th>
+            <th>가격</th>
+            <th>수량</th>
+            <th>삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item, i : ${cartItems}">
+            <td><input type="checkbox" name="selectedItems" th:value="${item.getId()}"></td>
+            <td th:text="${i.count}">1</td>
+            <td th:text="${item.getProduct().getId()}"></td>
+            <td th:text="${item.getProduct().getName()}"></td>
+            <td th:text="${item.getProduct().getPrice()}"></td>
+            <td>
+                <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
+                    <input type="hidden" name="cartItemId" th:value="${item.getId()}">
+                    <div class="quantity_div">
+                        <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1)">-
+                        </button>
+                        <input type="number" name="count" th:value="${item.getCount()}" min="1" class="quantity_input"
+                               readonly>
+                        <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1)">+</button>
+                    </div>
+                    <button type="button" class="quantity_modify_btn" onclick="submitForm(this.form)">변경</button>
+                </form>
+            </td>
+            <td class="btn btn-outline-dark"><a
+                    th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}"
+                    style="text-decoration: none">삭제</a></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center mt-3">
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm">
+                <div class="card-header py-3">
+                    <h4 class="my-0 fw-normal">총 결제금액</h4>
                 </div>
-                <button type="button" class="quantity_modify_btn" onclick="submitForm(this.form)">변경</button>
-            </form>
-        </td>
-        <td class="btn btn-outline-dark"><a th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}" style="text-decoration: none">삭제</a></td>
-    </tr>
-    </tbody>
-</table>
-<div class="row row-cols-1 row-cols-md-3 mb-3 text-center mt-3">
-    <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm">
-            <div class="card-header py-3">
-                <h4 class="my-0 fw-normal">총 결제금액</h4>
-            </div>
-            <form class="card-body" th:action="@{/trendpick/orders/order}" method="post">
                 <h1 class="card-title pricing-card-title" th:text="${totalPrice} + '원'"></h1>
                 <button type="submit" class="w-100 btn btn-lg btn-outline-primary">구매하기</button>
-            </form>
+            </div>
         </div>
     </div>
-</div>
+</form>
 
 <script>
     function updateQuantity(element, amount) {
@@ -71,6 +76,25 @@
         if (quantityInput) {
             form.submit();
         }
+    }
+
+    // 전체 선택 체크박스 클릭 시 모든 상품 체크박스 상태 변경
+    document.getElementById('selectAllCheckbox').addEventListener('click', function () {
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = this.checked;
+        }
+    });
+    function submitCartForm() {
+        var selectedItems = document.getElementsByName('selectedItems');
+        var selectedIds = [];
+        for (var i = 0; i < selectedItems.length; i++) {
+            if (selectedItems[i].checked) {
+                selectedIds.push(selectedItems[i].value);
+            }
+        }
+        document.getElementById('selectedItemsInput').value = selectedIds.join(',');
+        document.getElementById('cartForm').submit();
     }
 </script>
 </body>

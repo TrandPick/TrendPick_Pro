@@ -8,7 +8,7 @@ import project.trendpick_pro.domain.product.entity.Product;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class OrderItemDto {
     private Long productId;
     private String productName;

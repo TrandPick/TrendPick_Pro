@@ -47,8 +47,7 @@ public class CartService {
 
     // 장바구니 상품 추가
     @Transactional
-    public CartItemResponse addItemToCart(Long productId, CartItemRequest cartItemRequest) {
-        Member member = CheckMember();
+    public CartItemResponse addItemToCart(Member member, Long productId, CartItemRequest cartItemRequest) {
         Cart cart = cartRepository.findByMemberId(member.getId());
         Product product = getProductById(productId);
 

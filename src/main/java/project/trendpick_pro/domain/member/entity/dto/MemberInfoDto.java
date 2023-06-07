@@ -1,17 +1,18 @@
 package project.trendpick_pro.domain.member.entity.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import project.trendpick_pro.domain.member.entity.Member;
 
 @Getter
 @NoArgsConstructor
+@Setter
 public class MemberInfoDto {
 
     private Long memberId;
     private String name;
     private String email;
 
+    @Builder
     public MemberInfoDto (Member member) {
         this.memberId = member.getId();
         this.name = member.getUsername();

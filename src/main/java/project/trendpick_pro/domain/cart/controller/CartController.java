@@ -59,7 +59,7 @@ public class CartController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
     public String addItem(Long productId, @ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
-        CartItemResponse cartItemResponse = cartService.addItemToCart(productId, cartItemRequests);
+        CartItemResponse cartItemResponse = cartService.addItemToCart(rq.CheckMember().get(), productId, cartItemRequests);
         model.addAttribute("cartItemResponse", cartItemResponse);
         // System.out.println(cartItemRequests.getCount());
         // System.out.println(cartItemRequests.getColor());
