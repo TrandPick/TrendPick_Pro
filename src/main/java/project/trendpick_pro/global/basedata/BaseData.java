@@ -175,9 +175,9 @@ public class BaseData {
                 MemberInfoDto memberInfo = new MemberInfoDto(findMember);
                 List<OrderItemDto> orderItems = new ArrayList<>();
 
-                orderItems.add(new OrderItemDto(productRepository.findById(1L).get(), 5));
-                orderItems.add(new OrderItemDto(productRepository.findById(2L).get(), 3));
-                orderItems.add(new OrderItemDto(productRepository.findById(3L).get(), 2));
+                orderItems.add(OrderItemDto.of(productRepository.findById(1L).get(), 5));
+                orderItems.add(OrderItemDto.of(productRepository.findById(2L).get(), 3));
+                orderItems.add(OrderItemDto.of(productRepository.findById(3L).get(), 2));
 
                 OrderForm orderForm = new OrderForm(memberInfo, orderItems);
                 orderForm.setPaymentMethod("신용카드");
@@ -188,9 +188,10 @@ public class BaseData {
                 MemberInfoDto memberInfo2 = new MemberInfoDto(findMember2);
                 List<OrderItemDto> orderItems2 = new ArrayList<>();
 
-                orderItems2.add(new OrderItemDto(productRepository.findById(1L).get(), 5));
-                orderItems2.add(new OrderItemDto(productRepository.findById(2L).get(), 3));
-                orderItems2.add(new OrderItemDto(productRepository.findById(3L).get(), 2));
+                orderItems2.add(OrderItemDto.of(productRepository.findById(1L).get(), 5));
+                orderItems2.add(OrderItemDto.of(productRepository.findById(2L).get(), 3));
+                orderItems2.add(OrderItemDto.of(productRepository.findById(3L).get(), 2));
+
 
                 OrderForm orderForm2 = new OrderForm(memberInfo2, orderItems2);
                 orderForm2.setPaymentMethod("신용카드");

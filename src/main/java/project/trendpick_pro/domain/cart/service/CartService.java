@@ -17,11 +17,8 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
-
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Service
 @Transactional(readOnly = true)
@@ -104,5 +101,14 @@ public class CartService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
         return member;
+    }
+
+    public List<CartItem> findCartItems(List<Long> cartItemIdList) {
+        List<CartItem> cartItemList = new ArrayList<>();
+        for (Long id : cartItemIdList) {
+            cartItemList.add(cartItemRepository.findById(id).
+                    orElseThrow(() -> new IllegalArgumentException("장바구니에 존재하지 않는 품목입니다.")));
+        }
+        return cartItemList;
     }
 }

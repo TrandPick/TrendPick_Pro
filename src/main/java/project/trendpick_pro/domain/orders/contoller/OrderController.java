@@ -41,33 +41,27 @@ public class OrderController {
 
     @GetMapping("/order")
     public  String orderForm(@ModelAttribute OrderForm orderForm, Model model){
-//        Member member = rq.CheckMember().get();
-//        MemberInfoDto memberInfo = new MemberInfoDto(member.getId(), member.getUsername(), member.getEmail(), member.getPhoneNumber(), member.getAddress());
-//        List<OrderItemDto> orderItems = new ArrayList<>();
-//        Product product1 = productRepository.findById(1L).get();
-//        Product product2 = productRepository.findById(2L).get();
-//        Product product3 = productRepository.findById(3L).get();
-//
-//        orderItems.add(new OrderItemDto(product1.getId(), product1.getName(),"M", 5, product1.getPrice()));
-//        orderItems.add(new OrderItemDto(product2.getId(), product2.getName(),"L", 1, product2.getPrice()));
-//        orderItems.add(new OrderItemDto(product3.getId(), product3.getName(), "L", 7, product3.getPrice()));
-//        orderForm = new OrderForm(memberInfo, orderItems);
-
-        //상품 상세 또는 장바구니에서 OrderForm으로 데이터가 날라오게끔
         model.addAttribute("orderForm", orderForm);
-
         return "trendpick/orders/order";
     }
 
     @PostMapping("/order")
     @ResponseBody
-    public synchronized String order(@ModelAttribute("orderForm") OrderForm orderForm) {
+    public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
         Member member = rq.CheckMember().get();
         if(member.getId()!=orderForm.getMemberInfo().getMemberId())
             throw new RuntimeException("잘못된 접근입니다.");
 
         orderService.order(member, orderForm);
         return "redirect:/trendpick/orders/list";
+    }
+
+    @GetMapping("/cart")
+    public  String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model){
+        model.addAttribute("orderForm"
+                ,orderService.cartToOrder(rq.CheckMember().get(), selectedItems));
+
+        return "redirect:/trendpick/orders/order";
     }
 
 

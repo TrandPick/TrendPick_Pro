@@ -12,12 +12,16 @@ public class MemberInfoDto {
     private String name;
     private String email;
 
-    public MemberInfoDto(Member member) {
+    public MemberInfoDto (Member member) {
         this.memberId = member.getId();
         this.name = member.getUsername();
         this.email = member.getEmail();
         this.phone = member.getPhoneNumber();
         this.address = member.getAddress();
+    }
+
+    public static MemberInfoDto of(Member member){
+        return new MemberInfoDto(member);
     }
 
     private String phone;
