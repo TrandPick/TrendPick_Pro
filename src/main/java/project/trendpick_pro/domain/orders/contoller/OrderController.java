@@ -44,14 +44,14 @@ public class OrderController {
     private final ProductRepository productRepository;
 
     @GetMapping("/order")
-    public String orderForm(@RequestParam("orderForm") OrderForm orderForm,
+    public String orderForm(@ModelAttribute OrderForm orderForm,
                             HttpServletRequest req,
                             Model model) {
-//        Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(req);
-//        if (flashMap != null) {
-//            orderForm = (OrderForm) flashMap.get("orderForm");
-//            model.addAttribute("orderForm", orderForm);
-//        }
+        Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(req);
+        if (flashMap != null) {
+            orderForm = (OrderForm) flashMap.get("orderForm");
+            model.addAttribute("orderForm", orderForm);
+        }
         model.addAttribute("orderForm", orderForm);
         return "trendpick/orders/order";
     }
@@ -59,12 +59,6 @@ public class OrderController {
     @PostMapping("/order")
     public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
         Member member = rq.CheckMember().get();
-        log.info(member.getUsername());
-        log.info(orderForm.getMemberInfo().getName());
-        log.info(orderForm.getMemberInfo().getAddress());
-        log.info(orderForm.getMemberInfo().getEmail());
-        log.info(orderForm.getPaymentMethod());
-        log.info(orderForm.getOrderItems().get(0).getProductName());
         if (member.getId() != orderForm.getMemberInfo().getMemberId())
             throw new RuntimeException("잘못된 접근입니다.");
 
@@ -73,18 +67,18 @@ public class OrderController {
     }
 
     @PostMapping("/cart")
-    public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model) {
-        model.addAttribute("orderForm"
-                , orderService.cartToOrder(rq.CheckMember().get(), selectedItems));
+    public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, RedirectAttributes redirect) {
+        redirect.addFlashAttribute("orderForm"
+                ,orderService.cartToOrder(rq.CheckMember().get(), selectedItems));
 
-        return "trendpick/orders/order";
+        return "redirect:/trendpick/orders/order";
     }
 
     @GetMapping("/order/product")
     public String orderProduct(@RequestParam("product") Long productId,
-                               @RequestParam("count") int count, Model model) {
-        model.addAttribute("orderForm", orderService.productToOrder(rq.CheckMember().get(), productId, count));
-        return "trendpick/orders/order";
+                               @RequestParam("count") int count, RedirectAttributes redirect) {
+        redirect.addFlashAttribute("orderForm", orderService.productToOrder(rq.CheckMember().get(), productId, count));
+        return "redirect:/trendpick/orders/order";
     }
 
     @PreAuthorize("isAuthenticated()")
