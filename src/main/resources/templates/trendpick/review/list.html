@@ -15,30 +15,43 @@
     </style>
 </head>
 <body>
-<div>
-    <a th:href="@{/trendpick/review/user}" class="btn btn-primary">내 리뷰만 보기</a>
-</div>
-<div class="grid-container">
-    <div th:each="reviewResponse : ${reviewResponses.content}" class="grid-item">
-        <form th:action="@{/trendpick/review/{id}(id=${reviewResponse.id})}" th:method="post">
-            <div th:onclick="${'\'#' + reviewResponse.id + '\''}.submit()">
-                <img th:src="|/images/${reviewResponse.mainFile}|" width="100" height="100"/></br>
-                <p>제목: <span th:text="${reviewResponse.title}"></span></p>
-                <p>상품명: <span th:text="${reviewResponse.productName}"></span></p>
-                <p>평점: <span th:text="${reviewResponse.rating}"></span></p>
-                <a th:if="${reviewResponse.writer == currentUser}" th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}">수정하기</a>
-            </div>
-        </form>
-    </div>
-</div>
+    <!-- 데이지 UI 불러오기 -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css"/>
+    <!-- 테일윈드 불러오기 -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<div>
-    <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
-    <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}">
-        <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponses.number == i ? 'current-page' : ''}"></a>
-    </span>
-    <a th:if="${reviewResponses.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number+1})}">Next</a>
-</div>
+    <header>
+        <div class="flex justify-center items-center">
+            <span>Trend Pick</span>
+        </div>
+    </header>
+    <div class="mt-20">
+        <div class="flex justify-between">
+            <div></div>
+            <div>
+                <a class="text-decoration-line: underline" th:href="@{/trendpick/review/user}" >내 리뷰만 보기</a>
+            </div>
+        </div>
+        <div class="justify-center mb0 mt-10 grid-container grid-cols-3" style="width: 1000px; height: 800px; margin: 0 auto;">
+            <div th:each="reviewResponse : ${reviewResponses.content}" class="grid-item">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <img th:src="|/images/${reviewResponse.mainFile}|" w-100 h-150 class="mx-auto" />
+                    <p class="text-center">상품명: <span th:text="${reviewResponse.productName}"></span></p>
+                    <p class="text-center">제목: <span th:text="${reviewResponse.title}"></span></p>
+                    <p class="text-center">평점: <span th:text="${reviewResponse.rating}"></span>/5</p>
+                    <a class="justify-center" th:if="${reviewResponse.writer == currentUser}" th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}" style="text-align: center;">수정하기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-10 left-0 w-full flex justify-center">
+        <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
+        <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}" class="mr-4">
+            <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponses.number == i ? 'current-page' : '' }"></a>
+        </span>
+        <a th:if="${reviewResponses.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number+1})}">Next</a>
+    </div>
 
 </body>
 </html>

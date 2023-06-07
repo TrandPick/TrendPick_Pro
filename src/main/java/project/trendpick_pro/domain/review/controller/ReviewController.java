@@ -100,6 +100,7 @@ public class ReviewController {
         String writer = rq.getMember().getUsername();
         Page<ReviewResponse> reviewResponses = reviewService.showOwnReview(writer, pageable);
         model.addAttribute("reviewResponses", reviewResponses);
+        model.addAttribute("currentUser", writer);
         return "/trendpick/review/list";
     }
 }
