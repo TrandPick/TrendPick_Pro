@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>게시물 목록</title>
+    <title>리뷰 목록</title>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+        }
+
+        .grid-item {
+            /* 그리드 항목의 스타일 설정 */
+        }
+    </style>
 </head>
 <body>
-
-리뷰리스트입니다
-<div th:each="reviewResponse : ${reviewResponses.content}">
-    <form th:action="@{/trendpick/review/{id}(id=${reviewResponse.id})}" th:method="post">
-        <div th:onclick="${'\'#' + reviewResponse.id + '\''}.submit()">
-            <h2 th:text="${reviewResponse.title}"></h2>
-            <p>작성자: <span th:text="${reviewResponse.writer}"></span></p>
-            <p>상품명: <span th:text="${reviewResponse.productName}"></span></p>
-            <p>메인 파일: <img th:src="${reviewResponse.mainFile}" class="rounded" alt="메인 이미지"></p>
-            <p>내용: <span th:text="${reviewResponse.content}"></span></p>
-            <p>평점: <span th:text="${reviewResponse.rating}"></span></p>
-        </div>
-    </form>
+<div class="grid-container">
+    <div th:each="reviewResponse : ${reviewResponses.content}" class="grid-item">
+        <form th:action="@{/trendpick/review/{id}(id=${reviewResponse.id})}" th:method="post">
+            <div th:onclick="${'\'#' + reviewResponse.id + '\''}.submit()">
+                <img th:src="|/images/${reviewResponse.mainFile}|" width="100" height="100"/></br>
+<!--                <img th:src="${reviewResponse.mainFile}" class="rounded" alt="메인 이미지">-->
+                <p>제목: <span th:text="${reviewResponse.title}"></span></p>
+                <p>상품명: <span th:text="${reviewResponse.productName}"></span></p>
+                <p>평점: <span th:text="${reviewResponse.rating}"></span></p>
+            </div>
+        </form>
+    </div>
 </div>
 
-<!-- 페이지네이션 -->
 <div>
     <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
     <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}">
@@ -30,35 +39,3 @@
 
 </body>
 </html>
-
-
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--    <title>게시물 목록</title>-->
-<!--</head>-->
-<!--<body>-->
-
-<!--리뷰리스트입니다-->
-<!--<div th:each="reviewResponse : ${reviewResponses.content}">-->
-<!--    <form th:action="@{/trendpick/review/{id}(id=${reviewResponse.id})}" th:method="post">-->
-<!--        <div th:onclick="${'#' + reviewResponse.id}.submit()">-->
-<!--            <h2 th:text="${reviewResponse.title}"></h2>-->
-<!--            <p>productName: <span th:text="${reviewResponse.productName}"></span></p>-->
-<!--            <p>Main File: <span th:text="${reviewResponse.content}"></span></p>-->
-<!--            <p>rating: <span th:text="${reviewResponse.rating}"></span></p>-->
-<!--        </div>-->
-<!--    </form>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; 페이지네이션 &ndash;&gt;-->
-<!--<div>-->
-<!--    <a th:if="${reviewResponse.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponse.number})}">Previous</a>-->
-<!--    <span th:each="i : ${#numbers.sequence(0, reviewResponse.totalPages)}">-->
-<!--        <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponse.number == i ? 'current-page' : ''}"></a>-->
-<!--    </span>-->
-<!--    <a th:if="${reviewResponse.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponse.number+1})}">Next</a>-->
-<!--</div>-->
-
-<!--</body>-->
-<!--</html>-->

@@ -14,9 +14,9 @@
 
     <div class="md:flex md:items-center">
         <div class="md:w-1/2">
-            <img th:src="${reviewResponse.mainFile}" class="rounded" alt="메인 이미지">
-            <div class="mt-4 flex" th:each="image : ${reviewResponse.subFiles}">
-                <img th:src="${image}" class="rounded w-24 mr-2" alt="서브 이미지">
+            <img th:src="|/images/${reviewResponse.mainFile}|" width="200" height="200"/></br>
+            <div class="mt-4 flex" th:each="subFile : ${reviewResponse.subFiles}" >
+                <img th:src="${'/images/' + subFile}" class="rounded w-24 mr-2" alt="서브 이미지" width="150" height="150">
             </div>
         </div>
 
