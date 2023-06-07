@@ -16,18 +16,16 @@ public class CartResponse {
 
     private int totalCount;
 
-    private int totalPrice;
 
     private List<CartItem> cartItems;
 
 
     @Builder
     @QueryProjection
-    public CartResponse(Long id, Long memberId, int totalCount, int totalPrice, List<CartItem> cartItems) {
+    public CartResponse(Long id, Long memberId, int totalCount,  List<CartItem> cartItems) {
         this.id = id;
         this.memberId = memberId;
         this.totalCount=totalCount;
-        this.totalPrice=totalPrice;
         this.cartItems=cartItems;
     }
 
@@ -36,7 +34,6 @@ public class CartResponse {
                 .id(cart.getId())
                 .memberId(cart.getMember().getId())
                 .totalCount(cart.getTotalCount())
-                .totalPrice(cart.getTotalPrice())
                 .cartItems(cart.getCartItems())
                 .build();
     }

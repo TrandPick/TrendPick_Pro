@@ -12,21 +12,36 @@
 <table class="table">
     <thead>
     <tr>
+        <th>번호</th>
+        <th>상품ID</th>
         <th>상품명</th>
         <th>색상</th>
         <th>사이즈</th>
         <th>수량</th>
+        <th>삭제</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="item : ${cartItems}">
-        <td th:text="${item.product.name}"></td>
-        <td th:text="${item.color}"></td>
-        <td th:text="${item.size}"></td>
-        <td th:text="${item.count}"></td>
+    <tr th:each="item,i : ${cartItems}">
+        <td th:text="${i.count}">1</td>
+        <td th:text="${item.getProduct().getId()}"></td>
+        <td th:text="${item.getProduct().getName()}"></td>
+        <td th:text="${item.getColor()}"></td>
+        <td th:text="${item.getSize()}"></td>
+        <td th:text="${item.getCount()}"></td>
+        <td class="btn btn-outline-dark"><a th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}" style="text-decoration: none">삭제</a></td>
     </tr>
     </tbody>
 </table>
-
+<div class="row row-cols-1 row-cols-md-3 mb-3 text-center mt-3">
+    <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3">
+                <h4 class="my-0 fw-normal">총 결제금액</h4>
+            </div>
+<h1 class="card-title pricing-card-title" th:text="${totalPrice} + '원'"></h1>
+        </div>
+    </div>
+</div>
 </body>
 </html>

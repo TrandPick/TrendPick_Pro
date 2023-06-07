@@ -36,6 +36,10 @@ public class MemberService {
         return memberRepository.findByEmail(username);
     }
 
+    public Member findByMember(Long id){
+        return memberRepository.findById(id).get();
+    }
+
     @Transactional
     public void register(JoinForm joinForm) {
 

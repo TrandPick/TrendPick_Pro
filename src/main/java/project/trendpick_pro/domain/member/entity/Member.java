@@ -2,6 +2,7 @@ package project.trendpick_pro.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 
 import java.util.LinkedHashSet;
@@ -31,6 +32,8 @@ public class Member {
     @Column(name = "role", nullable = false)
     private RoleType role;
 
+    @OneToOne(mappedBy = "member")
+    private Cart cart;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FavoriteTag> tags = new LinkedHashSet<>();
 
