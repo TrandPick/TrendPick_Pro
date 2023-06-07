@@ -74,10 +74,10 @@ public class OrderController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String orderListByMember(
-//            @RequestParam(value = "page", defaultValue = "0") int offset,
+            @RequestParam(value = "page", defaultValue = "0") int offset,
                                     Model model) {
 
-        model.addAttribute("orderList", orderService.findAllByMember(rq.CheckMember().get(), 0));
+        model.addAttribute("orderList", orderService.findAllByMember(rq.CheckMember().get(), offset));
         return "trendpick/usr/member/orders";
     }
 

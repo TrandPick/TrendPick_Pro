@@ -36,8 +36,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.product.brand.name,
                         orderItem.product.name,
                         orderItem.size,
-                        orderItem.order.createdDate,
+                        orderItem.count,
                         orderItem.orderPrice,
+                        orderItem.order.createdDate,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )

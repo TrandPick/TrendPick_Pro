@@ -16,8 +16,9 @@
         <th scope="col">상품이미지</th>
         <th scope="col">상품명</th>
         <th scope="col">사이즈</th>
-        <th scope="col">주문일시</th>
+        <th scope="col">주문수량</th>
         <th scope="col">주문금액</th>
+        <th scope="col">주문일시</th>
         <th scope="col">주문상태</th>
         <th scope="col">배송상태</th>
     </tr>
@@ -29,8 +30,9 @@
         <td><img th:src="|/images/${order.productFilePath}|" width="100" height="100"/></br></td>
         <td th:text="${order.productName}"></td>
         <td th:text="${order.size}"></td>
-        <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd')}"></td>
+        <td th:text="${order.count}"></td>
         <td th:text="${order.totalPrice}"></td>
+        <td th:text="${#temporals.format(order.orderDate, 'MM-dd')}"></td>
         <td th:text="${order.orderStatus}"></td>
         <td th:text="${order.deliveryStatus}"></td>
     </tr>
