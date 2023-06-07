@@ -9,6 +9,7 @@ import org.hibernate.annotations.Fetch;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import project.trendpick_pro.domain.answer.entity.dto.request.AnswerRequest;
+import project.trendpick_pro.domain.answer.entity.form.AnswerForm;
 import project.trendpick_pro.domain.ask.entity.Ask;
 import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
@@ -32,11 +33,11 @@ public class Answer extends BaseTimeEntity {
 
     private String content;
 
-    public static Answer write(Ask ask, AnswerRequest answerRequest) {
+    public static Answer write(Ask ask, AnswerForm answerForm) {
         Answer answer = Answer
                 .builder()
                 .ask(ask)
-                .content(answerRequest.getContent())
+                .content(answerForm.getContent())
                 .build()
                 ;
 
@@ -44,7 +45,7 @@ public class Answer extends BaseTimeEntity {
         return answer;
     }
 
-    public void update(AnswerRequest answerRequest) {
-        this.content = content;
+    public void update(AnswerForm answerForm) {
+        this.content = answerForm.getContent();
     }
 }
