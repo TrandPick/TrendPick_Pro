@@ -9,16 +9,14 @@ import project.trendpick_pro.domain.product.entity.Product;
 public class OrderItemDto {
     private Long productId;
     private String productName;
-    private String size;
     private int count;
     private int price;
 
-    public OrderItemDto(Product product, String size, int count) {
+    public OrderItemDto(Product product, int count) {
         this.productId = product.getId();
         this.productName = product.getName();
         this.price = product.getPrice();
         this.count = count;
-        this.size = size;
     }
 
     public OrderItemDto() {

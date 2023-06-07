@@ -137,7 +137,7 @@ public class BaseData {
                 memberService.register(member2);
 
                 //==상품데이터==//
-                for(int n=1; n<=10; n++) {
+                for (int n = 1; n <= 10; n++) {
                     CommonFile mainFile = CommonFile.builder()
                             .fileName("355d1034-90ac-420b-ae02-6656eeebd707.jpg")
                             .build();
@@ -152,10 +152,10 @@ public class BaseData {
 
                     Product product = Product
                             .builder()
-                            .name("멋쟁이 티셔츠"+n)
-                            .description("이 상품은 멋쟁이 티셔츠입니다."+n)
-                            .stock(50+n)
-                            .price(20000+n)
+                            .name("멋쟁이 티셔츠" + n)
+                            .description("이 상품은 멋쟁이 티셔츠입니다." + n)
+                            .stock(50 + n)
+                            .price(20000 + n)
                             .mainCategory(mainCategoryService.findByName("상의"))
                             .subCategory(subCategoryService.findByName("반소매티셔츠"))
                             .brand(brandService.findByName("나이키"))
@@ -163,7 +163,7 @@ public class BaseData {
                             .build();
                     Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
                     for (int i = 1; i <= 5; i++) {
-                        TagName tagName = tagNameService.findById(Long.valueOf(i+n));
+                        TagName tagName = tagNameService.findById(Long.valueOf(i + n));
                         tags.add(new Tag(tagName.getName()));
                     }
                     product.addTag(tags);
@@ -175,9 +175,9 @@ public class BaseData {
                 MemberInfoDto memberInfo = new MemberInfoDto(findMember);
                 List<OrderItemDto> orderItems = new ArrayList<>();
 
-                orderItems.add(new OrderItemDto(productRepository.findById(1L).get(), "M", 5));
-                orderItems.add(new OrderItemDto(productRepository.findById(2L).get(), "L", 3));
-                orderItems.add(new OrderItemDto(productRepository.findById(3L).get(), "S", 2));
+                orderItems.add(new OrderItemDto(productRepository.findById(1L).get(), 5));
+                orderItems.add(new OrderItemDto(productRepository.findById(2L).get(), 3));
+                orderItems.add(new OrderItemDto(productRepository.findById(3L).get(), 2));
 
                 OrderForm orderForm = new OrderForm(memberInfo, orderItems);
                 orderForm.setPaymentMethod("신용카드");
@@ -188,9 +188,9 @@ public class BaseData {
                 MemberInfoDto memberInfo2 = new MemberInfoDto(findMember2);
                 List<OrderItemDto> orderItems2 = new ArrayList<>();
 
-                orderItems2.add(new OrderItemDto(productRepository.findById(1L).get(), "M", 5));
-                orderItems2.add(new OrderItemDto(productRepository.findById(2L).get(), "L", 3));
-                orderItems2.add(new OrderItemDto(productRepository.findById(3L).get(), "S", 2));
+                orderItems2.add(new OrderItemDto(productRepository.findById(1L).get(), 5));
+                orderItems2.add(new OrderItemDto(productRepository.findById(2L).get(), 3));
+                orderItems2.add(new OrderItemDto(productRepository.findById(3L).get(), 2));
 
                 OrderForm orderForm2 = new OrderForm(memberInfo2, orderItems2);
                 orderForm2.setPaymentMethod("신용카드");

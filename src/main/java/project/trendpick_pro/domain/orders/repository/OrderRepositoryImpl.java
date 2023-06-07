@@ -35,7 +35,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.product.file.fileName,
                         orderItem.product.brand.name,
                         orderItem.product.name,
-                        orderItem.size,
                         orderItem.count,
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
