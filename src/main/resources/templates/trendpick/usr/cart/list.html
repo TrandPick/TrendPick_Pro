@@ -29,7 +29,9 @@
         <td th:text="${item.getColor()}"></td>
         <td th:text="${item.getSize()}"></td>
         <td th:text="${item.getCount()}"></td>
-        <td class="btn btn-outline-dark"><a th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}" style="text-decoration: none">삭제</a></td>
+        <td class="btn btn-outline-dark"><a
+                th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}"
+                style="text-decoration: none">삭제</a></td>
     </tr>
     </tbody>
 </table>
@@ -39,7 +41,13 @@
             <div class="card-header py-3">
                 <h4 class="my-0 fw-normal">총 결제금액</h4>
             </div>
-<h1 class="card-title pricing-card-title" th:text="${totalPrice} + '원'"></h1>
+            <form class="card-body" th:action="@{/trendpick/orders/order}" method="post">
+                <h1 class="card-title pricing-card-title" th:text="${totalPrice} + '원'">$0</h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>잘못 담은 물건이 있는지 확인해보세요!</li>
+                </ul>
+                <button type="submit" class="w-100 btn btn-lg btn-outline-primary">구매하기</button>
+            </form>
         </div>
     </div>
 </div>
