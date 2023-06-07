@@ -21,6 +21,7 @@
         <th scope="col">주문일시</th>
         <th scope="col">주문상태</th>
         <th scope="col">배송상태</th>
+        <th scope="col">리뷰</th>
     </tr>
     </thead>
     <tbody>
@@ -35,6 +36,11 @@
         <td th:text="${#temporals.format(order.orderDate, 'MM-dd')}"></td>
         <td th:text="${order.orderStatus}"></td>
         <td th:text="${order.deliveryStatus}"></td>
+        <td>
+            <a th:href="@{|/trendpick/review/register/${order.productId}|}">
+                리뷰등록
+            </a>
+        </td>
     </tr>
     </tbody>
 </table>
