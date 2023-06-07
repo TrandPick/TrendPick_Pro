@@ -51,14 +51,14 @@ public class Review extends BaseTimeEntity {
         this.rating = rating;
     }
 
-    public static Review of(ReviewSaveRequest reviewCreateRequest, Member member, Product product, CommonFile file) {
+    public static Review of(ReviewSaveRequest reviewSaveRequest, Member member, Product product, CommonFile file) {
         return Review.builder()
                 .writer(member.getUsername())
                 .product(product)
                 .file(file)
-                .title(reviewCreateRequest.title())
-                .content(reviewCreateRequest.content())
-                .rating(reviewCreateRequest.rating())
+                .title(reviewSaveRequest.title())
+                .content(reviewSaveRequest.content())
+                .rating(reviewSaveRequest.rating())
                 .build();
     }
 
