@@ -2,7 +2,6 @@ package project.trendpick_pro.domain.orders.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
@@ -31,17 +30,21 @@ public class OrderItem {
 
     @Column(name = "count", nullable = false)
     private int count;
+    @Column(name = "size", nullable = false)
 
-    private OrderItem(Product product, int orderPrice, int count) {
+    private String size;
+
+    private OrderItem(Product product,String size, int orderPrice, int count) {
         this.product = product;
         this.orderPrice = orderPrice;
         this.count = count;
+        this.size = size;
 
         product.removeStock(count);
     }
 
     public static OrderItem of(Product product, OrderItemDto orderItemDto) {
-        return new OrderItem(product, orderItemDto.getPrice(), orderItemDto.getCount());
+        return new OrderItem(product, orderItemDto.getSize(), orderItemDto.getPrice(), orderItemDto.getCount());
     }
 
     public void connectOrder(Order order) {

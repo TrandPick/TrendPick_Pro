@@ -5,9 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.trendpick_pro.domain.delivery.entity.DeliveryState;
-import project.trendpick_pro.domain.orders.entity.Order;
-import project.trendpick_pro.domain.orders.entity.OrderItem;
 
 import java.time.LocalDateTime;
 
@@ -16,20 +13,32 @@ import java.time.LocalDateTime;
 public class OrderResponse {
 
     private Long orderId;
+    private String productFilePath;
     private String brandName;
-    private String orderItemName;
-    private LocalDateTime order_date;
-    private int totalPrice;
+    private String productName;
+    private String size;
+    private int count;
+    private LocalDateTime orderDate;
+    private int productPrice;
+    private String orderStatus;
     private String deliveryStatus;
 
     @Builder
     @QueryProjection
-    public OrderResponse(Long orderId, String brandName, String productName, LocalDateTime order_date, int totalPrice, String deliveryStatus) {
+    public OrderResponse(Long orderId, String productFilePath, String brandName, String productName, String size, int count,int productPrice, LocalDateTime orderDate, String orderStatus, String deliveryStatus) {
         this.orderId = orderId;
+        this.productFilePath = productFilePath;
         this.brandName = brandName;
-        this.orderItemName = productName;
-        this.order_date = order_date;
-        this.totalPrice = totalPrice;
+        this.productName = productName;
+        this.size = size;
+        this.count = count;
+        this.productPrice = productPrice;
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
         this.deliveryStatus = deliveryStatus;
+    }
+
+    public int getTotalPrice(){
+        return productPrice * count;
     }
 }
