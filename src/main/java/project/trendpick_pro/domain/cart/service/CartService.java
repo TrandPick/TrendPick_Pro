@@ -1,11 +1,14 @@
 package project.trendpick_pro.domain.cart.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
+import project.trendpick_pro.domain.cart.entity.dto.response.CartItemResponse;
+import project.trendpick_pro.domain.cart.entity.dto.response.CartResponse;
 import project.trendpick_pro.domain.cart.repository.CartItemRepository;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -15,11 +18,11 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductOptionRepository;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -33,22 +36,32 @@ public class CartService {
     private final ProductOptionRepository productOptionRepository;
     private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
-    private final TagService tagService;
     private final FavoriteTagService favoriteTagService;
 
-    public List<Cart> findByCartMember(Member member){
-        return cartRepository.findByCartMember(member);
+
+    // 장바구니 조회
+    public List<CartItem> CartView(Cart cart) {
+        List<CartItem> cartItems = cartItemRepository.findAll();
+        List<CartItem> userItems = new ArrayList<>();
+
+        for (CartItem cartItem : cartItems) {
+            if (cartItem.getCart().getId() == cart.getId()) {
+                userItems.add(cartItem);
+            }
+        }
+        return userItems;
     }
 
+    // 장바구니 상품 추가
     @Transactional
-    public void addItemToCart(Member member, Long productId, CartItemRequest cartItemRequest) {
-        member=memberRepository.findById(member.getId()).orElseThrow(()->new MemberNotFoundException("존재하지 않는 유저입니다."));
+    public CartItemResponse addItemToCart(Long productId, CartItemRequest cartItemRequest) {
+        Member member = CheckMember();
         Cart cart = cartRepository.findByMemberId(member.getId());
-        Product product=productRepository.findById(productId).orElseThrow(() ->  new ProductNotFoundException("존재하지 않는 상품 입니다."));
+        Product product = getProductById(productId);
 
-        if(cart==null){
+        if (cart == null) {
             // 장바구니가 비어있다면 생성
-            cart=Cart.createCart(member);
+            cart = Cart.createCart(member);
             cartRepository.save(cart);
         }
         CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
@@ -60,30 +73,39 @@ public class CartService {
             cartItem.addCount(cartItem.getCount());
         } else {
             // 카트에 해당 상품이 없는 경우, 새로운 카트 아이템을 생성하여 추가
-            cartItem =CartItem.createCartItem(cart,product,cartItemRequest);
-            cartItemRepository.save(cartItem);
-            cart.setTotalCount(cart.getTotalCount()+1);
+            cartItem = CartItem.of(cart, product, cartItemRequest);
+            cart.setTotalCount(cart.getTotalCount() + 1);
         }
+        cartItemRepository.save(cartItem);
+        return CartItemResponse.of(cartItem);
     }
 
+
     // 상품을 장바구니에서 제거
-    public void removeItemFromCart(Member member, Long cartItemId) {
-        Cart cart = getCartByUser(member);
-        cart.removeItem(cartItemId);
+   @Transactional
+    public void removeItemFromCart(Long cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
     }
 
     // 상품의 수량 업데이트
     public void updateItemCount(Member member, Long cartItemId, int count) {
-        Cart cart = getCartByUser(member);
+        Cart cart = getCartByUser(member.getId());
         cart.updateItemCount(cartItemId, count);
     }
 
-    public Cart getCartByUser(Member member) {
-        return cartRepository.findByMemberId(member.getId());
+    public Cart getCartByUser(Long memberId) {
+        return cartRepository.findByMemberId(memberId);
     }
 
-    private Product getProductById(Long productId){
+    private Product getProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
     }
+
+    private Member CheckMember() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+        return member;
+    }
+
 }
