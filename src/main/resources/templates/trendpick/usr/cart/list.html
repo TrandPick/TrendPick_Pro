@@ -15,20 +15,28 @@
         <th>번호</th>
         <th>상품ID</th>
         <th>상품명</th>
-        <th>색상</th>
-        <th>사이즈</th>
+        <th>가격</th>
         <th>수량</th>
         <th>삭제</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="item,i : ${cartItems}">
+    <tr th:each="item, i : ${cartItems}">
         <td th:text="${i.count}">1</td>
         <td th:text="${item.getProduct().getId()}"></td>
         <td th:text="${item.getProduct().getName()}"></td>
-        <td th:text="${item.getColor()}"></td>
-        <td th:text="${item.getSize()}"></td>
-        <td th:text="${item.getCount()}"></td>
+        <td th:text="${item.getProduct().getPrice()}"></td>
+        <td>
+            <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
+                <input type="hidden" name="cartItemId" th:value="${item.getId()}">
+                <div class="quantity_div">
+                    <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1)">-</button>
+                    <input type="number" name="count" th:value="${item.getCount()}" min="1" class="quantity_input" readonly>
+                    <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1)">+</button>
+                </div>
+                <button type="button" class="quantity_modify_btn" onclick="submitForm(this.form)">변경</button>
+            </form>
+        </td>
         <td class="btn btn-outline-dark"><a th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}" style="text-decoration: none">삭제</a></td>
     </tr>
     </tbody>
@@ -46,5 +54,24 @@
         </div>
     </div>
 </div>
+
+<script>
+    function updateQuantity(element, amount) {
+        const quantityInput = element.parentNode.querySelector('.quantity_input');
+        let quantity = parseInt(quantityInput.value);
+        quantity += amount;
+        if (quantity < 1) {
+            quantity = 1;
+        }
+        quantityInput.value = quantity;
+    }
+
+    function submitForm(form) {
+        const quantityInput = form.querySelector('.quantity_input');
+        if (quantityInput) {
+            form.submit();
+        }
+    }
+</script>
 </body>
 </html>

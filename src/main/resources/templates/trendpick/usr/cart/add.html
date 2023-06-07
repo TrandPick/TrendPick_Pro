@@ -10,22 +10,10 @@
 <form th:action="@{/trendpick/usr/cart/add}" th:object="${cartItemRequest}" method="post">
     <input type="hidden" name="productId" th:value="${productId}">
     <div>
-        <label for="color">Color:</label>
-        <input type="text" th:field="*{color}" id="color" name="color" required>
-        <p class="text-danger" th:if="${#fields.hasErrors('color')}" th:errors="*{color}"></p>
-    </div>
-    <div>
-        <label for="size">Size:</label>
-        <input type="text" th:field="*{size}" id="size" name="size" required>
-        <p class="text-danger" th:if="${#fields.hasErrors('size')}" th:errors="*{size}"></p>
-    </div>
-
-    <div>
         <label for="count">Count:</label>
         <input type="number" th:field="*{count}" id="count" name="count" required>
         <p class="text-danger" th:if="${#fields.hasErrors('count')}" th:errors="*{count}"></p>
     </div>
-
     <input type="submit" value="Add to Cart">
 </form>
 </body>

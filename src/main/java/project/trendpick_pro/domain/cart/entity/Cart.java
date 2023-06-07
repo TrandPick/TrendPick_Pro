@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.ProductOption;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,17 +74,5 @@ public class Cart {
                 .findFirst()
                 .orElse(null);
     }
-/*
-    public void updateTotalCountAndPrice() {
-        if (cartItems.isEmpty()) {
-            totalPrice = 0;
-            totalCount = 0;
-        } else {
-            for (CartItem cartItem : cartItems) {
-                totalPrice += (cartItem.getProduct().getPrice() * cartItem.getCount());
-            }
-            totalCount = cartItems.size();
-        }
-    }
-    */
+
 }
