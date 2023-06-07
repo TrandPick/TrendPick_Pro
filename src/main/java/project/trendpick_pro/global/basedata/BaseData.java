@@ -11,21 +11,28 @@ import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
+import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.member.service.MemberService;
+import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
+import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +74,9 @@ public class BaseData {
             MemberService memberService,
             MainCategoryService mainCategoryService,
             SubCategoryService subCategoryService,
-            BrandService brandService
+            BrandService brandService,
+            ProductRepository productRepository,
+            OrderService orderservice
     ) {
         return new CommandLineRunner() {
             @Override
@@ -117,60 +126,52 @@ public class BaseData {
                 memberService.register(brand_admin);
                 memberService.register(member);
 
-//                member1은 시티보이룩(10점), 빈티지룩(5점), 로멘틱룩(1점)을 선호 태그로 가지고 있다.
-//                상품1은 시티보이룩을 가지고 있다
-//                상품2는 시티보이룩, 빈티지룩을 가지고 있다
-//                상품3은 시티보이룩, 빈티지룩, 로멘틱룩을 모두 가지고 있다.
-//
-//                Member member1 = memberRepository.save(Member.builder().username("member1").email("jjj@naver.com").phoneNumber("01099999999").role(RoleType.MEMBER).password("111111").build());
-//                FavoriteTag favorTag1 = new FavoriteTag("시티보이룩");
-//                favorTag1.increaseScore(TagType.SHOW);//상품클릭해서 1점 누적.
-//                member1.addTag(favorTag1);
-//
-//                FavoriteTag favorTag2 = new FavoriteTag("빈티지룩");
-//                favorTag2.increaseScore(TagType.CART);//장바구니 담아서 5점 누적.
-//                member1.addTag(favorTag2);
-//
-//                FavoriteTag favorTag3 = new FavoriteTag("로멘틱룩");
-//                favorTag3.increaseScore(TagType.ORDER);//상품 주문해서 10점 누적.
-//                member1.addTag(favorTag3);
-//
-////                상품1은 시티보이룩을 가지고 있다
-//                Set<Tag> tags1 = new LinkedHashSet<>();
-//                Product product1 = Product.builder().name("상품1").tags(tags1).description("설명1").price(500).stock(100).build();
-//                product1.addTag(new Tag("시티보이룩"));
-//
-////                상품2는 시티보이룩, 빈티지룩을 가지고 있다
-//                Set<Tag> tags2 = new LinkedHashSet<>();
-//                Product product2 = Product.builder().name("상품2").tags(tags2).description("설명2").price(500).stock(100).build();
-//                product2.addTag(new Tag("시티보이룩"));
-//                product2.addTag(new Tag("빈티지룩"));
-//
-//                Set<Tag> tags3 = new LinkedHashSet<>();
-//                Product product3 = Product.builder().name("상품3").tags(tags3).description("설명3").price(500).stock(100).build();
-//                product3.addTag(new Tag("시티보이룩"));
-//                product3.addTag(new Tag("빈티지룩"));
-//                product3.addTag(new Tag("로멘틱룩"));
-//                productService.save(product1);
-//                productService.save(product2);
-//                productService.save(product3);
-//
-//                Set<Tag> tags4 = new LinkedHashSet<>();
-//                Product product4 = Product.builder().name("상품4").tags(tags4).description("설명4").price(500).stock(100).build();
-//                product4.addTag(new Tag("원숭이룩"));
-//                productService.save(product1);
-//                productService.save(product2);
-//                productService.save(product3);
-//                productService.save(product4);
-                //member1의 추천상품을 가져오면 로멘틱룩, 빈티지룩, 시티보이룩 순서대로 가져와야 한다.
-                //상품 4는 member의 선호태그를 가지고 있지 않으므로 추천되지 않아야 한다.
+                //==상품데이터==//
+                for(int n=1; n<=10; n++) {
+                    CommonFile mainFile = CommonFile.builder()
+                            .fileName("355d1034-90ac-420b-ae02-6656eeebd707.jpg")
+                            .build();
+                    List<CommonFile> subFiles = new ArrayList<>();
+                    subFiles.add(CommonFile.builder()
+                            .fileName("290ffec9-2da6-46dd-8779-86c27d48ef0c.jpg")
+                            .build());
 
-//                상품3은 시티보이룩, 빈티지룩, 로멘틱룩을 모두 가지고 있다.
-//                Set<Tag> tags3 = new LinkedHashSet<>();
-//                tags3.add(new Tag("시티보이룩"));
-//                tags3.add(new Tag("빈티지룩"));
-//                tags3.add(new Tag("로멘틱룩"));
-//                Product product3 = Product.builder().name("상품3").tags(tags3).description("설명3").price(500).stock(100).build();
+                    for (CommonFile subFile : subFiles) {
+                        mainFile.connectFile(subFile);
+                    }
+
+                    Product product = Product
+                            .builder()
+                            .name("멋쟁이 티셔츠"+n)
+                            .description("이 상품은 멋쟁이 티셔츠입니다."+n)
+                            .stock(50+n)
+                            .price(20000+n)
+                            .mainCategory(mainCategoryService.findByName("상의"))
+                            .subCategory(subCategoryService.findByName("반소매티셔츠"))
+                            .brand(brandService.findByName("나이키"))
+                            .file(mainFile)
+                            .build();
+                    Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+                    for (int i = 1; i <= 5; i++) {
+                        TagName tagName = tagNameService.findById(Long.valueOf(i+n));
+                        tags.add(new Tag(tagName.getName()));
+                    }
+                    product.addTag(tags);
+                    productRepository.save(product);
+                }
+
+                //==주문데이터==//
+                Member findMember = memberService.findByEmail("trendpick@naver.com").get();
+                MemberInfoDto memberInfo = new MemberInfoDto(findMember);
+                List<OrderItemDto> orderItems = new ArrayList<>();
+
+                orderItems.add(new OrderItemDto(productRepository.findById(1L).get(), "M", 5));
+                orderItems.add(new OrderItemDto(productRepository.findById(2L).get(), "L", 3));
+                orderItems.add(new OrderItemDto(productRepository.findById(3L).get(), "S", 2));
+
+                OrderForm orderForm = new OrderForm(memberInfo, orderItems);
+                orderForm.setPaymentMethod("신용카드");
+                orderservice.order(findMember, orderForm);
             }
         };
     }

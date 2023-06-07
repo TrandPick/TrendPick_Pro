@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
-    Page<Order> findAllByMember(Member member, Pageable pageable);
+public interface OrderRepository extends JpaRepository<Order, Long>, OrderRepositoryCustom {
 }

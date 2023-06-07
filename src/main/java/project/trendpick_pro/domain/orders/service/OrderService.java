@@ -11,6 +11,7 @@ import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.delivery.entity.embaded.Address;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
@@ -68,10 +69,8 @@ public class OrderService {
         order.cancel();
     }
 
-    //임시 작성
-    public Page<Order> findAll(OrderSearchCond cond) {
-        Member member = memberRepository.findById(cond.getMemberId()).orElseThrow();
-        return orderRepository.findAllByMember(member, PageRequest.of(0, 10));
+    public Page<OrderResponse> findAllByMember(Member member, int offset) {
+        return orderRepository.findAllByMember(new OrderSearchCond(member.getId()), PageRequest.of(offset, 10));
     }
 
 
