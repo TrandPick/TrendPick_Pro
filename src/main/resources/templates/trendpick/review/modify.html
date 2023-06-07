@@ -4,36 +4,53 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>리뷰 등록</title>
+  <title>리뷰 수정</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
 <body>
 <form th:action="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewId})}" th:object="${reviewSaveRequst}" method="post" enctype="multipart/form-data">
-  <div>
-    <label for="title">제목</label>
-    <input type="text" id="title" name="title" required  th:value="${originReview.title}">
+
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text">제목</span>
+    </label>
+    <input type="text" name="title" th:value="${originReview.title}" placeholder="제목" class="input input-bordered" autofocus/>
   </div>
 
-  <div>
-    <label for="content">내용</label>
-    <textarea id="content" name="content" required  th:value="${originReview.content}"></textarea>
-    <div class="error-message" data-error-message="content"></div>
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text">내용</span>
+    </label>
+    <input type="text" name="content" th:value="${originReview.content}" placeholder="내용" class="input input-bordered" autofocus/>
   </div>
 
-  <div>
-    <label for="mainFile">메인 사진</label>
-    <input type="file" id="mainFile" name="mainFile" required >
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text">메인 사진</span>
+    </label>
+    <input type="file" id="mainFile" name="mainFile" required>
   </div>
 
-  <div>
-    <label for="subFiles">서브 사진들</label>
-    <input type="file" id="subFiles" name="subFiles" multiple="multiple">
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text">서브 사진들</span>
+    </label>
+    <input type="file" id="subFiles" name="subFiles" required>
   </div>
 
-  <div>
-    <label for="rating">별점</label>
-    <input type="number" id="rating" name="rating" required th:value="${originReview.rating}">
+  <div class="form-control">
+    <label class="label">
+      <span class="label-text">별점</span>
+    </label>
+    <select name="rating" class="input input-bordered" autofocus>
+      <option value="1" th:selected="${originReview.rating == 1}">1</option>
+      <option value="2" th:selected="${originReview.rating == 2}">2</option>
+      <option value="3" th:selected="${originReview.rating == 3}">3</option>
+      <option value="4" th:selected="${originReview.rating == 4}">4</option>
+      <option value="5" th:selected="${originReview.rating == 5}">5</option>
+    </select>
   </div>
+
 
   <button type="submit">리뷰 수정</button>
 </form>
