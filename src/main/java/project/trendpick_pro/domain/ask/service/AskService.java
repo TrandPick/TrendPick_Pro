@@ -7,17 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.ask.entity.Ask;
-import project.trendpick_pro.domain.ask.entity.dto.request.AskByProductRequest;
+import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
 import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
-import project.trendpick_pro.domain.ask.entity.dto.response.AskByProductResponse;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 import project.trendpick_pro.domain.ask.repository.AskRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,28 +24,20 @@ public class AskService {
     private final ProductRepository productRepository;
 
     //상품 상세에서 문의 내역 볼 때
-    public Page<AskByProductResponse> showAsksByProduct(int offset, Long productId) {
+    public Page<AskResponse> showAsksByProduct(Long productId, int offset) {
         Pageable pageable = PageRequest.of(offset, 10);
-        AskByProductRequest request = new AskByProductRequest(productId);
-
-        Page<AskByProductResponse> responses = askRepository.findAllByProduct(request, pageable);
-
-        return responses;
+        Page<Ask> asks = askRepository.findAllByProductId(productId, pageable);
+        return AskResponse.of(asks);
     }
 
-    //마이페이지 나의 문의 내역 볼 때
-//    public Page<AskByProductResponse> showAsksByMyPage(int offset, Long productId) {
-//        Pageable pageable = PageRequest.of(offset, 10);
-//        AskByProductRequest request = new AskByProductRequest(productId);
-//
-//        Page<AskByProductResponse> responses = askRepository.findAllByProduct(request, pageable);
-//
-//        return responses;
-//    }
+    public Page<AskResponse> showAsksByMyPage(Member member, int offset) {
+        Pageable pageable = PageRequest.of(offset, 10);
+        Page<Ask> asks = askRepository.findAllByMember(member, pageable);
+        return AskResponse.of(asks);
+    }
 
     public AskResponse show(Long askId) {
         Ask ask = askRepository.findById(askId).orElseThrow();
-
         return AskResponse.of(ask);
     }
 
@@ -75,10 +63,9 @@ public class AskService {
     }
 
     @Transactional
-    public AskResponse register(Member member, Long productId, AskRequest askRequest) {
-        Product product = productRepository.findById(productId).orElseThrow();
-
-        Ask ask = Ask.of(member, product, askRequest);
+    public AskResponse register(Member member, AskForm askForm) {
+        Product product = productRepository.findById(askForm.getProductId()).orElseThrow();
+        Ask ask = Ask.of(member, product, askForm);
 
         askRepository.save(ask);
         return AskResponse.of(ask);

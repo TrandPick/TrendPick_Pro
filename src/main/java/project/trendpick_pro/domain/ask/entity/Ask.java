@@ -5,16 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import project.trendpick_pro.domain.answer.entity.Answer;
+import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
 import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,19 +36,21 @@ public class Ask extends BaseTimeEntity {
 
     private String title;
     private String content;
-    private String state;
+
+    @Enumerated(EnumType.STRING)
+    private AskStatus status;
 
     @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Answer> answerList = new ArrayList<>();
 
-    public static Ask of(Member member, Product product, AskRequest askRequest) {
+    public static Ask of(Member member, Product product, AskForm askForm) {
         return Ask.builder()
                 .author(member)
                 .product(product)
-                .title(askRequest.getTitle())
-                .content(askRequest.getTitle())
-                .state("답변예정")
+                .title(askForm.getTitle())
+                .content(askForm.getContent())
+                .status(AskStatus.YET)
                 .build()
                 ;
     }

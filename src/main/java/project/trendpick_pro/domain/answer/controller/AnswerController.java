@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.answer.entity.dto.request.AnswerRequest;
 import project.trendpick_pro.domain.answer.entity.dto.response.AnswerResponse;
+import project.trendpick_pro.domain.answer.entity.form.AnswerForm;
 import project.trendpick_pro.domain.answer.service.AnswerService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -19,25 +20,27 @@ public class AnswerController {
     private final Rq rq;
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/register")
-    public String registerAnswer(@RequestParam("ask") Long askId, @Valid AnswerRequest answerRequest){
-        Member member = rq.getMember();
-        answerService.register(askId, member, answerRequest);
+    @PostMapping("register/{askId}")
+    public String register(@PathVariable Long askId, @Valid AnswerForm answerForm){
+        rq.CheckAdmin().get();
+        answerService.register(askId, answerForm);
 
         return "redirect:/trendpick/customerservice/asks/{askId}".formatted(askId);
     }
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{answerId}")
     public String deleteAnswer(@PathVariable Long answerId){
-        AnswerResponse res = answerService.delete(rq.getMember(), answerId);
+        rq.CheckAdmin().get();
+        AnswerResponse answerResponse = answerService.delete(answerId);
 
-        return "redirect:/trendpick/customerservice/asks/%s".formatted(res.getAsk().getId());
+        return "redirect:/trendpick/customerservice/asks/%s".formatted(answerResponse.getAskId());
     }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/moidfy/{answerId}")
-    public String modifyAnswer(@PathVariable Long answerId, @Valid AnswerRequest answerRequest){
-        AnswerResponse res = answerService.modify(rq.getMember(), answerId, answerRequest);
-
-        return "redirect:/trendpick/customerservice/asks/%s".formatted(res.getAsk().getId());
+    public String modifyAnswer(@PathVariable Long answerId, @Valid AnswerForm answerForm){
+        rq.CheckAdmin().get();
+        AnswerResponse answerResponse = answerService.modify(answerId, answerForm);
+        return "redirect:/trendpick/customerservice/asks/%s".formatted(answerResponse.getAskId());
     }
 }
