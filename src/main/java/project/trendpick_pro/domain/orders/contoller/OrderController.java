@@ -64,6 +64,12 @@ public class OrderController {
         return "redirect:/trendpick/orders/order";
     }
 
+    @GetMapping("/order/product")
+    public String orderProduct(@RequestParam("product") Long productId,
+                                @RequestParam("count") int count, Model model){
+        model.addAttribute("orderForm", orderService.productToOrder(rq.CheckMember().get(), productId, count));
+        return "redirect:/trendpick/orders/order";
+    }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")

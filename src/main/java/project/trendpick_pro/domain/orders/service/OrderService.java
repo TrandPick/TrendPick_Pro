@@ -32,6 +32,7 @@ import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -92,4 +93,11 @@ public class OrderService {
         return orderItemDtoList;
     }
 
+    public OrderForm productToOrder(Member member, Long productId, int count) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
+        List<OrderItemDto> orderItemDtoList = new ArrayList<>();
+        orderItemDtoList.add(OrderItemDto.of(product, count));
+        return new OrderForm(MemberInfoDto.of(member), orderItemDtoList);
+    }
 }
