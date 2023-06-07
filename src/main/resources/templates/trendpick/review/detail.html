@@ -27,6 +27,9 @@
             <h2 class="text-xl font-bold text-gray-800 mb-2">내용</h2>
             <p class="mb-4" th:text="${reviewResponse.content}">후기내용</p>
         </div>
+
+        <a th:if="${reviewResponse.writer == currentUser}" th:href="@{|/trendpick/review/edit/${reviewResponse.id}|}">수정하기</a>
+
     </div>
 </div>
 </body>

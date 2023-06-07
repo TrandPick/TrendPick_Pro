@@ -20,7 +20,6 @@
         <form th:action="@{/trendpick/review/{id}(id=${reviewResponse.id})}" th:method="post">
             <div th:onclick="${'\'#' + reviewResponse.id + '\''}.submit()">
                 <img th:src="|/images/${reviewResponse.mainFile}|" width="100" height="100"/></br>
-<!--                <img th:src="${reviewResponse.mainFile}" class="rounded" alt="메인 이미지">-->
                 <p>제목: <span th:text="${reviewResponse.title}"></span></p>
                 <p>상품명: <span th:text="${reviewResponse.productName}"></span></p>
                 <p>평점: <span th:text="${reviewResponse.rating}"></span></p>

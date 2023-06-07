@@ -122,9 +122,19 @@ public class BaseData {
                         .tags(List.of("오버핏청바지", "로맨틱룩"))
                         .build();
 
+                JoinForm member2 = JoinForm.builder()
+                        .email("hye_0000@naver.com")
+                        .password("12345")
+                        .username("hye0000")
+                        .phoneNumber("010-1234-1234")
+                        .state("MEMBER")
+                        .tags(List.of("오버핏청바지", "로맨틱룩"))
+                        .build();
+
                 memberService.register(admin);
                 memberService.register(brand_admin);
                 memberService.register(member);
+                memberService.register(member2);
 
                 //==상품데이터==//
                 for(int n=1; n<=10; n++) {
@@ -161,7 +171,7 @@ public class BaseData {
                 }
 
                 //==주문데이터==//
-                Member findMember = memberService.findByEmail("trendpick@naver.com").get();
+                Member findMember = memberService.findByEmail("hye_0000@naver.com").get();
                 MemberInfoDto memberInfo = new MemberInfoDto(findMember);
                 List<OrderItemDto> orderItems = new ArrayList<>();
 
@@ -172,6 +182,19 @@ public class BaseData {
                 OrderForm orderForm = new OrderForm(memberInfo, orderItems);
                 orderForm.setPaymentMethod("신용카드");
                 orderservice.order(findMember, orderForm);
+
+                //==주문데이터2==//
+                Member findMember2 = memberService.findByEmail("trendpick@naver.com").get();
+                MemberInfoDto memberInfo2 = new MemberInfoDto(findMember2);
+                List<OrderItemDto> orderItems2 = new ArrayList<>();
+
+                orderItems2.add(new OrderItemDto(productRepository.findById(1L).get(), "M", 5));
+                orderItems2.add(new OrderItemDto(productRepository.findById(2L).get(), "L", 3));
+                orderItems2.add(new OrderItemDto(productRepository.findById(3L).get(), "S", 2));
+
+                OrderForm orderForm2 = new OrderForm(memberInfo2, orderItems2);
+                orderForm2.setPaymentMethod("신용카드");
+                orderservice.order(findMember2, orderForm2);
             }
         };
     }

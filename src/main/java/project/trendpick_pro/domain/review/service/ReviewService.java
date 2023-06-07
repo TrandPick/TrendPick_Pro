@@ -109,6 +109,12 @@ public class ReviewService {
         return reviewPage.map(ReviewResponse::of);
     }
 
+    @Transactional
+    public Page<ReviewResponse> showOwnReview(String writer, Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findByWriter(writer, pageable);
+        return reviewPage.map(ReviewResponse::of);
+    }
+
 //    public Page<ReviewResponse> showAll(int offset) {
 //        Pageable pageable = PageRequest.of(offset, 20);
 //        Page<Review> reviews = reviewRepository.findAllByPage(pageable);
