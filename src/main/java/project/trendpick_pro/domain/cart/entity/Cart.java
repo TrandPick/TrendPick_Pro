@@ -40,6 +40,7 @@ public class Cart {
         Cart cart = new Cart();
         cart.member= member;
         cart.totalCount = 0;
+        cart.totalPrice=0;
         return cart;
     }
 
