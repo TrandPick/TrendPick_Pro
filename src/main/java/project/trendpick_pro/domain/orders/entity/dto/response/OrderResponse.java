@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderResponse {
 
-    private Long orderId;
+    private Long productId;
     private String productFilePath;
     private String brandName;
     private String productName;
@@ -25,8 +25,8 @@ public class OrderResponse {
 
     @Builder
     @QueryProjection
-    public OrderResponse(Long orderId, String productFilePath, String brandName, String productName, String size, int count,int productPrice, LocalDateTime orderDate, String orderStatus, String deliveryStatus) {
-        this.orderId = orderId;
+    public OrderResponse(Long productId, String productFilePath, String brandName, String productName, String size, int count,int productPrice, LocalDateTime orderDate, String orderStatus, String deliveryStatus) {
+        this.productId = productId;
         this.productFilePath = productFilePath;
         this.brandName = brandName;
         this.productName = productName;
