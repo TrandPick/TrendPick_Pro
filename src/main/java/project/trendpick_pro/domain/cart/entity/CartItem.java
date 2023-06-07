@@ -48,4 +48,7 @@ public class CartItem {
         this.count += count;
     }
 
+    public void update(int count){
+        this.count=count;
+    }
 }

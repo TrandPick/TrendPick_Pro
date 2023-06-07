@@ -88,9 +88,11 @@ public class CartService {
     }
 
     // 상품의 수량 업데이트
-    public void updateItemCount(Member member, Long cartItemId, int count) {
-        Cart cart = getCartByUser(member.getId());
-        cart.updateItemCount(cartItemId, count);
+    @Transactional
+    public void updateItemCount(Long cartItemId, int count) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
+        cartItem.update(count);
+        cartItemRepository.save(cartItem);
     }
 
     public Cart getCartByUser(Long memberId) {
@@ -107,5 +109,4 @@ public class CartService {
         Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
         return member;
     }
-
 }

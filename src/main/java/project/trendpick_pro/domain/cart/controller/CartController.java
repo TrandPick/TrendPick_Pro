@@ -4,6 +4,7 @@ package project.trendpick_pro.domain.cart.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -76,12 +77,13 @@ public class CartController {
         return "redirect:/trendpick/usr/cart/list";
     }
 
+    // 장바구니에서 수량 변경
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
-    public String updateCartItemQuantity(@RequestParam("cartItemId") Long cartItemId,
-                                         @RequestParam("count") int count) {
+    public String updateCount(@RequestParam("cartItemId") Long cartItemId,
+                                              @RequestParam("count") int newCount) {
         Member member = rq.getMember();
-        cartService.updateItemCount(member, cartItemId, count);
-        return "redirect:/trendpick/list";
+        cartService.updateItemCount(cartItemId, newCount);
+        return "redirect:/trendpick/usr/cart/list";
     }
 }

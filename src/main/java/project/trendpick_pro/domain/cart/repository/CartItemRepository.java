@@ -5,4 +5,6 @@ import project.trendpick_pro.domain.cart.entity.CartItem;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     CartItem findByCartIdAndProductId(Long cartId, long ProductId);
+
+    CartItem findByCartId(Long cartItemID);
 }
