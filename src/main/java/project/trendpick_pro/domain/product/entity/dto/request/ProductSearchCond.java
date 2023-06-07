@@ -7,11 +7,16 @@ public class ProductSearchCond {
 
     private final String mainCategory;
     private final String subCategory;
-    private final Integer sortCode;
+    private Integer sortCode;
 
     public ProductSearchCond(String mainCategory, String subCategory, Integer sortCode) {
         this.mainCategory = mainCategory;
         this.subCategory = subCategory;
         this.sortCode = sortCode;
+    }
+
+    public ProductSearchCond(String mainCategory, String subCategory) {
+        this.mainCategory = mainCategory;
+        this.subCategory = subCategory;
     }
 }

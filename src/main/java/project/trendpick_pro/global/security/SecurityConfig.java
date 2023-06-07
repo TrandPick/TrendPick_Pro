@@ -21,11 +21,12 @@ public class SecurityConfig {
 //                        formLogin -> formLogin
 //                                .loginPage("/trendpick/member/login")
 //                                .loginProcessingUrl("/login_proc")
-//                                .defaultSuccessUrl("/trendpick/products/list")
+//                                .defaultSuccessUrl("/trendpick/products/list?main-category=추천")
 //                )
 //                .logout(
 //                        logout -> logout
 //                                .logoutUrl("/trendpick/member/logout")
+//                                .logoutSuccessUrl("/trendpick/products/list?main-category=상의")
 //                );
 //        return http.build();
 //    }
@@ -35,18 +36,18 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/register").hasAnyAuthority("ADMIN", "BRAND_ADMIN")
+                .requestMatchers("/register").anonymous()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .formLogin()
                 .loginPage("/trendpick/member/login")
-                .loginProcessingUrl("/login_proc")
-                .defaultSuccessUrl("/trendpick/products/list")
+                .defaultSuccessUrl("/trendpick/products/list?main-category=recommend")
                 .permitAll()
                 .and()
                 .logout()
                 .logoutUrl("/trendpick/member/logout")
+                .logoutSuccessUrl("/trendpick/products/list?main-category=top")
                 .permitAll();
         return http.build();
     }

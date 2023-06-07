@@ -1,46 +1,42 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상품 상세 페이지</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/daisyui/1.14.0/full.css" rel="stylesheet">
+    <title>TrendPick</title>
 </head>
-<body class="bg-gray-100">
-<div class="container mx-auto px-6 py-8">
-    <h2 class="text-4xl font-bold mb-8" th:text="${productResponse.name}">제품명</h2>
-
-    <div class="md:flex md:items-center">
-        <div class="md:w-1/2">
-            <img th:src="${productResponse.mainFile}" class="rounded" alt="메인 이미지">
-            <div class="mt-4 flex" th:each="image : ${productResponse.subFiles}">
-                <img th:src="${image}" class="rounded w-24 mr-2" alt="서브 이미지">
+<body>
+<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col">
+    <div class="flex-1 overflow-auto p-4">
+        <div class="card bordered flex flex-col md:flex-row gap-4">
+            <figure class="flex-1">
+                <img th:src="|/images/${productResponse.mainFile}|" class="w-full h-full object-cover" alt="Product Image"/>
+                <div class="mt-4 flex" th:each="image : ${productResponse.subFiles}">
+                    <img th:src="|/images/${image}|" class="rounded w-24 mr-2" alt="Sub Image">
+                </div>
+            </figure>
+            <div class="card-body flex-1">
+                <h2 class="text-2xl font-bold" th:text="${productResponse.name}"></h2>
+                <div class="badge my-2">Brand: <span th:text="${productResponse.brand}"></span></div>
+                <p class="mb-4" th:text="${productResponse.description}">Product Description</p>
+                <ul class="mb-8">
+                    <li>Main Category: <span th:text="${productResponse.mainCategory}">Main Category</span></li>
+                    <li>Sub Category: <span th:text="${productResponse.subCategory}">Sub Category</span></li>
+                    <li>Brand: <span th:text="${productResponse.brand}">Brand</span></li>
+                    <li>Price: <span class="text-orange-600 font-bold text-lg" th:text="${#numbers.formatDecimal(productResponse.price, 0, 'COMMA', 0, 'POINT')} + ' 원'">Price</span></li>
+                    <li>Stock: <span th:text="${productResponse.stock}">Stock</span></li>
+                </ul>
+                <div class="mb-4">
+                    <label for="quantity" class="font-bold">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" min="1" max="10" value="1" class="w-16 border border-gray-300 rounded-md px-2 py-1">
+                </div>
+                <div class="flex-grow"></div>
+                <div class="flex justify-between card-actions">
+                    <a href="@{/trendpick/cart/add/${productResponse.id}}" class="btn btn-accent">Add to Cart</a>
+                    <a href="@{/trendpick/productResponses/buy/${productResponse.id}}" class="btn btn-green">Buy Now</a>
+                    <a href="/trendpick/productResponses/list" class="btn">Back to List</a>
+                </div>
             </div>
         </div>
-
-        <div class="md:w-1/2 ml-4">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">상품 설명</h2>
-            <p class="mb-4" th:text="${productResponse.description}">상품 설명</p>
-
-            <h2 class="text-xl font-bold text-gray-800 mb-2">상세 정보</h2>
-            <ul class="mb-8">
-                <li>메인 카테고리: <span class="text-gray-700" th:text="${productResponse.mainCategory}">메인 카테고리</span></li>
-                <li>서브 카테고리: <span class="text-gray-700" th:text="${productResponse.subCategory}">서브 카테고리</span></li>
-                <li>브랜드: <span class="text-gray-700" th:text="${productResponse.brand}">브랜드</span></li>
-                <li>가격: <span class="text-gray-700" th:text="${productResponse.price}">가격</span></li>
-                <li>재고: <span class="text-gray-700" th:text="${productResponse.stock}">재고</span></li>
-                <li>태그:
-                    <ul th:each="tag : ${productResponse.tags}">
-                        <li class="text-gray-700" th:text="${tag.name}">태그</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <button th:if="${productResponse.role != 'MEMBER'}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none" type="button" onclick="location.href='@{/trendpick/cart/add/${productResponse.id}}'">장바구니에 추가</button>
-            <button th:if="${productResponse.role != 'MEMBER'}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 focus:outline-none ml-4" type="button" onclick="location.href='@{/trendpick/products/buy/${productResponse.id}}'">바로 구매하기</button>
-        </div>
     </div>
-</div>
+</main>
 </body>
 </html>
