@@ -41,7 +41,6 @@
         <ul class="menu menu-horizontal flex justify-end flex-1 px-2 float-right" >
           <li><a href="/trendpick/member/register" sec:authorize="isAnonymous()">회원가입</a></li>
           <li><a href="/trendpick/member/login" sec:authorize="isAnonymous()">로그인</a></li>
-          <li><a href="/trendpick/member/me" sec:authorize="isAuthenticated()">마이페이지</a></li>
           <li><form th:action="|/trendpick/member/logout|" sec:authorize="isAuthenticated()" method="POST"
                     style="display: inline;">
             <input class="link link-hover" type="submit" value="로그아웃">
@@ -62,6 +61,34 @@
               </a>
             </div>
           </button>
+          <div class="dropdown">
+            <label tabindex="0" class="btn btn-ghost btn-circle">
+              <i class="fa-solid fa-bars"></i>
+            </label>
+            <ul tabindex="0"
+                class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-64">
+              <li>
+                <span>
+                  <a th:href="@{/trendpick/member/info}"><span>내 정보</span></a>
+                </span>
+              </li>
+              <li>
+                <span>
+                  <a th:href="@{/trendpick/orders/list}"><span>내 주문목록</span></a>
+                </span>
+              </li>
+              <li>
+                <span>
+                  <a th:href="@{/trendpick/member/info/address}"><span>배송지 관리</span></a>
+                </span>
+              </li>
+              <li>
+                <span>
+                  <a th:href="@{/trendpick/member/info/account}"><span>계좌 관리</span></a>
+                </span>
+              </li>
+            </ul>
+          </div>
         </ul>
       </div>
     </div>

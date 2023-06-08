@@ -101,6 +101,7 @@ public class MemberService {
         member.connectAddress(address);
     }
 
+    @Transactional
     public void manageAccount(Member actor, String bank_name, String account){
         Member member = memberRepository.findByUsername(actor.getUsername()).orElseThrow();
         member.connectBank(bank_name, account);
