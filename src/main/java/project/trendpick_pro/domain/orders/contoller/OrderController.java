@@ -44,7 +44,7 @@ public class OrderController {
     private final MemberService memberService;
     private final ProductRepository productRepository;
 
-    @GetMapping("/order")
+    @GetMapping("/order-form")
     public String orderForm(@ModelAttribute OrderForm orderForm,
                             HttpServletRequest req,
                             Model model) {
@@ -54,7 +54,7 @@ public class OrderController {
             model.addAttribute("orderForm", orderForm);
         }
         model.addAttribute("orderForm", orderForm);
-        return "trendpick/orders/order";
+        return "trendpick/orders/order-form";
     }
 
     @PostMapping("/order")
@@ -72,13 +72,13 @@ public class OrderController {
         redirect.addFlashAttribute("orderForm"
                 ,orderService.cartToOrder(rq.CheckMember().get(), selectedItems));
 
-        return "redirect:/trendpick/orders/order";
+        return "redirect:/trendpick/orders/order-form";
     }
 
     @PostMapping("/order/product")
     public String orderProduct(@ModelAttribute ProductOptionForm productOptionForm, RedirectAttributes redirect) {
         redirect.addFlashAttribute("orderForm", orderService.productToOrder(rq.CheckMember().get(), productOptionForm));
-        return "redirect:/trendpick/orders/order";
+        return "redirect:/trendpick/orders/order-form";
     }
 
     @PreAuthorize("isAuthenticated()")

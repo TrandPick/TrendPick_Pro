@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>주문 목록</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/css/bootstrap.min.css">
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
     <body>
@@ -11,7 +10,7 @@
         <thead>
         <tr>
             <th class="text-center" scope="col">주문번호</th>
-            <th class="text-center" scope="col">상품정보</th>
+            <th scope="col">상품정보</th>
             <th class="text-center" scope="col">주문수량</th>
             <th class="text-center" scope="col">주문금액</th>
             <th class="text-center" scope="col">주문일시</th>
@@ -23,7 +22,7 @@
         <tbody>
         <tr th:each="order, loop : ${orderList}">
             <td class="text-center" th:text="${orderList.number * 10 + loop.count}"></td>
-            <td>
+            <td class="text-center">
                 <div class="flex items-center space-x-3">
                     <div class="avatar">
                         <div class="mask mask-squircle w-12 h-12">
