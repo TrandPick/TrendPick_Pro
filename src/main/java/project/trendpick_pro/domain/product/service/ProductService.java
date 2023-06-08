@@ -144,16 +144,16 @@ public class ProductService {
         }
     }
 
-    public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory, Integer sortCode) {
+    public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory) { //, Integer sortCode
 
-        ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory, sortCode);
+        ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
         PageRequest pageable = PageRequest.of(offset, 18);
 
         Page<ProductListResponse> listResponses = productRepository.findAllByCategoryId(cond, pageable);
 
         List<ProductListResponse> list = listResponses.getContent().stream()
                 .peek(product -> {
-                    String updatedMainFile = filePath + product.getMainFile();
+                    String updatedMainFile = product.getMainFile();
                     product.setMainFile(updatedMainFile);
                 }).toList();
 

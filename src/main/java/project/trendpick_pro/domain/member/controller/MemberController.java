@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import project.trendpick_pro.domain.common.base.rq.Rq;
@@ -38,11 +39,7 @@ public class MemberController {
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/register")
-    public String register(@Valid JoinForm joinForm, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("allTags", tagNameService.findAll());
-            return "trendpick/usr/member/join";
-        }
+    public String register(@ModelAttribute @Valid JoinForm joinForm) {
         memberService.register(joinForm);
         return "redirect:/trendpick/member/login";
     }
@@ -50,7 +47,7 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @GetMapping("/login")
     public String login() {
-        return "/trendpick/usr/member/login";
+        return "trendpick/usr/member/login";
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -89,18 +89,25 @@ public class ProductController {
     public String showAllProduct(@RequestParam(value = "page", defaultValue = "0") int offset,
                                  @RequestParam(value = "main-category") String mainCategory,
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
-                                 @RequestParam(value = "sort", defaultValue = "1") Integer sortCode,
                                  Model model) {
-        if (mainCategory.equals("추천")) {
+        if (mainCategory.equals("recommend")) {
+            mainCategory = "추천";
+        } else if (mainCategory.equals("top")) {
+            mainCategory = "상의";
+        } if (mainCategory.equals("추천")) {
             Member member = rq.CheckLogin().orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
             if (member.getRole().getValue().equals("MEMBER")) {
+                model.addAttribute("mainCategoryName", mainCategory);
                 model.addAttribute("productResponses", recommendService.getFindAll(offset));
             } else {
-                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory, sortCode));
+                model.addAttribute("mainCategoryName", mainCategory);
+                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
             }
         } else {
-            model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory, sortCode));
+            model.addAttribute("mainCategoryName", mainCategory);
+            model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
         }
         return "/trendpick/products/list";
     }
 }
+// @RequestParam(value = "sort", defaultValue = "1"), Integer sortCode
