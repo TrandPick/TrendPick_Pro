@@ -33,7 +33,7 @@ public class CartController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showCart(Model model) {
-        Cart carts = cartService.getCartByUser(rq.getMember().getId());
+        Cart carts = cartService.getCartByUser(rq.CheckMember().get().getId());
         List<CartItem> cartItems = cartService.CartView(carts);
 
         int totalPrice = 0;

@@ -16,6 +16,7 @@ import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
+import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
@@ -93,11 +94,11 @@ public class OrderService {
         return orderItemDtoList;
     }
 
-    public OrderForm productToOrder(Member member, Long productId, int count) {
-        Product product = productRepository.findById(productId)
+    public OrderForm productToOrder(Member member, ProductOptionForm productOptionForm) {
+        Product product = productRepository.findById(productOptionForm.getProductId())
                 .orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         List<OrderItemDto> orderItemDtoList = new ArrayList<>();
-        orderItemDtoList.add(OrderItemDto.of(product, count));
+        orderItemDtoList.add(OrderItemDto.of(product, productOptionForm.getQuantity()));
         return new OrderForm(MemberInfoDto.of(member), orderItemDtoList);
     }
 }

@@ -23,6 +23,7 @@ import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 
 import java.time.LocalDateTime;
@@ -74,10 +75,9 @@ public class OrderController {
         return "redirect:/trendpick/orders/order";
     }
 
-    @GetMapping("/order/product")
-    public String orderProduct(@RequestParam("product") Long productId,
-                               @RequestParam("count") int count, RedirectAttributes redirect) {
-        redirect.addFlashAttribute("orderForm", orderService.productToOrder(rq.CheckMember().get(), productId, count));
+    @PostMapping("/order/product")
+    public String orderProduct(@ModelAttribute ProductOptionForm productOptionForm, RedirectAttributes redirect) {
+        redirect.addFlashAttribute("orderForm", orderService.productToOrder(rq.CheckMember().get(), productOptionForm));
         return "redirect:/trendpick/orders/order";
     }
 
