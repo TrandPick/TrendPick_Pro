@@ -4,10 +4,8 @@ package project.trendpick_pro.domain.cart.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import project.trendpick_pro.domain.cart.entity.Cart;
@@ -50,7 +48,6 @@ public class CartController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/add")
     public String addItemToCart(Long productId, CartItemRequest cartItemRequests, Model model) {
-        Member member = rq.getMember();
         model.addAttribute("cartItemRequest", cartItemRequests);
         // 쇼핑을 계속 하시겠습니까? 띄우고 yes이면 main no면 cart로
         return "/trendpick/usr/cart/add";
@@ -83,8 +80,8 @@ public class CartController {
     @PostMapping("/update")
     public String updateCount(@RequestParam("cartItemId") Long cartItemId,
                               @RequestParam("quantity") int newQuantity) {
-        Member member = rq.getMember();
-        cartService.updateItemCount(cartItemId, newQuantity);
+        Member member = rq.CheckMember().get();
+        cartService.updateItemCount(member,cartItemId, newQuantity);
         return "redirect:/trendpick/usr/cart/list";
     }
 }
