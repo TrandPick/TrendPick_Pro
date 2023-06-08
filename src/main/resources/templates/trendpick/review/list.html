@@ -3,15 +3,18 @@
 <head>
     <title>리뷰 목록</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
     <style>
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 20px;
+            grid-gap: 10px;
         }
-        .grid-item {
-            /* 그리드 항목의 스타일 설정 */
+        .star-icon {
+            color: gray; /* 비어있는 별 아이콘의 색상 */
+        }
+
+        .filled {
+            color: red; /* 채워진 별 아이콘의 색상 */
         }
     </style>
 </head>
@@ -22,28 +25,34 @@
             <a class="text-decoration-line: underline" th:href="@{/trendpick/review/user}">내 리뷰만 보기</a>
         </div>
     </div>
-    <div class="mt-5">
-        <div class="justify-center mt-10 grid-container grid-cols-3" style="width: 1000px; height: 680px; margin: 0 auto;">
+    <div class="mt-2">
+        <div class="justify-center mt-10 grid-container grid-cols-3" style="width: 1000px; height: 640px; margin: 0 auto;">
             <div th:each="reviewResponse : ${reviewResponses.content}" class="grid-item card bordered">
                 <div style="display: flex; flex-direction: column; align-items: center;">
                     <a th:href="@{/trendpick/review/{reviewId}(reviewId=${reviewResponse.id})}">
                         <img th:src="|/images/${reviewResponse.mainFile}|" class="mx-auto w-full"  style="height: 250px;"/>
                         <p class="text-center">상품명: <span th:text="${reviewResponse.productName}"></span></p>
                         <p class="text-center">제목: <span th:text="${reviewResponse.title}"></span></p>
-                        <p class="text-center"><span class="rating-stars" data-rating="${reviewResponse.rating}"></span></p>
+                        <p class="text-center">
+                            <span style="margin-right: 5px;" class="mr-2" th:each="star : ${#numbers.sequence(1, 5)}"
+                                  th:class="${star <= reviewResponse.rating} ? 'star-icon filled' : 'star-icon'"><i class="fa-solid fa-star"></i></span>
+                            <span>(</span><span th:text="${reviewResponse.rating}"></span><span>)</span>
+                        </p>
                     </a>
                 </div>
-                <a class="justify-center" th:if="${reviewResponse.writer == currentUser}" th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}" style="display: flex; justify-content: center;">수정하기</a>
+                <a class="justify-center btn btn-accent btn-sm" th:if="${reviewResponse.writer == currentUser}"
+                   th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}"
+                   style="display: flex; justify-content: center; border-top: 1px solid #ccc;">수정하기</a>
             </div>
         </div>
     </div>
 
     <div class="fixed bottom-2 left-0 w-full flex justify-center">
         <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
-        <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}" class="mr-4">
+        <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}" class="ml-4">
             <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponses.number == i ? 'current-page' : '' }"></a>
         </span>
-        <a th:if="${reviewResponses.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number+1})}">Next</a>
+        <a th:if="${reviewResponses.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number+1})}" class="ml-4">Next</a>
     </div>
 
 </main>
