@@ -2,84 +2,35 @@
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <title>리뷰 목록</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
     <style>
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-gap: 20px;
         }
-
         .grid-item {
             /* 그리드 항목의 스타일 설정 */
         }
     </style>
 </head>
-<main>
-    <!-- 데이지 UI 불러오기 -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css"/>
-    <!-- 테일윈드 불러오기 -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <div class="nav3">
-        <a class="px-2 lg:flex-none" href="/trendpick/products/list?main-category=상의">
-            <div class="flex items-center">
-                <img th:src="|/images/trendpick_logo.png|" width="150px" alt="TrendPick"/>
-                <h1 class="text-4xl font-bold ml-4">TrendPick</h1>
-            </div>
-        </a>
-        <div class="flex justify-between">
-            <ul class="menu menu-horizontal px-1">
-                <li><a href="/trendpick/products/list?main-category=추천" sec:authorize="isAuthenticated()">추천</a></li>
-                <li><a href="/trendpick/products/list?main-category=상의">상의</a></li>
-                <li><a href="/trendpick/products/list?main-category=아우터">아우터</a></li>
-                <li><a href="/trendpick/products/list?main-category=하의">하의</a></li>
-                <li><a href="/trendpick/products/list?main-category=신발">신발</a></li>
-                <li><a href="/trendpick/products/list?main-category=가방">가방</a></li>
-                <li><a href="/trendpick/products/list?main-category=악세서리">악세서리</a></li>
-            </ul>
-            <ul class="menu menu-horizontal flex justify-end flex-1 px-2 float-right" >
-                <li><a href="/trendpick/member/register" sec:authorize="isAnonymous()">회원가입</a></li>
-                <li><a href="/trendpick/member/login" sec:authorize="isAnonymous()">로그인</a></li>
-                <li><a href="/trendpick/member/me" sec:authorize="isAuthenticated()">마이페이지</a></li>
-                <li><form th:action="|/trendpick/member/logout|" sec:authorize="isAuthenticated()" method="POST"
-                          style="display: inline;">
-                    <input class="link link-hover" type="submit" value="로그아웃">
-                </form></li>
-                <button class="btn btn-ghost btn-circle">
-                    <div class="indicator">
-                        <a href="/trendpick/member/notification">
-                            <i class="fa-regular fa-bell"></i>
-                            <span class="badge badge-xs badge-accent indicator-item"></span>
-                        </a>
-                    </div>
-                </button>
-                <button class="btn btn-ghost btn-circle">
-                    <div class="indicator">
-                        <a href="/trendpick/cart">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                            <span class="badge badge-accent indicator-item">8</span>
-                        </a>
-                    </div>
-                </button>
-            </ul>
+<main layout:fragment="main">
+    <div class="flex justify-between mt-3">
+        <div></div>
+        <div class="flex justify-end">
+            <a class="text-decoration-line: underline" th:href="@{/trendpick/review/user}">내 리뷰만 보기</a>
         </div>
-
     </div>
-    <div class="mt-20">
-        <div class="flex justify-between">
-            <div></div>
-            <div>
-                <a class="text-decoration-line: underline" th:href="@{/trendpick/review/user}" >내 리뷰만 보기</a>
-            </div>
-        </div>
-        <div class="justify-center mt-10 grid-container grid-cols-3" style="width: 1000px; height: 700px; margin: 0 auto;">
-            <div th:each="reviewResponse : ${reviewResponses.content}" class="grid-item">
+    <div class="mt-5">
+        <div class="justify-center mt-10 grid-container grid-cols-3" style="width: 1000px; height: 680px; margin: 0 auto;">
+            <div th:each="reviewResponse : ${reviewResponses.content}" class="grid-item card bordered">
                 <div style="display: flex; flex-direction: column; align-items: center;">
                     <a th:href="@{/trendpick/review/{reviewId}(reviewId=${reviewResponse.id})}">
                         <img th:src="|/images/${reviewResponse.mainFile}|" class="mx-auto w-full"  style="height: 250px;"/>
                         <p class="text-center">상품명: <span th:text="${reviewResponse.productName}"></span></p>
                         <p class="text-center">제목: <span th:text="${reviewResponse.title}"></span></p>
-                        <p class="text-center">평점: <span th:text="${reviewResponse.rating}"></span>/5</p>
+                        <p class="text-center"><span class="rating-stars" data-rating="${reviewResponse.rating}"></span></p>
                     </a>
                 </div>
                 <a class="justify-center" th:if="${reviewResponse.writer == currentUser}" th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}" style="display: flex; justify-content: center;">수정하기</a>
@@ -87,7 +38,7 @@
         </div>
     </div>
 
-    <div class="fixed bottom-10 left-0 w-full flex justify-center">
+    <div class="fixed bottom-2 left-0 w-full flex justify-center">
         <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
         <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}" class="mr-4">
             <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponses.number == i ? 'current-page' : '' }"></a>

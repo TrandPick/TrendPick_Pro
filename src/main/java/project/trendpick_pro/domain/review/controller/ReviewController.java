@@ -43,9 +43,10 @@ public class ReviewController {
                                @RequestParam("mainFile") MultipartFile mainFile,
                                @RequestParam("subFiles") List<MultipartFile> subFiles,
                                @PathVariable("productId") Long productId, Model model) throws Exception {
-        Member member = rq.getMember();
+        Optional<Member> member = rq.CheckLogin();
+        Member checkMember = member.get();
 
-        ReviewResponse reviewResponse = reviewService.createReview(member, productId, reviewCreateRequest, mainFile, subFiles);
+        ReviewResponse reviewResponse = reviewService.createReview(checkMember, productId, reviewCreateRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
         return "redirect:/trendpick/review/list";
@@ -55,7 +56,9 @@ public class ReviewController {
     @GetMapping("/{reviewId}")
     public String showReview(@PathVariable Long reviewId, Model model){
         ReviewResponse reviewResponse = reviewService.showReview(reviewId);
-        String currentUser = rq.getMember().getUsername();
+        Optional<Member> member = rq.CheckLogin();
+        Member checkMember = member.get();
+        String currentUser = checkMember.getUsername();
         model.addAttribute("reviewResponse", reviewResponse);
         model.addAttribute("currentUser", currentUser);
         return "/trendpick/review/detail";
@@ -89,7 +92,9 @@ public class ReviewController {
     @GetMapping("/list")
     public String showAllReview(Pageable pageable, Model model){
         Page<ReviewResponse> reviewResponses = reviewService.showAll(pageable);
-        String currentUser = rq.getMember().getUsername();
+        Optional<Member> member = rq.CheckLogin();
+        Member checkMember = member.get();
+        String currentUser = checkMember.getUsername();
         model.addAttribute("reviewResponses", reviewResponses);
         model.addAttribute("currentUser", currentUser);
         return "/trendpick/review/list";
@@ -97,7 +102,9 @@ public class ReviewController {
 
     @GetMapping("/user")
     public String showOwnReview(Pageable pageable, Model model){
-        String writer = rq.getMember().getUsername();
+        Optional<Member> member = rq.CheckLogin();
+        Member checkMember = member.get();
+        String writer = checkMember.getUsername();
         Page<ReviewResponse> reviewResponses = reviewService.showOwnReview(writer, pageable);
         model.addAttribute("reviewResponses", reviewResponses);
         model.addAttribute("currentUser", writer);
