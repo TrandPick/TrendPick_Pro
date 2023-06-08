@@ -29,18 +29,18 @@
                     <input type="number" id="quantity" name="quantity" min="1" max="10" value="1" class="w-16 border border-gray-300 rounded-md px-2 py-1">
                 </div>
                 <div class="flex-grow"></div>
-                <div class="flex justify-between card-actions">
+                <div class="card-actions">
                     <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" method="post">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="quantity" id="addToCartQuantity">
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
+
                     <form id="orderForm" th:action="@{/trendpick/orders/order/product}" method="POST">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
-                        <input type="hidden" name="quantity" id="orderQuantity">
-                        <button type="submit" class="btn btn-green">Buy Now</button>
+                        <input type="hidden" name="quantity" value="quantity">
+                        <button type="submit" class="btn btn-accent">Buy Now</button>
                     </form>
-                    <a href="/trendpick/productResponses/list" class="btn">Back to List</a>
                 </div>
             </div>
         </div>
@@ -50,20 +50,18 @@
         function setQuantity() {
             var quantityInput = document.getElementById("quantity");
             var addToCartQuantityInput = document.getElementById("addToCartQuantity");
-            var orderQuantityInput = document.getElementById("orderQuantity");
             addToCartQuantityInput.value = quantityInput.value;
-            orderQuantityInput.value = quantityInput.value;
         }
 
-        // Quantity 값이 변경될 때마다 setQuantity 함수를 호출
-        var quantityInput = document.getElementById("quantity");
-        quantityInput.addEventListener("change", setQuantity);
+        window.onload = function() {
+            setQuantity();
 
-        // 폼 전송 시 setQuantity 함수를 호출하여 각각의 hiddenQuantity 값을 업데이트
-        var addToCartForm = document.getElementById("addToCartForm");
-        addToCartForm.addEventListener("submit", setQuantity);
-        var orderForm = document.getElementById("orderForm");
-        orderForm.addEventListener("submit", setQuantity);
+            var quantityInput = document.getElementById("quantity");
+            quantityInput.addEventListener("change", setQuantity);
+
+            var addToCartForm = document.getElementById("addToCartForm");
+            addToCartForm.addEventListener("submit", setQuantity);
+        }
     </script>
 </main>
 </body>

@@ -131,16 +131,16 @@ public class ProductService {
     }
 
     public ProductResponse show(Long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
 
-        Optional<Member> member = rq.CheckLogin();
-
-        if (member.isPresent()){
-            Member checkMember = member.get();
+        try {
+            Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
+            Member checkMember = rq.CheckMember().get();
             favoriteTagService.updateTag(checkMember, product, TagType.SHOW);
             return ProductResponse.of(filePath, product, checkMember.getRole().getValue());
-        } else {
-            throw new MemberNotFoundException("존재하지 않는 회원입니다.");
+        }
+        catch(MemberNotMatchException | MemberNotFoundException e) {
+            Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
+            return ProductResponse.of(filePath, product);
         }
     }
 

@@ -24,11 +24,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/trendpick/usr/cart")
 public class CartController {
+
     private final CartService cartService;
     private final MemberService memberService;
+
     private final Rq rq;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('MEMBER')")
     @GetMapping("/list")
     public String showCart(Model model) {
         Member member = rq.CheckMember().get();
@@ -45,19 +47,19 @@ public class CartController {
         return "/trendpick/usr/cart/list";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/add")
-    public String addItemToCart(Long productId, CartItemRequest cartItemRequests, Model model) {
+    public String addItemToCart(CartItemRequest cartItemRequests, Model model) {
         model.addAttribute("cartItemRequest", cartItemRequests);
         // 쇼핑을 계속 하시겠습니까? 띄우고 yes이면 main no면 cart로
         return "/trendpick/usr/cart/add";
     }
 
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/add")
-    public String addItem(Long productId, @ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
-        CartItemResponse cartItemResponse = cartService.addItemToCart(rq.CheckMember().get(), productId, cartItemRequests);
+    public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
+        CartItemResponse cartItemResponse = cartService.addItemToCart(rq.CheckMember().get(), cartItemRequests);
         model.addAttribute("cartItemResponse", cartItemResponse);
         // System.out.println(cartItemRequests.getCount());
         // System.out.println(cartItemRequests.getColor());
@@ -66,7 +68,7 @@ public class CartController {
     }
 
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("{memberId}/{cartItemId}")
     public String removeItem(@PathVariable("memberId") Long memberId, @PathVariable("cartItemId") Long cartItemId) {
         Member member = memberService.findByMember(memberId);
@@ -76,7 +78,7 @@ public class CartController {
     }
 
     // 장바구니에서 수량 변경
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/update")
     public String updateCount(@RequestParam("cartItemId") Long cartItemId,
                               @RequestParam("quantity") int newQuantity) {

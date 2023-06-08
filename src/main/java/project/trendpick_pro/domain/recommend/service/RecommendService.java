@@ -56,6 +56,23 @@ public class RecommendService {
         }
     }
 
+    @Transactional
+    public void select(String username){
+
+        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+
+        recommendRepository.deleteAllByMemberId(member.getId());
+
+        List<Product> products = productService.getRecommendProduct(member);
+
+        for (Product product : products) {
+            Recommend recommend = Recommend.of(product);
+            recommend.connectProduct(product);
+            recommend.connectMember(member);
+            recommendRepository.save(recommend);
+        }
+    }
+
     public Page<ProductListResponse> getFindAll(int offset){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         PageRequest pageable = PageRequest.of(offset, 18);

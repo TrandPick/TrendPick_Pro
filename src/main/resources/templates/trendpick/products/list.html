@@ -6,8 +6,19 @@
 </head>
 <body>
 <main layout:fragment="main" class="bg-white">
+    <div class="flex flex-row flex-wrap bg-gray-200 p-2 rounded">
+        <a
+           th:href="@{/trendpick/products/list(main-category=${mainCategoryName},sub-category='전체')}"
+           th:text="전체"
+           class="mx-1 my-1 px-2 py-1 bg-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-400">
+        </a>
+        <a th:each="subCategory : ${subCategories}"
+           th:href="@{/trendpick/products/list(main-category=${mainCategoryName},sub-category=${subCategory.name})}"
+           th:text="${subCategory.name}"
+           class="mx-1 my-1 px-2 py-1 bg-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-400">
+        </a>
+    </div>
     <div class="grid grid-flow-row-dense grid-cols-6 gap-4 m-4">
-        <!-- 첫 번째 카드 클릭 시 생성 창으로 이동 -->
         <div class="card bordered cursor-pointer flex justify-center items-center" th:onclick="'window.location=\'/trendpick/products/register\';'">
             <figure class="p-8">
                 <span class="text-lg font-bold">새 상품 생성</span>
@@ -17,14 +28,15 @@
             <figure>
                 <img th:src="|/images/${product.mainFile}|" alt="Product Image"/>
                 <div sec:authorize="isAuthenticated()" class="card-actions">
-<!--                    <div sec:authorize="hasRole('ADMIN') or hasRole('BRAND_ADMIN')" class="card-actions">-->
-                    <form th:action="|/trendpick/products/edit/${product.id}|" method="post">
-                        <input type="submit" value="Edit" class="btn"/>
-                    </form>
-                    <form th:action="|/trendpick/products/${product.id}|" method="post">
-                        <input type="hidden" name="_method" value="delete"/>
-                        <input type="submit" value="delete" class="btn"/>
-                    </form>
+                    <div sec:authorize="hasRole('ADMIN') or hasRole('BRAND_ADMIN')" class="card-actions">
+                        <form th:action="|/trendpick/products/edit/${product.id}|" method="post">
+                            <input type="submit" value="Edit" class="btn"/>
+                        </form>
+                        <form th:action="|/trendpick/products/${product.id}|" method="post">
+                            <input type="hidden" name="_method" value="delete"/>
+                            <input type="submit" value="delete" class="btn"/>
+                        </form>
+                    </div>
                 </div>
             </figure>
             <div class="card-body">

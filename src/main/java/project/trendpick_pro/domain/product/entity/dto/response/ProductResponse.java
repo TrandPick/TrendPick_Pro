@@ -64,6 +64,22 @@ public class ProductResponse {
                 .build();
     }
 
+    public static ProductResponse of (String filePath, Product product) {
+        return ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .mainCategory(product.getMainCategory().getName())
+                .subCategory(product.getSubCategory().getName())
+                .brand(product.getBrand().getName())
+                .description(product.getDescription())
+                .mainFile(product.getFile().getFileName())
+                .subFiles(subFiles(filePath, product.getFile().getChild()))
+                .price(product.getPrice())
+                .stock(product.getStock())
+                .tags(new ArrayList<>(product.getTags()))
+                .build();
+    }
+
     private static List<String> subFiles(String filePath, List<CommonFile> subFiles) {
         List<String> tmpList = new ArrayList<>();
 
