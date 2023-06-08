@@ -33,22 +33,23 @@ public class CartController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showCart(Model model) {
+        Member member = rq.CheckMember().get();
         Cart carts = cartService.getCartByUser(rq.CheckMember().get().getId());
-        List<CartItem> cartItems = cartService.CartView(carts);
+
+        List<CartItem> cartItems = cartService.CartView(member, carts);
 
         int totalPrice = 0;
         for (CartItem cartItem : cartItems) {
-            totalPrice += (cartItem.getProduct().getPrice() * cartItem.getCount());
+            totalPrice += (cartItem.getProduct().getPrice() * cartItem.getQuantity());
         }
-
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("totalPrice", totalPrice);
-        return "/trendPick/usr/cart/list";
+        return "/trendpick/usr/cart/list";
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/add/{productId}")
-    public String addItemToCart(@PathVariable("productId") Long productId, CartItemRequest cartItemRequests, Model model) {
+    @GetMapping("/add")
+    public String addItemToCart(Long productId, CartItemRequest cartItemRequests, Model model) {
         Member member = rq.getMember();
         model.addAttribute("cartItemRequest", cartItemRequests);
         // 쇼핑을 계속 하시겠습니까? 띄우고 yes이면 main no면 cart로
@@ -70,7 +71,7 @@ public class CartController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("{memberId}/{cartItemId}")
-    public String removeItem(@PathVariable("memberId") Long memberId,@PathVariable("cartItemId") Long cartItemId) {
+    public String removeItem(@PathVariable("memberId") Long memberId, @PathVariable("cartItemId") Long cartItemId) {
         Member member = memberService.findByMember(memberId);
         member.getCart().setTotalCount(member.getCart().getTotalCount() - 1);
         cartService.removeItemFromCart(cartItemId);
@@ -81,9 +82,9 @@ public class CartController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public String updateCount(@RequestParam("cartItemId") Long cartItemId,
-                                              @RequestParam("count") int newCount) {
+                              @RequestParam("quantity") int newQuantity) {
         Member member = rq.getMember();
-        cartService.updateItemCount(cartItemId, newCount);
+        cartService.updateItemCount(cartItemId, newQuantity);
         return "redirect:/trendpick/usr/cart/list";
     }
 }

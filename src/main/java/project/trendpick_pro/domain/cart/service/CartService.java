@@ -17,6 +17,7 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +34,14 @@ public class CartService {
 
 
     // 장바구니 조회
-    public List<CartItem> CartView(Cart cart) {
+    public List<CartItem> CartView(Member member, Cart cart) {
         List<CartItem> cartItems = cartItemRepository.findAll();
         List<CartItem> userItems = new ArrayList<>();
 
+        // 장바구니가 비어있는 경우
+        if(cart==null){
+            return userItems;
+        }
         for (CartItem cartItem : cartItems) {
             if (cartItem.getCart().getId() == cart.getId()) {
                 userItems.add(cartItem);
@@ -62,7 +67,7 @@ public class CartService {
 
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가
-            cartItem.addCount(cartItem.getCount());
+            cartItem.addCount(cartItem.getQuantity());
         } else {
             // 카트에 해당 상품이 없는 경우, 새로운 카트 아이템을 생성하여 추가
             cartItem = CartItem.of(cart, product, cartItemRequest);
@@ -74,16 +79,16 @@ public class CartService {
 
 
     // 상품을 장바구니에서 제거
-   @Transactional
+    @Transactional
     public void removeItemFromCart(Long cartItemId) {
         cartItemRepository.deleteById(cartItemId);
     }
 
     // 상품의 수량 업데이트
     @Transactional
-    public void updateItemCount(Long cartItemId, int count) {
+    public void updateItemCount(Long cartItemId, int quantity) {
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
-        cartItem.update(count);
+        cartItem.update(quantity);
         cartItemRepository.save(cartItem);
     }
 

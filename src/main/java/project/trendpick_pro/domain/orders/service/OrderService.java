@@ -89,7 +89,7 @@ public class OrderService {
     private List<OrderItemDto> convertToOrderItemDto(List<CartItem> cartItems) {
         List<OrderItemDto> orderItemDtoList = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
-            orderItemDtoList.add(OrderItemDto.of(cartItem.getProduct(), cartItem.getCount()));
+            orderItemDtoList.add(OrderItemDto.of(cartItem.getProduct(), cartItem.getQuantity()));
         }
         return orderItemDtoList;
     }
