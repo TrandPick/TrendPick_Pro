@@ -36,7 +36,7 @@ public class Review extends BaseTimeEntity {
     private Product product;    //Product
 
     private String title;
-    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     private int rating;
