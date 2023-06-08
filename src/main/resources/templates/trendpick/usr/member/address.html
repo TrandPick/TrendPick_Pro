@@ -1,3 +1,40 @@
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>배송지 등록하기</title>
+</head>
 <body>
-<div> 배송지 정보</div>
+<main layout:fragment="main" class="flex-grow flex items-center justify-center">
+
+    <script>
+        function AddressForm__submit(form) {
+
+            form.address.value = form.address.value.trim();
+
+            if (form.address.value.length === 0) {
+                toastWarning('주소를 입력해주세요.');
+                form.address.focus();
+                return;
+            }
+            form.submit(); // 폼 발송
+        }
+    </script>
+
+    <div class="w-full px-4">
+        <form th:action method="post" class="flex flex-col gap-6" onsubmit="AddressForm__submit(this); return false;">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">배송지</span>
+                </label>
+                <label>
+                    <input type="text" name="address" placeholder="주소를 입력해주세요." class="input input-bordered input-accent w-full max-w-xs" autoFocus/>
+                </label>
+            </div>
+            <button id="btn-join-1 w-min" class="btn btn-accent">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>등록하기</span>
+            </button>
+        </form>
+    </div>
+</main>
 </body>
+</html>

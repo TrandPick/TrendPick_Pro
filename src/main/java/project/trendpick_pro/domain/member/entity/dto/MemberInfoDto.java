@@ -19,6 +19,8 @@ public class MemberInfoDto {
         this.email = member.getEmail();
         this.phone = member.getPhoneNumber();
         this.address = member.getAddress();
+        this.bankName = member.getBankName();
+        this.bankAccount = member.getBankAccount();
     }
 
     public static MemberInfoDto of(Member member){
@@ -27,4 +29,7 @@ public class MemberInfoDto {
 
     private String phone;
     private String address;
+
+    private String bankName;
+    private String bankAccount;
 }
