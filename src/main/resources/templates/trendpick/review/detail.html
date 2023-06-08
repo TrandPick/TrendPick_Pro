@@ -6,31 +6,47 @@
     <title>리뷰 상세 페이지</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/daisyui/1.14.0/full.css" rel="stylesheet">
+    <!-- 데이지 UI 불러오기 -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css"/>
+    <!-- 테일윈드 불러오기 -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
-<div class="container mx-auto px-6 py-8">
-    <h2 class="text-4xl font-bold mb-8" th:text="${reviewResponse.productName}">제품명</h2>
-    <h3 th:text="${reviewResponse.writer}">작성자</h3>
+<body>
+    <div class="flex justify-center items-center">
+        <span>Trend Pick</span>
+    </div>
+    <div style="width: 1000px; height: 1000px; margin: 80px auto 0;">
+        <h2 class="text-center text-4xl font-bold mb-8" th:text="${reviewResponse.productName}">제품명</h2>
+        <div class="flex justify-end">
+            <a th:if="${reviewResponse.writer == currentUser}" th:href="@{|/trendpick/review/edit/${reviewResponse.id}|}">수정하기</a>
+        </div>
+        <div class="relative">
+            <div class="md:flex md:items-start">
+                <div class="md:w-1/2 pr-4">
+                    <img th:src="|/images/${reviewResponse.mainFile}|" width="200" height="200" /></br>
+                    <div class="mt-4 grid grid-cols-3 gap-4">
+                        <div th:each="subFile : ${reviewResponse.subFiles}">
+                            <img th:src="${'/images/' + subFile}" class="mx-auto w-full" style="height: 150px;" />
+                        </div>
+                    </div>
+                </div>
 
-    <div class="md:flex md:items-center">
-        <div class="md:w-1/2">
-            <img th:src="|/images/${reviewResponse.mainFile}|" width="200" height="200"/></br>
-            <div class="mt-4 flex" th:each="subFile : ${reviewResponse.subFiles}" >
-                <img th:src="${'/images/' + subFile}" class="rounded w-24 mr-2" alt="서브 이미지" width="150" height="150">
+                <div class="md:w-1/2 ml-auto pl-4">
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">작성자</h2>
+                    <p class="mb-4" th:text="${reviewResponse.writer}"></p>
+
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">별점</h2>
+                    <p class="mb-4"><span th:text="${reviewResponse.rating}"></span>/5</p>
+
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">제목</h2>
+                    <p class="mb-4" th:text="${reviewResponse.title}"></p>
+
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">내용</h2>
+                    <p class="mb-4" th:text="${reviewResponse.content}"></p>
+                </div>
             </div>
         </div>
 
-        <div class="md:w-1/2 ml-4">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">제목</h2>
-            <p class="mb-4" th:text="${reviewResponse.title}">제목</p>
-
-            <h2 class="text-xl font-bold text-gray-800 mb-2">내용</h2>
-            <p class="mb-4" th:text="${reviewResponse.content}">후기내용</p>
-        </div>
-
-        <a th:if="${reviewResponse.writer == currentUser}" th:href="@{|/trendpick/review/edit/${reviewResponse.id}|}">수정하기</a>
-
     </div>
-</div>
 </body>
 </html>
