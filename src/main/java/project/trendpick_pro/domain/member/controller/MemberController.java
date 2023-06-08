@@ -84,6 +84,24 @@ public class MemberController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping("/edit/address")
+    public String editAddress(AddressForm addressForm, Model model) {
+        model.addAttribute("addressForm", addressForm);
+        return "trendpick/usr/member/address";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/edit/address")
+    public String updateAddress(@ModelAttribute @Valid AddressForm addressForm, Model model) {
+        Optional<Member> member = rq.CheckLogin();
+        Member actor = member.get();
+        memberService.manageAddress(actor, addressForm.address());
+        model.addAttribute("MemberInfo", MemberInfoDto.of(actor));
+
+        return "redirect:/trendpick/member/info";
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/info/account")
     public String registerAccount(AccountForm accountForm, Model model){
         model.addAttribute("accountForm", accountForm);
@@ -100,4 +118,23 @@ public class MemberController {
 
         return "redirect:/trendpick/member/info";
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/edit/account")
+    public String editAccount(AccountForm accountForm, Model model){
+        model.addAttribute("accountForm", accountForm);
+        return "trendpick/usr/member/account";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/edit/account")
+    public String updateAccount(@ModelAttribute @Valid AccountForm accountForm, Model model) {
+        Optional<Member> member = rq.CheckLogin();
+        Member actor = member.get();
+        memberService.manageAccount(actor, accountForm.bankName(), accountForm.bankAccount());
+        model.addAttribute("MemberInfo", MemberInfoDto.of(actor));
+
+        return "redirect:/trendpick/member/info";
+    }
+
 }
