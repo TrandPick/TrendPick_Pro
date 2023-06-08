@@ -25,7 +25,7 @@ public class CartItemResponse {
     public static CartItemResponse of(CartItem cartItem) {
         return CartItemResponse.builder()
                 .id(cartItem.getId())
-                .count(cartItem.getCount())
+                .count(cartItem.getQuantity())
                 .build();
     }
 }

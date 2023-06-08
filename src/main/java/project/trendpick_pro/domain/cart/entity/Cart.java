@@ -60,10 +60,10 @@ public class Cart {
 
 
     // CartItem 수량 변경
-    public void updateItemCount(Long cartItemId, int count) {
+    public void updateItemCount(Long cartItemId, int quantity) {
         CartItem cartItem = findCartItemById(cartItemId);
         if (cartItem != null) {
-            cartItem.setCount(count);
+            cartItem.setQuantity(quantity);
           //  updateTotalCountAndPrice();
         }
     }
