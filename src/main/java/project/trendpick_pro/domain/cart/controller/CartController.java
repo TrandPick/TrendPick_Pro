@@ -81,7 +81,7 @@ public class CartController {
     public String updateCount(@RequestParam("cartItemId") Long cartItemId,
                               @RequestParam("quantity") int newQuantity) {
         Member member = rq.CheckMember().get();
-        cartService.updateItemCount(cartItemId, newQuantity);
+        cartService.updateItemCount(member,cartItemId, newQuantity);
         return "redirect:/trendpick/usr/cart/list";
     }
 }

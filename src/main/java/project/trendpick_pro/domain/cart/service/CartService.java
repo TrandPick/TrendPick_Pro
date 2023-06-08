@@ -86,8 +86,10 @@ public class CartService {
 
     // 상품의 수량 업데이트
     @Transactional
-    public void updateItemCount(Long cartItemId, int quantity) {
+    public void updateItemCount(Member member,Long cartItemId, int quantity) {
+        Cart cart=member.getCart();
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
+        cart.setTotalCount(cartItem.getQuantity()+quantity);
         cartItem.update(quantity);
         cartItemRepository.save(cartItem);
     }
