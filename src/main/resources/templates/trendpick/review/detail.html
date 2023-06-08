@@ -1,52 +1,48 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>리뷰 상세 페이지</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/daisyui/1.14.0/full.css" rel="stylesheet">
-    <!-- 데이지 UI 불러오기 -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css"/>
-    <!-- 테일윈드 불러오기 -->
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="flex justify-center items-center">
-        <span>Trend Pick</span>
-    </div>
-    <div style="width: 1000px; height: 1000px; margin: 80px auto 0;">
-        <h2 class="text-center text-4xl font-bold mb-8" th:text="${reviewResponse.productName}">제품명</h2>
-        <div class="flex justify-end">
+<main layout:fragment="main">
+    <div class="mt-3" style="width:100%; margin-right: 0;">
+        <div class="flex justify-end mt-3">
             <a th:if="${reviewResponse.writer == currentUser}" th:href="@{|/trendpick/review/edit/${reviewResponse.id}|}">수정하기</a>
         </div>
-        <div class="relative">
-            <div class="md:flex md:items-start">
-                <div class="md:w-1/2 pr-4">
-                    <img th:src="|/images/${reviewResponse.mainFile}|" width="200" height="200" /></br>
-                    <div class="mt-4 grid grid-cols-3 gap-4">
-                        <div th:each="subFile : ${reviewResponse.subFiles}">
-                            <img th:src="${'/images/' + subFile}" class="mx-auto w-full" style="height: 150px;" />
-                        </div>
+        <div class="flex flex-col mt-5 justify-center items-start">
+            <div class="card bordered flex flex-col w-full md:flex-row gap-4">
+                <div class="md:flex w-full md:items-start ">
+                    <div class="md:w-1/2 pr-4" >
+                        <img th:src="|/images/${reviewResponse.mainFile}|"/></br>
+                    </div>
+                    <div class="md:w-1/2 ml-auto pl-4" style="border-left: 1px solid #ccc;">
+                        <h2 class="text-xl font-bold text-gray-800 mb-2 mt-2">제품명</h2>
+                        <p class="mb-4" th:text="${reviewResponse.productName}"></p>
+
+                        <h2 class="text-xl font-bold text-gray-800 mb-2">작성자</h2>
+                        <p class="mb-4" th:text="${reviewResponse.writer}"></p>
+
+                        <h2 class="text-xl font-bold text-gray-800 mb-2">별점</h2>
+                        <p class="mb-4"><span th:text="${reviewResponse.rating}"></span>/5</p>
+
+                        <h2 class="text-xl font-bold text-gray-800 mb-2">제목</h2>
+                        <p class="mb-4" th:text="${reviewResponse.title}"></p>
+
+                        <h2 class="text-xl font-bold text-gray-800 mb-2">내용</h2>
+                        <p class="mb-4" th:text="${reviewResponse.content}"></p>
                     </div>
                 </div>
-
-                <div class="md:w-1/2 ml-auto pl-4">
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">작성자</h2>
-                    <p class="mb-4" th:text="${reviewResponse.writer}"></p>
-
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">별점</h2>
-                    <p class="mb-4"><span th:text="${reviewResponse.rating}"></span>/5</p>
-
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">제목</h2>
-                    <p class="mb-4" th:text="${reviewResponse.title}"></p>
-
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">내용</h2>
-                    <p class="mb-4" th:text="${reviewResponse.content}"></p>
+            </div>
+            <div class="flex flex-col justify-center w-full mb-8">
+                <h3 class="mt-5">더 많은 후기 사진</h3>
+                <div class="mt-4 grid grid-cols-3 gap-4 w-full">
+                    <div th:each="subFile : ${reviewResponse.subFiles}">
+                        <img th:src="${'/images/' + subFile}" class="mx-auto w-full" style="height: 150px;" />
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
-</body>
+
+</main>
 </html>

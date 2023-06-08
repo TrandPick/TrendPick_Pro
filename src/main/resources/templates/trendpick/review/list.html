@@ -3,15 +3,11 @@
 <head>
     <title>리뷰 목록</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
     <style>
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 20px;
-        }
-        .grid-item {
-            /* 그리드 항목의 스타일 설정 */
+            grid-gap: 10px;
         }
     </style>
 </head>
@@ -30,10 +26,12 @@
                         <img th:src="|/images/${reviewResponse.mainFile}|" class="mx-auto w-full"  style="height: 250px;"/>
                         <p class="text-center">상품명: <span th:text="${reviewResponse.productName}"></span></p>
                         <p class="text-center">제목: <span th:text="${reviewResponse.title}"></span></p>
-                        <p class="text-center"><span class="rating-stars" data-rating="${reviewResponse.rating}"></span></p>
+                        <p class="text-center">평점: <span th:text="${reviewResponse.rating}"></span>/5</p>
                     </a>
                 </div>
-                <a class="justify-center" th:if="${reviewResponse.writer == currentUser}" th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}" style="display: flex; justify-content: center;">수정하기</a>
+                <a class="justify-center" th:if="${reviewResponse.writer == currentUser}"
+                   th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}"
+                   style="display: flex; justify-content: center; border-top: 1px solid #ccc;">수정하기</a>
             </div>
         </div>
     </div>
