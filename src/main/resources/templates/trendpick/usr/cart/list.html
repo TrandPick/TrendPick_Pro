@@ -24,8 +24,12 @@
             <td><input type="checkbox" name="selectedItems" th:value="${item.getId()}"></td>
             <td th:text="${i.count}">1</td>
             <td th:text="${item.getProduct().getId()}"></td>
-            <td th:text="${item.getProduct().getName()}"></td>
-            <td th:text="${item.getProduct().getPrice()}"></td>
+            <td>
+                <a  th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
+                        th:text="${item.getProduct().getName()}"></a>
+            </td>
+            <td th:text="${#numbers.formatDecimal(item.getProduct().getPrice(), 0, 'COMMA', 0, 'POINT')} + ' 원'"></td>
+
             <td>
                 <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
                     <input type="hidden" name="cartItemId" th:value="${item.getId()}">
@@ -51,7 +55,7 @@
                 </div>
                 <form th:action="@{/trendpick/orders/cart}" method="post" id="cartForm">
                     <input type="hidden" id="selectedItemsInput" name="selectedItems">
-                    <h4 class="card-title pricing-card-title" th:text="${totalPrice} + '원'"></h4>
+                    <h4 class="card-title pricing-card-title" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></h4>
                 <button type="submit" class="w-100 btn btn-lg btn-outline-primary" onclick="submitCartForm(this.form)">구매하기</button>
                 </form>
             </div>
