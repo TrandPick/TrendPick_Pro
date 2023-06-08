@@ -6,12 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderResponse {
-
     private Long productId;
     private String productFilePath;
     private String brandName;
@@ -36,7 +37,9 @@ public class OrderResponse {
         this.deliveryStatus = deliveryStatus;
     }
 
-    public int getTotalPrice(){
-        return productPrice * count;
+    public String getTotalPrice(){
+        int totalPrice = productPrice * count;
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
+        return numberFormat.format(totalPrice);
     }
 }

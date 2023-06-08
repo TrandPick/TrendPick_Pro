@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 폼</title>
+</head>
+<main class="min-h-screen flex flex-col" layout:fragment="main">
+    <body>
+    <h1 class="text-center">주문서</h1>
+    <form th:action="@{/trendpick/orders/order}" th:object="${orderForm}" method="post">
+        <h1>회원 정보</h1>
+        <div class="border p-4 mb-4">
+            <table class="table">
+                <tbody>
+                <input type="hidden" th:field="*{memberInfo.memberId}" th:value="${orderForm.memberInfo.memberId}"/>
+                <tr>
+                    <th scope="row">회원 이름</th>
+                    <td>
+                        <input type="text" th:field="*{memberInfo.name}" th:value="${orderForm.memberInfo.name}"
+                               readonly="readonly"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">이메일</th>
+                    <td>
+                        <input type="text" th:field="*{memberInfo.email}" th:value="${orderForm.memberInfo.email}"
+                               readonly="readonly"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">번호</th>
+                    <td>
+                        <input type="text" th:field="*{memberInfo.phone}" th:value="${orderForm.memberInfo.phone}"
+                               readonly="readonly"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">주소</th>
+                    <td>
+                        <input type="text" th:field="*{memberInfo.address}" th:value="${orderForm.memberInfo.address}"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h1>주문상품 정보</h1>
+        <div class="border p-4 mb-4">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th class="text-center" scope="col">번호</th>
+                    <th class="text-center" scope="col">상품명</th>
+                    <th class="text-center" scope="col">주문수량</th>
+                    <th class="text-center" scope="col">주문금액</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="orderItem, itemStat : ${orderForm.orderItems}">
+                    <td class="text-center"><input type="hidden" th:field="*{orderItems[__${itemStat.index}__].productId}" th:value="${orderItem.productId}" /></td>
+                    <td class="text-center" th:text="${itemStat.count}">1</td>
+                    <td class="text-center"><input class="text-center" type="text" th:field="*{orderItems[__${itemStat.index}__].productName}" th:value="${orderItem.productName}" readonly="readonly" /></td>
+                    <td class="text-center"><input class="text-center" type="number" th:field="*{orderItems[__${itemStat.index}__].count}" th:value="${orderItem.count}" readonly="readonly" /></td>
+                    <td class="text-center"><input class="text-center" type="number" th:field="*{orderItems[__${itemStat.index}__].price}" th:value="${orderItem.price}" readonly="readonly" /></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h1>결제 정보</h1>
+        <div class="border p-4 mb-4">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <th scope="row">결제 방법</th>
+                    <td>
+                        <div class="flex items-center">
+                            <div class="mr-2">
+                                <input type="radio" id="creditCard" name="paymentMethod" value="creditCard">
+                                <label for="creditCard">신용카드</label>
+                            </div>
+                            <div class="mr-2">
+                                <input type="radio" id="bankTransfer" name="paymentMethod" value="bankTransfer">
+                                <label for="bankTransfer">계좌이체</label>
+                            </div>
+                            <div class="mr-2">
+                                <input type="radio" id="cash" name="paymentMethod" value="cash">
+                                <label for="cash">현금</label>
+                            </div>
+                            <div class="mr-2">
+                                <input type="radio" id="toss" name="paymentMethod" value="toss">
+                                <label for="toss">토스페이먼트</label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center mt-3">
+            <div class="col">
+                <div class="card mb-4 rounded-3">
+                    <button type="submit" class="w-70 btn btn-lg btn-primary"
+                            th:text="${orderForm.formattedPaymentPrice} + ' 결제하기'"></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    </body>
+</main>
+</html>

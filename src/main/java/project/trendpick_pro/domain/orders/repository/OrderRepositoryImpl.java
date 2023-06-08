@@ -47,7 +47,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .on(member.id.eq(orderSearchCond.getMemberId()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(orderItem.order.createdDate.asc())
+                .orderBy(orderItem.order.createdDate.desc())
                 .fetch();
 
         JPAQuery<Long> countQuery = queryFactory
