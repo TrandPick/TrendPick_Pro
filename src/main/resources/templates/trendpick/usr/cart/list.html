@@ -34,7 +34,7 @@
                     <div class="quantity_div">
                         <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1)">-
                         </button>
-                        <input type="number" name="count" th:value="${item.getCount()}" min="1" class="quantity_input"
+                        <input type="number" name="quantity" th:value="${item.getQuantity()}" min="1" class="quantity_input"
                                readonly>
                         <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1)">+</button>
                     </div>

@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CartItemRequest {
     @Min(value=1,message = "한 개 이상 선택하세요.")
-    private int count;
+    private int quantity;
 }

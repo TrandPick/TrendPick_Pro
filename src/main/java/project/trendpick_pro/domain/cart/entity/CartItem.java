@@ -22,26 +22,26 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private int count; // 해당 상품 수량
+    private int quantity; // 해당 상품 수량
 
     @Builder
-    public CartItem(Cart cart, Product product, int count) {
+    public CartItem(Cart cart, Product product, int quantity) {
         this.cart = cart;
         this.product = product;
-        this.count = count;
+        this.quantity = quantity;
     }
     public static CartItem of(Cart cart, Product product, CartItemRequest cartItemRequest){
         return CartItem.builder()
                 .cart(cart)
                 .product(product)
-                .count(cartItemRequest.getCount())
+                .quantity(cartItemRequest.getQuantity())
                 .build();
     }
-    public void addCount(int count){
-        this.count += count;
+    public void addCount(int quantity){
+        this.quantity += quantity;
     }
 
     public void update(int count){
-        this.count=count;
+        this.quantity=quantity;
     }
 }
