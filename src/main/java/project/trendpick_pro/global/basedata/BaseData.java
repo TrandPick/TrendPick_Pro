@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.brand.service.BrandService;
+import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
+import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
@@ -79,7 +81,8 @@ public class BaseData {
             SubCategoryService subCategoryService,
             BrandService brandService,
             ProductRepository productRepository,
-            OrderService orderservice
+            OrderService orderservice,
+            CartService cartService
     ) {
         return new CommandLineRunner() {
             @Override
@@ -172,15 +175,19 @@ public class BaseData {
                     product.addTag(tags);
                     productRepository.save(product);
                 }
+                //==장바구니 데이터==//
+                cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),1L, new CartItemRequest(5));
+                cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),2L, new CartItemRequest(3));
+                cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),3L, new CartItemRequest(1));
 
                 //==주문데이터==//
                 Member findMember = memberService.findByEmail("hye_0000@naver.com").get();
                 MemberInfoDto memberInfo = new MemberInfoDto(findMember);
                 List<OrderItemDto> orderItems = new ArrayList<>();
 
-                orderItems.add(new OrderItemDto(productRepository.findById(1L).get(), 5));
-                orderItems.add(new OrderItemDto(productRepository.findById(2L).get(), 3));
-                orderItems.add(new OrderItemDto(productRepository.findById(3L).get(), 2));
+                orderItems.add(OrderItemDto.of(productRepository.findById(1L).get(), 5));
+                orderItems.add(OrderItemDto.of(productRepository.findById(2L).get(), 3));
+                orderItems.add(OrderItemDto.of(productRepository.findById(3L).get(), 2));
 
                 OrderForm orderForm = new OrderForm(memberInfo, orderItems);
                 orderForm.setPaymentMethod("신용카드");
@@ -191,9 +198,9 @@ public class BaseData {
                 MemberInfoDto memberInfo2 = new MemberInfoDto(findMember2);
                 List<OrderItemDto> orderItems2 = new ArrayList<>();
 
-                orderItems2.add(new OrderItemDto(productRepository.findById(1L).get(), 5));
-                orderItems2.add(new OrderItemDto(productRepository.findById(2L).get(), 3));
-                orderItems2.add(new OrderItemDto(productRepository.findById(3L).get(), 2));
+                orderItems2.add(OrderItemDto.of(productRepository.findById(1L).get(), 5));
+                orderItems2.add(OrderItemDto.of(productRepository.findById(2L).get(), 3));
+                orderItems2.add(OrderItemDto.of(productRepository.findById(3L).get(), 2));
 
                 OrderForm orderForm2 = new OrderForm(memberInfo2, orderItems2);
                 orderForm2.setPaymentMethod("신용카드");

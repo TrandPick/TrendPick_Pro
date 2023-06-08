@@ -16,6 +16,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
+import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
@@ -81,6 +82,7 @@ public class ProductController {
     @GetMapping("/{productId}")
     public String showProduct(@PathVariable Long productId, Model model) {
         model.addAttribute("productResponse", productService.show(productId));
+        model.addAttribute("productOptionForm", new ProductOptionForm());
         return "/trendpick/products/detailpage";
     }
 

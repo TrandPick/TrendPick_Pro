@@ -7,19 +7,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.trendpick_pro.domain.cart.entity.Cart;
+import project.trendpick_pro.domain.cart.entity.CartItem;
+import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
-import project.trendpick_pro.domain.delivery.entity.embaded.Address;
+import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
+import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
+import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
-import project.trendpick_pro.domain.orders.entity.dto.request.OrderSaveRequest;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
@@ -27,17 +30,17 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
-import project.trendpick_pro.domain.tags.tag.service.TagService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
-
+    private final CartService cartService;
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
@@ -73,5 +76,29 @@ public class OrderService {
         return orderRepository.findAllByMember(new OrderSearchCond(member.getId()), PageRequest.of(offset, 10));
     }
 
+    public OrderForm cartToOrder(Member member, List<Long> selectedItems) {
+        List<CartItem> cartItems = cartService.findCartItems(selectedItems);
+        for (CartItem cartItem : cartItems) {
+            if(cartItem.getCart().getMember().getId() != member.getId())
+                throw new MemberNotMatchException("현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
+        }
 
+        return new OrderForm(MemberInfoDto.of(member) ,convertToOrderItemDto(cartItems));
+    }
+
+    private List<OrderItemDto> convertToOrderItemDto(List<CartItem> cartItems) {
+        List<OrderItemDto> orderItemDtoList = new ArrayList<>();
+        for (CartItem cartItem : cartItems) {
+            orderItemDtoList.add(OrderItemDto.of(cartItem.getProduct(), cartItem.getCount()));
+        }
+        return orderItemDtoList;
+    }
+
+    public OrderForm productToOrder(Member member, ProductOptionForm productOptionForm) {
+        Product product = productRepository.findById(productOptionForm.getProductId())
+                .orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
+        List<OrderItemDto> orderItemDtoList = new ArrayList<>();
+        orderItemDtoList.add(OrderItemDto.of(product, productOptionForm.getQuantity()));
+        return new OrderForm(MemberInfoDto.of(member), orderItemDtoList);
+    }
 }
