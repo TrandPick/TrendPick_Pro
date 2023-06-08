@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html layout:decorate="~{trendpick/usr/cartlayout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<html layout:decorate="~{trendpick/usr/cart/cartlayout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>장바구니</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
 <body>
-
-<h1>장바구니</h1>
-<form th:action="@{/trendpick/orders/cart}" method="post" id="cartForm">
+<div layout:fragment="content">
     <table class="table">
         <thead>
         <tr>
@@ -32,13 +30,11 @@
                 <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
                     <input type="hidden" name="cartItemId" th:value="${item.getId()}">
                     <div class="quantity_div">
-                        <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1)">-
+                        <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1,form)">-
                         </button>
-                        <input type="number" name="quantity" th:value="${item.getQuantity()}" min="1" class="quantity_input"
-                               readonly>
-                        <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1)">+</button>
+                        <input type="number" name="quantity" th:value="${item.getQuantity()}" min="1" class="quantity_input" onchange="updateInputValue(this)" readonly>
+                        <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1,form)">+</button>
                     </div>
-                    <button type="button" class="quantity_modify_btn" onclick="submitForm(this.form)">변경</button>
                 </form>
             </td>
             <td class="btn btn-outline-dark"><a
@@ -53,15 +49,17 @@
                 <div class="card-header py-3">
                     <h4 class="my-0 fw-normal">총 결제금액</h4>
                 </div>
-                <h1 class="card-title pricing-card-title" th:text="${totalPrice} + '원'"></h1>
-                <button type="submit" class="w-100 btn btn-lg btn-outline-primary">구매하기</button>
+                <form th:action="@{/trendpick/orders/cart}" method="post" id="cartForm">
+                    <input type="hidden" id="selectedItemsInput" name="selectedItems">
+                    <h4 class="card-title pricing-card-title" th:text="${totalPrice} + '원'"></h4>
+                <button type="submit" class="w-100 btn btn-lg btn-outline-primary" onclick="submitCartForm(this.form)">구매하기</button>
+                </form>
             </div>
         </div>
     </div>
-</form>
 
 <script>
-    function updateQuantity(element, amount) {
+    function updateQuantity(element, amount,form) {
         const quantityInput = element.parentNode.querySelector('.quantity_input');
         let quantity = parseInt(quantityInput.value);
         quantity += amount;
@@ -69,12 +67,12 @@
             quantity = 1;
         }
         quantityInput.value = quantity;
+        form.submit();
     }
-
-    function submitForm(form) {
-        const quantityInput = form.querySelector('.quantity_input');
-        if (quantityInput) {
-            form.submit();
+    function updateInputValue(input) {
+        const quantity = parseInt(input.value);
+        if (isNaN(quantity) || quantity < 1) {
+            input.value = 1;
         }
     }
 
@@ -85,7 +83,7 @@
             checkboxes[i].checked = this.checked;
         }
     });
-    function submitCartForm() {
+    function submitCartForm(form) {
         var selectedItems = document.getElementsByName('selectedItems');
         var selectedIds = [];
         for (var i = 0; i < selectedItems.length; i++) {
@@ -95,7 +93,9 @@
         }
         document.getElementById('selectedItemsInput').value = selectedIds.join(',');
         document.getElementById('cartForm').submit();
+        form.submit();
     }
 </script>
+</div>
 </body>
 </html>

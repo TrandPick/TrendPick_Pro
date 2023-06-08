@@ -41,7 +41,7 @@ public class CartItem {
         this.quantity += quantity;
     }
 
-    public void update(int count){
+    public void update(int quantity){
         this.quantity=quantity;
     }
 }
