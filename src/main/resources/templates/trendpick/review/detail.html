@@ -36,7 +36,7 @@
                 <h3 class="mt-5">더 많은 후기 사진</h3>
                 <div class="mt-4 grid grid-cols-3 gap-4 w-full">
                     <div th:each="subFile : ${reviewResponse.subFiles}">
-                        <img th:src="${'/images/' + subFile}" class="mx-auto w-full" style="height: 150px;" />
+                        <img th:src="${'/images/' + subFile}" class="mx-auto w-full" style="height: 300px;" />
                     </div>
                 </div>
             </div>
