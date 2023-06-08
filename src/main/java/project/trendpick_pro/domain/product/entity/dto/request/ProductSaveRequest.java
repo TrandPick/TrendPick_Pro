@@ -18,13 +18,13 @@ public class ProductSaveRequest {
     @NotBlank(message = "내용을 입력해주세요.")
     private String description;
 
-    @NotBlank(message = "메인 카테고리를 정하세요.")
+//    @NotBlank(message = "메인 카테고리를 정하세요.")
     private String mainCategory;
 
-    @NotBlank(message = "서브 카테고리를 정하세요.")
+//    @NotBlank(message = "서브 카테고리를 정하세요.")
     private String subCategory;
 
-    @NotBlank(message = "브랜드를 입력해주세요.")
+//    @NotBlank(message = "브랜드를 입력해주세요.")
     private String brand;
 
     @NotNull(message = "가격을 입력해주세요.")

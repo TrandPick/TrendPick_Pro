@@ -26,6 +26,7 @@ import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.product.service.ProductService;
+import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
@@ -82,7 +83,8 @@ public class BaseData {
             BrandService brandService,
             ProductRepository productRepository,
             OrderService orderservice,
-            CartService cartService
+            CartService cartService,
+            RecommendService recommendService
     ) {
         return new CommandLineRunner() {
             @Override
@@ -176,9 +178,9 @@ public class BaseData {
                     productRepository.save(product);
                 }
                 //==장바구니 데이터==//
-                cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),1L, new CartItemRequest(5));
-                cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),2L, new CartItemRequest(3));
-                cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),3L, new CartItemRequest(1));
+                cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),  new CartItemRequest(1L,5));
+                cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(2L,3));
+                cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(3L,1));
 
                 //==주문데이터==//
                 Member findMember = memberService.findByEmail("hye_0000@naver.com").get();
@@ -205,6 +207,8 @@ public class BaseData {
                 OrderForm orderForm2 = new OrderForm(memberInfo2, orderItems2);
                 orderForm2.setPaymentMethod("신용카드");
                 orderservice.order(findMember2, orderForm2);
+
+                recommendService.select(member.email());
             }
         };
     }

@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.brand.service.BrandService;
+import project.trendpick_pro.domain.category.entity.dto.response.MainCategoryResponse;
+import project.trendpick_pro.domain.category.entity.dto.response.SubCategoryResponse;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
@@ -22,8 +24,7 @@ import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -44,14 +45,22 @@ public class ProductController {
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("/register")
-    public String registerProduct(ProductSaveRequest productSaveRequest, @RequestParam("main-category") String mainCategory, Model model) {
-        model.addAttribute("productSaveRequest", productSaveRequest);
+    public String registerProduct(@ModelAttribute("productSaveRequest") ProductSaveRequest productSaveRequest, Model model) {
         model.addAttribute("tags", tagNameService.findAll());
-        model.addAttribute("mainCategories", mainCategoryService.findAll());
-        model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
+
+        List<MainCategoryResponse> MainCategories = mainCategoryService.findAll();
+        model.addAttribute("mainCategories", MainCategories);
+
+        Map<String, List<SubCategoryResponse>> subCategoryList = new HashMap<>();
+        for (MainCategoryResponse mainCategoryResponse : MainCategories) {
+            subCategoryList.put(mainCategoryResponse.getName(), subCategoryService.findAll(mainCategoryResponse.getName()));
+        }
+
+        model.addAttribute("subCategoriesList", subCategoryList);
         model.addAttribute("brands", brandService.findAll());
         return "/trendpick/products/register";
     }
+
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @PostMapping("/register")
@@ -60,6 +69,13 @@ public class ProductController {
                            @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
         log.info("registerProduct: {}", productSaveRequest.toString());
         Long id = productService.register(productSaveRequest, mainFile, subFiles);
+        return "redirect:/trendpick/products/" + id;
+    }
+
+    @GetMapping("/edit/{productId}")
+    public String modifyBefore(@PathVariable Long productId, @Valid ProductSaveRequest productSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
+                                @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
+        Long id = productService.modify(productId, productSaveRequest, mainFile, subFiles);
         return "redirect:/trendpick/products/" + id;
     }
 
@@ -101,15 +117,20 @@ public class ProductController {
             if (member.getRole().getValue().equals("MEMBER")) {
                 model.addAttribute("mainCategoryName", mainCategory);
                 model.addAttribute("productResponses", recommendService.getFindAll(offset));
+                model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
                 model.addAttribute("mainCategoryName", mainCategory);
                 model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+                model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             }
         } else {
             model.addAttribute("mainCategoryName", mainCategory);
             model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+            model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
         }
         return "/trendpick/products/list";
     }
+
+
 }
 // @RequestParam(value = "sort", defaultValue = "1"), Integer sortCode

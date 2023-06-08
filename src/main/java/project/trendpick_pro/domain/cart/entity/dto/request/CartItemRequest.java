@@ -9,6 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class CartItemRequest {
+
+    private Long productId;
+
     @Min(value=1,message = "한 개 이상 선택하세요.")
     private int quantity;
 }

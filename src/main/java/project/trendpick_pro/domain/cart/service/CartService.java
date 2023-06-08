@@ -52,9 +52,9 @@ public class CartService {
 
     // 장바구니 상품 추가
     @Transactional
-    public CartItemResponse addItemToCart(Member member, Long productId, CartItemRequest cartItemRequest) {
+    public CartItemResponse addItemToCart(Member member, CartItemRequest cartItemRequest) {
         Cart cart = cartRepository.findByMemberId(member.getId());
-        Product product = getProductById(productId);
+        Product product = getProductById(cartItemRequest.getProductId());
 
         if (cart == null) {
             // 장바구니가 비어있다면 생성

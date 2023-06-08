@@ -1,108 +1,110 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상품 등록 폼</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <title>Product Registration</title>
 </head>
 <body>
-    <form id="productSaveRequest" th:action="@{/trendpick/products/register}" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data">
-        <div>
-            <label for="name">제목</label>
-            <input type="text" id="name" name="name" required>
-            <p class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+
+<main layout:fragment="main" class="bg-white">
+
+    <script>
+        $(document).ready(function() {
+            $(`input[name="type-1"]`).change(function () {
+                // 기존에 나오던 녀석을 숨긴다.
+                $(`[data-type-1]:not(.hidden)`).addClass("hidden");
+                // 이번에 나와야 할 녀석을 노출시킨다.
+                $(`[data-type-1="${this.value}"]`).removeClass("hidden");
+
+                // 기존에 체크된 녀석을 체크해제 한다.
+                $(`input[name="type-2"]:checked`).prop("checked", false);
+
+                // 디폴트로 가장 첫번째 것을 체크한다.
+                $(`[data-type-1="${this.value}"] input[name="type-2"]:first`).prop(
+                    "checked",
+                    true
+                );
+            });
+            $(`input[name="type-1"]:first`).click();
+        });
+    </script>
+
+    <form id="productSaveRequest" th:action="@{/trendpick/products/register}" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data" class="m-4">
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700 font-bold mb-2">Title</label>
+            <input type="text" id="name" name="name" required class="shadow input-accent appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
 
-        <div>
-            <label for="description">내용</label>
-            <textarea id="description" name="description" required></textarea>
-            <div class="error-message" data-error-message="description"></div>
-            <p class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+        <div class="mb-4">
+            <label for="description" class="block text-gray-700 font-bold mb-2">Description</label>
+            <textarea id="description" name="description" required class="textarea-accent shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
         </div>
 
-        <label>메인 카테고리</label>
-        <div>
-            <input id="all" type="radio" name="mainCategory" value="전체" th:text="'전체'">
-            <div th:each="mainCategory : ${mainCategories}">
-                <input type="radio" name="mainCategory" th:value="${mainCategory.name}" th:text="${mainCategory.name}" required>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">Main Category</label>
+            <div class="grid grid-cols-3 space-x-1">
+                <div th:each="mainCategory, stat : ${mainCategories}" th:if="${mainCategory.name} != '추천'" class="space-x-1">
+                    <label class="flex items-center" th:class="${stat.count % 3 == 0 ? 'col-start-1' : ''}">
+                        <input type="radio" th:id="mainCategory" name="type-1" th:value="${mainCategory.name}" class="radio radio-success">
+                        <span th:text="${mainCategory.name}"></span>
+                    </label>
+                </div>
             </div>
         </div>
 
-        <label>서브 카테고리</label>
-        <div>
-            <div th:each="subCategory : ${subCategories}">
-                <input type="radio" name="subCategory" th:value="${subCategory.name}" th:text="${subCategory.name}" required>
+        <div class="mb-4 gap-4">
+            <label class="block text-gray-700 font-bold mb-2">Sub Category</label>
+            <div th:each="subCategories, stat : ${subCategoriesList}">
+                <label th:each="subCategory : ${subCategories.value}" th:data-type-1="${subCategories.key}" class="hidden">
+                    <input type="radio" th:id="subCategory" name="type-2" th:value="${subCategory.name}" class="radio radio-success">
+                    <span th:text="${subCategory.name}" class="text-gray-700"></span>
+                </label>
             </div>
         </div>
 
-        <label>브랜드</label>
-        <div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">Brand</label>
             <div th:each="brand : ${brands}">
-                <input type="radio" name="brand" th:value="${brand.name}" th:text="${brand.name}" required>
+                <div>
+                    <input type="radio" id="brand" name="brand" th:value="${brand.name}" class="mr-2 leading-tight input-accent">
+                    <span th:text="${brand.name}" class="text-gray-700"></span>
+                </div>
             </div>
         </div>
 
-        <div>
-            <label for="mainFile">메인 사진</label>
-            <input type="file" id="mainFile" name="mainFile" required>
+        <div class="mb-4">
+            <label for="mainFile" class="block text-gray-700 font-bold mb-2">Main Image</label>
+            <input type="file" id="mainFile" name="mainFile" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
         </div>
 
-        <div>
-            <label for="subFiles">서브 사진들</label>
-            <input type="file" id="subFiles" name="subFiles" multiple="multiple" required>
+        <div class="mb-4">
+            <label for="subFiles" class="block text-gray-700 font-bold mb-2">Sub Images</label>
+            <input type="file" id="subFiles" name="subFiles" multiple="multiple" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
         </div>
 
-        <div>
-            <label for="price">가격</label>
-            <input type="number" id="price" name="price" required>
-            <p class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p>
+        <div class="mb-4">
+            <label for="price" class="block text-gray-700 font-bold mb-2">Price</label>
+            <input type="number" id="price" name="price" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
         </div>
 
-        <div>
-            <label for="stock">수량</label>
-            <input type="number" id="stock" name="stock" required>
-            <p class="text-danger" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></p>
+        <div class="mb-4">
+            <label for="stock" class="block text-gray-700 font-bold mb-2">Stock</label>
+            <input type="number" id="stock" name="stock" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
         </div>
 
         <div class="form-group">
-            <label>태그들</label>
-            <div class="row">
+            <label class="block text-gray-700 font-bold mb-2">Tags</label>
+            <div class="grid grid-cols-5">
                 <div th:each="tag, iterStat : ${tags}" class="col-md-2">
-                    <input type="checkbox" name="tags" th:value="${tag.name}" />
-                    <span th:text="${tag.name}"></span>
+                    <input type="checkbox" name="tags" th:value="${tag.name}" class="checkbox checkbox-success"/>
+                    <span th:text="${tag.name}" class="text-gray-700"></span>
                     <th:block th:if="${iterStat.count % 5 == 0}"><br/></th:block>
                 </div>
             </div>
-            <p class="text-danger" th:if="${#fields.hasErrors('tags')}" th:errors="*{tags}"></p>
         </div>
 
-        <button type="submit">상품 등록</button>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Register Product</button>
     </form>
+</main>
 </body>
-<script>
-    const form = document.getElementById('productSaveRequest');
-
-    // form의 상태를 저장하고 불러오는 함수
-    function saveFormState() {
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        localStorage.setItem('formState', JSON.stringify(data));
-    }
-
-    function loadFormState() {
-        const data = JSON.parse(localStorage.getItem('formState') || '{}');
-        for (const [name, value] of Object.entries(data)) {
-            const input = form.elements[name];
-            if (input) input.value = value;
-        }
-    }
-
-    // form 제출 전에 상태를 저장
-    form.addEventListener('submit', saveFormState);
-
-    // 페이지 로딩 시 저장된 상태 불러오기
-    loadFormState();
-</script>
 </html>
