@@ -1,52 +1,76 @@
 <!DOCTYPE html>
-<html layout:decorate="~{trendpick/usr/cart/cartlayout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>장바구니</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
 <body>
-<div layout:fragment="content">
+<main layout:fragment="main">
+    <div class="table-responsive">
     <table class="table">
         <thead>
         <tr>
-            <th><input type="checkbox" id="selectAllCheckbox"></th>
-            <th>번호</th>
-            <th>상품ID</th>
-            <th>상품명</th>
-            <th>가격</th>
-            <th>수량</th>
-            <th>삭제</th>
+            <th class="text-center" scope="col"><input type="checkbox" id="selectAllCheckbox"></th>
+            <th class="text-center" scope="col">번호</th>
+            <th class="text-center" scope="col">상품ID</th>
+            <th scope="col">상품정보</th>
+            <th class="text-center" scope="col">가격</th>
+            <th class="text-center" scope="col">수량</th>
+            <th class="text-center" scope="col">담은날짜</th>
+            <th class="text-center" scope="col">삭제</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="item, i : ${cartItems}">
-            <td><input type="checkbox" name="selectedItems" th:value="${item.getId()}"></td>
-            <td th:text="${i.count}">1</td>
-            <td th:text="${item.getProduct().getId()}"></td>
-            <td>
-                <a  th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
-                        th:text="${item.getProduct().getName()}"></a>
+            <td class="text-center">
+                <input type="checkbox" name="selectedItems" th:value="${item.getId()}"></td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-sm" th:text="${i.count}">1</span>
             </td>
-            <td th:text="${#numbers.formatDecimal(item.getProduct().getPrice(), 0, 'COMMA', 0, 'POINT')} + ' 원'"></td>
-
-            <td>
+            <td class="text-center">
+                <span lass="badge badge-ghost badge-sm" th:text="${item.getProduct().getId()}">1</span>
+            </td>
+            <td class="text-center">
+                <div class="flex items-center space-x-3">
+                    <div class="avatar">
+                        <div class="mask mask-squircle w-12 h-12">
+                            <img th:src="|/images/${item.getProduct().getFile().getParent()}|" width="100" height="100"/>
+                        </div>
+                    </div>
+                    <div>
+                        <a th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
+                            th:text="${item.getProduct().getName()}"></a>
+                        <div class="text-sm opacity-50" th:text="${item.getProduct().getBrand().getName()}"></div>
+                    </div>
+                </div>
+            </td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-sm" th:text="${#numbers.formatDecimal(item.getProduct().getPrice(), 0, 'COMMA', 0, 'POINT')} + ' 원'"></span></td>
+            <td class="text-center">
                 <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
                     <input type="hidden" name="cartItemId" th:value="${item.getId()}">
                     <div class="quantity_div">
                         <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1,form)">-
                         </button>
-                        <input type="number" name="quantity" th:value="${item.getQuantity()}" min="1" class="quantity_input" onchange="updateInputValue(this)" readonly>
+                        <input type="number" name="quantity" th:value="${item.getQuantity()}" min="1" class="quantity_input" onchange="updateInputValue(this)" style='text-align:center' readonly>
                         <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1,form)">+</button>
                     </div>
                 </form>
             </td>
-            <td class="btn btn-outline-dark"><a
-                    th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}"
-                    style="text-decoration: none">삭제</a></td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-sm" th:text="${#temporals.format(item.getCreateDate(), 'MM/dd')}"></span>
+            </td>
+            <td class="text-center">
+                <a th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}"
+                    style="text-decoration: none">삭제</a>
+            </td>
         </tr>
         </tbody>
     </table>
+    </div>
+    <hr>
+
     <div class="row row-cols-1 row-cols-md-3 mb-3 text-center mt-3">
         <div class="col">
             <div class="card mb-4 rounded-3 shadow-sm">
@@ -55,7 +79,9 @@
                 </div>
                 <form th:action="@{/trendpick/orders/cart}" method="post" id="cartForm">
                     <input type="hidden" id="selectedItemsInput" name="selectedItems">
-                    <h4 class="card-title pricing-card-title" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></h4>
+                    <h4 class="card-title pricing-card-title" style="text-align: center; display: flex; justify-content: center;">
+                        <span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원' "></span>
+                    </h4>
                 <button type="submit" class="w-100 btn btn-lg btn-outline-primary" onclick="submitCartForm(this.form)">구매하기</button>
                 </form>
             </div>
@@ -100,6 +126,6 @@
         form.submit();
     }
 </script>
-</div>
+</main>
 </body>
 </html>

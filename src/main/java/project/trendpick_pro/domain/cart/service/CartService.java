@@ -67,7 +67,8 @@ public class CartService {
 
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가
-            cartItem.addCount(cartItem.getQuantity());
+            cartItem.addCount(cartItemRequest.getQuantity());
+            cart.setTotalCount(cart.getTotalCount()+ cartItemRequest.getQuantity());
         } else {
             // 카트에 해당 상품이 없는 경우, 새로운 카트 아이템을 생성하여 추가
             cartItem = CartItem.of(cart, product, cartItemRequest);
@@ -87,11 +88,14 @@ public class CartService {
     // 상품의 수량 업데이트
     @Transactional
     public void updateItemCount(Member member,Long cartItemId, int quantity) {
-        Cart cart=member.getCart();
+        Cart cart=cartRepository.findByMemberId(member.getId());
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
-        cart.setTotalCount(cartItem.getQuantity()+quantity);
+
+        // quantity값이 수량에 있는 값 그대로 넘어옴
+        // 수량이 1로 들어오는 게 아닌 해당 상품의 수량 값이 오기 때문에
+        // 기존 해당 아이템의 수량값을 빼줌
+        cart.setTotalCount(cart.getTotalCount()+(quantity-cartItem.getQuantity()));
         cartItem.update(quantity);
-        cartItemRepository.save(cartItem);
     }
 
     public Cart getCartByUser(Long memberId) {
