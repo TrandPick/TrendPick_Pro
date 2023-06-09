@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <title>주문 폼</title>
 </head>
-<main class="min-h-screen flex flex-col" layout:fragment="main">
-    <body>
-    <h1 class="text-center">주문서</h1>
+<body>
+<main layout:fragment="main" class="bg-white">
+    <script src="https://js.tosspayments.com/v1/payment-widget"></script>
+    <br/><br/>
+    <h1 class="text-center text-5xl font-bold mb-6">주문서</h1>
     <form th:action="@{/trendpick/orders/order}" th:object="${orderForm}" method="post">
         <h1>회원 정보</h1>
         <div class="border p-4 mb-4">
@@ -17,7 +19,8 @@
                     <th scope="row">회원 이름</th>
                     <td>
                         <input type="text" th:field="*{memberInfo.name}" th:value="${orderForm.memberInfo.name}"
-                               readonly="readonly"/>
+                               readonly="readonly"/><img
+                            src="../../../../../../../../../AppData/Local/Temp/btn_close.png" height="61" width="64"/>
                     </td>
                 </tr>
                 <tr>
@@ -45,8 +48,8 @@
         </div>
 
         <h1>주문상품 정보</h1>
-        <div class="border p-4 mb-4">
-            <table class="table">
+        <div class="border p-4 mb-4 relative bg-white shadow rounded-lg">
+            <table class="table w-full table-compact mb-8">
                 <thead>
                 <tr>
                     <th scope="col"></th>
@@ -57,15 +60,21 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="orderItem, itemStat : ${orderForm.orderItems}">
+                <tr th:each="orderItem, itemStat : ${orderForm.orderItems}" class="bg-blue-50">
                     <td class="text-center"><input type="hidden" th:field="*{orderItems[__${itemStat.index}__].productId}" th:value="${orderItem.productId}" /></td>
                     <td class="text-center" th:text="${itemStat.count}">1</td>
-                    <td class="text-center"><input class="text-center" type="text" th:field="*{orderItems[__${itemStat.index}__].productName}" th:value="${orderItem.productName}" readonly="readonly" /></td>
+                    <td class="text-center"><input class="text-center" type="text" id="Product" th:data-total-product="${orderItem.productName}" th:field="*{orderItems[__${itemStat.index}__].productName}" th:value="${orderItem.productName}" readonly="readonly" /></td>
                     <td class="text-center"><input class="text-center" type="number" th:field="*{orderItems[__${itemStat.index}__].count}" th:value="${orderItem.count}" readonly="readonly" /></td>
-                    <td class="text-center"><input class="text-center" type="number" th:field="*{orderItems[__${itemStat.index}__].price}" th:value="${orderItem.price}" readonly="readonly" /></td>
+                    <td class="text-center font-bold">
+                        <input class="text-center" type="hidden" th:field="*{orderItems[__${itemStat.index}__].price}" th:value="${orderItem.price}" readonly="readonly" />
+                        <span id="totalPrice" th:data-total-price="${SuperTotalPrice}" th:text="${#numbers.formatDecimal(orderItem.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span>
+                    </td>
                 </tr>
                 </tbody>
             </table>
+            <div class="text-black p-2 rounded-lg font-bold text-center" style="background-color:#f8f9fa">
+                전체 총 가격: <span th:text="${#numbers.formatDecimal(SuperTotalPrice, 0, 'COMMA', 0, 'POINT')}"></span> 원
+            </div>
         </div>
 
         <h1>결제 정보</h1>
@@ -88,26 +97,53 @@
                                 <input type="radio" id="cash" name="paymentMethod" value="cash">
                                 <label for="cash">현금</label>
                             </div>
-                            <div class="mr-2">
-                                <input type="radio" id="toss" name="paymentMethod" value="toss">
-                                <label for="toss">토스페이먼트</label>
-                            </div>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+        <div id="payment-method"></div>
+        <div id="agreement"></div>
 
-        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center mt-3">
-            <div class="col">
-                <div class="card mb-4 rounded-3">
-                    <button type="submit" class="w-70 btn btn-lg btn-primary"
-                            th:text="${orderForm.formattedPaymentPrice} + ' 결제하기'"></button>
-                </div>
-            </div>
+<!--        <div class="card mb-4 rounded-3">-->
+<!--            <button type="submit" class="w-70 btn btn-lg btn-neutral"-->
+<!--                    th:text="${#numbers.formatDecimal(SuperTotalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 결제하기'"></button>-->
+<!--        </div>-->
+        <div class="flex justify-center">
+            <button id="payment-button" class="btn btn-natural btn-lg"
+                    th:text="${#numbers.formatDecimal(SuperTotalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 결제하기'">
+            </button>
         </div>
     </form>
-    </body>
+
+    <script>
+        const clientKey = "test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq"
+        const customerKey = PaymentWidget.ANONYMOUS
+        const button = document.getElementById("payment-button")
+        const totalPrice = document.getElementById('totalPrice').dataset.totalPrice;
+        const product = document.getElementById('Product').dataset.totalProduct;
+
+
+        const paymentWidget = PaymentWidget(clientKey, customerKey)
+
+        paymentWidget.renderPaymentMethods("#payment-method", { value: totalPrice })
+
+        paymentWidget.renderAgreement('#agreement')
+
+        button.addEventListener("click", function () {
+            event.preventDefault();
+            paymentWidget.requestPayment({
+                orderId: "1rcNIBAny7JdK4TtGVxbQ",            // 주문 ID(직접 만들어주세요)
+                orderName: product + " 외..",                 // 주문명
+                successUrl: "http://localhost:8080/payment/success",  // 결제에 성공하면 이동하는 페이지(직접 만들어주세요)
+                failUrl: "http://localhost:8080/payment/fail",        // 결제에 실패하면 이동하는 페이지(직접 만들어주세요)
+                customerEmail: "hyeri0603@naver.com",
+                customerName: "이수호"
+            })
+        })
+
+    </script>
 </main>
+</body>
 </html>

@@ -6,6 +6,18 @@
 <main layout:fragment="main" class="flex-grow flex items-center justify-center">
 
     <script>
+
+        $(document).ready(function() {
+            $('input[type=radio][name="state"]').change(function() {
+                if (this.value === 'BRAND_ADMIN') {
+                    $('#brandNameInput').removeClass("hidden");
+                }
+                else {
+                    $('#brandNameInput').addClass("hidden");
+                }
+            });
+        });
+
         function JoinForm__submit(form) {
 
             form.username.value = form.username.value.trim();
@@ -109,12 +121,20 @@
                         <input type="radio" th:field="*{state}" name="ADMIN" value="ADMIN" class="radio radio-success" autoFocus/>
                     </label><label>관리자</label><br/><br/>
                     <label>
-                        <input type="radio" th:field="*{state}" data-title="브랜드관리자" name="BRAND_ADMIN" value="BRAND_ADMIN" class="radio radio-success"/>
+                        <input type="radio" id="BRAND_ADMIN" th:field="*{state}" name="BRAND_ADMIN" value="BRAND_ADMIN" class="radio radio-success"/>
                     </label><label>브랜드관리자</label><br/><br/>
                     <label>
-                        <input type="radio" th:field="*{state}" data-title="사용자" name="MEMBER" value="MEMBER" class="radio radio-success"/>
+                        <input type="radio" th:field="*{state}" name="MEMBER" value="MEMBER" class="radio radio-success"/>
                     </label><label>사용자</label><br/><br/>
                 </div>
+
+                <div id="brandNameInput" data-type-1="BRAND_ADMIN" class="hidden">
+                    <label>브랜드 이름:</label>
+                    <label>
+                        <input type="text" name="brandName" placeholder="브랜드 이름을 입력해주세요." class="input input-bordered input-accent w-full max-w-xs" autoFocus/>
+                    </label>
+                </div><br/><br/>
+
                 <div class="form-control">
                     <h3 class="">
                         <span class="label-text">선호하는 태그를 선택 해주세요!</span>
@@ -134,6 +154,7 @@
         </form>
         <a href="/trendpick/member/login" class="link link-accent float-right">이미 계정이 있나요?</a>
     </div>
+
 </main>
 </body>
 </html>

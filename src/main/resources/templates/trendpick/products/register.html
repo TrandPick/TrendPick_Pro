@@ -2,7 +2,7 @@
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Product Registration</title>
+    <title>상품 등록</title>
 </head>
 <body>
 
@@ -45,7 +45,7 @@
             <div class="grid grid-cols-3 space-x-1">
                 <div th:each="mainCategory, stat : ${mainCategories}" th:if="${mainCategory.name} != '추천'" class="space-x-1">
                     <label class="flex items-center" th:class="${stat.count % 3 == 0 ? 'col-start-1' : ''}">
-                        <input type="radio" th:id="mainCategory" name="mainCategory" th:value="${mainCategory.name}" class="radio radio-success">
+                        <input type="radio" id="mainCategory" name="mainCategory" th:value="${mainCategory.name}" class="radio radio-success">
                         <span th:text="${mainCategory.name}"></span>
                     </label>
                 </div>
@@ -56,19 +56,20 @@
             <label class="block text-gray-700 font-bold mb-2">Sub Category</label>
             <div th:each="subCategories, stat : ${subCategoriesList}">
                 <label th:each="subCategory : ${subCategories.value}" th:data-type-1="${subCategories.key}" class="hidden">
-                    <input type="radio" th:id="subCategory" name="subCategory" th:value="${subCategory.name}" class="radio radio-success">
+                    <input type="radio" id="subCategory" name="subCategory" th:value="${subCategory.name}" class="radio radio-success">
                     <span th:text="${subCategory.name}" class="text-gray-700"></span>
                 </label>
             </div>
         </div>
 
-        <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2">Brand</label>
-            <div th:each="brand : ${brands}">
-                <div>
-                    <input type="radio" id="brand" name="brand" th:value="${brand.name}" class="mr-2 leading-tight input-accent">
+        <label class="block text-gray-700 font-bold mb-2">Brand</label>
+        <div class="mb-4 gap-4 flex flex-wrap">
+
+            <div th:each="brand : ${brands}" class="flex items-center mr-4">
+                <label for="brand">
+                    <input type="radio" id="brand" name="brand" th:value="${brand.name}" class="radio radio-success">
                     <span th:text="${brand.name}" class="text-gray-700"></span>
-                </div>
+                </label>
             </div>
         </div>
 
