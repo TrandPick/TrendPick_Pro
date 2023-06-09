@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
+import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -67,8 +68,10 @@ public class Member {
 
     public void changeTags(Set<FavoriteTag> tags) {
         this.tags = tags;
-        for(FavoriteTag tag : tags)
+        for(FavoriteTag tag : tags){
             tag.connectMember(this);
+            tag.increaseScore(TagType.REGISTER);
+        }
     }
 
     //양방향 메서드
