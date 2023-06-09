@@ -19,6 +19,7 @@ import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
@@ -102,5 +103,12 @@ public class OrderController {
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
         orderService.cancel(orderId);
         return "redirect:trendpick/usr/member/orders";
+    }
+
+    @GetMapping("/{orderId}")
+    public String showOrder(@PathVariable("orderId") Long orderId, Model model){
+        model.addAttribute("order",
+                orderService.showOrderItems(rq.CheckMember().get(), orderId));
+        return "trendpick/orders/detail";
     }
 }

@@ -10,7 +10,7 @@
         <thead>
         <tr>
             <th class="text-center" scope="col">주문번호</th>
-            <th scope="col">상품정보</th>
+            <th class="text-center" scope="col">상품정보</th>
             <th class="text-center" scope="col">주문수량</th>
             <th class="text-center" scope="col">주문금액</th>
             <th class="text-center" scope="col">주문일시</th>
@@ -21,7 +21,11 @@
         </thead>
         <tbody>
         <tr th:each="order, loop : ${orderList}">
-            <td class="text-center" th:text="${orderList.number * 10 + loop.count}"></td>
+            <td class="text-center">
+                <a th:href="@{/trendpick/orders/{orderId}(orderId=${order.orderId})}"
+                   th:text="${orderList.number * 10 + loop.count}">
+                </a>
+            </td>
             <td class="text-center">
                 <div class="flex items-center space-x-3">
                     <div class="avatar">
@@ -39,7 +43,7 @@
                 <span class="badge badge-ghost badge-sm" th:text="${order.count+'개'}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.totalPrice+'원'}"></span>
+                <span class="badge badge-ghost badge-sm" th:text="${order.formattedTotalPrice+'원'}"></span>
             </td>
             <td class="text-center">
                 <span class="badge badge-ghost badge-sm" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>

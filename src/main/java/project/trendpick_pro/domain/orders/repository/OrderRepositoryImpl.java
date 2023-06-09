@@ -31,6 +31,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     public Page<OrderResponse> findAllByMember(OrderSearchCond orderSearchCond, Pageable pageable) {
         List<OrderResponse> result = queryFactory
                 .select(new QOrderResponse(
+                        orderItem.order.id,
                         orderItem.product.id,
                         orderItem.product.file.fileName,
                         orderItem.product.brand.name,
@@ -57,5 +58,26 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .on(member.id.eq(orderSearchCond.getMemberId()))
                 ;
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public List<OrderResponse> findOrderItemsByOrderId(Long orderId) {
+        return queryFactory
+                .select(new QOrderResponse(
+                        orderItem.order.id,
+                        orderItem.product.id,
+                        orderItem.product.file.fileName,
+                        orderItem.product.brand.name,
+                        orderItem.product.name,
+                        orderItem.count,
+                        orderItem.orderPrice,
+                        orderItem.order.createdDate,
+                        orderItem.order.status.stringValue(),
+                        orderItem.order.delivery.state.stringValue())
+                )
+                .from(orderItem)
+                .join(orderItem.order, order)
+                .where(order.id.eq(orderId))
+                .fetch();
     }
 }

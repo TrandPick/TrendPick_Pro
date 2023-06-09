@@ -13,6 +13,7 @@ import java.util.Locale;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderResponse {
+    private Long orderId;
     private Long productId;
     private String productFilePath;
     private String brandName;
@@ -25,7 +26,8 @@ public class OrderResponse {
 
     @Builder
     @QueryProjection
-    public OrderResponse(Long productId, String productFilePath, String brandName, String productName, int count,int productPrice, LocalDateTime orderDate, String orderStatus, String deliveryStatus) {
+    public OrderResponse(Long orderId, Long productId, String productFilePath, String brandName, String productName, int count,int productPrice, LocalDateTime orderDate, String orderStatus, String deliveryStatus, String paymentMethod) {
+        this.orderId = orderId;
         this.productId = productId;
         this.productFilePath = productFilePath;
         this.brandName = brandName;
@@ -37,9 +39,11 @@ public class OrderResponse {
         this.deliveryStatus = deliveryStatus;
     }
 
-    public String getTotalPrice(){
-        int totalPrice = productPrice * count;
+    public String getFormattedTotalPrice(){
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
-        return numberFormat.format(totalPrice);
+        return numberFormat.format(getTotalPrice());
+    }
+    public int getTotalPrice(){
+        return productPrice * count;
     }
 }

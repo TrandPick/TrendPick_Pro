@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 목록</title>
+</head>
+<main class="min-h-screen flex flex-col" layout:fragment="main">
+    <h1>주문상품 정보</h1>
+    <div class="border p-4 mb-4">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                <th class="text-center" scope="col">번호</th>
+                <th class="text-center" scope="col">상품명</th>
+                <th class="text-center" scope="col">주문수량</th>
+                <th class="text-center" scope="col">주문금액</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="orderItem, loop : ${order.orderItems}">
+                <td class="text-center" th:value="${loop.count}"></td>
+                <td class="text-center" th:value="${orderItem.productName}"></td>
+                <td class="text-center" th:value="${orderItem.count}"></td>
+                <td class="text-center" th:value="${orderItem.formattedTotalPrice}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+</html>

@@ -14,6 +14,7 @@ import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
@@ -45,7 +46,6 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final FavoriteTagService favoriteTagService;
-
     @Transactional
     public void order(Member member, OrderForm orderForm) {
 
@@ -100,5 +100,15 @@ public class OrderService {
         List<OrderItemDto> orderItemDtoList = new ArrayList<>();
         orderItemDtoList.add(OrderItemDto.of(product, productOptionForm.getQuantity()));
         return new OrderForm(MemberInfoDto.of(member), orderItemDtoList);
+    }
+
+    public OrderDetailResponse showOrderItems(Member member, Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new IllegalArgumentException("잘못된 주문번호입니다."));
+
+        if (order.getMember().getId() != member.getId())
+            throw new IllegalArgumentException("다른 사용자의 주문에는 접근할 수 없습니다.");
+
+        return OrderDetailResponse.of(order, orderRepository.findOrderItemsByOrderId(orderId));
     }
 }
