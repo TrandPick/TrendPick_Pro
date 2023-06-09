@@ -116,7 +116,7 @@ public class ProductController {
             Member member = rq.CheckLogin().orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
             if (member.getRole().getValue().equals("MEMBER")) {
                 model.addAttribute("mainCategoryName", mainCategory);
-                model.addAttribute("productResponses", recommendService.getFindAll(offset));
+                model.addAttribute("productResponses", recommendService.getFindAll(member, offset));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
                 model.addAttribute("mainCategoryName", mainCategory);
