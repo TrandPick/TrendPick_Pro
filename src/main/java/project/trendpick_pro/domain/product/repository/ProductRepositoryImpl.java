@@ -135,7 +135,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 ))
                 .from(product)
                 .leftJoin(product.file, commonFile)
-                .leftJoin(product, ask.product)
+                .leftJoin(ask.product, product)
                 .where(product.brand.name.eq(brand))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -145,9 +145,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         JPAQuery<Long> count = queryFactory
                 .select(product.count())
                 .from(product)
-                .from(product)
                 .leftJoin(product.file, commonFile)
-                .leftJoin(product, ask.product)
+                .leftJoin(ask.product, product)
                 .where(product.brand.name.eq(brand));
 
         return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);

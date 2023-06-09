@@ -155,13 +155,9 @@ public class ProductController {
     @GetMapping("admin/list")
     public String showAllProductBySeller(@RequestParam("page") int offset, Model model) {
         Page<ProductListResponseBySeller> products =
-                productService.findProductsBySeller(rq.CheckAdmin().get(), offset);
+                productService.findProductsBySeller(rq.CheckAdmin().get(), offset).getData();
         model.addAttribute("products", products);
         return "/trendpick/admin/products";
     }
-
-
-
-
 }
 // @RequestParam(value = "sort", defaultValue = "1"), Integer sortCode
