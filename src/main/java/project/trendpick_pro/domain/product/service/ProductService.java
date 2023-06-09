@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -216,5 +217,11 @@ public class ProductService {
             ));
         }
         return products;
+    }
+
+    public void findProductsBySeller(Member member, int offset) {
+        Pageable pageable = PageRequest.of(offset, 20);
+
+        productRepository.findAllBySeller(member.getBrand(), pageable);
     }
 }

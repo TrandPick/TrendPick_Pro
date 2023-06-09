@@ -26,6 +26,7 @@ import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.global.rsData.RsData;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public class OrderController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/list")
+    @GetMapping("usr//list")
     public String orderListByMember(
             @RequestParam(value = "page", defaultValue = "0") int offset,
             Model model) {
@@ -100,7 +101,7 @@ public class OrderController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/list")
+    @GetMapping("admin/list")
     public String orderListBySeller(
             @RequestParam(value = "page", defaultValue = "0") int offset,
             Model model) {
@@ -118,8 +119,12 @@ public class OrderController {
 
     @PostMapping("/cancel/{orderId}")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
-        orderService.cancel(orderId);
-        return "redirect:trendpick/orders/list";
+        RsData result = orderService.cancel(orderId);
+
+        if(result.isFail())
+            rq.historyBack(result);
+
+        return rq.redirectWithMsg("/trendpick/orders/admin/list", result);
     }
 
     @GetMapping("/{orderId}")

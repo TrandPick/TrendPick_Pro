@@ -37,6 +37,7 @@ public class OrderItem {
         this.count = count;
 
         product.removeStock(count);
+        product.increaseSaleCount(count);
     }
 
     public static OrderItem of(Product product, OrderItemDto orderItemDto) {

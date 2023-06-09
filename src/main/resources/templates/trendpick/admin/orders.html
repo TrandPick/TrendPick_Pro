@@ -16,7 +16,6 @@
             <th class="text-center" scope="col">주문일시</th>
             <th class="text-center" scope="col">주문상태</th>
             <th class="text-center" scope="col">배송상태</th>
-            <th class="text-center" scope="col">리뷰등록</th>
         </tr>
         </thead>
         <tbody>
@@ -53,11 +52,6 @@
             </td>
             <td class="text-center">
                 <span class="badge badge-ghost badge-sm" th:text="${order.deliveryStatus}"></span>
-            </td>
-            <td class="text-center">
-                <a th:href="@{|/trendpick/review/register/${order.productId}|}">
-                    등록
-                </a>
             </td>
         </tr>
         </tbody>

@@ -64,7 +64,6 @@ public class ProductController {
         return "/trendpick/products/register";
     }
 
-
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @PostMapping("/register")
     public String register(@ModelAttribute @Valid ProductSaveRequest productSaveRequest,
@@ -148,6 +147,15 @@ public class ProductController {
         }
         return "/trendpick/products/list";
     }
+
+    @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
+    @GetMapping("admin/list")
+    public String showAllProductBySeller(@RequestParam("page") int offset, Model model) {
+        productService.findProductsBySeller(rq.CheckAdmin().get(), offset);
+        return "/trendpick/admin/products";
+    }
+
+
 
 
 }

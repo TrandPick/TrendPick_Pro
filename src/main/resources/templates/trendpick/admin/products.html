@@ -2,9 +2,77 @@
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>주문 목록</title>
+    <title>판매상품 관리</title>
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
-    판매자가 올린 상품들
+    <body>
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="text-center" scope="col">상품번호</th>
+            <th class="text-center" scope="col">상품정보</th>
+            <th class="text-center" scope="col">상품금액</th>
+            <th class="text-center" scope="col">상품재고</th>
+            <th class="text-center" scope="col">등록일자</th>
+            <th class="text-center" scope="col">판매개수</th>
+            <th class="text-center" scope="col">상품평점</th>
+            <th class="text-center" scope="col">상품리뷰</th>
+            <th class="text-center" scope="col">문의내역</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order, loop : ${orderList}">
+            <td class="text-center">
+                <a th:href="@{/trendpick/orders/{orderId}(orderId=${order.orderId})}"
+                   th:text="${orderList.number * 10 + loop.count}">
+                </a>
+            </td>
+            <td class="text-center">
+                <div class="flex items-center space-x-3">
+                    <div class="avatar">
+                        <div class="mask mask-squircle w-12 h-12">
+                            <img th:src="|/images/${order.productFilePath}|" width="100" height="100"/>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="font-bold" th:text="${order.productName}"></div>
+                        <div class="text-sm opacity-50" th:text="${order.brandName}"></div>
+                    </div>
+                </div>
+            </td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-sm" th:text="${order.count+'개'}"></span>
+            </td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-sm" th:text="${order.formattedTotalPrice+'원'}"></span>
+            </td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-sm" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
+            </td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-sm" th:text="${order.orderStatus}"></span>
+            </td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-sm" th:text="${order.deliveryStatus}"></span>
+            </td>
+            <td class="text-center">
+                <a th:href="@{|/trendpick/review/register/${order.productId}|}">
+                    등록
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="flex justify-center my-4" th:if="orderList != null">
+        <div class="btn-group">
+            <a th:if="${orderList.hasPrevious()}" th:href="@{/trendpick/products/list(page=${orderList.number - 1})}" class="btn">Previous</a>
+            <span th:each="i : ${#numbers.sequence(0, orderList.totalPages - 1)}">
+            <a th:href="@{/trendpick/orders/list(page=${i})}" th:text="${i+1}" th:class="${orderList.number == i ? 'btn btn-active' : 'btn'}"></a>
+        </span>
+            <a th:if="${orderList.hasNext()}" th:href="@{/trendpick/orders/list(page=${orderList.number + 1})}" class="btn">Next</a>
+        </div>
+    </div>
+    </body>
 </main>
 </html>
