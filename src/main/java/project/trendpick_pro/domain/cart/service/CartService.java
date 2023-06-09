@@ -1,7 +1,6 @@
 package project.trendpick_pro.domain.cart.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.Cart;
@@ -11,7 +10,6 @@ import project.trendpick_pro.domain.cart.entity.dto.response.CartItemResponse;
 import project.trendpick_pro.domain.cart.repository.CartItemRepository;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
@@ -39,7 +37,7 @@ public class CartService {
         List<CartItem> userItems = new ArrayList<>();
 
         // 장바구니가 비어있는 경우
-        if(cart==null){
+        if (cart == null) {
             return userItems;
         }
         for (CartItem cartItem : cartItems) {
@@ -68,13 +66,13 @@ public class CartService {
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가
             cartItem.addCount(cartItemRequest.getQuantity());
-            cart.setTotalCount(cart.getTotalCount()+ cartItemRequest.getQuantity());
+            cart.setTotalCount(cart.getTotalCount() + cartItemRequest.getQuantity());
         } else {
             // 카트에 해당 상품이 없는 경우, 새로운 카트 아이템을 생성하여 추가
             cartItem = CartItem.of(cart, product, cartItemRequest);
             cart.setTotalCount(cart.getTotalCount() + 1);
+            cartItemRepository.save(cartItem);
         }
-        cartItemRepository.save(cartItem);
         return CartItemResponse.of(cartItem);
     }
 
@@ -87,14 +85,14 @@ public class CartService {
 
     // 상품의 수량 업데이트
     @Transactional
-    public void updateItemCount(Member member,Long cartItemId, int quantity) {
-        Cart cart=cartRepository.findByMemberId(member.getId());
+    public void updateItemCount(Member member, Long cartItemId, int quantity) {
+        Cart cart = cartRepository.findByMemberId(member.getId());
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
 
-        // quantity값이 수량에 있는 값 그대로 넘어옴
+        // quantity값이 수량에 있는 값(input) 그대로 넘어옴
         // 수량이 1로 들어오는 게 아닌 해당 상품의 수량 값이 오기 때문에
         // 기존 해당 아이템의 수량값을 빼줌
-        cart.setTotalCount(cart.getTotalCount()+(quantity-cartItem.getQuantity()));
+        cart.setTotalCount(cart.getTotalCount() + (quantity - cartItem.getQuantity()));
         cartItem.update(quantity);
     }
 
@@ -107,12 +105,6 @@ public class CartService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
     }
 
-    private Member CheckMember() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-        return member;
-    }
-
     public List<CartItem> findCartItems(List<Long> cartItemIdList) {
         List<CartItem> cartItemList = new ArrayList<>();
         for (Long id : cartItemIdList) {
@@ -121,4 +113,17 @@ public class CartService {
         }
         return cartItemList;
     }
+
+    @Transactional
+    public void deleteCartItemsByOrder(Member member,List<Long> cartItemIdList) {
+       Cart cart = cartRepository.findByMemberId(member.getId());
+       int quantity=0;
+       for(long id: cartItemIdList){
+           CartItem cartItem = cartItemRepository.findById(id).orElse(null);
+           quantity+= cartItem.getQuantity();
+       }
+       cartItemRepository.deleteAllByIdInBatch(cartItemIdList);
+       cart.totalCountUpdate(cart.getTotalCount()-quantity);
+    }
 }
+

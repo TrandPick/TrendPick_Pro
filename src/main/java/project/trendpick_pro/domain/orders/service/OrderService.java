@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
+import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
@@ -83,6 +84,12 @@ public class OrderService {
                 throw new MemberNotMatchException("현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
         }
 
+        // 주문상품 장바구니에서 삭제
+        List<Long> orderItemIds = new ArrayList<>();
+        for (CartItem cartItem : cartItems) {
+            orderItemIds.add(cartItem.getId());
+        }
+        cartService.deleteCartItemsByOrder(member,orderItemIds);
         return new OrderForm(MemberInfoDto.of(member) ,convertToOrderItemDto(cartItems));
     }
 
