@@ -33,6 +33,7 @@ public class RecommendService {
     private final ProductService productService;
     private final MemberRepository memberRepository;
 
+
     @Value("${file.path}")
     private String filePath;
     //recommend -> 태그 기반 추천 상품들이 있어야 함
@@ -73,10 +74,9 @@ public class RecommendService {
         }
     }
 
-    public Page<ProductListResponse> getFindAll(int offset){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    public Page<ProductListResponse> getFindAll(Member member, int offset){
         PageRequest pageable = PageRequest.of(offset, 18);
-        Page<ProductListResponse> listResponses = recommendRepository.findAllByMemberName(username, pageable);
+        Page<ProductListResponse> listResponses = recommendRepository.findAllByMemberName(member.getUsername(), pageable);
 
         List<ProductListResponse> list = listResponses.getContent().stream()
                 .peek(product -> {
