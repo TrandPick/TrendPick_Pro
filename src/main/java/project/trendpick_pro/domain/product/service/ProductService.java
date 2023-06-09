@@ -64,6 +64,10 @@ public class ProductService {
     @Value("${file.path}")
     private String filePath;
 
+    public Product findById(Long id) {
+        return productRepository.findById(id).orElseThrow();
+    }
+
     @Transactional
     public Long register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 

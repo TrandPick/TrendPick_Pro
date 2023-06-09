@@ -38,12 +38,10 @@
                     <div sec:authorize="isAuthenticated()">
                         <div th:if="${@rq.CheckLoginHtml()}">
                             <div th:if="${@rq.CheckAdminHtml()}" class="card-actions">
-                                <form th:action="|/trendpick/products/edit/${product.id}|" method="post">
-                                    <input type="submit" value="Edit" class="btn btn-accent"/>
-                                </form>
-                                <form th:action="|/trendpick/products/${product.id}|" method="post">
+                                <a th:href="@{/trendpick/products/edit/{productId}(productId=${product.id})}" class="btn btn-accent">Edit</a>
+                                <a href="javascript:;" onclick="if ( confirm('정말로 삭제하시겠습니까?') ) $(this).next().submit();" class="btn btn-accent">Delete</a>
+                                <form hidden th:action="|/trendpick/products/${product.id}|" method="post">
                                     <input type="hidden" name="_method" value="delete"/>
-                                    <input type="submit" value="delete" class="btn btn-accent"/>
                                 </form>
                             </div>
                         </div>
