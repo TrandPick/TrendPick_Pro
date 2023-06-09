@@ -24,6 +24,8 @@ import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Slf4j
@@ -91,7 +93,9 @@ public class ProductController {
     @DeleteMapping("/{productId}")
     public String deleteProduct(@PathVariable Long productId) {
         productService.delete(productId);
-        return "redirect:/trendpick/products/list";
+        String category = URLEncoder.encode("상의", StandardCharsets.UTF_8);
+        return "redirect:/trendpick/products/list?main-category=" + category;
+
     }
 
     @PreAuthorize("permitAll()")
