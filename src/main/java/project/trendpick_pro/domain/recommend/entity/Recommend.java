@@ -17,19 +17,6 @@ public class Recommend {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
-
-    @Column(name = "main_file", nullable = false)
-    private String mainFile;
-
-    @Column(name = "price", nullable = false)
-    private int price;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
@@ -39,14 +26,7 @@ public class Recommend {
     private Member member;
 
     @Builder
-    public Recommend(String name, Brand brand, String mainFile, int price) {
-        this.name = name;
-        this.brand = brand;
-        this.mainFile = mainFile;
-        this.price = price;
-    }
-
-    public void connectProduct(Product product) {
+    public Recommend(Product product) {
         this.product = product;
     }
 
@@ -56,10 +36,7 @@ public class Recommend {
 
     public static Recommend of(Product product) {
         return Recommend.builder()
-                .name(product.getName())
-                .brand(product.getBrand())
-                .mainFile(product.getFile().getFileName())
-                .price(product.getPrice())
+                .product(product)
                 .build();
     }
 }

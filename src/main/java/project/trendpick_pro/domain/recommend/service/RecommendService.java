@@ -51,7 +51,6 @@ public class RecommendService {
 
         for (Product product : products) {
             Recommend recommend = Recommend.of(product);
-            recommend.connectProduct(product);
             recommend.connectMember(member);
             recommendRepository.save(recommend);
         }
@@ -68,7 +67,6 @@ public class RecommendService {
 
         for (Product product : products) {
             Recommend recommend = Recommend.of(product);
-            recommend.connectProduct(product);
             recommend.connectMember(member);
             recommendRepository.save(recommend);
         }
