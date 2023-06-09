@@ -120,6 +120,11 @@ public class Rq {
         return member;
     }
 
+    public Boolean CheckAdminHtml() {
+        Member checkMember = CheckLogin().get();
+        return !checkMember.getRole().equals(RoleType.MEMBER);
+    }
+
     public Optional<Member> CheckMember() {
         Optional<Member> member = CheckLogin();
         Member checkMember = member.get();
@@ -128,6 +133,14 @@ public class Rq {
 
         }
         throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+    }
+
+    public Boolean CheckLoginHtml() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
+        Optional<Member> member = memberService.findByEmail(username);
+
+        return member.isPresent();
     }
 
     public Optional<Member> CheckLogin() {
