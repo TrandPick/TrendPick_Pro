@@ -3,6 +3,7 @@ package project.trendpick_pro.domain.product.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -151,7 +153,9 @@ public class ProductController {
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("admin/list")
     public String showAllProductBySeller(@RequestParam("page") int offset, Model model) {
-        productService.findProductsBySeller(rq.CheckAdmin().get(), offset);
+        Page<ProductListResponseBySeller> products =
+                productService.findProductsBySeller(rq.CheckAdmin().get(), offset);
+        model.addAttribute("products", products);
         return "/trendpick/admin/products";
     }
 

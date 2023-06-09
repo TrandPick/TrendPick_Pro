@@ -23,6 +23,7 @@ import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
@@ -219,9 +220,8 @@ public class ProductService {
         return products;
     }
 
-    public void findProductsBySeller(Member member, int offset) {
+    public Page<ProductListResponseBySeller> findProductsBySeller(Member member, int offset) {
         Pageable pageable = PageRequest.of(offset, 20);
-
-        productRepository.findAllBySeller(member.getBrand(), pageable);
+        return productRepository.findAllBySeller(member.getBrand(), pageable);
     }
 }

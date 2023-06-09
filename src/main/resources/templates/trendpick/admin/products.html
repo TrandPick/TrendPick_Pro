@@ -13,7 +13,6 @@
             <th class="text-center" scope="col">상품정보</th>
             <th class="text-center" scope="col">상품금액</th>
             <th class="text-center" scope="col">상품재고</th>
-            <th class="text-center" scope="col">등록일자</th>
             <th class="text-center" scope="col">판매개수</th>
             <th class="text-center" scope="col">상품평점</th>
             <th class="text-center" scope="col">상품리뷰</th>
@@ -21,56 +20,41 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="order, loop : ${orderList}">
+        <tr th:each="product, loop : ${products}">
             <td class="text-center">
-                <a th:href="@{/trendpick/orders/{orderId}(orderId=${order.orderId})}"
-                   th:text="${orderList.number * 10 + loop.count}">
+                <a th:href="@{/trendpick/products/{productId}(productId=${product.id})}"
+                   th:text="${products.number * 10 + loop.count}">
                 </a>
             </td>
             <td class="text-center">
-                <div class="flex items-center space-x-3">
-                    <div class="avatar">
-                        <div class="mask mask-squircle w-12 h-12">
-                            <img th:src="|/images/${order.productFilePath}|" width="100" height="100"/>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="font-bold" th:text="${order.productName}"></div>
-                        <div class="text-sm opacity-50" th:text="${order.brandName}"></div>
-                    </div>
-                </div>
+                <a th:href="@{/trendpick/products/{productId}(productId=${product.id})}"
+                   th:text="${product.name}">
+                </a>
+            </td>
+            <td class="text-center" th:text="${product.stock+'개'}"></td>
+            <td class="text-center" th:text="${product.saleCount+'개'}"></td>
+            <td class="text-center" th:text="${product.rateAvg+'점'}"></td>
+            <td class="text-center">
+                <a th:href="@{/trendpick/review/product/{productId}(productId=${product.id})}"
+                   th:text="${product.reviewCount+'개'}">
+                </a>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.count+'개'}"></span>
-            </td>
-            <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.formattedTotalPrice+'원'}"></span>
-            </td>
-            <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
-            </td>
-            <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.orderStatus}"></span>
-            </td>
-            <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.deliveryStatus}"></span>
-            </td>
-            <td class="text-center">
-                <a th:href="@{|/trendpick/review/register/${order.productId}|}">
-                    등록
+                <a th:href="@{/trendpick/customerservice/asks/product/{productId}(productId=${product.id})}"
+                   th:text="${product.ask+'개'}">
                 </a>
             </td>
         </tr>
         </tbody>
     </table>
 
-    <div class="flex justify-center my-4" th:if="orderList != null">
+    <div class="flex justify-center my-4" th:if="products != null">
         <div class="btn-group">
-            <a th:if="${orderList.hasPrevious()}" th:href="@{/trendpick/products/list(page=${orderList.number - 1})}" class="btn">Previous</a>
-            <span th:each="i : ${#numbers.sequence(0, orderList.totalPages - 1)}">
-            <a th:href="@{/trendpick/orders/list(page=${i})}" th:text="${i+1}" th:class="${orderList.number == i ? 'btn btn-active' : 'btn'}"></a>
+            <a th:if="${products.hasPrevious()}" th:href="@{/trendpick/products/admin/list(page=${products.number - 1})}" class="btn">Previous</a>
+            <span th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}">
+            <a th:href="@{/trendpick/products/admin/list(page=${i})}" th:text="${i+1}" th:class="${products.number == i ? 'btn btn-active' : 'btn'}"></a>
         </span>
-            <a th:if="${orderList.hasNext()}" th:href="@{/trendpick/orders/list(page=${orderList.number + 1})}" class="btn">Next</a>
+            <a th:if="${products.hasNext()}" th:href="@{/trendpick/products/admin/list(page=${products.number + 1})}" class="btn">Next</a>
         </div>
     </div>
     </body>
