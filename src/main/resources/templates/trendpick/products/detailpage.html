@@ -4,38 +4,43 @@
     <title>TrendPick</title>
 </head>
 <body>
-<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col">
-    <div class="flex-1 overflow-auto p-4">
+<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col" style="max-width:960px;">
+    <div class="overflow-auto">
         <div class="card bordered flex flex-col md:flex-row gap-4">
-            <figure class="flex-1">
-                <img th:src="|/images/${productResponse.mainFile}|" class="w-full h-full object-cover" alt="Product Image"/>
-                <div class="mt-4 flex" th:each="image : ${productResponse.subFiles}">
-                    <img th:src="|/images/${image}|" class="rounded w-24 mr-2" alt="Sub Image">
+            <figure class="flex-1 flex flex-col items-center">
+                <img th:src="|/images/${productResponse.mainFile}|" class="image-main object-cover" alt="Product Image"/>
+                <div class="mt-4 flex flex-row overflow-x-auto">
+                    <div th:each="image : ${productResponse.subFiles}">
+                        <img th:src="|/images/${image}|" class="rounded w-24 mr-2 my-2" alt="Sub Image">
+                    </div>
                 </div>
             </figure>
+
             <div class="card-body flex-1">
+                <div class="mb-4 flex flex-wrap overflow-auto">
+                    <div th:each="tag : ${productResponse.tags}" class="badge-large mr-2 mb-2">
+                        <span th:text="${tag.name}"></span>
+                    </div>
+                </div>
+                <hr>
                 <h2 class="text-2xl font-bold" th:text="${productResponse.name}"></h2>
                 <div class="badge my-2">Brand: <span th:text="${productResponse.brand}"></span></div>
-                <p class="mb-4" th:text="${productResponse.description}">Product Description</p>
+                <p class="mb-4" th:text="${productResponse.description}"></p>
                 <ul class="mb-8">
-                    <li>Main Category: <span th:text="${productResponse.mainCategory}">Main Category</span></li>
-                    <li>Sub Category: <span th:text="${productResponse.subCategory}">Sub Category</span></li>
-                    <li>Brand: <span th:text="${productResponse.brand}">Brand</span></li>
-                    <li>Price: <span class="text-orange-600 font-bold text-lg" th:text="${#numbers.formatDecimal(productResponse.price, 0, 'COMMA', 0, 'POINT')} + ' 원'">Price</span></li>
-                    <li>Stock: <span th:text="${productResponse.stock}">Stock</span></li>
+                    <li>가격: <span class="text-orange-600 font-bold text-lg" th:text="${#numbers.formatDecimal(productResponse.price, 0, 'COMMA', 0, 'POINT')} + ' 원'">Price</span></li>
+                    <li>재고: <span th:text="|${productResponse.stock} 개|">Stock</span></li>
                 </ul>
                 <div class="mb-4">
                     <label for="quantity" class="font-bold">Quantity:</label>
                     <input type="number" id="quantity" name="quantity" min="1" max="10" value="1" class="w-16 border border-gray-300 rounded-md px-2 py-1">
                 </div>
                 <div class="flex-grow"></div>
-                <div class="card-actions">
+                <div th:if="!${@rq.CheckAdminHtml()}" class="card-actions">
                     <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" method="post">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="quantity" id="addToCartQuantity">
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
-
                     <form id="orderForm" th:action="@{/trendpick/orders/order/product}" method="POST">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="quantity" value="quantity">
@@ -45,24 +50,6 @@
             </div>
         </div>
     </div>
-    <script>
-        // Quantity 값을 읽어서 각각의 hiddenQuantity 필드에 할당하는 함수
-        function setQuantity() {
-            var quantityInput = document.getElementById("quantity");
-            var addToCartQuantityInput = document.getElementById("addToCartQuantity");
-            addToCartQuantityInput.value = quantityInput.value;
-        }
-
-        window.onload = function() {
-            setQuantity();
-
-            var quantityInput = document.getElementById("quantity");
-            quantityInput.addEventListener("change", setQuantity);
-
-            var addToCartForm = document.getElementById("addToCartForm");
-            addToCartForm.addEventListener("submit", setQuantity);
-        }
-    </script>
 </main>
 </body>
 </html>
