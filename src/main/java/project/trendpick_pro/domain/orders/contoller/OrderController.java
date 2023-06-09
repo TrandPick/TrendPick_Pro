@@ -99,10 +99,10 @@ public class OrderController {
         return "trendpick/usr/member/orders";
     }
 
-    @PostMapping("/{orderId}/cancel")
+    @PostMapping("/cancel/{orderId}")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
         orderService.cancel(orderId);
-        return "redirect:trendpick/usr/member/orders";
+        return "redirect:trendpick/orders/list";
     }
 
     @GetMapping("/{orderId}")

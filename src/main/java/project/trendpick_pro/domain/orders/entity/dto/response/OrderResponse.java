@@ -26,7 +26,7 @@ public class OrderResponse {
 
     @Builder
     @QueryProjection
-    public OrderResponse(Long orderId, Long productId, String productFilePath, String brandName, String productName, int count,int productPrice, LocalDateTime orderDate, String orderStatus, String deliveryStatus, String paymentMethod) {
+    public OrderResponse(Long orderId, Long productId, String productFilePath, String brandName, String productName, int count,int productPrice, LocalDateTime orderDate, String orderStatus, String deliveryStatus) {
         this.orderId = orderId;
         this.productId = productId;
         this.productFilePath = productFilePath;
@@ -41,7 +41,7 @@ public class OrderResponse {
 
     public String getFormattedTotalPrice(){
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
-        return numberFormat.format(getTotalPrice());
+        return numberFormat.format(getTotalPrice())+"원";
     }
     public int getTotalPrice(){
         return productPrice * count;
