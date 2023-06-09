@@ -29,7 +29,7 @@
       </a>
       <div class="flex justify-between">
         <ul class="menu menu-horizontal px-1">
-          <li><a href="/trendpick/products/list?main-category=추천" sec:authorize="isAuthenticated()">추천</a></li>
+          <li th:if="${#authorization.expression('hasRole(''MEMBER'')')}"><a href="/trendpick/products/list?main-category=추천">추천</a></li>
           <li><a href="/trendpick/products/list?main-category=상의">상의</a></li>
           <li><a href="/trendpick/products/list?main-category=아우터">아우터</a></li>
           <li><a href="/trendpick/products/list?main-category=하의">하의</a></li>
@@ -45,7 +45,7 @@
                     style="display: inline;">
             <input class="link link-hover" type="submit" value="로그아웃">
           </form></li>
-          <button class="btn btn-ghost btn-circle">
+          <button class="btn btn-ghost btn-circle" th:if="${#authorization.expression('hasRole(''MEMBER'')')}">
             <div class="indicator">
               <a href="/trendpick/member/notification">
                 <i class="fa-regular fa-bell"></i>
@@ -53,7 +53,7 @@
               </a>
             </div>
           </button>
-          <button class="btn btn-ghost btn-circle">
+          <button class="btn btn-ghost btn-circle" th:if="${#authorization.expression('hasRole(''MEMBER'')')}">
             <div class="indicator">
               <a href="/trendpick/usr/cart/list">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
@@ -61,7 +61,7 @@
               </a>
             </div>
           </button>
-          <div class="dropdown">
+          <div class="dropdown" th:if="${#authorization.expression('hasRole(''MEMBER'')')}">
             <label tabindex="0" class="btn btn-ghost btn-circle">
               <i class="fa-solid fa-bars"></i>
             </label>

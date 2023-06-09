@@ -16,6 +16,7 @@ import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
+import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
@@ -75,10 +76,23 @@ public class ProductController {
     }
 
     @GetMapping("/edit/{productId}")
-    public String modifyBefore(@PathVariable Long productId, @Valid ProductSaveRequest productSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
-                                @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
-        Long id = productService.modify(productId, productSaveRequest, mainFile, subFiles);
-        return "redirect:/trendpick/products/" + id;
+    public String modifyBefore(@PathVariable Long productId, Model model) throws IOException {
+        model.addAttribute("tags", tagNameService.findAll());
+
+        List<MainCategoryResponse> MainCategories = mainCategoryService.findAll();
+        model.addAttribute("mainCategories", MainCategories);
+
+        Map<String, List<SubCategoryResponse>> subCategoryList = new HashMap<>();
+        for (MainCategoryResponse mainCategoryResponse : MainCategories) {
+            subCategoryList.put(mainCategoryResponse.getName(), subCategoryService.findAll(mainCategoryResponse.getName()));
+        }
+
+        model.addAttribute("subCategoriesList", subCategoryList);
+        model.addAttribute("brands", brandService.findAll());
+
+        Product product = productService.findById(productId);
+        model.addAttribute("originProduct", product);
+        return "/trendpick/products/modify";
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")

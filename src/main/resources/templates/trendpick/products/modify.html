@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Registration</title>
+</head>
+<body>
+
+<main layout:fragment="main" class="bg-white">
+
+    <script>
+        $(document).ready(function() {
+            $(`input[name="mainCategory"]`).change(function () {
+                // 기존에 나오던 녀석을 숨긴다.
+                $(`[data-type-1]:not(.hidden)`).addClass("hidden");
+                // 이번에 나와야 할 녀석을 노출시킨다.
+                $(`[data-type-1="${this.value}"]`).removeClass("hidden");
+
+                // 기존에 체크된 녀석을 체크해제 한다.
+                $(`input[name="subCategory"]:checked`).prop("checked", false);
+
+                // 디폴트로 가장 첫번째 것을 체크한다.
+                $(`[data-type-1="${this.value}"] input[name="subCategory"]:first`).prop(
+                    "checked",
+                    true
+                );
+            });
+            $(`input[name="mainCategory"]:first`).click();
+        });
+    </script>
+
+    <form id="productSaveRequest" th:action="@{/trendpick/products/edit/{productId}(productId=${productId})}" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data" class="m-4">
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700 font-bold mb-2">Title</label>
+            <input type="text" id="name" name="name" th:value="${originProduct.name}" required class="shadow input-accent appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="description" class="block text-gray-700 font-bold mb-2">Description</label>
+            <textarea id="description" name="description" th:value="${originProduct.description}" required class="textarea-accent shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">Main Category</label>
+            <div class="grid grid-cols-3 space-x-1">
+                <div th:each="mainCategory, stat : ${mainCategories}" th:if="${mainCategory.name} != '추천'" class="space-x-1">
+                    <label class="flex items-center" th:class="${stat.count % 3 == 0 ? 'col-start-1' : ''}">
+                        <input type="radio" th:id="mainCategory" name="mainCategory" th:value="${mainCategory.name}" class="radio radio-success">
+                        <span th:text="${mainCategory.name}"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4 gap-4">
+            <label class="block text-gray-700 font-bold mb-2">Sub Category</label>
+            <div th:each="subCategories, stat : ${subCategoriesList}">
+                <label th:each="subCategory : ${subCategories.value}" th:data-type-1="${subCategories.key}" class="hidden">
+                    <input type="radio" th:id="subCategory" name="subCategory" th:value="${subCategory.name}" class="radio radio-success">
+                    <span th:text="${subCategory.name}" class="text-gray-700"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">Brand</label>
+            <div th:each="brand : ${brands}">
+                <div>
+                    <input type="radio" id="brand" name="brand" th:value="${brand.name}" class="mr-2 leading-tight input-accent">
+                    <span th:text="${brand.name}" class="text-gray-700"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="mainFile" class="block text-gray-700 font-bold mb-2">Main Image</label>
+            <input type="file" id="mainFile" name="mainFile" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+        </div>
+
+        <div class="mb-4">
+            <label for="subFiles" class="block text-gray-700 font-bold mb-2">Sub Images</label>
+            <input type="file" id="subFiles" name="subFiles" multiple="multiple" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+        </div>
+
+        <div class="mb-4">
+            <label for="price" class="block text-gray-700 font-bold mb-2">Price</label>
+            <input type="number" id="price" name="price" th:value="${originProduct.price}" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+        </div>
+
+        <div class="mb-4">
+            <label for="stock" class="block text-gray-700 font-bold mb-2">Stock</label>
+            <input type="number" id="stock" name="stock" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+        </div>
+
+        <div class="form-group">
+            <label class="block text-gray-700 font-bold mb-2">Tags</label>
+            <div class="grid grid-cols-5">
+                <div th:each="tag, iterStat : ${tags}" class="col-md-2">
+                    <input type="checkbox" name="tags" th:value="${tag.name}" class="checkbox checkbox-success"/>
+                    <span th:text="${tag.name}" class="text-gray-700"></span>
+                    <th:block th:if="${iterStat.count % 5 == 0}"><br/></th:block>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Update Product</button>
+    </form>
+</main>
+</body>
+</html>
