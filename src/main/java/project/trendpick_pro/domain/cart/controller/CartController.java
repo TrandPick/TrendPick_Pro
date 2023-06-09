@@ -32,16 +32,18 @@ public class CartController {
 
     @PreAuthorize("hasAuthority('MEMBER')")
     @GetMapping("/list")
-    public String showCart(Model model) {
+    public String showCart( Model model) {
         Member member = rq.CheckMember().get();
         Cart carts = cartService.getCartByUser(rq.CheckMember().get().getId());
 
         List<CartItem> cartItems = cartService.CartView(member, carts);
-
+        //List<CartItem>cartItemList=cartService.findCartItems(selectedItems);
         int totalPrice = 0;
+      /*
         for (CartItem cartItem : cartItems) {
             totalPrice += (cartItem.getProduct().getPrice() * cartItem.getQuantity());
         }
+       */
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("totalPrice", totalPrice);
         return "/trendpick/usr/cart/list";

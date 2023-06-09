@@ -105,11 +105,16 @@ public class CartService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
     }
 
-    public List<CartItem> findCartItems(List<Long> cartItemIdList) {
+    public List<CartItem> findCartItems(Member member,List<Long> cartItemIdList)  {
+        Cart cart=getCartByUser(member.getId()); //현재 로그인되어 있는 cart 정보
         List<CartItem> cartItemList = new ArrayList<>();
+
         for (Long id : cartItemIdList) {
-            cartItemList.add(cartItemRepository.findById(id).
-                    orElseThrow(() -> new IllegalArgumentException("장바구니에 존재하지 않는 품목입니다.")));
+            for(CartItem item : cartItemRepository.findByProductId(id)) {
+                if(item.getCart().getId() == cart.getId()) {
+                    cartItemList.add(item);
+                }
+            }
         }
         return cartItemList;
     }

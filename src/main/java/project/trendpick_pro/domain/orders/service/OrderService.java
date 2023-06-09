@@ -78,9 +78,9 @@ public class OrderService {
     }
 
     public OrderForm cartToOrder(Member member, List<Long> selectedItems) {
-        List<CartItem> cartItems = cartService.findCartItems(selectedItems);
+        List<CartItem> cartItems = cartService.findCartItems(member, selectedItems);
         for (CartItem cartItem : cartItems) {
-            if(cartItem.getCart().getMember().getId() != member.getId())
+            if (cartItem.getCart().getMember().getId() != member.getId())
                 throw new MemberNotMatchException("현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
         }
 
