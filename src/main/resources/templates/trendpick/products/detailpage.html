@@ -4,9 +4,9 @@
     <title>TrendPick</title>
 </head>
 <body>
-<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col" style="max-width:960px;">
+<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col" style="max-width:100%;">
     <div class="overflow-auto">
-        <div class="card bordered flex flex-col md:flex-row gap-4">
+        <div class="card bordered flex flex-col md:flex-row gap-4" style="height:800px">
             <figure class="flex-1 flex flex-col items-center">
                 <img th:src="|/images/${productResponse.mainFile}|" class="image-main object-cover" alt="Product Image"/>
                 <div class="mt-4 flex flex-row overflow-x-auto">

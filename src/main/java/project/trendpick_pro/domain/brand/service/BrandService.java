@@ -32,6 +32,10 @@ public class BrandService {
     }
 
     public Brand findByName(String name) {
-        return brandRepository.findByName(name);
+        try {
+            return brandRepository.findByName(name);
+        } catch (Exception e) {
+            return brandRepository.save(new Brand(name));
+        }
     }
 }
