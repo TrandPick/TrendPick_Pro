@@ -114,8 +114,9 @@ public class ProductController {
 
     @PreAuthorize("permitAll()")
     @GetMapping("/{productId}")
-    public String showProduct(@PathVariable Long productId, Model model) {
+    public String showProduct(@PathVariable Long productId, ProductOptionForm productOptionForm, Model model) {
         model.addAttribute("productResponse", productService.show(productId));
+        model.addAttribute("ProductOptionForm", productOptionForm);
         model.addAttribute("productOptionForm", new ProductOptionForm());
         return "/trendpick/products/detailpage";
     }
