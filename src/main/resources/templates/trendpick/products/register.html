@@ -10,22 +10,22 @@
 
     <script>
         $(document).ready(function() {
-            $(`input[name="type-1"]`).change(function () {
+            $(`input[name="mainCategory"]`).change(function () {
                 // 기존에 나오던 녀석을 숨긴다.
-                $(`[data-type-1]:not(.hidden)`).addClass("hidden");
+                $(`[data-mainCategory]:not(.hidden)`).addClass("hidden");
                 // 이번에 나와야 할 녀석을 노출시킨다.
-                $(`[data-type-1="${this.value}"]`).removeClass("hidden");
+                $(`[data-mainCategory="${this.value}"]`).removeClass("hidden");
 
                 // 기존에 체크된 녀석을 체크해제 한다.
-                $(`input[name="type-2"]:checked`).prop("checked", false);
+                $(`input[name="subCategory"]:checked`).prop("checked", false);
 
                 // 디폴트로 가장 첫번째 것을 체크한다.
-                $(`[data-type-1="${this.value}"] input[name="type-2"]:first`).prop(
+                $(`[data-mainCategory="${this.value}"] input[name="subCategory"]:first`).prop(
                     "checked",
                     true
                 );
             });
-            $(`input[name="type-1"]:first`).click();
+            $(`input[name="mainCategory"]:first`).click();
         });
     </script>
 
@@ -45,7 +45,7 @@
             <div class="grid grid-cols-3 space-x-1">
                 <div th:each="mainCategory, stat : ${mainCategories}" th:if="${mainCategory.name} != '추천'" class="space-x-1">
                     <label class="flex items-center" th:class="${stat.count % 3 == 0 ? 'col-start-1' : ''}">
-                        <input type="radio" th:id="mainCategory" name="type-1" th:value="${mainCategory.name}" class="radio radio-success">
+                        <input type="radio" th:id="mainCategory" name="mainCategory" th:value="${mainCategory.name}" class="radio radio-success">
                         <span th:text="${mainCategory.name}"></span>
                     </label>
                 </div>
@@ -56,7 +56,7 @@
             <label class="block text-gray-700 font-bold mb-2">Sub Category</label>
             <div th:each="subCategories, stat : ${subCategoriesList}">
                 <label th:each="subCategory : ${subCategories.value}" th:data-type-1="${subCategories.key}" class="hidden">
-                    <input type="radio" th:id="subCategory" name="type-2" th:value="${subCategory.name}" class="radio radio-success">
+                    <input type="radio" th:id="subCategory" name="subCategory" th:value="${subCategory.name}" class="radio radio-success">
                     <span th:text="${subCategory.name}" class="text-gray-700"></span>
                 </label>
             </div>
