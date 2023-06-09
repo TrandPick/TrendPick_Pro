@@ -40,23 +40,23 @@
                 </div>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.count+'개'}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${order.count+'개'}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.formattedTotalPrice+'원'}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${order.formattedTotalPrice}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.orderStatus}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${order.orderStatus}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.deliveryStatus}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${order.deliveryStatus}"></span>
             </td>
             <td class="text-center">
                 <a th:href="@{|/trendpick/review/register/${order.productId}|}">
-                    등록
+                    리뷰달기
                 </a>
             </td>
         </tr>

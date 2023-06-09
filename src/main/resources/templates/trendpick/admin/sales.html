@@ -39,19 +39,19 @@
                 </div>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.count+'개'}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${order.count+'개'}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.formattedTotalPrice}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${order.formattedTotalPrice}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.orderStatus}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${order.orderStatus}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.deliveryStatus}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${order.deliveryStatus}"></span>
             </td>
         </tr>
         </tbody>
