@@ -34,15 +34,13 @@ public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
                 .select(new QProductListResponse(
                         product.id,
                         product.name,
-                        brand.name,
-                        commonFile.fileName,
+                        product.brand.name,
+                        product.file.fileName,
                         product.price
                 ))
                 .from(recommend)
                 .leftJoin(recommend.member, member)
                 .leftJoin(recommend.product, product)
-                .leftJoin(recommend.brand, brand)
-                .leftJoin(recommend.product.file, commonFile)
                 .where(recommend.member.username.eq(username))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -53,8 +51,6 @@ public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
                 .from(recommend)
                 .leftJoin(recommend.member, member)
                 .leftJoin(recommend.product, product)
-                .leftJoin(recommend.brand, brand)
-                .leftJoin(recommend.product.file, commonFile)
                 .where(recommend.member.username.eq(username));
 
         return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
