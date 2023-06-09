@@ -38,18 +38,29 @@
                 <div th:if="!${@rq.CheckAdminHtml()}" class="card-actions">
                     <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" method="post">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
-                        <input type="hidden" name="quantity" id="addToCartQuantity">
+                        <input type="hidden" name="quantity" value="1" min="1" />
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
-                    <form id="orderForm" th:action="@{/trendpick/orders/order/product}" method="POST">
+                    <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${ProductOptionForm}" method="POST">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
-                        <input type="hidden" name="quantity" value="quantity">
+                        <input type="hidden" id="productOptionQuantity" name="quantity" value="1" min="1" />
                         <button type="submit" class="btn btn-accent">Buy Now</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#quantity').on('input', function () {
+                var quantity = $(this).val();
+                $('#addToCartQuantity').val(quantity);
+                $('#productOptionQuantity').val(quantity); // assuming the second quantity field has id="productOptionQuantity"
+            });
+        });
+    </script>
+
 </main>
 </body>
 </html>
