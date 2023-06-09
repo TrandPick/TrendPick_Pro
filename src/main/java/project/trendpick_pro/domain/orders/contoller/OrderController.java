@@ -99,6 +99,23 @@ public class OrderController {
         return "trendpick/usr/member/orders";
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/list")
+    public String orderListBySeller(
+            @RequestParam(value = "page", defaultValue = "0") int offset,
+            Model model) {
+        Page<OrderResponse> orderList = orderService.findAllBySeller(rq.CheckAdmin().get(), offset);
+        int blockPage = 5;
+        int startPage = (offset / blockPage) * blockPage + 1;
+        int endPage = Math.min(startPage + blockPage - 1, orderList.getTotalPages());
+
+        model.addAttribute("orderList", orderList);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "trendpick/admin/orders";
+    }
+
     @PostMapping("/cancel/{orderId}")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
         orderService.cancel(orderId);

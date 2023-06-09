@@ -112,4 +112,8 @@ public class OrderService {
         return OrderDetailResponse.of(order, orderRepository.findOrderItemsByOrderId(orderId));
     }
 
+    public Page<OrderResponse> findAllBySeller(Member member, int offset) {
+        return orderRepository.findAllBySeller(
+                new OrderSearchCond(member.getBrand()), PageRequest.of(offset, 10));
+    }
 }

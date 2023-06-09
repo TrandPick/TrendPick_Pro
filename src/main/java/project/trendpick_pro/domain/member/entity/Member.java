@@ -32,6 +32,8 @@ public class Member {
     @Column(name = "role", nullable = false)
     private RoleType role;
 
+    private String brand;
+
     @OneToOne(mappedBy = "member")
     private Cart cart;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -49,6 +51,9 @@ public class Member {
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.role = role;
+    }
+    public void connectBrand(String brand){
+        this.brand = brand;
     }
 
     public void connectAddress(String address) {

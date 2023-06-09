@@ -10,4 +10,5 @@ import java.util.List;
 public interface OrderRepositoryCustom {
     public Page<OrderResponse> findAllByMember(OrderSearchCond orderSearchCond, Pageable pageable);
     public List<OrderResponse> findOrderItemsByOrderId(Long orderId);
+    Page<OrderResponse> findAllBySeller(OrderSearchCond orderSearchCond, Pageable pageable);
 }
