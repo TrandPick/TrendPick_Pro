@@ -9,11 +9,11 @@
     <table class="table">
         <thead>
         <tr>
-            <th class="text-center" scope="col">주문번호</th>
+            <th class="text-center" scope="col">판매번호</th>
             <th class="text-center" scope="col">상품정보</th>
-            <th class="text-center" scope="col">주문수량</th>
-            <th class="text-center" scope="col">주문금액</th>
-            <th class="text-center" scope="col">주문일시</th>
+            <th class="text-center" scope="col">판매수량</th>
+            <th class="text-center" scope="col">판매금액</th>
+            <th class="text-center" scope="col">판매일시</th>
             <th class="text-center" scope="col">주문상태</th>
             <th class="text-center" scope="col">배송상태</th>
         </tr>
@@ -42,7 +42,7 @@
                 <span class="badge badge-ghost badge-sm" th:text="${order.count+'개'}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${order.formattedTotalPrice+'원'}"></span>
+                <span class="badge badge-ghost badge-sm" th:text="${order.formattedTotalPrice}"></span>
             </td>
             <td class="text-center">
                 <span class="badge badge-ghost badge-sm" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>

@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>판매상품 관리</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .star-icon {
+            color: gray; /* 비어있는 별 아이콘의 색상 */
+        }
+
+        .filled {
+            color: red; /* 채워진 별 아이콘의 색상 */
+        }
+
+    </style>
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
     <body>
@@ -10,7 +21,7 @@
         <thead>
         <tr>
             <th class="text-center" scope="col">상품번호</th>
-            <th class="text-center" scope="col">상품정보</th>
+            <th class="text-center" scope="col">상품명</th>
             <th class="text-center" scope="col">상품금액</th>
             <th class="text-center" scope="col">상품재고</th>
             <th class="text-center" scope="col">판매개수</th>
@@ -31,9 +42,14 @@
                    th:text="${product.name}">
                 </a>
             </td>
+            <td class="text-center" th:text="${product.formattedPrice}"></td>
             <td class="text-center" th:text="${product.stock+'개'}"></td>
             <td class="text-center" th:text="${product.saleCount+'개'}"></td>
-            <td class="text-center" th:text="${product.rateAvg+'점'}"></td>
+            <td class="text-center">
+                <span style="margin-right: 5px;" class="mr-2" th:each="star : ${#numbers.sequence(1, 5)}"
+                      th:class="${star <= product.rateAvg} ? 'star-icon filled' : 'star-icon'"><i class="fa-solid fa-star"></i></span>
+                <span>(</span><span th:text="${product.rateAvg}"></span><span>)</span>
+            </td>
             <td class="text-center">
                 <a th:href="@{/trendpick/review/product/{productId}(productId=${product.id})}"
                    th:text="${product.reviewCount+'개'}">

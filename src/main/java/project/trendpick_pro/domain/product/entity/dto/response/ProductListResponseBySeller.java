@@ -4,9 +4,12 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductListResponseBySeller {
@@ -36,5 +39,10 @@ public class ProductListResponseBySeller {
         this.rateAvg = rateAvg;
         this.reviewCount = reviewCount;
         this.ask = ask;
+    }
+
+    public String getFormattedPrice(){
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
+        return numberFormat.format(getPrice())+"원";
     }
 }

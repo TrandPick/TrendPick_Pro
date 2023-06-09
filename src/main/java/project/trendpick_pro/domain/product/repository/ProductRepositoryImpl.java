@@ -135,7 +135,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 ))
                 .from(product)
                 .leftJoin(product.file, commonFile)
-                .leftJoin(ask.product, product)
                 .where(product.brand.name.eq(brand))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -146,7 +145,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .select(product.count())
                 .from(product)
                 .leftJoin(product.file, commonFile)
-                .leftJoin(ask.product, product)
                 .where(product.brand.name.eq(brand));
 
         return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);

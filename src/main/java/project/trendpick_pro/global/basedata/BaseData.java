@@ -119,6 +119,7 @@ public class BaseData {
                         .username("brand")
                         .phoneNumber("010-1234-1234")
                         .state("BRAND_ADMIN")
+                        .brand("나이키")
                         .build();
 
                 JoinForm member = JoinForm.builder()

@@ -222,7 +222,6 @@ public class ProductService {
     }
 
     public RsData<Page<ProductListResponseBySeller>> findProductsBySeller(Member member, int offset) {
-
         if (member.getBrand() == null)
             RsData.of("F-1", "브랜드 관리자의 브랜드를 알 수 없습니다. 브랜드를 설정하세요.");
 
