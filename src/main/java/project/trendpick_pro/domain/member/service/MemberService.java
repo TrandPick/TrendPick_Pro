@@ -6,17 +6,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.brand.service.BrandService;
-import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.dto.request.TagRequest;
-import project.trendpick_pro.domain.tags.tag.repository.TagRepository;
+import project.trendpick_pro.global.rsData.RsData;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -25,10 +28,9 @@ import java.util.*;
 public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
-
     private final MemberRepository memberRepository;
+
     private final BrandService brandService;
-    private final TagRepository tagRepository;
 
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
@@ -43,14 +45,14 @@ public class MemberService {
     }
 
     @Transactional
-    public void register(JoinForm joinForm) {
+    public RsData<Member> register(JoinForm joinForm) {
 
         if (memberRepository.findByEmail(joinForm.email()).isPresent()) {
-            throw new MemberAlreadyExistException("이미 존재하는 이름입니다.");
+            return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(joinForm.email()));
         }
 
-        RoleType roleType;
         String brand = "";
+        RoleType roleType;
         if (Objects.equals(joinForm.state(), RoleType.ADMIN.getValue())) {
             roleType = RoleType.ADMIN;
         } else if (joinForm.state().equals(RoleType.BRAND_ADMIN.getValue())) {
@@ -59,7 +61,6 @@ public class MemberService {
         } else {
             roleType = RoleType.MEMBER;
         }
-
         Member member = Member
                 .builder()
                 .email(joinForm.email())
@@ -81,7 +82,10 @@ public class MemberService {
             }
             member.changeTags(favoriteTags);
         }
+
         memberRepository.save(member);
+
+        return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
     }
 
     @Transactional
@@ -91,9 +95,6 @@ public class MemberService {
 
         Set<FavoriteTag> tags = new LinkedHashSet<>();
         for (String tag : tagRequest.getTags()) {
-            //기존에 선택했던 태그들에 대한 가중치를 마이너스 (만약 0점 이하로 떨어지면 삭제)
-//            Tag tag = tagRepository.findByName(s).orElseThrow();
-//            favoriteTag.connectMember(member);
             FavoriteTag favoriteTag = new FavoriteTag(tag);
             tags.add(favoriteTag);
         }
@@ -101,14 +102,14 @@ public class MemberService {
     }
 
     @Transactional
-    public void manageAddress(Member actor, String address){
-        Member member = memberRepository.findByUsername(actor.getUsername()).orElseThrow();
+    public RsData<Member> manageAddress(Member member, String address){
         member.connectAddress(address);
+        return RsData.of("S-1", "주소 수정이 완료되었습니다.", member);
     }
 
     @Transactional
-    public void manageAccount(Member actor, String bank_name, String account){
-        Member member = memberRepository.findByUsername(actor.getUsername()).orElseThrow();
+    public RsData<Member> manageAccount(Member member, String bank_name, String account){
         member.connectBank(bank_name, account);
+        return RsData.of("S-1", "계좌 수정이 완료되었습니다.", member);
     }
 }
