@@ -82,7 +82,7 @@ public class PaymentController {
             model.addAttribute("message", (String) jsonObject.get("message"));
         }
 
-        return "redirect:/trendpick/member/orders/list";
+        return "redirect:/trendpick/orders/usr/list";
     }
 
     @GetMapping(value = "/payment/fail")

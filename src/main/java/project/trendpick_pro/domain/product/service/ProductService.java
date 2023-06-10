@@ -41,6 +41,7 @@ import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.tag.service.TagService;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.io.File;
@@ -61,6 +62,7 @@ public class ProductService {
 
     private final FileTranslator fileTranslator;
     private final FavoriteTagService favoriteTagService;
+    private final TagService tagService;
 
     private final Rq rq;
 
@@ -126,6 +128,13 @@ public class ProductService {
             mainFile.connectFile(subFile);
         }
 
+        Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+        for (String tagName : productSaveRequest.getTags()) {
+            tags.add(new Tag(tagName));
+        }
+
+        tagService.delete(product.getTags());
+        product.modifyTag(tags);
         product.update(productSaveRequest, mainFile);
         return RsData.of("S-1", "상품 수정 완료되었습니다.", product.getId());
     }

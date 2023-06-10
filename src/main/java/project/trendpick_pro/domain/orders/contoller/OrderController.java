@@ -28,10 +28,7 @@ import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Slf4j
@@ -67,11 +64,12 @@ public class OrderController {
     @PostMapping("/order")
     public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
         Member member = rq.CheckMember().get();
-        if (member.getId() != orderForm.getMemberInfo().getMemberId())
+        if (!Objects.equals(member.getId(), orderForm.getMemberInfo().getMemberId()))
             throw new RuntimeException("잘못된 접근입니다.");
         orderService.order(member, orderForm);
-        return "redirect:/trendpick/orders/list";
+        return "redirect:/trendpick/orders/usr/list";
     }
+
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/cart")
     public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, RedirectAttributes redirect) {
@@ -88,7 +86,7 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("usr//list")
+    @GetMapping("usr/list")
     public String orderListByMember(
             @RequestParam(value = "page", defaultValue = "0") int offset,
             Model model) {

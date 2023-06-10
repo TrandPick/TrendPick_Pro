@@ -2,14 +2,20 @@
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Product Registration</title>
+    <title>상품 수정</title>
 </head>
 <body>
 
 <main layout:fragment="main" class="bg-white">
 
-    <script>
-        $(document).ready(function() {
+    <script th:inline="javascript">
+        /* 주의: Thymeleaf 문법으로 인해 실제 JavaScript에서 사용되는 상수와 다름 */
+        const mainCategoryName = /*[[${originProduct.mainCategory.name}]]*/ "식물";
+        const subCategoryName = /*[[${originProduct.subCategory.name}]]*/ "야채";
+
+        let brandName = /*[[${originProduct.brand.name}]]*/ "brand";
+
+        $(document).ready(function () {
             $(`input[name="mainCategory"]`).change(function () {
                 // 기존에 나오던 녀석을 숨긴다.
                 $(`[data-type-1]:not(.hidden)`).addClass("hidden");
@@ -19,15 +25,34 @@
                 // 기존에 체크된 녀석을 체크해제 한다.
                 $(`input[name="subCategory"]:checked`).prop("checked", false);
 
-                // 디폴트로 가장 첫번째 것을 체크한다.
-                $(`[data-type-1="${this.value}"] input[name="subCategory"]:first`).prop(
-                    "checked",
-                    true
-                );
+                if (
+                    subCategoryName !== undefined &&
+                    $(`[data-type-1="${this.value}"] input[name="subCategory"][value="${subCategoryName}"]`)
+                        .length > 0
+                ) {
+                    $(
+                        `[data-type-1="${this.value}"] input[name="subCategory"][value="${subCategoryName}"]`
+                    ).prop("checked", true);
+                } else {
+                    $(`[data-type-1="${this.value}"] input[name="subCategory"]:first`).prop(
+                        "checked",
+                        true
+                    );
+                }
             });
-            $(`input[name="mainCategory"]:first`).click();
+
+            // 페이지 로드 후 해당 메인 카테고리 클릭
+            $(`input[name="mainCategory"][value="${mainCategoryName}"]`).click();
         });
+
+        $(document).ready(function () {
+            $(`input[name="brand"]:checked`).prop("checked", false);
+            $(`input[name="brand"][value="${brandName}"]`).prop("checked", true);
+        });
+
     </script>
+
+
 
     <form id="productSaveRequest" th:action="@{/trendpick/products/edit/{productId}(productId=${productId})}" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data" class="m-4">
         <div class="mb-4">
@@ -37,44 +62,61 @@
 
         <div class="mb-4">
             <label for="description" class="block text-gray-700 font-bold mb-2">Description</label>
-            <textarea id="description" name="description" th:value="${originProduct.description}" required class="textarea-accent shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+            <textarea id="description" name="description" required class="textarea-accent shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" th:text="${originProduct.description}"></textarea>
         </div>
 
+        <!-- Main Category -->
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2">Main Category</label>
             <div class="grid grid-cols-3 space-x-1">
                 <div th:each="mainCategory, stat : ${mainCategories}" th:if="${mainCategory.name} != '추천'" class="space-x-1">
                     <label class="flex items-center" th:class="${stat.count % 3 == 0 ? 'col-start-1' : ''}">
-                        <input type="radio" th:id="mainCategory" name="mainCategory" th:value="${mainCategory.name}" class="radio radio-success">
+                        <input type="radio" th:id="mainCategory" name="mainCategory" th:value="${mainCategory.name}"
+                               th:checked="${mainCategory.name == originProduct.mainCategory.name ? 'checked' : ''}"
+                               class="radio radio-success">
                         <span th:text="${mainCategory.name}"></span>
                     </label>
                 </div>
             </div>
         </div>
 
+        <!-- Sub Category -->
         <div class="mb-4 gap-4">
             <label class="block text-gray-700 font-bold mb-2">Sub Category</label>
             <div th:each="subCategories, stat : ${subCategoriesList}">
                 <label th:each="subCategory : ${subCategories.value}" th:data-type-1="${subCategories.key}" class="hidden">
-                    <input type="radio" th:id="subCategory" name="subCategory" th:value="${subCategory.name}" class="radio radio-success">
+                    <input type="radio" th:id="subCategory" name="subCategory" th:value="${subCategory.name}"
+                           th:checked="${subCategory.name == originProduct.subCategory.name ? 'checked' : ''}"
+                           class="radio radio-success">
                     <span th:text="${subCategory.name}" class="text-gray-700"></span>
                 </label>
             </div>
         </div>
 
-        <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2">Brand</label>
-            <div th:each="brand : ${brands}">
-                <div>
-                    <input type="radio" id="brand" name="brand" th:value="${brand.name}" class="mr-2 leading-tight input-accent">
+
+        <label class="block text-gray-700 font-bold mb-2">Brand</label>
+        <div class="mb-4 gap-4 flex flex-wrap">
+            <div th:each="brand : ${brands}" class="flex items-center mr-4">
+                <label for="brand">
+                    <input type="radio" id="brand" name="brand" th:value="${brand.name}" th:checked="${brand.name == originProduct.brand.name ? 'checked' : ''}" class="radio radio-success">
                     <span th:text="${brand.name}" class="text-gray-700"></span>
-                </div>
+                </label>
             </div>
+        </div>
+
+        <div class="mb-4">
+            <img th:src="|/images/${originProduct.file.fileName}|" alt="Main Image" class="mb-2" style="width:400px; height:400px;">
         </div>
 
         <div class="mb-4">
             <label for="mainFile" class="block text-gray-700 font-bold mb-2">Main Image</label>
             <input type="file" id="mainFile" name="mainFile" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+        </div>
+
+        <div class="mb-4 flex flex-wrap">
+            <div th:each="imageUrl : ${originProduct.file.child}" class="mr-2 mb-2">
+                <img th:src="|/images/${imageUrl.fileName}|" alt="Sub Image" class="w-24 h-24">
+            </div>
         </div>
 
         <div class="mb-4">
@@ -89,13 +131,21 @@
 
         <div class="mb-4">
             <label for="stock" class="block text-gray-700 font-bold mb-2">Stock</label>
-            <input type="number" id="stock" name="stock" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+            <input type="number" id="stock" name="stock" th:value="${originProduct.stock}" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
         </div>
 
-        <div class="form-group">
-            <label class="block text-gray-700 font-bold mb-2">Tags</label>
+        <label class="block text-gray-700 font-bold mb-2">기존 Tags</label>
             <div class="grid grid-cols-5">
-                <div th:each="tag, iterStat : ${tags}" class="col-md-2">
+                <div th:each="tag, iterStat : ${originProduct.tags}" class="col-md-2">
+                    <input type="checkbox" th:value="${tag.name}" checked class="checkbox checkbox-success"/>
+                    <span th:text="${tag.name}" class="text-gray-700"></span>
+                    <th:block th:if="${iterStat.count % 5 == 0}"></th:block>
+                </div>
+            </div><br/><hr><br/>
+
+        <div class="form-group">
+            <div class="grid grid-cols-5">
+                <div th:each="tag, iterStat : ${tags}" th:if="${!#lists.contains(originProduct.tags, tag)}" class="col-md-2">
                     <input type="checkbox" name="tags" th:value="${tag.name}" class="checkbox checkbox-success"/>
                     <span th:text="${tag.name}" class="text-gray-700"></span>
                     <th:block th:if="${iterStat.count % 5 == 0}"><br/></th:block>

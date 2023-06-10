@@ -167,4 +167,15 @@ public class Product extends BaseTimeEntity {
             tag.connectProduct(this);
         }
     }
+
+    public void modifyTag(Set<Tag> tags){
+        for (Tag tag : this.tags) {
+            tag.disconnectProduct();
+        }
+
+        this.tags = tags;
+        for (Tag tag : tags) {
+            tag.connectProduct(this);
+        }
+    }
 }
