@@ -5,7 +5,9 @@ import net.minidev.json.parser.JSONParser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,11 +24,14 @@ public class PaymentController {
     @GetMapping(value = "/payment/success")
     public String paymentResult(
             Model model,
+            @ModelAttribute OrderForm orderForm,
             @RequestParam(value = "orderId") String orderId,
             @RequestParam(value = "amount") Integer amount,
             @RequestParam(value = "paymentKey") String paymentKey) throws Exception {
 
         String secretKey = "test_sk_4vZnjEJeQVxqjRyWaKOrPmOoBN0k";
+
+        System.out.println("orderForm = " + orderForm);
 
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encodedBytes = encoder.encode(secretKey.getBytes("UTF-8"));

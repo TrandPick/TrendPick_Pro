@@ -34,4 +34,14 @@ public class OrderItemDto {
     public int getTotalPrice(){
         return getPrice() * count;
     }
+
+    @Override
+    public String toString() {
+        return "OrderItemDto{" +
+                "productId=" + productId +
+                ", productName='" + productName + '\'' +
+                ", count=" + count +
+                ", price=" + price +
+                '}';
+    }
 }

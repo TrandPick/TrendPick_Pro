@@ -20,6 +20,7 @@ import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
+import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.Optional;
 
@@ -45,8 +46,13 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @PostMapping("/register")
     public String register(@ModelAttribute @Valid JoinForm joinForm) {
-        memberService.register(joinForm);
-        return "redirect:/trendpick/member/login";
+
+        RsData<Member> member = memberService.register(joinForm);
+        if (member.isFail()) {
+            return rq.historyBack(member);
+        }
+
+        return rq.redirectWithMsg("/trendpick/member/login", member);
     }
 
     @PreAuthorize("isAnonymous()")
@@ -55,86 +61,77 @@ public class MemberController {
         return "trendpick/usr/member/login";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/info")
     public String showMe(Model model) {
         Optional<Member> member = rq.CheckLogin();
-        Member actor = member.get();
-        model.addAttribute("MemberInfo", MemberInfoDto.of(actor));
+        model.addAttribute("MemberInfo", MemberInfoDto.of(member.get()));
         return "trendpick/usr/member/info";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/info/address")
     public String registerAddress(AddressForm addressForm, Model model) {
         model.addAttribute("addressForm", addressForm);
         return "trendpick/usr/member/address";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/info/address")
     public String manageAddress(@ModelAttribute @Valid AddressForm addressForm, Model model) {
-        Optional<Member> member = rq.CheckLogin();
-        Member actor = member.get();
-        memberService.manageAddress(actor, addressForm.address());
-        model.addAttribute("MemberInfo", MemberInfoDto.of(actor));
 
+        RsData<Member> member = memberService.manageAddress(rq.CheckLogin().get(), addressForm.address());
+        model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
 
-        return "redirect:/trendpick/member/info";
+        return rq.redirectWithMsg("/trendpick/member/info", member);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/edit/address")
     public String editAddress(AddressForm addressForm, Model model) {
         model.addAttribute("addressForm", addressForm);
         return "trendpick/usr/member/address";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/edit/address")
     public String updateAddress(@ModelAttribute @Valid AddressForm addressForm, Model model) {
-        Optional<Member> member = rq.CheckLogin();
-        Member actor = member.get();
-        memberService.manageAddress(actor, addressForm.address());
-        model.addAttribute("MemberInfo", MemberInfoDto.of(actor));
 
-        return "redirect:/trendpick/member/info";
+        RsData<Member> member = memberService.manageAddress(rq.CheckLogin().get(), addressForm.address());
+        model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
+
+        return rq.redirectWithMsg("/trendpick/member/info", member);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/info/account")
     public String registerAccount(AccountForm accountForm, Model model){
         model.addAttribute("accountForm", accountForm);
         return "trendpick/usr/member/account";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/info/account")
     public String manageAccount(@ModelAttribute @Valid AccountForm accountForm, Model model) {
-        Optional<Member> member = rq.CheckLogin();
-        Member actor = member.get();
-        memberService.manageAccount(actor, accountForm.bankName(), accountForm.bankAccount());
-        model.addAttribute("MemberInfo", MemberInfoDto.of(actor));
+        RsData<Member> member = memberService.manageAccount(rq.CheckLogin().get(), accountForm.bankName(), accountForm.bankAccount());
+        model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
 
-        return "redirect:/trendpick/member/info";
+        return rq.redirectWithMsg("/trendpick/member/info", member);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/edit/account")
     public String editAccount(AccountForm accountForm, Model model){
         model.addAttribute("accountForm", accountForm);
         return "trendpick/usr/member/account";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/edit/account")
     public String updateAccount(@ModelAttribute @Valid AccountForm accountForm, Model model) {
-        Optional<Member> member = rq.CheckLogin();
-        Member actor = member.get();
-        memberService.manageAccount(actor, accountForm.bankName(), accountForm.bankAccount());
-        model.addAttribute("MemberInfo", MemberInfoDto.of(actor));
+        RsData<Member> member = memberService.manageAccount(rq.CheckLogin().get(), accountForm.bankName(), accountForm.bankAccount());
+        model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
 
-        return "redirect:/trendpick/member/info";
+        return rq.redirectWithMsg("/trendpick/member/info", member);
     }
-
 }
