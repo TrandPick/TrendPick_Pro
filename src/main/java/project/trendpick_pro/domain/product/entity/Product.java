@@ -128,10 +128,10 @@ public class Product extends BaseTimeEntity {
         this.saleCount -= quantity;
     }
 
-    public void increaseSaleCount(){
+    public void increaseAskCount(){
         this.askCount += 1;
     }
-    public void decreaseSaleCount(){
+    public void decreaseAskCount(){
         this.askCount -= 1;
     }
 
