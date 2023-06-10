@@ -56,6 +56,7 @@ public class ReviewService {
 //    }
 
     public Page<ReviewProductResponse> getProductReviews(Long productId, Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), 6);
         return reviewRepository.findAllByProductId(productId, pageable);
     }
 

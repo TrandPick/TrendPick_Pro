@@ -1,7 +1,10 @@
 package project.trendpick_pro.domain.review.repository;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.QTuple;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.ListPath;
 import com.querydsl.core.types.dsl.PathInits;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -25,6 +28,7 @@ import project.trendpick_pro.domain.review.entity.dto.response.ReviewProductResp
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static project.trendpick_pro.domain.member.entity.QMember.member;
 import static project.trendpick_pro.domain.orders.entity.QOrder.order;
@@ -37,11 +41,12 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     private final QReview qReview = QReview.review;
+    private final QCommonFile qCommonFile = QCommonFile.commonFile;
+
 
     public ReviewRepositoryImpl(EntityManager entityManager) {
         this.queryFactory = new JPAQueryFactory(entityManager);
     }
-
     @Override
     public Page<ReviewProductResponse> findAllByProductId(Long productId, Pageable pageable) {
         List<ReviewProductResponse> reviewProductResponses = queryFactory
@@ -50,8 +55,10 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                         qReview.writer,
                         qReview.title,
                         qReview.content,
+                        qReview.file.fileName,
                         qReview.rating))
                 .from(qReview)
+                .join(qReview.file)
                 .where(qReview.product.id.eq(productId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -64,6 +71,29 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
         return new PageImpl<>(reviewProductResponses, pageable, totalCount);
     }
+
+//    @Override
+//    public Page<ReviewProductResponse> findAllByProductId(Long productId, Pageable pageable) {
+//        List<ReviewProductResponse> reviewProductResponses = queryFactory
+//                .select(Projections.constructor(ReviewProductResponse.class,
+//                        qReview.id,
+//                        qReview.writer,
+//                        qReview.title,
+//                        qReview.content,
+//                        qReview.rating))
+//                .from(qReview)
+//                .where(qReview.product.id.eq(productId))
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//        long totalCount = queryFactory
+//                .selectFrom(qReview)
+//                .where(qReview.product.id.eq(productId))
+//                .fetchCount();
+//
+//        return new PageImpl<>(reviewProductResponses, pageable, totalCount);
+//    }
 }
 //        long totalCount = queryFactory.selectFrom(qReview)
 //                .where(qReview.product.id.eq(productId))

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +25,8 @@ import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
+import project.trendpick_pro.domain.review.entity.dto.response.ReviewProductResponse;
+import project.trendpick_pro.domain.review.service.ReviewService;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
 import java.io.IOException;
@@ -45,6 +48,8 @@ public class ProductController {
 
     private final MainCategoryService mainCategoryService;
     private final SubCategoryService subCategoryService;
+
+    private final ReviewService reviewService;
 
     private final Rq rq;
 
@@ -115,10 +120,12 @@ public class ProductController {
 
     @PreAuthorize("permitAll()")
     @GetMapping("/{productId}")
-    public String showProduct(@PathVariable Long productId, ProductOptionForm productOptionForm, Model model) {
+    public String showProduct(@PathVariable Long productId, Pageable pageable, ProductOptionForm productOptionForm, Model model) {
         model.addAttribute("productResponse", productService.show(productId));
         model.addAttribute("ProductOptionForm", productOptionForm);
         model.addAttribute("productOptionForm", new ProductOptionForm());
+        Page<ReviewProductResponse> productReviews = reviewService.getProductReviews(productId, pageable);
+        model.addAttribute("productReview", productReviews);
         return "/trendpick/products/detailpage";
     }
 

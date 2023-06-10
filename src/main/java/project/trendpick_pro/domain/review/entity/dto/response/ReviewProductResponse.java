@@ -17,17 +17,20 @@ public class ReviewProductResponse {
     private Long id;
     private String writer;   //User
     private String title;
+
+    private String mainFile;
     private String content;
     private int rating;
 
     @Builder
     @QueryProjection
-    public ReviewProductResponse(Long id, String writer, String title, String content,
+    public ReviewProductResponse(Long id, String writer, String title, String content, String mainFile,
                                  int rating) {
         this.id = id;
         this.writer = writer;
         this.title = title;
         this.content = content;
+        this.mainFile = mainFile;
         this.rating = rating;
     }
 
@@ -37,6 +40,7 @@ public class ReviewProductResponse {
                 .writer(review.getWriter())
                 .title(review.getTitle())
                 .content(review.getContent())
+                .mainFile(review.getFile().getFileName())
                 .rating(review.getRating())
                 .build();
     }
