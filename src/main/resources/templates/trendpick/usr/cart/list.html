@@ -9,7 +9,7 @@
 <main layout:fragment="main">
     <div class="table-responsive">
     <table class="table">
-        <thead>
+        <thead class="thead-dark">
         <tr>
             <th class="text-center" scope="col"><input type="checkbox" id="selectAllCheckbox" checked></th>
             <th class="text-center" scope="col">번호</th>
@@ -67,32 +67,33 @@
             </td>
             <td class="text-center">
                 <a th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}"
-                    style="text-decoration: none">삭제</a>
+                   style="text-decoration: none; color: grey;">X</a>
             </td>
         </tr>
         </tbody>
     </table>
     </div>
-    <hr>
 
-    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center mt-3">
-        <div class="col">
-            <div class="card mb-4 rounded-3 shadow-sm">
-                <div class="card-header py-3">
-                    <h4 class="my-0 fw-normal">총 결제금액</h4>
-                </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class="text-center" scope="col" style="font-size: 20px;"> 총 주문금액</th>
+                </tr>
+                </thead>
+                <tbody>
                 <form th:action="@{/trendpick/orders/cart}" method="post" id="cartForm">
-                    <h4> </h4>
                     <input type="hidden" id="selectedItemsInput" name="selectedItems">
-
-                    <h4><span id="totalPrice">0 원</span></h4>
-                <button type="submit" class="w-100 btn btn-lg btn-outline-primary" onclick="submitCartForm(this.form)">구매하기</button>
+                    <td class="text-center">
+                        <br>
+                        <h4><span id="totalPrice" style="font-size: 24px; font-weight: bold;"> 0원</span></h4>
+                        <br>
+                        <button type="submit" class="btn btn-outline-dark btn-block" onclick="submitCartForm(this.form)">구매하기</button>
+                    </td>
                 </form>
-            </div>
+                </tbody>
+            </table>
         </div>
-    </div>
-
-
 
 <script>
     // 수량 변경 시 결제 금액 업데이트
@@ -131,41 +132,28 @@
         }
         var totalPriceElement = document.getElementById('totalPrice');
         if (totalPriceElement) {
-            totalPriceElement.innerText = totalPrice + ' 원';
+            totalPriceElement.innerText = totalPrice.toLocaleString() + ' 원';
         }
     }
 
     // 전체 선택 체크박스 클릭 시 모든 상품 체크박스 상태 변경 및 결제 금액 업데이트
     document.getElementById('selectAllCheckbox').addEventListener('click', function () {
         var checkboxes = document.getElementsByName('selectedItems');
-
+        var isChecked = this.checked;
         for (var i = 0; i < checkboxes.length; i++) {
-            checkboxes[i].checked = this.checked;
+            checkboxes[i].checked = isChecked;
+            updateTotalPrice(checkboxes[i]);
         }
-
         calculateTotalPrice();
     });
 
     // 개별 상품 체크박스 클릭 시 결제 금액 업데이트
     function updateTotalPrice(element) {
-        var price = parseInt(element.getAttribute('data-product-price'));
         calculateTotalPrice();
     }
 
     // 초기 결제 금액 계산
     calculateTotalPrice();
-
-    // 전체 선택 체크박스 클릭 시 모든 상품 체크박스 상태 변경
-    document.getElementById('selectAllCheckbox').addEventListener('click', function () {
-        var checkboxes = document.getElementsByName('selectedItems');
-        var isChecked = this.checked;
-
-        for (var i = 0; i < checkboxes.length; i++) {
-            checkboxes[i].checked = isChecked;
-        }
-        calculateTotalPrice();
-    });
-
 
     function submitCartForm(form) {
         var selectedItems = document.getElementsByName('selectedItems');

@@ -35,12 +35,14 @@ public class CartService {
     public List<CartItem> CartView(Member member, Cart cart) {
         List<CartItem> cartItems = cartItemRepository.findAll();
         List<CartItem> userItems = new ArrayList<>();
-        int totalCount=cart.getTotalCount();
+        int totalCount=0;
         // 장바구니가 비어있는 경우
         if (cart == null) {
+            totalCount=0;
             return userItems;
         }
         for (CartItem cartItem : cartItems) {
+            totalCount=cart.getTotalCount();
             if (cartItem.getCart().getId() == cart.getId()) {
                 userItems.add(cartItem);
                 totalCount+=cartItem.getQuantity();
