@@ -5,7 +5,7 @@
 </head>
 <body>
 <main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col" style="max-width:100%;">
-    <div class="overflow-auto">
+    <div >
         <div class="card bordered flex flex-col md:flex-row gap-4" style="height:800px">
             <figure class="flex-1 flex flex-col items-center">
                 <img th:src="|/images/${productResponse.mainFile}|" class="image-main object-cover" alt="Product Image"/>
@@ -49,8 +49,56 @@
                 </div>
             </div>
         </div>
+        <div class="mt-4">
+            <h1 class="text-xl">리뷰 보기</h1>
+            <table class="w-full mt-6" th:if="${productReview != null}">
+                <tr class="border-b border-t">
+                    <th class="text-center" scope="col">제목</th>
+                    <th scope="col">리뷰 이미지</th>
+                    <th class="text-center" scope="col">내용</th>
+                    <th class="text-center" scope="col">작성자</th>
+                    <th class="text-center" scope="col">별점</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="review : ${productReview}">
+                    <tr>
+                        <td class="text-center border-b">
+                            <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
+                                <h2 th:text="${review.title}"></h2>
+                            </a>
+                        </td>
+                        <td class="border-b">
+                            <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
+                                <img th:src="|/images/${review.mainFile}|" class="mx-auto"  style="width: 100px; height: 100px;"/>
+                            </a>
+                        </td>
+                        <td class="text-center border-b">
+                            <p th:text="${review.content}"></p>
+                        </td>
+                        <td class="text-center border-b">
+                            <p th:text="${review.writer}"></p>
+                        </td>
+                        <td class="text-center border-b">
+                            <span th:text="${review.rating}"></span>
+                        </td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4" th:if="${productReview.totalPages > 1}">
+            <div class="flex justify-center my-4">
+                <div class="btn-group">
+                    <a th:if="${productReview.hasPrevious()}" th:href="@{/trendpick/products/{productId}(page=${productReview.number-1}, productId=${productId})}">Previous</a>
+                    <span th:each="pageNumber : ${#numbers.sequence(0, productReview.totalPages-1)}" class="ml-4">
+                        <a th:href="@{/trendpick/products/{productId}(page=${pageNumber}, productId=${productId})}" th:text="${pageNumber+1}" th:class="${pageNumber == productReview.number ? 'current-page' : ''}"></a>
+                    </span>
+                    <a th:if="${productReview.hasNext()}" th:href="@{/trendpick/products/{productId}(page=${productReview.number+1}, productId=${productId})}" class="ml-4">Next</a>
+                </div>
+            </div>
+        </div>
     </div>
-
     <script>
         $(document).ready(function() {
             $('#quantity').on('input', function () {
