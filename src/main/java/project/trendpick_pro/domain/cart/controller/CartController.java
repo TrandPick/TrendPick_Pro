@@ -16,6 +16,7 @@ import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
+import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.List;
 
@@ -34,19 +35,9 @@ public class CartController {
     @GetMapping("/list")
     public String showCart( Model model) {
         Member member = rq.CheckMember().get();
-        Cart carts = cartService.getCartByUser(rq.CheckMember().get().getId());
-
-        List<CartItem> cartItems = cartService.CartView(member, carts);
-      /*
-        int totalPrice = 0;
-
-        for (CartItem cartItem : cartItems) {
-            totalPrice += (cartItem.getProduct().getPrice() * cartItem.getQuantity());
-        }
-         model.addAttribute("totalPrice", totalPrice);
-       */
+        Cart carts = cartService.getCartByUser(member.getId());
+        List<CartItem> cartItems = cartService.CartView(carts);
         model.addAttribute("cartItems", cartItems);
-
         return "/trendpick/usr/cart/list";
     }
 
@@ -54,7 +45,6 @@ public class CartController {
     @GetMapping("/add")
     public String addItemToCart(CartItemRequest cartItemRequests, Model model) {
         model.addAttribute("cartItemRequest", cartItemRequests);
-        // 쇼핑을 계속 하시겠습니까? 띄우고 yes이면 main no면 cart로
         return "/trendpick/usr/cart/add";
     }
 
@@ -62,22 +52,21 @@ public class CartController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/add")
     public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
-        CartItemResponse cartItemResponse = cartService.addItemToCart(rq.CheckMember().get(), cartItemRequests);
+        RsData<CartItemResponse> cartItemResponse = cartService.addItemToCart(rq.CheckMember().get(), cartItemRequests);
+       if(cartItemResponse.isFail()){
+           rq.redirectWithMsg("/trendpick/products/list?main-category=상의",cartItemResponse);
+       }
         model.addAttribute("cartItemResponse", cartItemResponse);
-        // System.out.println(cartItemRequests.getCount());
-        // System.out.println(cartItemRequests.getColor());
         // 쇼핑을 계속 하시겠습니까? 띄우고 yes이면 main no면 cart로
-        return "redirect:/trendpick/usr/cart/list";
+        return rq.redirectWithMsg("/trendpick/usr/cart/list", "상품이 추가되었습니다.");
     }
 
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("{memberId}/{cartItemId}")
-    public String removeItem(@PathVariable("memberId") Long memberId, @PathVariable("cartItemId") Long cartItemId) {
-        Member member = memberService.findByMember(memberId);
-        member.getCart().setTotalCount(member.getCart().getTotalCount() - 1);
+    @GetMapping("delete/{cartItemId}")
+    public String removeItem(@PathVariable("cartItemId") Long cartItemId) {
         cartService.removeItemFromCart(cartItemId);
-        return "redirect:/trendpick/usr/cart/list";
+        return rq.redirectWithMsg("/trendpick/usr/cart/list", "상품이 삭제되었습니다.");
     }
 
     // 장바구니에서 수량 변경
@@ -85,8 +74,10 @@ public class CartController {
     @PostMapping("/update")
     public String updateCount(@RequestParam("cartItemId") Long cartItemId,
                               @RequestParam("quantity") int newQuantity) {
-        Member member = rq.CheckMember().get();
-        cartService.updateItemCount(member,cartItemId, newQuantity);
+        RsData<CartItem> cartItems=  cartService.updateItemCount(cartItemId, newQuantity);
+        if(cartItems.isFail()){
+            rq.redirectWithMsg("/trendpick/usr/cart/list",cartItems);
+        }
         return "redirect:/trendpick/usr/cart/list";
     }
 }

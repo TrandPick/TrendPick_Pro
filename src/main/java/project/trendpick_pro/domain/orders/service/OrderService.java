@@ -73,7 +73,7 @@ public class OrderService {
             for (CartItem cartItem : cartItems) {
                 orderItemIds.add(cartItem.getId());
             }
-            cartService.deleteCartItemsByOrder(member, orderItemIds);
+            cartService.deleteCartItemsByOrder(orderItemIds);
         }
         Order order = Order.createOrder(member, delivery, OrderStatus.ORDERED, orderItemList, orderForm.getPaymentMethod());
         Order savedOrder = orderRepository.save(order);
