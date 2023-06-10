@@ -53,9 +53,6 @@ public class OrderService {
     @Transactional
     public RsData<Long> order(Member member, OrderForm orderForm) {
 
-        if(orderForm.getMemberInfo().getAddress().trim().length() == 0)
-            return RsData.of("F-1", "주소를 등록해주세요.");
-
         Delivery delivery = new Delivery(orderForm.getMemberInfo().getAddress());
         List<OrderItem> orderItemList = new ArrayList<>();
         Product product = null;
