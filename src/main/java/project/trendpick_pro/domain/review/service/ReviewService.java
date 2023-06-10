@@ -73,6 +73,7 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
+    @Transactional
     public ReviewResponse createReview(Member actor, Long productId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws Exception {
         Product product = productRepository.findById(productId).orElseThrow();
 
