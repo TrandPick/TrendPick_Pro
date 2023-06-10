@@ -32,4 +32,17 @@ public class MemberInfoDto {
 
     private String bankName;
     private String bankAccount;
+
+    @Override
+    public String toString() {
+        return "MemberInfoDto{" +
+                "memberId=" + memberId +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                ", bankName='" + bankName + '\'' +
+                ", bankAccount='" + bankAccount + '\'' +
+                '}';
+    }
 }

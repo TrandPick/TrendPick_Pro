@@ -19,6 +19,7 @@ import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.service.ReviewService;
+import project.trendpick_pro.global.rsData.RsData;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,11 +47,11 @@ public class ReviewController {
         Optional<Member> member = rq.CheckLogin();
         Member checkMember = member.get();
 
-        ReviewResponse reviewResponse = reviewService.createReview(checkMember, productId, reviewCreateRequest, mainFile, subFiles);
+        RsData<ReviewResponse> reviewResponse = reviewService.createReview(checkMember, productId, reviewCreateRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
-        return "redirect:/trendpick/review/list";
-
+//        return "redirect:/trendpick/review/list";
+        return rq.redirectWithMsg("/trendpick/review/list", reviewResponse);
     }
 
     @GetMapping("/{reviewId}")
@@ -64,11 +65,11 @@ public class ReviewController {
         return "/trendpick/review/detail";
     }
 
-    @GetMapping("/delete/{reviewId}")
+    @DeleteMapping("/delete/{reviewId}")
     public String deleteReview(@PathVariable Long reviewId) {
         reviewService.delete(reviewId);
 
-        return "redirect:/trendpick/review/list";
+        return rq.redirectWithMsg("/trendpick/review/list", "삭제가 완료되었습니다.");
     }
 
     @GetMapping("/edit/{reviewId}")
@@ -82,10 +83,11 @@ public class ReviewController {
     @PostMapping("/edit/{reviewId}")
     public String updateReview(@PathVariable Long reviewId, ReviewSaveRequest reviewSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
                                @RequestParam("subFiles") List<MultipartFile> subFiles, Model model) throws IOException {
-        ReviewResponse reviewResponse = reviewService.modify(reviewId, reviewSaveRequest, mainFile, subFiles);
+        RsData<ReviewResponse> reviewResponse = reviewService.modify(reviewId, reviewSaveRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
-        return "redirect:/trendpick/review/" + reviewId;
+//        return "redirect:/trendpick/review/" + reviewId;
+        return rq.redirectWithMsg("/trendpick/review/" + reviewId, reviewResponse);
     }
 
 

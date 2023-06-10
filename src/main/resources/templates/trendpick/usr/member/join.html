@@ -4,9 +4,7 @@
 </head>
 <body>
 <main layout:fragment="main" class="flex-grow flex items-center justify-center">
-
     <script>
-
         $(document).ready(function() {
             $('input[type=radio][name="state"]').change(function() {
                 if (this.value === 'BRAND_ADMIN') {
@@ -17,7 +15,9 @@
                 }
             });
         });
+    </script>
 
+    <script>
         function JoinForm__submit(form) {
 
             form.username.value = form.username.value.trim();
@@ -154,7 +154,6 @@
         </form>
         <a href="/trendpick/member/login" class="link link-accent float-right">이미 계정이 있나요?</a>
     </div>
-
 </main>
 </body>
 </html>

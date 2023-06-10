@@ -50,3 +50,9 @@ html > body .label-text {
 .number-div {
     width: 30px; /* Or whatever width you feel is appropriate */
 }
+
+.header, .main {
+    max-width: 1200px;  /* 최대 가로 너비 설정 */
+    width: 100%;  /* 가능한 한 넓게 설정 */
+    margin: 0 auto;  /* 페이지 중앙에 위치하도록 설정 */
+}

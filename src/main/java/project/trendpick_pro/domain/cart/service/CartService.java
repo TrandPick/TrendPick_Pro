@@ -35,7 +35,6 @@ public class CartService {
     public List<CartItem> CartView(Member member, Cart cart) {
         List<CartItem> cartItems = cartItemRepository.findAll();
         List<CartItem> userItems = new ArrayList<>();
-        int totalCount=cart.getTotalCount();
         // 장바구니가 비어있는 경우
         if (cart == null) {
             return userItems;
@@ -43,10 +42,8 @@ public class CartService {
         for (CartItem cartItem : cartItems) {
             if (cartItem.getCart().getId() == cart.getId()) {
                 userItems.add(cartItem);
-                totalCount+=cartItem.getQuantity();
             }
         }
-        cart.update(totalCount);
         return userItems;
     }
 
@@ -88,13 +85,7 @@ public class CartService {
     // 상품의 수량 업데이트
     @Transactional
     public void updateItemCount(Member member, Long cartItemId, int quantity) {
-        Cart cart = cartRepository.findByMemberId(member.getId());
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
-
-        // quantity값이 수량에 있는 값(input) 그대로 넘어옴
-        // 수량이 1로 들어오는 게 아닌 해당 상품의 수량 값이 오기 때문에
-        // 기존 해당 아이템의 수량값을 빼줌
-        cart.update(cart.getTotalCount() + (quantity - cartItem.getQuantity()));
         cartItem.update(quantity);
     }
 
@@ -124,13 +115,10 @@ public class CartService {
     @Transactional
     public void deleteCartItemsByOrder(Member member,List<Long> cartItemIdList) {
        Cart cart = cartRepository.findByMemberId(member.getId());
-       int quantity=0;
        for(long id: cartItemIdList){
            CartItem cartItem = cartItemRepository.findById(id).orElse(null);
-           quantity+= cartItem.getQuantity();
        }
        cartItemRepository.deleteAllByIdInBatch(cartItemIdList);
-       cart.update(cart.getTotalCount()-quantity);
     }
 }
 
