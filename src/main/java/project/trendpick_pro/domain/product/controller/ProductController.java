@@ -79,7 +79,7 @@ public class ProductController {
                            @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
         log.info("registerProduct: {}", productSaveRequest.toString());
         RsData<Long> id = productService.register(productSaveRequest, mainFile, subFiles);
-        return rq.redirectWithMsg("/trendpick/products/" + id.getData(), String.valueOf(id.getData()));
+        return rq.redirectWithMsg("/trendpick/products/" + id.getData(), id.getMsg());
     }
 
     @GetMapping("/edit/{productId}")
@@ -107,7 +107,7 @@ public class ProductController {
     public String modifyProduct(@PathVariable Long productId, @Valid ProductSaveRequest productSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
                                 @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
         RsData<Long> id = productService.modify(productId, productSaveRequest, mainFile, subFiles);
-        return rq.redirectWithMsg("/trendpick/products/" + id.getData(), String.valueOf(id.getData()));
+        return rq.redirectWithMsg("/trendpick/products/" + id.getData(), id.getMsg());
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
