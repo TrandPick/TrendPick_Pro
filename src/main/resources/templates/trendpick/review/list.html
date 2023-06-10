@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <div class="fixed bottom-2 left-0 w-full flex justify-center">
+    <div class="fixed bottom-2 left-0 w-full flex justify-center" th:if="${reviewResponses.totalPages > 1}">
         <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
         <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}" class="ml-4">
             <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponses.number == i ? 'current-page' : '' }"></a>
