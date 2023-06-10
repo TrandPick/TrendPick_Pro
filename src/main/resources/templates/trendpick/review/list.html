@@ -40,14 +40,22 @@
                         </p>
                     </a>
                 </div>
-                <a class="justify-center btn btn-accent btn-sm" th:if="${reviewResponse.writer == currentUser}"
-                   th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}"
-                   style="display: flex; justify-content: center; border-top: 1px solid #ccc;">수정하기</a>
+                <div class="flex justify-between">
+                    <a class="w-1/2 justify-center btn btn-accent btn-sm" th:if="${reviewResponse.writer == currentUser}"
+                       th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}"
+                       style="display: flex; justify-content: center; border-top: 1px solid #ccc;">수정하기</a>
+                    <a class="w-1/2 justify-center btn btn-accent btn-sm" href="javascript:;"
+                       onclick="if (confirm('정말로 삭제하시겠습니까?')) $(this).next().submit();">삭제하기</a>
+                    <form hidden th:action="|/trendpick/review/delete/${reviewResponse.id}|" method="post">
+                        <input type="hidden" name="_method" value="delete"/>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <div class="fixed bottom-2 left-0 w-full flex justify-center">
+    <div class="fixed bottom-2 left-0 w-full flex justify-center" th:if="${reviewResponses.totalPages > 1}">
         <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
         <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}" class="ml-4">
             <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponses.number == i ? 'current-page' : '' }"></a>

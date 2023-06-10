@@ -19,6 +19,7 @@ import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewProductResponse;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
+import project.trendpick_pro.global.rsData.RsData;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,20 +52,12 @@ public class ReviewService {
     }
 
 
-//    public Review findByAllProductId(Long id) {
-//        return reviewRepository.findAllByProductId(id);
-//    }
 
     public Page<ReviewProductResponse> getProductReviews(Long productId, Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), 6);
         return reviewRepository.findAllByProductId(productId, pageable);
     }
 
-//    public ReviewResponse productReview(Long productId) {
-//        Review review = reviewRepository.findAllByProductId(productId);
-//        if(review == null) return ReviewResponse.of("현재 리뷰가 0건입니다!");
-//        return ReviewResponse.of(review);
-//    }
 
 
     @Transactional
@@ -73,7 +66,7 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public ReviewResponse createReview(Member actor, Long productId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws Exception {
+    public RsData<ReviewResponse> createReview(Member actor, Long productId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws Exception {
         Product product = productRepository.findById(productId).orElseThrow();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
@@ -87,11 +80,11 @@ public class ReviewService {
         product.addReview(review.getRating()); //상품 리뷰수, 상품 평균 평점을 계산해서 저장
         reviewRepository.save(review);
 
-        return ReviewResponse.of(review);
+        return RsData.of("S-1", "리뷰 등록이 완료되었습니다.", ReviewResponse.of(review));
     }
 
     @Transactional
-    public ReviewResponse modify(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public RsData<ReviewResponse> modify(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
         CommonFile mainFile = review.getFile();
@@ -119,7 +112,7 @@ public class ReviewService {
 
         review.update(reviewSaveRequest, mainFile);
 
-        return ReviewResponse.of(review);
+        return RsData.of("S-1", "리뷰 수정이 완료되었습니다.", ReviewResponse.of(review));
     }
 
     @Transactional
