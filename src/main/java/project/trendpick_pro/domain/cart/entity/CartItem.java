@@ -2,8 +2,11 @@ package project.trendpick_pro.domain.cart.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.product.entity.Product;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -23,6 +26,14 @@ public class CartItem {
     private Product product;
 
     private int quantity; // 해당 상품 수량
+
+    @DateTimeFormat(pattern = "yyyy-mm-dd")
+    private LocalDate createDate;
+
+    @PrePersist // DB에 INSERT 되기 직전에 실행. 즉 DB에 값을 넣으면 자동으로 실행
+    public void createDate() {
+        this.createDate = LocalDate.now();
+    }
 
     @Builder
     public CartItem(Cart cart, Product product, int quantity) {

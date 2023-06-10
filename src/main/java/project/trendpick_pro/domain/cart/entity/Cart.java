@@ -43,36 +43,7 @@ public class Cart {
         this.member = member;
     }
 
-    // CartItem 추가
-    public void addItem(CartItem cartItem) {
-        cartItems.add(cartItem);
-        cartItem.setCart(this);
-       // updateTotalCountAndPrice();
+    public void update(int totalCount){
+        this.totalCount=totalCount;
     }
-
-    // CartItem 삭제
-    public void removeItem(Long cartItemId) {
-        CartItem cartItem = findCartItemById(cartItemId);
-        if (cartItem != null) {
-            cartItems.remove(cartItem);
-        }
-    }
-
-
-    // CartItem 수량 변경
-    public void updateItemCount(Long cartItemId, int quantity) {
-        CartItem cartItem = findCartItemById(cartItemId);
-        if (cartItem != null) {
-            cartItem.setQuantity(quantity);
-          //  updateTotalCountAndPrice();
-        }
-    }
-
-    private CartItem findCartItemById(Long cartItemId) {
-        return cartItems.stream()
-                .filter(item -> item.getId().equals(cartItemId))
-                .findFirst()
-                .orElse(null);
-    }
-
 }

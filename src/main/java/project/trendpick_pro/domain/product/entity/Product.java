@@ -75,8 +75,11 @@ public class Product extends BaseTimeEntity {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Recommend recommends;
 
-    public long reviewCount = 0;
-    public double rateAvg = 0;
+
+    private int reviewCount = 0;
+    private double rateAvg = 0;
+    private int saleCount = 0;
+    private int askCount = 0;
 
     @Builder
     public Product(String name, MainCategory mainCategory, SubCategory subCategory, Brand brand,
@@ -118,12 +121,28 @@ public class Product extends BaseTimeEntity {
         this.stock = restStock;
     }
 
+    public void increaseSaleCount(int quantity){
+        this.saleCount += quantity;
+    }
+    public void decreaseSaleCount(int quantity){
+        this.saleCount -= quantity;
+    }
+
+    public void increaseAskCount(){
+        this.askCount += 1;
+    }
+    public void decreaseAskCount(){
+        this.askCount -= 1;
+    }
+
     public void addReview(int rating){
         double total = getRateAvg() * getReviewCount() + rating;
 
         this.reviewCount++;
         this.rateAvg = Math.round(total / reviewCount * 10) / 10.0;
     }
+
+
 
     public void update(ProductSaveRequest request, CommonFile file) {
         this.name = request.getName();

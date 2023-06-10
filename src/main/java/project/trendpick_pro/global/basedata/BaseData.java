@@ -1,5 +1,4 @@
 package project.trendpick_pro.global.basedata;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -32,48 +31,35 @@ import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 @Configuration
 @Profile({"dev", "test"})
 public class BaseData {
-
     @Value("${file.path}")
     private String filePath;
-
     @Value("${tag}")
     private List<String> tags;
-
     @Value("${main-category}")
     private List<String> mainCategories;
-
     @Value("${top}")
     private List<String> tops;
-
     @Value("${outer}")
     private List<String> outers;
-
     @Value("${bottom}")
     private List<String> bottoms;
-
     @Value("${shoes}")
     private List<String> shoes;
-
     @Value("${bag}")
     private List<String> bags;
-
     @Value("${accessory}")
     private List<String> accessories;
-
     @Value("${brand}")
     private List<String> brands;
-
     @Bean
     CommandLineRunner initData(
             TagNameService tagNameService,
@@ -94,17 +80,13 @@ public class BaseData {
                 for (String tag : tags) {
                     tagNameService.save(tag);
                 }
-
                 for (String mainCategory : mainCategories) {
                     mainCategoryService.save(mainCategory);
                 }
-
                 CreateSubCategories(mainCategoryService, subCategoryService);
-
-                for (String brand : brands) {
-                    brandService.save(brand);
-                }
-
+//                for (String brand : brands) {
+//                    brandService.save(brand);
+//                }
                 JoinForm admin = JoinForm.builder()
                         .email("admin@naver.com")
                         .password("12345")
@@ -112,15 +94,30 @@ public class BaseData {
                         .phoneNumber("010-1234-1234")
                         .state("ADMIN")
                         .build();
-
-                JoinForm brand_admin = JoinForm.builder()
+                JoinForm brand_admin1 = JoinForm.builder()
                         .email("brand@naver.com")
                         .password("12345")
                         .username("brand")
                         .phoneNumber("010-1234-1234")
                         .state("BRAND_ADMIN")
+                        .brand("나이키")
                         .build();
-
+                JoinForm brand_admin2 = JoinForm.builder()
+                        .email("brand2@naver.com")
+                        .password("12345")
+                        .username("brand2")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .brand("아디다스")
+                        .build();
+                JoinForm brand_admin3 = JoinForm.builder()
+                        .email("brand3@naver.com")
+                        .password("12345")
+                        .username("brand3")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .brand("버버리")
+                        .build();
                 JoinForm member = JoinForm.builder()
                         .email("trendpick@naver.com")
                         .password("12345")
@@ -129,7 +126,6 @@ public class BaseData {
                         .state("MEMBER")
                         .tags(List.of("오버핏청바지", "로맨틱룩"))
                         .build();
-
                 JoinForm member2 = JoinForm.builder()
                         .email("hye_0000@naver.com")
                         .password("12345")
@@ -138,12 +134,12 @@ public class BaseData {
                         .state("MEMBER")
                         .tags(List.of("오버핏청바지", "로맨틱룩"))
                         .build();
-
                 memberService.register(admin);
-                memberService.register(brand_admin);
+                memberService.register(brand_admin1);
+                memberService.register(brand_admin2);
+                memberService.register(brand_admin3);
                 memberService.register(member);
                 memberService.register(member2);
-
                 //==상품데이터==//
                 for (int n = 1; n <= 10; n++) {
                     CommonFile mainFile = CommonFile.builder()
@@ -153,11 +149,9 @@ public class BaseData {
                     subFiles.add(CommonFile.builder()
                             .fileName("dev-jeans.png")
                             .build());
-
                     for (CommonFile subFile : subFiles) {
                         mainFile.connectFile(subFile);
                     }
-
                     Product product = Product
                             .builder()
                             .name("멋쟁이 티셔츠" + n)
@@ -181,64 +175,51 @@ public class BaseData {
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),  new CartItemRequest(1L,5));
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(2L,3));
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(3L,1));
-
                 //==주문데이터==//
                 Member findMember = memberService.findByEmail("hye_0000@naver.com").get();
                 MemberInfoDto memberInfo = new MemberInfoDto(findMember);
                 List<OrderItemDto> orderItems = new ArrayList<>();
-
                 orderItems.add(OrderItemDto.of(productRepository.findById(1L).get(), 5));
                 orderItems.add(OrderItemDto.of(productRepository.findById(2L).get(), 3));
                 orderItems.add(OrderItemDto.of(productRepository.findById(3L).get(), 2));
-
                 OrderForm orderForm = new OrderForm(memberInfo, orderItems);
                 orderForm.setPaymentMethod("신용카드");
                 orderservice.order(findMember, orderForm);
-
                 //==주문데이터2==//
                 Member findMember2 = memberService.findByEmail("trendpick@naver.com").get();
                 MemberInfoDto memberInfo2 = new MemberInfoDto(findMember2);
                 List<OrderItemDto> orderItems2 = new ArrayList<>();
-
                 orderItems2.add(OrderItemDto.of(productRepository.findById(1L).get(), 5));
                 orderItems2.add(OrderItemDto.of(productRepository.findById(2L).get(), 3));
                 orderItems2.add(OrderItemDto.of(productRepository.findById(3L).get(), 2));
-
                 OrderForm orderForm2 = new OrderForm(memberInfo2, orderItems2);
                 orderForm2.setPaymentMethod("신용카드");
                 orderservice.order(findMember2, orderForm2);
-
                 recommendService.select(member.email());
             }
         };
     }
-
     private void CreateSubCategories(MainCategoryService mainCategoryService, SubCategoryService subCategoryService) {
         for (String top : tops) {
             MainCategory mainCategory = mainCategoryService.findByName("상의");
             subCategoryService.save(top, mainCategory);
         }
-
         for (String outer : outers) {
             MainCategory mainCategory = mainCategoryService.findByName("아우터");
             subCategoryService.save(outer, mainCategory);
         }
-
         for (String bottom : bottoms) {
             MainCategory mainCategory = mainCategoryService.findByName("하의");
             subCategoryService.save(bottom, mainCategory);
         }
-
         for (String shoe : shoes) {
             MainCategory mainCategory = mainCategoryService.findByName("신발");
             subCategoryService.save(shoe, mainCategory);
         }
-
         for (String bag : bags) {
             MainCategory mainCategory = mainCategoryService.findByName("가방");
             subCategoryService.save(bag, mainCategory);
         }
-
         for (String accessory : accessories) {
             MainCategory mainCategory = mainCategoryService.findByName("악세서리");
             subCategoryService.save(accessory, mainCategory);

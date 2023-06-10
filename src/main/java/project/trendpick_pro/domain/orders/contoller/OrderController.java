@@ -25,6 +25,7 @@ import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.global.rsData.RsData;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class OrderController {
     private final Rq rq;
     private final MemberService memberService;
     private final ProductRepository productRepository;
-
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/order-form")
     public String orderForm(@ModelAttribute OrderForm orderForm,
                             HttpServletRequest req,
@@ -53,36 +54,41 @@ public class OrderController {
             orderForm = (OrderForm) flashMap.get("orderForm");
             model.addAttribute("orderForm", orderForm);
         }
+        int totalPrice = 0;
+        for (OrderItemDto item : orderForm.getOrderItems()) {
+            totalPrice += item.getPrice();
+        }
+        model.addAttribute("orderId", orderService.OrderSize());
         model.addAttribute("orderForm", orderForm);
+        model.addAttribute("SuperTotalPrice", totalPrice);
         return "trendpick/orders/order-form";
     }
-
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order")
     public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
         Member member = rq.CheckMember().get();
         if (member.getId() != orderForm.getMemberInfo().getMemberId())
             throw new RuntimeException("잘못된 접근입니다.");
-
         orderService.order(member, orderForm);
         return "redirect:/trendpick/orders/list";
     }
-
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/cart")
     public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, RedirectAttributes redirect) {
         redirect.addFlashAttribute("orderForm"
                 ,orderService.cartToOrder(rq.CheckMember().get(), selectedItems));
-
         return "redirect:/trendpick/orders/order-form";
     }
 
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/product")
     public String orderProduct(@ModelAttribute ProductOptionForm productOptionForm, RedirectAttributes redirect) {
         redirect.addFlashAttribute("orderForm", orderService.productToOrder(rq.CheckMember().get(), productOptionForm));
         return "redirect:/trendpick/orders/order-form";
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/list")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
+    @GetMapping("usr//list")
     public String orderListByMember(
             @RequestParam(value = "page", defaultValue = "0") int offset,
             Model model) {
@@ -90,17 +96,41 @@ public class OrderController {
         int blockPage = 5;
         int startPage = (offset / blockPage) * blockPage + 1;
         int endPage = Math.min(startPage + blockPage - 1, orderList.getTotalPages());
-
         model.addAttribute("orderList", orderList);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-
         return "trendpick/usr/member/orders";
     }
 
-    @PostMapping("/{orderId}/cancel")
+    @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
+    @GetMapping("admin/list")
+    public String orderListBySeller(
+            @RequestParam(value = "page", defaultValue = "0") int offset,
+            Model model) {
+        Page<OrderResponse> orderList = orderService.findAllBySeller(rq.CheckAdmin().get(), offset);
+        int blockPage = 5;
+        int startPage = (offset / blockPage) * blockPage + 1;
+        int endPage = Math.min(startPage + blockPage - 1, orderList.getTotalPages());
+        model.addAttribute("orderList", orderList);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        return "trendpick/admin/sales";
+    }
+
+    @PreAuthorize("hasAuthority({'MEMBER'})")
+    @PostMapping("/cancel/{orderId}")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
-        orderService.cancel(orderId);
-        return "redirect:trendpick/usr/member/orders";
+        RsData result = orderService.cancel(orderId);
+        if(result.isFail())
+            rq.historyBack(result);
+        return rq.redirectWithMsg("/trendpick/orders/admin/list", result);
+    }
+
+    @PreAuthorize("hasAuthority({'MEMBER'})")
+    @GetMapping("/{orderId}")
+    public String showOrder(@PathVariable("orderId") Long orderId, Model model){
+        model.addAttribute("order",
+                orderService.showOrderItems(rq.CheckMember().get(), orderId));
+        return "trendpick/orders/detail";
     }
 }

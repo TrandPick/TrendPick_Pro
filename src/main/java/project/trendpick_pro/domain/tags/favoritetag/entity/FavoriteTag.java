@@ -37,6 +37,7 @@ public class FavoriteTag {
         switch (type) {
             case ORDER -> score += 10;
             case CART -> score += 5;
+            case REGISTER -> score += 30;
             default -> score += 1;
         }
     }
