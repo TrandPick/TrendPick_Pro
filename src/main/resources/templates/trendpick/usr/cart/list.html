@@ -28,7 +28,7 @@
                        th:data-product-price="${item.getProduct().getPrice()}"
                        th:data-product-id="${item.getProduct().getId()}"
                        th:checked="${i.count == 1 ? 'checked' : ''}"
-                       onclick="updateTotalPrice()">
+                       onclick="updateTotalPrice(this)">
             <td class="text-center">
                 <span class="badge badge-ghost badge-sm" th:text="${i.count}">1</span>
             </td>

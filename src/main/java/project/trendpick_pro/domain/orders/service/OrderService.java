@@ -53,8 +53,9 @@ public class OrderService {
         Delivery delivery = new Delivery(orderForm.getMemberInfo().getAddress());
 
         List<OrderItem> orderItemList = new ArrayList<>();
+        Product product = null;
         for (OrderItemDto orderItemDto : orderForm.getOrderItems()) {
-            Product product = productRepository.findById(orderItemDto.getProductId()).orElseThrow(() ->  new ProductNotFoundException("존재하지 않는 상품 입니다."));
+            product = productRepository.findById(orderItemDto.getProductId()).orElseThrow(() ->  new ProductNotFoundException("존재하지 않는 상품 입니다."));
             if (product.getStock() < orderItemDto.getCount()) {
                 throw new ProductStockOutException(product.getName()+"의 재고가 부족합니다.");   // 임시. 나중에 사용자 exception 널을까말까 생각
             }
@@ -63,6 +64,15 @@ public class OrderService {
             orderItemList.add(OrderItem.of(product, orderItemDto));
         }
 
+        // 주문상품 장바구니에서 삭제
+        List<Long> orderItemIds = new ArrayList<>();
+        List<CartItem> cartItems=product.getCartItems();
+        if(!cartItems.isEmpty()) {
+            for (CartItem cartItem : cartItems) {
+                orderItemIds.add(cartItem.getId());
+            }
+            cartService.deleteCartItemsByOrder(member, orderItemIds);
+        }
         Order order = Order.createOrder(member, delivery, OrderStatus.ORDERED, orderItemList, orderForm.getPaymentMethod());
         orderRepository.save(order);
     }
@@ -84,12 +94,6 @@ public class OrderService {
                 throw new MemberNotMatchException("현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
         }
 
-        // 주문상품 장바구니에서 삭제
-        List<Long> orderItemIds = new ArrayList<>();
-        for (CartItem cartItem : cartItems) {
-            orderItemIds.add(cartItem.getId());
-        }
-        cartService.deleteCartItemsByOrder(member,orderItemIds);
         return new OrderForm(MemberInfoDto.of(member) ,convertToOrderItemDto(cartItems));
     }
 
