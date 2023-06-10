@@ -28,6 +28,7 @@ import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewProductResponse;
 import project.trendpick_pro.domain.review.service.ReviewService;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
+import project.trendpick_pro.global.rsData.RsData;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -77,8 +78,8 @@ public class ProductController {
                            @RequestParam("mainFile") MultipartFile mainFile,
                            @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
         log.info("registerProduct: {}", productSaveRequest.toString());
-        Long id = productService.register(productSaveRequest, mainFile, subFiles);
-        return "redirect:/trendpick/products/" + id;
+        RsData<Long> id = productService.register(productSaveRequest, mainFile, subFiles);
+        return rq.redirectWithMsg("/trendpick/products/" + id.getData(), String.valueOf(id.getData()));
     }
 
     @GetMapping("/edit/{productId}")
@@ -105,8 +106,8 @@ public class ProductController {
     @PostMapping("/edit/{productId}")
     public String modifyProduct(@PathVariable Long productId, @Valid ProductSaveRequest productSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
                                 @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
-        Long id = productService.modify(productId, productSaveRequest, mainFile, subFiles);
-        return "redirect:/trendpick/products/" + id;
+        RsData<Long> id = productService.modify(productId, productSaveRequest, mainFile, subFiles);
+        return rq.redirectWithMsg("/trendpick/products/" + id.getData(), String.valueOf(id.getData()));
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")

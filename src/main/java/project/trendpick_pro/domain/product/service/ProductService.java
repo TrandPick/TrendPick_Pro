@@ -72,7 +72,7 @@ public class ProductService {
     }
 
     @Transactional
-    public Long register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public RsData<Long> register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
         rq.CheckAdmin();
 
@@ -96,11 +96,11 @@ public class ProductService {
         product.addTag(tags);
 
         productRepository.save(product);
-        return product.getId();
+        return RsData.of("S-1", "상품 등록이 완료되었습니다.", product.getId());
     }
 
     @Transactional
-    public Long modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public RsData<Long> modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
         rq.CheckAdmin();
 
@@ -127,7 +127,7 @@ public class ProductService {
         }
 
         product.update(productSaveRequest, mainFile);
-        return product.getId();
+        return RsData.of("S-1", "상품 수정 완료되었습니다.", product.getId());
     }
 
     @Transactional
