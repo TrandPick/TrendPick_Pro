@@ -130,16 +130,42 @@
 
         paymentWidget.renderAgreement('#agreement')
 
+
         button.addEventListener("click", function () {
             event.preventDefault();
-            paymentWidget.requestPayment({
-                orderId: "1rcNIBAny7JdK4TtGVxbQ",            // 주문 ID(직접 만들어주세요)
-                orderName: product + " 외..",                 // 주문명
-                successUrl: "http://localhost:8080/payment/success",  // 결제에 성공하면 이동하는 페이지(직접 만들어주세요)
-                failUrl: "http://localhost:8080/payment/fail",        // 결제에 실패하면 이동하는 페이지(직접 만들어주세요)
+
+            let formData = new FormData(form);
+
+            let paymentData = {
+                orderId: "1rcNIBAny7JdK4TtGVxbQ",
+                orderName: product + " 외..",
+                successUrl: "http://localhost:8080/payment/success",
+                failUrl: "http://localhost:8080/payment/fail",
                 customerEmail: "hyeri0603@naver.com",
-                customerName: "이수호"
+                customerName: "이수호",
+                memberInfo: {
+                    memberId: formData.get('*{memberInfo.memberId}'),
+                    name: formData.get('*{memberInfo.name}'),
+                    email: formData.get('*{memberInfo.email}'),
+                    phone: formData.get('*{memberInfo.phone}'),
+                    address: formData.get('*{memberInfo.address}')
+                },
+                orderItems: formData.getAll('*{orderItems}'),
+                paymentMethod: formData.get('paymentMethod')
+            };
+
+            paymentWidget.requestPayment({
+                paymentData
             })
+
+            // paymentWidget.requestPayment({
+            //     orderId: "1rcNIBAny7JdK4TtGVxbQ",
+            //     orderName: product + " 외..",
+            //     successUrl: "http://localhost:8080/payment/success",
+            //     failUrl: "http://localhost:8080/payment/fail",
+            //     customerEmail: "hyeri0603@naver.com",
+            //     customerName: "이수호"
+            // })
         })
 
     </script>
