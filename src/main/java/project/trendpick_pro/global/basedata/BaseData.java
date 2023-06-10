@@ -183,6 +183,7 @@ public class BaseData {
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(3L,1));
 
                 //==주문데이터==//
+
                 Member findMember = memberService.findByEmail("hye_0000@naver.com").get();
                 MemberInfoDto memberInfo = new MemberInfoDto(findMember);
                 List<OrderItemDto> orderItems = new ArrayList<>();
@@ -209,6 +210,8 @@ public class BaseData {
                 orderservice.order(findMember2, orderForm2);
 
                 recommendService.select(member.email());
+
+
             }
         };
     }

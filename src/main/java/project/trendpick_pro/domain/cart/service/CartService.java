@@ -1,7 +1,6 @@
 package project.trendpick_pro.domain.cart.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.Cart;
@@ -11,7 +10,6 @@ import project.trendpick_pro.domain.cart.entity.dto.response.CartItemResponse;
 import project.trendpick_pro.domain.cart.repository.CartItemRepository;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
@@ -37,16 +35,18 @@ public class CartService {
     public List<CartItem> CartView(Member member, Cart cart) {
         List<CartItem> cartItems = cartItemRepository.findAll();
         List<CartItem> userItems = new ArrayList<>();
-
+        int totalCount=cart.getTotalCount();
         // 장바구니가 비어있는 경우
-        if(cart==null){
+        if (cart == null) {
             return userItems;
         }
         for (CartItem cartItem : cartItems) {
             if (cartItem.getCart().getId() == cart.getId()) {
                 userItems.add(cartItem);
+                totalCount+=cartItem.getQuantity();
             }
         }
+        cart.update(totalCount);
         return userItems;
     }
 
@@ -67,13 +67,14 @@ public class CartService {
 
         if (cartItem != null) {
             // 이미 카트에 해당 상품이 존재하는 경우, 수량을 증가
-            cartItem.addCount(cartItem.getQuantity());
+            cartItem.addCount(cartItemRequest.getQuantity());
+            cart.setTotalCount(cart.getTotalCount() + cartItemRequest.getQuantity());
         } else {
             // 카트에 해당 상품이 없는 경우, 새로운 카트 아이템을 생성하여 추가
             cartItem = CartItem.of(cart, product, cartItemRequest);
             cart.setTotalCount(cart.getTotalCount() + 1);
+            cartItemRepository.save(cartItem);
         }
-        cartItemRepository.save(cartItem);
         return CartItemResponse.of(cartItem);
     }
 
@@ -86,12 +87,15 @@ public class CartService {
 
     // 상품의 수량 업데이트
     @Transactional
-    public void updateItemCount(Member member,Long cartItemId, int quantity) {
-        Cart cart=member.getCart();
+    public void updateItemCount(Member member, Long cartItemId, int quantity) {
+        Cart cart = cartRepository.findByMemberId(member.getId());
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
-        cart.setTotalCount(cartItem.getQuantity()+quantity);
+
+        // quantity값이 수량에 있는 값(input) 그대로 넘어옴
+        // 수량이 1로 들어오는 게 아닌 해당 상품의 수량 값이 오기 때문에
+        // 기존 해당 아이템의 수량값을 빼줌
+        cart.update(cart.getTotalCount() + (quantity - cartItem.getQuantity()));
         cartItem.update(quantity);
-        cartItemRepository.save(cartItem);
     }
 
     public Cart getCartByUser(Long memberId) {
@@ -103,18 +107,30 @@ public class CartService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
     }
 
-    private Member CheckMember() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-        return member;
-    }
-
-    public List<CartItem> findCartItems(List<Long> cartItemIdList) {
+    public List<CartItem> findCartItems(Member member,List<Long> cartItemIdList)  {
+        Cart cart=getCartByUser(member.getId()); //현재 로그인되어 있는 cart 정보
         List<CartItem> cartItemList = new ArrayList<>();
+
         for (Long id : cartItemIdList) {
-            cartItemList.add(cartItemRepository.findById(id).
-                    orElseThrow(() -> new IllegalArgumentException("장바구니에 존재하지 않는 품목입니다.")));
+            for(CartItem item : cartItemRepository.findByProductId(id)) {
+                if(item.getCart().getId() == cart.getId()) {
+                    cartItemList.add(item);
+                }
+            }
         }
         return cartItemList;
     }
+
+    @Transactional
+    public void deleteCartItemsByOrder(Member member,List<Long> cartItemIdList) {
+       Cart cart = cartRepository.findByMemberId(member.getId());
+       int quantity=0;
+       for(long id: cartItemIdList){
+           CartItem cartItem = cartItemRepository.findById(id).orElse(null);
+           quantity+= cartItem.getQuantity();
+       }
+       cartItemRepository.deleteAllByIdInBatch(cartItemIdList);
+       cart.update(cart.getTotalCount()-quantity);
+    }
 }
+
