@@ -141,7 +141,8 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public String showOrder(@PathVariable("orderId") Long orderId, Model model){
         RsData<OrderDetailResponse> result = orderService.showOrderItems(rq.CheckMember().get(), orderId);
-        if(result.isFail()) rq.historyBack(result);
+        if(result.isFail())
+            return rq.historyBack(result);
 
         model.addAttribute("order",
                 result.getData());

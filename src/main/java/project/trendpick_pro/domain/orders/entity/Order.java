@@ -70,5 +70,9 @@ public class Order extends BaseTimeEntity {
 
     public void cancel() {
         this.status = OrderStatus.CANCELLED;
+        for (OrderItem orderItem : this.orderItems) {
+            orderItem.getProduct().decreaseSaleCount(orderItem.getCount());
+            orderItem.getProduct().addStock(orderItem.getCount());
+        }
     }
 }
