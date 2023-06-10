@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
@@ -26,6 +27,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final MemberRepository memberRepository;
+    private final BrandService brandService;
     private final TagRepository tagRepository;
 
     public Optional<Member> findByUsername(String username) {
@@ -48,10 +50,12 @@ public class MemberService {
         }
 
         RoleType roleType;
+        String brand = "";
         if (Objects.equals(joinForm.state(), RoleType.ADMIN.getValue())) {
             roleType = RoleType.ADMIN;
         } else if (joinForm.state().equals(RoleType.BRAND_ADMIN.getValue())) {
             roleType = RoleType.BRAND_ADMIN;
+            brand = joinForm.brand();
         } else {
             roleType = RoleType.MEMBER;
         }
@@ -64,18 +68,19 @@ public class MemberService {
                 .phoneNumber(joinForm.phoneNumber())
                 .role(roleType)
                 .build();
+        member.connectBrand(brand);
+
+        if(brand.length() != 0)
+            brandService.save(brand);
 
         if (joinForm.tags() != null) {
             Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();
             for (String tag : joinForm.tags()) {
-//            Tag findTag = tagRepository.findByName(tag).orElseThrow();
-//            favoriteTag.connectMember(member);
                 FavoriteTag favoriteTag = new FavoriteTag(tag);
                 favoriteTags.add(favoriteTag);
             }
             member.changeTags(favoriteTags);
         }
-
         memberRepository.save(member);
     }
 

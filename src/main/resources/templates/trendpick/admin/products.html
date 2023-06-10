@@ -17,6 +17,7 @@
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
     <body>
+    <h1 class="text-center text-5xl font-bold mb-6">판매상품 관리</h1>
     <table class="table">
         <thead>
         <tr>
@@ -28,6 +29,7 @@
             <th class="text-center" scope="col">상품평점</th>
             <th class="text-center" scope="col">상품리뷰</th>
             <th class="text-center" scope="col">문의내역</th>
+            <th class="text-center" scope="col">관리</th>
         </tr>
         </thead>
         <tbody>
@@ -60,11 +62,17 @@
                    th:text="${product.ask+'개'}">
                 </a>
             </td>
+            <td class="text-center">
+                <div>
+                    <a class="edit-link" th:href="@{/trendpick/products/edit/{productId}(productId=${product.id})}">수정</a>
+                    /
+                    <a class="delete-link" th:href="@{/trendpick/products/cancel/{productId}(productId=${product.id})}">삭제</a>
+                </div>
+            </td>
         </tr>
         </tbody>
     </table>
-
-    <div class="flex justify-center my-4" th:if="products != null">
+    <div class="flex justify-center my-4" th:if="${products != null and not #lists.isEmpty(products.content)}">
         <div class="btn-group">
             <a th:if="${products.hasPrevious()}" th:href="@{/trendpick/products/admin/list(page=${products.number - 1})}" class="btn">Previous</a>
             <span th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}">

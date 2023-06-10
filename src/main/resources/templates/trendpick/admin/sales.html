@@ -6,6 +6,7 @@
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
     <body>
+    <h1 class="text-center text-5xl font-bold mb-6">판매내역</h1>
     <table class="table">
         <thead>
         <tr>
@@ -57,7 +58,7 @@
         </tbody>
     </table>
 
-    <div class="flex justify-center my-4" th:if="orderList != null">
+    <div class="flex justify-center my-4" th:if="${orderList != null and not #lists.isEmpty(orderList.content)}">
         <div class="btn-group">
             <a th:if="${orderList.hasPrevious()}" th:href="@{/trendpick/orders/admin/list(page=${orderList.number - 1})}" class="btn">Previous</a>
             <span th:each="i : ${#numbers.sequence(0, orderList.totalPages - 1)}">

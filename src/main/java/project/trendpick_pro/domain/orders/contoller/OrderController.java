@@ -19,14 +19,12 @@ import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.global.rsData.RsData;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -84,7 +82,7 @@ public class OrderController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("usr//list")
+    @GetMapping("/list")
     public String orderListByMember(
             @RequestParam(value = "page", defaultValue = "0") int offset,
             Model model) {
@@ -100,37 +98,9 @@ public class OrderController {
         return "trendpick/usr/member/orders";
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("admin/list")
-    public String orderListBySeller(
-            @RequestParam(value = "page", defaultValue = "0") int offset,
-            Model model) {
-        Page<OrderResponse> orderList = orderService.findAllBySeller(rq.CheckAdmin().get(), offset);
-        int blockPage = 5;
-        int startPage = (offset / blockPage) * blockPage + 1;
-        int endPage = Math.min(startPage + blockPage - 1, orderList.getTotalPages());
-
-        model.addAttribute("orderList", orderList);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-
-        return "trendpick/admin/orders";
-    }
-
-    @PostMapping("/cancel/{orderId}")
+    @PostMapping("/{orderId}/cancel")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
-        RsData result = orderService.cancel(orderId);
-
-        if(result.isFail())
-            rq.historyBack(result);
-
-        return rq.redirectWithMsg("/trendpick/orders/admin/list", result);
-    }
-
-    @GetMapping("/{orderId}")
-    public String showOrder(@PathVariable("orderId") Long orderId, Model model){
-        model.addAttribute("order",
-                orderService.showOrderItems(rq.CheckMember().get(), orderId));
-        return "trendpick/orders/detail";
+        orderService.cancel(orderId);
+        return "redirect:trendpick/usr/member/orders";
     }
 }

@@ -14,7 +14,6 @@ import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
@@ -31,7 +30,6 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
-import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +45,7 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final FavoriteTagService favoriteTagService;
+
     @Transactional
     public void order(Member member, OrderForm orderForm) {
 
@@ -68,14 +67,9 @@ public class OrderService {
     }
 
     @Transactional
-    public RsData cancel(Long orderId) {
+    public void cancel(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 주문입니다."));
-        if(order.getStatus() == OrderStatus.CANCELLED)
-            return RsData.of("F-1", "이미 취소된 주문입니다.");
-
         order.cancel();
-
-        return RsData.of("S-1", "환불 요청이 정상적으로 진행되었습니다.");
     }
 
     public Page<OrderResponse> findAllByMember(Member member, int offset) {
@@ -106,20 +100,5 @@ public class OrderService {
         List<OrderItemDto> orderItemDtoList = new ArrayList<>();
         orderItemDtoList.add(OrderItemDto.of(product, productOptionForm.getQuantity()));
         return new OrderForm(MemberInfoDto.of(member), orderItemDtoList);
-    }
-
-    public OrderDetailResponse showOrderItems(Member member, Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new IllegalArgumentException("잘못된 주문번호입니다."));
-
-        if (order.getMember().getId() != member.getId())
-            throw new IllegalArgumentException("다른 사용자의 주문에는 접근할 수 없습니다.");
-
-        return OrderDetailResponse.of(order, orderRepository.findOrderItemsByOrderId(orderId));
-    }
-
-    public Page<OrderResponse> findAllBySeller(Member member, int offset) {
-        return orderRepository.findAllBySeller(
-                new OrderSearchCond(member.getBrand()), PageRequest.of(offset, 10));
     }
 }

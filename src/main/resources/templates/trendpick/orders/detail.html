@@ -5,7 +5,7 @@
     <title>주문 상세</title>
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
-    <h1>주문상품 정보</h1>
+    <h1>주문상세</h1>
     <div class="border p-4 mb-4">
         <table class="table">
             <thead>
@@ -38,14 +38,16 @@
                 <td class="text-center" th:text="${order.paymentMethod}"></td>
             </tr>
             <tr>
-                <th scope="row">총 주문금액</th>
+                <th scope="row">총 결제금액</th>
                 <td class="text-center" th:text="${order.formattedPaymentPrice}"></td>
             </tr>
             </tbody>
         </table>
     </div>
     <form th:action="@{|/trendpick/orders/cancel/${order.orderId}/|}" method="post">
-        <button type="submit" class="w-100 btn btn-lg btn-outline-primary">환불</button>
+        <button id="payment-button" class="btn btn-natural btn-lg"
+                type="submit" class="w-100 btn btn-lg btn-outline-primary">환불
+        </button>
     </form>
 </main>
 </html>

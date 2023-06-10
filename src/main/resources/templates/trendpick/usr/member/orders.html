@@ -6,6 +6,7 @@
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
     <body>
+    <h1 class="text-center text-5xl font-bold mb-6">나의 주문목록</h1>
     <table class="table">
         <thead>
         <tr>
@@ -33,8 +34,13 @@
                             <img th:src="|/images/${order.productFilePath}|" width="100" height="100"/>
                         </div>
                     </div>
+
                     <div>
-                        <div class="font-bold" th:text="${order.productName}"></div>
+                        <div class="font-bold" th:text="${order.productName}">
+                            <a th:href="@{/trendpick/products/{productId}(productId=${order.productId})}"
+                               th:text="${order.productName}">
+                            </a>
+                        </div>
                         <div class="text-sm opacity-50" th:text="${order.brandName}"></div>
                     </div>
                 </div>
