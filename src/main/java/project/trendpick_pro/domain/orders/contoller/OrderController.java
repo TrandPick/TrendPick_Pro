@@ -43,7 +43,7 @@ public class OrderController {
     private final Rq rq;
     private final MemberService memberService;
     private final ProductRepository productRepository;
-
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/order-form")
     public String orderForm(@ModelAttribute OrderForm orderForm,
                             HttpServletRequest req,
@@ -56,7 +56,7 @@ public class OrderController {
         model.addAttribute("orderForm", orderForm);
         return "trendpick/orders/order-form";
     }
-
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order")
     public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
         Member member = rq.CheckMember().get();
@@ -66,7 +66,7 @@ public class OrderController {
         orderService.order(member, orderForm);
         return "redirect:/trendpick/orders/list";
     }
-
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/cart")
     public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, RedirectAttributes redirect) {
         redirect.addFlashAttribute("orderForm"
@@ -74,14 +74,14 @@ public class OrderController {
 
         return "redirect:/trendpick/orders/order-form";
     }
-
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/product")
     public String orderProduct(@ModelAttribute ProductOptionForm productOptionForm, RedirectAttributes redirect) {
         redirect.addFlashAttribute("orderForm", orderService.productToOrder(rq.CheckMember().get(), productOptionForm));
         return "redirect:/trendpick/orders/order-form";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/list")
     public String orderListByMember(
             @RequestParam(value = "page", defaultValue = "0") int offset,
@@ -97,7 +97,7 @@ public class OrderController {
 
         return "trendpick/usr/member/orders";
     }
-
+    @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/{orderId}/cancel")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
         orderService.cancel(orderId);
