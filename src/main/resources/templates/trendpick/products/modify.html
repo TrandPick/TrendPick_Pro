@@ -51,18 +51,94 @@
         });
 
     </script>
+    <script>
+        function ProductSaveRequest__submit(form) {
+            form.name.value = form.name.value.trim();
+
+            if (form.name.value.length === 0) {
+                toastWarning('상품명을 입력해주세요.');
+                form.name.focus();
+                return;
+            }
+
+            form.description.value = form.description.value.trim();
+
+            if (form.description.value.length === 0) {
+                toastWarning('내용을 입력해주세요.');
+                form.description.focus();
+                return;
+            }
+
+            const brandInputs = form.querySelectorAll('input[name="brand"]');
+            let isBrandChecked = false;
+            for (let i = 0; i < brandInputs.length; i++) {
+                if (brandInputs[i].checked) {
+                    isBrandChecked = true;
+                    break;
+                }
+            }
+
+            if (!isBrandChecked) {
+                toastWarning('브랜드를 체크해주세요');
+                return;
+            }
+
+            if (form.mainFile.files.length === 0) {
+                toastWarning('파일을 선택해주세요.');
+                return;
+            }
+
+            if (form.subFiles.files.length === 0) {
+                toastWarning('파일을 선택해주세요.');
+                return;
+            }
+
+            form.price.value = form.price.value.trim();
+
+            if (form.price.value.length === 0) {
+                toastWarning('가격을 입력해주세요.');
+                form.price.focus();
+                return;
+            }
+
+            form.stock.value = form.stock.value.trim();
+
+            if (form.stock.value.length === 0) {
+                toastWarning('재고를 입력해주세요.');
+                form.stock.focus();
+                return;
+            }
+
+            const tagInputs = form.querySelectorAll('input[name="tags"]');
+            let isTagsChecked = false;
+            for (let i = 0; i < tagInputs.length; i++) {
+                if (tagInputs[i].checked) {
+                    isTagsChecked = true;
+                    break;
+                }
+            }
+
+            if (!isTagsChecked) {
+                toastWarning('태그를 선택해주세요');
+                return;
+            }
+
+            form.submit(); // 폼 발송
+        }
+    </script>
 
 
 
-    <form id="productSaveRequest" th:action="@{/trendpick/products/edit/{productId}(productId=${productId})}" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data" class="m-4">
+    <form id="productSaveRequest" th:action="@{/trendpick/products/edit/{productId}(productId=${productId})}" th:object="${productSaveRequest}"
+          method="post" enctype="multipart/form-data" class="m-4" onsubmit="ProductSaveRequest__submit(this); return false;">
         <div class="mb-4">
             <label for="name" class="block text-gray-700 font-bold mb-2">Title</label>
-            <input type="text" id="name" name="name" th:value="${originProduct.name}" required class="shadow input-accent appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <input type="text" id="name" name="name" th:value="${originProduct.name}" class="shadow input-accent appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
 
         <div class="mb-4">
             <label for="description" class="block text-gray-700 font-bold mb-2">Description</label>
-            <textarea id="description" name="description" required class="textarea-accent shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" th:text="${originProduct.description}"></textarea>
+            <textarea id="description" name="description" class="textarea-accent shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" th:text="${originProduct.description}"></textarea>
         </div>
 
         <!-- Main Category -->
@@ -110,7 +186,7 @@
 
         <div class="mb-4">
             <label for="mainFile" class="block text-gray-700 font-bold mb-2">Main Image</label>
-            <input type="file" id="mainFile" name="mainFile" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+            <input type="file" id="mainFile" name="mainFile" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
         </div>
 
         <div class="mb-4 flex flex-wrap">
@@ -121,17 +197,17 @@
 
         <div class="mb-4">
             <label for="subFiles" class="block text-gray-700 font-bold mb-2">Sub Images</label>
-            <input type="file" id="subFiles" name="subFiles" multiple="multiple" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+            <input type="file" id="subFiles" name="subFiles" multiple="multiple" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
         </div>
 
         <div class="mb-4">
             <label for="price" class="block text-gray-700 font-bold mb-2">Price</label>
-            <input type="number" id="price" name="price" th:value="${originProduct.price}" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+            <input type="number" id="price" name="price" th:value="${originProduct.price}" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
         </div>
 
         <div class="mb-4">
             <label for="stock" class="block text-gray-700 font-bold mb-2">Stock</label>
-            <input type="number" id="stock" name="stock" th:value="${originProduct.stock}" required class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+            <input type="number" id="stock" name="stock" th:value="${originProduct.stock}" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
         </div>
 
         <label class="block text-gray-700 font-bold mb-2">기존 Tags</label>
@@ -153,7 +229,7 @@
             </div>
         </div>
 
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Update Product</button>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Update Product</button>
     </form>
 </main>
 </body>
