@@ -34,10 +34,11 @@ public class UserSecurityService implements UserDetailsService {
             throw new MemberNotFoundException("사용자를 찾을수 없습니다.");
         }
         Member siteUser = member.get();
+        RoleType role = member.get().getRole();
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if ("admin".equals(siteUser.getUsername().substring(0,5))) {
+        if (role.equals(RoleType.ADMIN)) {
             authorities.add(new SimpleGrantedAuthority(RoleType.ADMIN.getValue()));
-        } else if ("brand". equals(siteUser.getUsername().substring(0,5))) {
+        } else if (role.equals(RoleType.BRAND_ADMIN)) {
             authorities.add(new SimpleGrantedAuthority(RoleType.BRAND_ADMIN.getValue()));
         } else {
             authorities.add(new SimpleGrantedAuthority(RoleType.MEMBER.getValue()));
