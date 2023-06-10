@@ -129,6 +129,10 @@ public class Rq {
         return checkMember.getRole().equals(RoleType.BRAND_ADMIN);
     }
 
+    public String getBrandName(){
+        return CheckLogin().get().getBrand();
+    }
+
     public Boolean CheckMemberHtml() {
         Member checkMember = CheckLogin().get();
         return checkMember.getRole().equals(RoleType.MEMBER);
