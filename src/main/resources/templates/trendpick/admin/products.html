@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>판매상품 관리</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .star-icon {
+            color: gray; /* 비어있는 별 아이콘의 색상 */
+        }
+
+        .filled {
+            color: red; /* 채워진 별 아이콘의 색상 */
+        }
+
+    </style>
+</head>
+<main class="min-h-screen flex flex-col" layout:fragment="main">
+    <body>
+    <h1 class="text-center text-5xl font-bold mb-6">판매상품 관리</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="text-center" scope="col">상품번호</th>
+            <th class="text-center" scope="col">상품명</th>
+            <th class="text-center" scope="col">상품금액</th>
+            <th class="text-center" scope="col">상품재고</th>
+            <th class="text-center" scope="col">판매개수</th>
+            <th class="text-center" scope="col">상품평점</th>
+            <th class="text-center" scope="col">상품리뷰</th>
+            <th class="text-center" scope="col">문의내역</th>
+            <th class="text-center" scope="col">관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product, loop : ${products}">
+            <td class="text-center">
+                <a th:href="@{/trendpick/products/{productId}(productId=${product.id})}"
+                   th:text="${products.number * 10 + loop.count}">
+                </a>
+            </td>
+            <td class="text-center">
+                <a th:href="@{/trendpick/products/{productId}(productId=${product.id})}"
+                   th:text="${product.name}">
+                </a>
+            </td>
+            <td class="text-center" th:text="${product.formattedPrice}"></td>
+            <td class="text-center" th:text="${product.stock+'개'}"></td>
+            <td class="text-center" th:text="${product.saleCount+'개'}"></td>
+            <td class="text-center">
+                <span style="margin-right: 5px;" class="mr-2" th:each="star : ${#numbers.sequence(1, 5)}"
+                      th:class="${star <= product.rateAvg} ? 'star-icon filled' : 'star-icon'"><i class="fa-solid fa-star"></i></span>
+                <span>(</span><span th:text="${product.rateAvg}"></span><span>)</span>
+            </td>
+            <td class="text-center">
+                <a th:href="@{/trendpick/review/product/{productId}(productId=${product.id})}"
+                   th:text="${product.reviewCount+'개'}">
+                </a>
+            </td>
+            <td class="text-center">
+                <a th:href="@{/trendpick/customerservice/asks/product/{productId}(productId=${product.id})}"
+                   th:text="${product.ask+'개'}">
+                </a>
+            </td>
+            <td class="text-center">
+                <div>
+                    <a class="edit-link" th:href="@{/trendpick/products/edit/{productId}(productId=${product.id})}">수정</a>
+                    /
+                    <a class="delete-link" th:href="@{/trendpick/products/cancel/{productId}(productId=${product.id})}">삭제</a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="flex justify-center my-4" th:if="${products != null and not #lists.isEmpty(products.content)}">
+        <div class="btn-group">
+            <a th:if="${products.hasPrevious()}" th:href="@{/trendpick/products/admin/list(page=${products.number - 1})}" class="btn">Previous</a>
+            <span th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}">
+            <a th:href="@{/trendpick/products/admin/list(page=${i})}" th:text="${i+1}" th:class="${products.number == i ? 'btn btn-active' : 'btn'}"></a>
+        </span>
+            <a th:if="${products.hasNext()}" th:href="@{/trendpick/products/admin/list(page=${products.number + 1})}" class="btn">Next</a>
+        </div>
+    </div>
+    </body>
+</main>
+</html>

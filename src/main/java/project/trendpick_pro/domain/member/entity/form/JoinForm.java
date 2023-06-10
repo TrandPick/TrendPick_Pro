@@ -12,5 +12,6 @@ public record JoinForm(@NotBlank(message = "email을 입력해주세요.") Strin
                        @NotBlank(message = "이름을 입력해주세요.") String username,
                        @NotBlank(message = "휴대폰 번호를 입력해주세요.") String phoneNumber,
                        @NotBlank(message = "권한을 입력해주세요.") String state,
-                       List<String> tags) {
+                       List<String> tags,
+                       String brand){
 }

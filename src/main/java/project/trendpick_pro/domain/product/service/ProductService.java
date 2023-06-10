@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
@@ -39,6 +41,7 @@ import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.global.rsData.RsData;
 
 import java.io.File;
 import java.io.IOException;
@@ -216,5 +219,13 @@ public class ProductService {
             ));
         }
         return products;
+    }
+
+    public RsData<Page<ProductListResponseBySeller>> findProductsBySeller(Member member, int offset) {
+        if (member.getBrand() == null)
+            RsData.of("F-1", "브랜드 관리자의 브랜드를 알 수 없습니다. 브랜드를 설정하세요.");
+
+        Pageable pageable = PageRequest.of(offset, 20);
+        return RsData.of("S-1", "성공", productRepository.findAllBySeller(member.getBrand(), pageable));
     }
 }

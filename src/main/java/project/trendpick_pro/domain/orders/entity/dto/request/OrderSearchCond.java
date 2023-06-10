@@ -8,8 +8,15 @@ import lombok.NoArgsConstructor;
 public class OrderSearchCond {
 
     private Long memberId;
+    private String brand;
 
     public OrderSearchCond(Long memberId) {
         this.memberId = memberId;
     }
+
+    public OrderSearchCond(String brand){
+        this.brand = brand;
+    }
+
+
 }

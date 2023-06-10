@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
+import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -32,6 +33,8 @@ public class Member {
     @Column(name = "role", nullable = false)
     private RoleType role;
 
+    private String brand;
+
     @OneToOne(mappedBy = "member")
     private Cart cart;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -50,6 +53,9 @@ public class Member {
         this.phoneNumber = phoneNumber;
         this.role = role;
     }
+    public void connectBrand(String brand){
+        this.brand = brand;
+    }
 
     public void connectAddress(String address) {
         this.address = address;
@@ -62,8 +68,10 @@ public class Member {
 
     public void changeTags(Set<FavoriteTag> tags) {
         this.tags = tags;
-        for(FavoriteTag tag : tags)
+        for(FavoriteTag tag : tags){
             tag.connectMember(this);
+            tag.increaseScore(TagType.REGISTER);
+        }
     }
 
     //양방향 메서드

@@ -121,8 +121,17 @@ public class Rq {
     }
 
     public Boolean CheckAdminHtml() {
+        return !CheckMemberHtml();
+    }
+
+    public Boolean CheckBrandAdminHtml() {
         Member checkMember = CheckLogin().get();
-        return !checkMember.getRole().equals(RoleType.MEMBER);
+        return checkMember.getRole().equals(RoleType.BRAND_ADMIN);
+    }
+
+    public Boolean CheckMemberHtml() {
+        Member checkMember = CheckLogin().get();
+        return checkMember.getRole().equals(RoleType.MEMBER);
     }
 
     public Optional<Member> CheckMember() {
