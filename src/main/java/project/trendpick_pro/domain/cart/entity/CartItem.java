@@ -54,5 +54,6 @@ public class CartItem {
 
     public void update(int quantity){
         this.quantity=quantity;
+        this.cart.updateTotalCount();
     }
 }

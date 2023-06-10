@@ -107,6 +107,7 @@
         quantityInput.value = quantity;
         calculateTotalPrice();
         form.submit();
+        updateTotalCount();
     }
 
     function updateInputValue(input) {
@@ -167,6 +168,22 @@
         document.getElementById('selectedItemsInput').value =  selectedIds.join(",");
         document.getElementById('cartForm').submit();
         form.submit();
+    }
+
+    // 총 주문 수량 업데이트
+    function updateTotalCount() {
+        var checkboxes = document.getElementsByName('selectedItems');
+        var totalCount = 0;
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                var quantityInput = checkboxes[i].parentNode.parentNode.querySelector('.quantity_input');
+                var quantity = parseInt(quantityInput.value);
+                totalCount += quantity;
+            }
+        }
+        // 총 주문 수량 업데이트
+        document.getElementById('totalCount').innerText = totalCount;
     }
 </script>
 </main>

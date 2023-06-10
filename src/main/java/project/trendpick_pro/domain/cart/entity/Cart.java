@@ -46,4 +46,13 @@ public class Cart {
     public void update(int totalCount){
         this.totalCount=totalCount;
     }
+
+
+    public void updateTotalCount() {
+        int totalCount = 0;
+        for (CartItem cartItem : cartItems) {
+            totalCount += cartItem.getQuantity();
+        }
+        setTotalCount(totalCount);
+    }
 }
