@@ -50,6 +50,7 @@ public class OrderItem {
 
     public void cancel() {
         this.product.addStock(count);
+        this.product.decreaseSaleCount(count);
     }
 
     public int getTotalPrice() {

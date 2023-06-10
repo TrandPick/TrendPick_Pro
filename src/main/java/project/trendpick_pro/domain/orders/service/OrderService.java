@@ -12,6 +12,7 @@ import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
+import project.trendpick_pro.domain.delivery.entity.DeliveryState;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
@@ -84,8 +85,16 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 주문입니다."));
         if(order.getStatus() == OrderStatus.CANCELLED)
             return RsData.of("F-1", "이미 취소된 주문입니다.");
+
+        if (order.getDelivery().getState() != DeliveryState.COMPLETED) {
+            throw new IllegalStateException("이미 배송완료된 상품은 취소가 불가능합니다.");
+        }
+
+        if (order.getDelivery().getState() != DeliveryState.COMPLETED) {
+            throw new IllegalStateException("이미 배송을 시작하여 취소가 불가능합니다.");
+        }
         order.cancel();
-        return RsData.of("S-1", "환불 요청이 정상적으로 진행되었습니다.");
+        return RsData.of("S-1", "환불 요청이 정상적으로 진행되었습니다. 환불까지는 최소 2일에서 최대 14일까지 소요될 수 있습니다.");
     }
 
     public Page<OrderResponse> findAllByMember(Member member, int offset) {
