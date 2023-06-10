@@ -43,7 +43,7 @@ public class Cart {
         this.member = member;
     }
 
-    public void totalCountUpdate(int totalCount){
+    public void update(int totalCount){
         this.totalCount=totalCount;
     }
 }

@@ -35,7 +35,7 @@ public class CartService {
     public List<CartItem> CartView(Member member, Cart cart) {
         List<CartItem> cartItems = cartItemRepository.findAll();
         List<CartItem> userItems = new ArrayList<>();
-
+        int totalCount=cart.getTotalCount();
         // 장바구니가 비어있는 경우
         if (cart == null) {
             return userItems;
@@ -43,8 +43,10 @@ public class CartService {
         for (CartItem cartItem : cartItems) {
             if (cartItem.getCart().getId() == cart.getId()) {
                 userItems.add(cartItem);
+                totalCount+=cartItem.getQuantity();
             }
         }
+        cart.update(totalCount);
         return userItems;
     }
 
@@ -92,7 +94,7 @@ public class CartService {
         // quantity값이 수량에 있는 값(input) 그대로 넘어옴
         // 수량이 1로 들어오는 게 아닌 해당 상품의 수량 값이 오기 때문에
         // 기존 해당 아이템의 수량값을 빼줌
-        cart.setTotalCount(cart.getTotalCount() + (quantity - cartItem.getQuantity()));
+        cart.update(cart.getTotalCount() + (quantity - cartItem.getQuantity()));
         cartItem.update(quantity);
     }
 
@@ -128,7 +130,7 @@ public class CartService {
            quantity+= cartItem.getQuantity();
        }
        cartItemRepository.deleteAllByIdInBatch(cartItemIdList);
-       cart.totalCountUpdate(cart.getTotalCount()-quantity);
+       cart.update(cart.getTotalCount()-quantity);
     }
 }
 
