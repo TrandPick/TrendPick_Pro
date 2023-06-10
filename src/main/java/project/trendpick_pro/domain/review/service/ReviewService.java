@@ -16,6 +16,7 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
+import project.trendpick_pro.domain.review.entity.dto.response.ReviewProductResponse;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
 
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @Service
@@ -43,9 +45,25 @@ public class ReviewService {
         return ReviewResponse.of(review);
     }
 
+
     public Review findById(Long id) {
         return reviewRepository.findById(id).orElseThrow();
     }
+
+
+//    public Review findByAllProductId(Long id) {
+//        return reviewRepository.findAllByProductId(id);
+//    }
+
+    public Page<ReviewProductResponse> getProductReviews(Long productId, Pageable pageable) {
+        return reviewRepository.findAllByProductId(productId, pageable);
+    }
+
+//    public ReviewResponse productReview(Long productId) {
+//        Review review = reviewRepository.findAllByProductId(productId);
+//        if(review == null) return ReviewResponse.of("현재 리뷰가 0건입니다!");
+//        return ReviewResponse.of(review);
+//    }
 
 
     @Transactional
@@ -116,10 +134,4 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findByWriter(writer, pageable);
         return reviewPage.map(ReviewResponse::of);
     }
-
-//    public Page<ReviewResponse> showAll(int offset) {
-//        Pageable pageable = PageRequest.of(offset, 20);
-//        Page<Review> reviews = reviewRepository.findAllByPage(pageable);
-//        return reviews.map(ReviewResponse::of);
-//    }
 }

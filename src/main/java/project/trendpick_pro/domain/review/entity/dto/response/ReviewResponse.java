@@ -54,6 +54,11 @@ public class ReviewResponse {
                 .rating(review.getRating())
                 .build();
     }
+    public static ReviewResponse of(String msg) {
+        return ReviewResponse.builder()
+                .content(msg)
+                .build();
+    }
 
     private static List<String> subFiles(List<CommonFile> subFiles) {
         List<String> tmpList = new ArrayList<>();
