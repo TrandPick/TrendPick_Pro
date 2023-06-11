@@ -48,15 +48,8 @@
             }
 
             const brandInputs = form.querySelectorAll('input[name="brand"]');
-            let isBrandChecked = false;
-            for (let i = 0; i < brandInputs.length; i++) {
-                if (brandInputs[i].checked) {
-                    isBrandChecked = true;
-                    break;
-                }
-            }
 
-            if (!isBrandChecked) {
+            if (brandInputs.value.length === 0) {
                 toastWarning('브랜드를 체크해주세요');
                 return;
             }
@@ -140,14 +133,11 @@
         </div>
 
         <label class="block text-gray-700 font-bold mb-2">Brand</label>
-        <div class="mb-4 gap-4 flex flex-wrap">
-
-            <div th:each="brand : ${brands}" class="flex items-center mr-4">
-                <label for="brand">
-                    <input type="radio" id="brand" name="brand" th:value="${brand.name}" class="radio radio-success">
-                    <span th:text="${brand.name}" class="text-gray-700"></span>
-                </label>
-            </div>
+        <div>
+            <label for="brand">
+                <input type="radio" id="brand" name="brand" th:value="${brands.name}" class="radio radio-success" checked="checked">
+                <span th:text="${brands.name}" class="text-gray-700"></span>
+            </label>
         </div>
 
         <div class="mb-4">
