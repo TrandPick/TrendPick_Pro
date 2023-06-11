@@ -6,12 +6,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.annotation.RequestScope;
 import project.trendpick_pro.domain.answer.entity.form.AnswerForm;
 import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
 import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 import project.trendpick_pro.domain.ask.service.AskService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.global.rsData.RsData;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,8 +24,8 @@ public class AskController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/register")
-    public String registerForm(@ModelAttribute AskForm askForm, Model model) {
-        askForm.setProductId(1L);
+    public String registerForm(@RequestParam("product") Long productId, AskForm askForm, Model model) {
+        askForm.setProductId(productId);
         model.addAttribute("askForm", askForm);
         return "trendpick/customerservice/asks/register";
     }
@@ -31,8 +33,11 @@ public class AskController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/register")
     public String registerAsk(@Valid AskForm askForm) {
-        AskResponse askResponse = askService.register(rq.CheckMember().get(), askForm);
-        return "redirect:/trendpick/customerservice/asks/%s".formatted(askResponse.getAskId());
+        RsData<Long> result = askService.register(rq.CheckMember().get(), askForm);
+        if(result.isFail())
+            return rq.redirectWithMsg("/trendpick/products/%s".formatted(askForm.getProductId()), result);
+
+        return rq.redirectWithMsg("/trendpick/products/%s".formatted(result.getData()), result);
     }
 
     @GetMapping("/{askId}")

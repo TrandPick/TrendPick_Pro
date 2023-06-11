@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
+import project.trendpick_pro.domain.ask.service.AskService;
 import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.category.entity.dto.response.MainCategoryResponse;
 import project.trendpick_pro.domain.category.entity.dto.response.SubCategoryResponse;
@@ -51,6 +53,7 @@ public class ProductController {
     private final SubCategoryService subCategoryService;
 
     private final ReviewService reviewService;
+    private final AskService askService;
 
     private final Rq rq;
 
@@ -126,7 +129,9 @@ public class ProductController {
         model.addAttribute("ProductOptionForm", productOptionForm);
         model.addAttribute("productOptionForm", new ProductOptionForm());
         Page<ReviewProductResponse> productReviews = reviewService.getProductReviews(productId, pageable);
+        Page<AskResponse> productAsk = askService.showAsksByProduct(productId, 0);
         model.addAttribute("productReview", productReviews);
+        model.addAttribute("productAsk", productAsk);
         return "/trendpick/products/detailpage";
     }
 

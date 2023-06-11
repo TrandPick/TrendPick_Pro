@@ -74,7 +74,10 @@
                     <a class="edit-link"
                        th:href="@{/trendpick/products/edit/{productId}(productId=${product.id})}">수정</a>
                     /
-                    <a class="delete-link" th:href="@{/trendpick/products/cancel/{productId}(productId=${product.id})}">삭제</a>
+                    <a href="javascript:;" onclick="if ( confirm('정말로 삭제하시겠습니까?') ) $(this).next().submit();" class="delete-link">삭제</a>
+                    <form hidden th:action="|/trendpick/products/${product.id}|" method="post">
+                        <input type="hidden" name="_method" value="delete"/>
+                    </form>
                 </div>
             </td>
         </tr>

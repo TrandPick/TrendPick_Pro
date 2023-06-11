@@ -111,6 +111,54 @@
                 </div>
             </div>
         </div>
+
+        <div class="mt-4">
+            <h1 class="text-xl">QnA 상품문의</h1>
+            <div class="flex justify-end">
+                <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-primary btn-sm">문의하기</a>
+
+            </div>
+            <table class="w-full mt-6" th:if="${productAsk != null}">
+                <tr class="border-b border-t">
+                    <th class="text-center" scope="col">번호</th>
+                    <th scope="col">답변여부</th>
+                    <th class="text-center" scope="col">제목</th>
+                    <th class="text-center" scope="col">작성자</th>
+                    <th class="text-center" scope="col">문의일자</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="ask, loop : ${productAsk}">
+                    <tr>
+                        <td class="text-center border-b">
+                            <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
+                               th:text="${productAsk.number * 10 + loop.count}">
+                            </a>
+                        </td>
+                        <td class="text-center border-b">
+                            <div th:if="${ask.status} == 'YET'">
+                                <p>답변예정</p>
+                            </div>
+                            <div th:unless="${ask.status} == 'YET'">
+                                <p>답변완료</p>
+                            </div>
+                        </td>
+                        <td class="text-center border-b">
+                            <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
+                               th:text="${ask.title}">
+                            </a>
+                        </td>
+                        <td class="text-center border-b">
+                            <p th:text="${ask.memberName}"></p>
+                        </td>
+                        <td class="text-center border-b">
+                            <span th:text="${#temporals.format(ask.createdDate, 'YY/MM/dd')}"></span>
+                        </td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
     </div>
     <script>
         $(document).ready(function() {
