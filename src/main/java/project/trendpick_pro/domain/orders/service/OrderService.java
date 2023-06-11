@@ -53,6 +53,8 @@ public class OrderService {
     @Transactional
     public RsData<Long> order(Member member, OrderForm orderForm) {
 
+        if(orderForm.getMemberInfo().getAddress().trim().length() == 0)
+            return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
         Delivery delivery = new Delivery(orderForm.getMemberInfo().getAddress());
         List<OrderItem> orderItemList = new ArrayList<>();
         Product product = null;
@@ -121,6 +123,7 @@ public class OrderService {
 
     private List<OrderItemDto> convertToOrderItemDto(List<CartItem> cartItems) {
         List<OrderItemDto> orderItemDtoList = new ArrayList<>();
+
         for (CartItem cartItem : cartItems) {
             orderItemDtoList.add(OrderItemDto.of(cartItem.getProduct(), cartItem.getQuantity()));
         }

@@ -6,6 +6,9 @@ import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.product.entity.Product;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,7 +35,12 @@ public class OrderItemDto {
     }
 
     public int getTotalPrice(){
-        return price * count;
+        return this.price * this.count;
+    }
+
+    public String getFormattedTotalPrice(){
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
+        return numberFormat.format(getTotalPrice())+"원";
     }
 
     @Override
