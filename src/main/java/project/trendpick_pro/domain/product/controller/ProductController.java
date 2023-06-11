@@ -126,6 +126,7 @@ public class ProductController {
         model.addAttribute("ProductOptionForm", productOptionForm);
         model.addAttribute("productOptionForm", new ProductOptionForm());
         Page<ReviewProductResponse> productReviews = reviewService.getProductReviews(productId, pageable);
+
         model.addAttribute("productReview", productReviews);
         return "/trendpick/products/detailpage";
     }
