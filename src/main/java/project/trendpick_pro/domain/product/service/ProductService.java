@@ -111,14 +111,14 @@ public class ProductService {
         CommonFile mainFile = product.getFile();
         List<CommonFile> subFiles = product.getFile().getChild();
 
-        if(requestMainFile!=null){
+        if (requestMainFile != null) {
             FileUtils.delete(new File(mainFile.getFileName()));
         }
 
         mainFile = fileTranslator.translateFile(requestMainFile);
 
-        if(requestSubFiles!=null){
-            for(CommonFile subFile:subFiles){
+        if (requestSubFiles != null) {
+            for (CommonFile subFile : subFiles) {
                 FileUtils.delete(new File(subFile.getFileName()));
             }
         }
@@ -149,16 +149,20 @@ public class ProductService {
 
     public ProductResponse show(Long productId) {
 
-        try {
-            Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
-            Member checkMember = rq.CheckMember().get();
-            favoriteTagService.updateTag(checkMember, product, TagType.SHOW);
-            return ProductResponse.of(filePath, product, checkMember.getRole().getValue());
+        Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
+
+        if(rq.checkLogin()){
+            updateFavoriteTag(product);
         }
-        catch(MemberNotMatchException | MemberNotFoundException e) {
-            Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
-            return ProductResponse.of(filePath, product);
-        }
+
+        return ProductResponse.of(filePath, product);
+    }
+
+    private void updateFavoriteTag(Product product) {
+        Member member = rq.GetMember();
+
+        if(member.getRole().equals(RoleType.MEMBER))
+            favoriteTagService.updateTag(member, product, TagType.SHOW);
     }
 
     public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory) { //, Integer sortCode
@@ -183,7 +187,7 @@ public class ProductService {
         return products.map(this::convertToProductListResponse);
     }
 
-    public List<Product> getRecommendProduct(Member member){
+    public List<Product> getRecommendProduct(Member member) {
 
         List<ProductByRecommended> tags = productRepository.findRecommendProduct(member.getUsername());
         Set<FavoriteTag> memberTags = member.getTags();
@@ -199,7 +203,7 @@ public class ProductService {
 
         //같은 태그명을 가지고 있지만 제각각 상품을 가르키는 productId는 다를 것이다. 그래서 태그명 별로 어떤 상품들을 가르키는지 모아보자
         for (ProductByRecommended tag : tags) {
-            if(!productIdListByTagName.containsKey(tag.getTagName()))
+            if (!productIdListByTagName.containsKey(tag.getTagName()))
                 productIdListByTagName.put(tag.getTagName(), new ArrayList<>());
             productIdListByTagName.get(tag.getTagName()).add(tag.getProductId());
         }
@@ -207,7 +211,7 @@ public class ProductService {
         //마찬가지로 같은 상품을 가르키고 있지만 태그명은 제각각일 것이다. 우리가 뽑아내길 원하는 것은 추천상품이다. 즉 같은 상품이 중복되면 안된다.
         //그래서 상품Id에 대한 중복을 없애서 하나에 몰아넣는 코드이다.
         for (ProductByRecommended response : tags) {
-            if(recommendProductByProductId.containsKey(response.getProductId()))
+            if (recommendProductByProductId.containsKey(response.getProductId()))
                 continue;
             recommendProductByProductId.put(response.getProductId(), response);
         }
@@ -215,7 +219,7 @@ public class ProductService {
         //실제로직! member 선호태그에는 점수가 있을 것이다.
         //그러니까  우리가 반환하려고 하는 추천상품이 점수가 몇점인지 갱신하는 코드이다.
         for (FavoriteTag memberTag : memberTags) {
-            if(productIdListByTagName.containsKey(memberTag.getName())){
+            if (productIdListByTagName.containsKey(memberTag.getName())) {
                 List<Long> productIdList = productIdListByTagName.get(memberTag.getName());
                 for (Long id : productIdList) {
                     recommendProductByProductId.get(id).plusTotalScore(memberTag.getScore());
@@ -229,7 +233,7 @@ public class ProductService {
 
         //Product 변환해서 리턴
         List<Product> products = new ArrayList<>();
-        for(ProductByRecommended recommendProduct : recommendProductList){
+        for (ProductByRecommended recommendProduct : recommendProductList) {
             products.add(productRepository.findById(recommendProduct.getProductId()).orElseThrow(
                     () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
             ));

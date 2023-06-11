@@ -124,6 +124,14 @@ public class Rq {
         return !CheckMemberHtml();
     }
 
+    public Boolean checkAdminOrBrandAdminHtml(){
+        if(!checkLogin()) //로그인 안되있으면 false
+            return false;
+        if(CheckLogin().get().getRole().equals(RoleType.MEMBER)) //Member면 false
+            return false;
+        return true;
+    }
+
     public Boolean CheckBrandAdminHtml() {
         Member checkMember = CheckLogin().get();
         return checkMember.getRole().equals(RoleType.BRAND_ADMIN);
@@ -143,9 +151,12 @@ public class Rq {
         Member checkMember = member.get();
         if (checkMember.getRole().equals(RoleType.MEMBER)) {
             return member;
-
         }
         throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+    }
+
+    public Member GetMember() {
+        return  CheckLogin().orElse(null);
     }
 
     public Boolean CheckLoginHtml() {
@@ -167,6 +178,15 @@ public class Rq {
         else {
             throw new MemberNotFoundException("존재하지 않는 회원입니다.");
         }
+    }
+    public boolean checkLogin(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
+        Optional<Member> member = memberService.findByEmail(username);
+
+        if (member.isPresent()) {
+            return true;
+        }
+        return false;
     }
 
     public void setSessionAttr(String name, String value) {
