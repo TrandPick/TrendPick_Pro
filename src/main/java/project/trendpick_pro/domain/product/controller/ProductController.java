@@ -140,7 +140,7 @@ public class ProductController {
     public String showAllProduct(@RequestParam(value = "page", defaultValue = "0") int offset,
                                  @RequestParam(value = "main-category") String mainCategory,
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
-                                 Model model) {
+                                 Pageable pageable, Model model) {
         if (mainCategory.equals("recommend")) {
             mainCategory = "추천";
         } else if (mainCategory.equals("top")) {
@@ -156,6 +156,9 @@ public class ProductController {
                 model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             }
+        } if(mainCategory.equals("전체")){
+            model.addAttribute("mainCategoryName", mainCategory);
+            model.addAttribute("productResponses", productService.getAllProducts(pageable));
         } else {
             model.addAttribute("mainCategoryName", mainCategory);
             model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
