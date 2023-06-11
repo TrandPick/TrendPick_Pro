@@ -26,7 +26,7 @@ public class OrderForm {
 
     @NotBlank
     private String paymentMethod;
-    private int paymentPrice;
+    private int paymentPrice = 0;
     public OrderForm(MemberInfoDto memberInfo, List<OrderItemDto> orderItems) {
         this.memberInfo = memberInfo;
         this.orderItems = orderItems;
@@ -37,7 +37,7 @@ public class OrderForm {
 
     public String getFormattedPaymentPrice(){
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
-        return numberFormat.format(paymentPrice) +"원";
+        return numberFormat.format(paymentPrice) +" 원";
     }
 
     @Override

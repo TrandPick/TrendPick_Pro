@@ -32,7 +32,7 @@ public class OrderItemDto {
     }
 
     public int getTotalPrice(){
-        return getPrice() * count;
+        return price * count;
     }
 
     @Override

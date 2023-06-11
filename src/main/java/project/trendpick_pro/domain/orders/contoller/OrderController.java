@@ -53,7 +53,7 @@ public class OrderController {
         }
         int totalPrice = 0;
         for (OrderItemDto item : orderForm.getOrderItems()) {
-            totalPrice += item.getPrice();
+            totalPrice += item.getPrice() * item.getCount();
         }
         model.addAttribute("orderId", orderService.OrderSize());
         model.addAttribute("orderForm", orderForm);

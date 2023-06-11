@@ -65,7 +65,7 @@
                     <td class="text-center"><input class="text-center" type="text" id="Product" th:data-total-product="${orderItem.productName}" th:field="*{orderItems[__${itemStat.index}__].productName}" th:value="${orderItem.productName}" readonly="readonly" /></td>
                     <td class="text-center"><input class="text-center" type="number" th:field="*{orderItems[__${itemStat.index}__].count}" th:value="${orderItem.count}" readonly="readonly" /></td>
                     <td class="text-center font-bold">
-                        <input class="text-center" type="hidden" th:field="*{orderItems[__${itemStat.index}__].price}" th:value="${orderItem.price}" readonly="readonly" />
+                        <input class="text-center" type="hidden" th:field="*{orderItems[__${itemStat.index}__].price}" th:value="${orderItem.price}*${orderItem.getTotalPrice()}" readonly="readonly" />
                         <span id="totalPrice" th:data-total-price="${SuperTotalPrice}" th:text="${#numbers.formatDecimal(orderItem.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span>
                     </td>
                 </tr>
