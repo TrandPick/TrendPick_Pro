@@ -84,7 +84,7 @@
                     </div>
                 </td>
                 <td class="text-center">
-                    <span th:text="${#numbers.formatDecimal(item.getProduct().getPrice(), 0, 'COMMA', 0, 'POINT')} + ' 원'"></span></td>
+                    <span th:text="${#numbers.formatDecimal(item.getProduct().getPrice()*item.getQuantity(), 0, 'COMMA', 0, 'POINT')} + ' 원'"></span></td>
                 <td class="text-center">
                     <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
                         <input type="hidden" name="cartItemId" th:value="${item.getId()}">
