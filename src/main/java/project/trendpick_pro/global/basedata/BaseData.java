@@ -10,6 +10,7 @@ import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.category.entity.MainCategory;
+import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
@@ -38,10 +39,8 @@ import project.trendpick_pro.global.rsData.RsData;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 @Configuration
 @Profile({"dev", "test"})
 public class BaseData {
@@ -63,8 +62,8 @@ public class BaseData {
     private List<String> bags;
     @Value("${accessory}")
     private List<String> accessories;
-    @Value("${brand}")
-    private List<String> brands;
+
+    Random random = new Random();
     @Bean
     CommandLineRunner initData(
             TagNameService tagNameService,
@@ -90,9 +89,7 @@ public class BaseData {
                     mainCategoryService.save(mainCategory);
                 }
                 CreateSubCategories(mainCategoryService, subCategoryService);
-//                for (String brand : brands) {
-//                    brandService.save(brand);
-//                }
+
                 JoinForm admin = JoinForm.builder()
                         .email("admin@naver.com")
                         .password("12345")
@@ -100,6 +97,9 @@ public class BaseData {
                         .phoneNumber("010-1234-1234")
                         .state("ADMIN")
                         .build();
+
+                /////////////////////////////////////////////////
+
                 JoinForm brand_admin1 = JoinForm.builder()
                         .email("brand@naver.com")
                         .password("12345")
@@ -124,6 +124,64 @@ public class BaseData {
                         .state("BRAND_ADMIN")
                         .brand("버버리")
                         .build();
+                JoinForm brand_admin4 = JoinForm.builder()
+                        .email("brand4@naver.com")
+                        .password("12345")
+                        .username("brand3")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .brand("유니클로")
+                        .build();
+                JoinForm brand_admin5 = JoinForm.builder()
+                        .email("brand5@naver.com")
+                        .password("12345")
+                        .username("brand3")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .brand("지오다노")
+                        .build();
+                JoinForm brand_admin6 = JoinForm.builder()
+                        .email("brand6@naver.com")
+                        .password("12345")
+                        .username("brand3")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .brand("구찌")
+                        .build();
+                JoinForm brand_admin7 = JoinForm.builder()
+                        .email("brand7@naver.com")
+                        .password("12345")
+                        .username("brand3")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .brand("뉴발란스")
+                        .build();
+                JoinForm brand_admin8 = JoinForm.builder()
+                        .email("brand8@naver.com")
+                        .password("12345")
+                        .username("brand3")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .brand("우포스")
+                        .build();
+                JoinForm brand_admin9 = JoinForm.builder()
+                        .email("brand9@naver.com")
+                        .password("12345")
+                        .username("brand3")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .brand("예일")
+                        .build();
+                JoinForm brand_admin10 = JoinForm.builder()
+                        .email("brand10@naver.com")
+                        .password("12345")
+                        .username("brand3")
+                        .phoneNumber("010-1234-1234")
+                        .state("BRAND_ADMIN")
+                        .brand("리복")
+                        .build();
+
+                /////////////////////////////////////////////////
                 JoinForm member1 = JoinForm.builder()
                         .email("trendpick@naver.com")
                         .password("12345")
@@ -145,6 +203,13 @@ public class BaseData {
                 memberService.register(brand_admin1);
                 memberService.register(brand_admin2);
                 memberService.register(brand_admin3);
+                memberService.register(brand_admin4);
+                memberService.register(brand_admin5);
+                memberService.register(brand_admin6);
+                memberService.register(brand_admin7);
+                memberService.register(brand_admin8);
+                memberService.register(brand_admin9);
+                memberService.register(brand_admin10);
 
                 Member Rsmember1 = memberService.register(member1).getData();
                 Rsmember1.connectAddress("서울특별시 어디구 어디로 123");
@@ -152,7 +217,7 @@ public class BaseData {
                 Rsmember2.connectAddress("경기도 어디구 어디로 456");
 
                 //==상품데이터==//
-                for (int n = 1; n <= 10; n++) {
+                for (int n = 1; n <= 1000; n++) {
                     CommonFile mainFile = CommonFile.builder()
                             .fileName("bamin.png")
                             .build();
@@ -163,20 +228,25 @@ public class BaseData {
                     for (CommonFile subFile : subFiles) {
                         mainFile.connectFile(subFile);
                     }
+
+                    MainCategory mainCategory = mainCategoryService.findByBaseId(random.nextLong(5) + 1L);
+                    SubCategory subCategory = subCategoryService.findByBaseId(random.nextLong(5) + 1L);
+
                     Product product = Product
                             .builder()
-                            .name("멋쟁이 티셔츠" + n)
+                            .name(mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
                             .description("이 상품은 멋쟁이 티셔츠입니다." + n)
                             .stock(50 + n)
                             .price(20000 + n)
-                            .mainCategory(mainCategoryService.findByName("상의"))
-                            .subCategory(subCategoryService.findByName("반소매티셔츠"))
-                            .brand(brandService.findByName("나이키"))
+                            .mainCategory(mainCategory)
+                            .subCategory(subCategory)
+                            .brand(brandService.findById(random.nextLong(10)+1L))
                             .file(mainFile)
                             .build();
+
                     Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
                     for (int i = 1; i <= 5; i++) {
-                        TagName tagName = tagNameService.findById(Long.valueOf(i + n));
+                        TagName tagName = tagNameService.findById(random.nextLong(30)+1L);
                         tags.add(new Tag(tagName.getName()));
                     }
                     product.addTag(tags);

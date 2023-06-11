@@ -38,4 +38,8 @@ public class BrandService {
             return brandRepository.save(new Brand(name));
         }
     }
+
+    public Brand findById(Long id) {
+        return brandRepository.findById(id).orElseThrow();
+    }
 }

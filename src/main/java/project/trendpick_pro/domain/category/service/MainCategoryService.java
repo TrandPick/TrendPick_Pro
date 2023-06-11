@@ -37,6 +37,10 @@ public class MainCategoryService {
         return new MainCategoryResponse(mainCategory.getName());
     }
 
+    public MainCategory findByBaseId(Long id) {
+        return mainCategoryRepository.findById(id).orElseThrow();
+    }
+
     public MainCategory findByName(String username) {
         return mainCategoryRepository.findByName(username);
     }
