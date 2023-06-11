@@ -21,17 +21,19 @@ public class AskResponse {
     private String memberName;
     private Long memberId;
     private String title;
+    private String content;
     private String status;
     private LocalDateTime createdDate;
 
     @QueryProjection
     @Builder
-    public AskResponse(Long askId, Long productId, String memberName, Long memberId, String title, String status, LocalDateTime createdDate) {
+    public AskResponse(Long askId, Long productId, String memberName, Long memberId, String title,String content, String status, LocalDateTime createdDate) {
         this.askId = askId;
         this.productId = productId;
         this.memberName = memberName;
         this.memberId = memberId;
         this.title = title;
+        this.content = content;
         this.status = status;
         this.createdDate = createdDate;
     }
@@ -51,5 +53,4 @@ public class AskResponse {
     public static Page<AskResponse> of(Page<Ask> asks){
         return asks.map(ask -> AskResponse.of(ask));
     }
-
 }

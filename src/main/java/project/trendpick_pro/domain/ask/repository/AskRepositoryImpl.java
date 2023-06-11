@@ -33,6 +33,7 @@ public class AskRepositoryImpl implements AskRepositoryCustom {
                         member.username,
                         member.id,
                         ask.title,
+                        ask.content,
                         ask.status.stringValue(),
                         ask.createdDate
                 ))
