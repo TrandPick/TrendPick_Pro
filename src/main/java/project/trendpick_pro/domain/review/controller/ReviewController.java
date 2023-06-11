@@ -57,11 +57,13 @@ public class ReviewController {
     @GetMapping("/{reviewId}")
     public String showReview(@PathVariable Long reviewId, Model model){
         ReviewResponse reviewResponse = reviewService.showReview(reviewId);
-        Optional<Member> member = rq.CheckLogin();
-        Member checkMember = member.get();
-        String currentUser = checkMember.getUsername();
         model.addAttribute("reviewResponse", reviewResponse);
-        model.addAttribute("currentUser", currentUser);
+        if (rq.CheckLoginHtml()) {
+            Optional<Member> member = rq.CheckLogin();
+            Member checkMember = member.get();
+            String writer = checkMember.getUsername();
+            model.addAttribute("currentUser", writer);
+        }
         return "/trendpick/review/detail";
     }
 

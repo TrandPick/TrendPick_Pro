@@ -18,13 +18,15 @@
 
     <div class="mt-3" style="width:100%; margin-right: 0;">
         <div class="flex justify-end mt-3" >
-            <a class="btn btn-accent btn-sm mr-2" th:if="${reviewResponse.writer == currentUser}"
-               th:href="@{|/trendpick/review/edit/${reviewResponse.id}|}" style="width: 100px;">수정하기</a>
-            <a class="justify-center btn btn-accent btn-sm" href="javascript:;" style="width: 100px;"
-               onclick="if (confirm('정말로 삭제하시겠습니까?')) $(this).next().submit();">삭제하기</a>
-            <form hidden th:action="|/trendpick/review/delete/${reviewResponse.id}|" method="post">
-                <input type="hidden" name="_method" value="delete"/>
-            </form>
+            <div th:if="${@rq.CheckLoginHtml()}">
+                <a class="btn btn-accent btn-sm mr-2" th:if="${reviewResponse.writer == currentUser}"
+                   th:href="@{|/trendpick/review/edit/${reviewResponse.id}|}" style="width: 100px;">수정하기</a>
+                <a class="justify-center btn btn-accent btn-sm" href="javascript:;" style="width: 100px;"
+                   onclick="if (confirm('정말로 삭제하시겠습니까?')) $(this).next().submit();">삭제하기</a>
+                <form hidden th:action="|/trendpick/review/delete/${reviewResponse.id}|" method="post">
+                    <input type="hidden" name="_method" value="delete"/>
+                </form>
+            </div>
         </div>
         <div class="flex flex-col mt-5 justify-center items-start">
             <div class="card bordered flex flex-col w-full md:flex-row gap-4">
