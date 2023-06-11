@@ -27,9 +27,11 @@
             <div th:if="${mainCategoryName} == '추천'" class="flex-none bg-gray-200 text-gray-800 text-center rounded-full w-8 h-8 flex items-center justify-center">
                 <span th:text="${stat.count}"></span>
             </div>
-            <div class="card bordered flex-grow">
+            <div class="card bordered flex-grow" th:href="@{/trendpick/products/{id}(id=${product.id})}">
                 <figure>
-                    <img th:src="|/images/${product.mainFile}|" alt="Product Image"/>
+                    <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
+                        <img th:src="|/images/${product.mainFile}|" alt="Product Image"/>
+                    </a>
                 </figure>
                 <div class="card-body">
                     <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
