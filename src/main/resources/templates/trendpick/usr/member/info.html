@@ -14,20 +14,11 @@
     <div class="mt-4">
       <table class="table border mb-4 w-full text-xl">
         <tr>
-          <th class="border">은행명</th>
-          <td><span th:text="${MemberInfo.bankName}"></span></td>
-        </tr>
-        <tr>
-          <th class="border">계좌번호</th>
-          <td><span th:text="${MemberInfo.bankAccount}"></span></td>
-        </tr>
-        <tr>
           <th class="border">주소</th>
           <td><span th:text="${MemberInfo.address}"></span></td>
         </tr>
       </table>
       <div class="flex justify-end">
-        <a th:href="@{/trendpick/member/edit/account}" class="btn btn-accent btn-sm">계좌번호 수정하기</a>
         <a th:href="@{/trendpick/member/edit/address}" class="btn btn-accent btn-sm ml-4">주소 수정하기</a>
       </div>
     </div>

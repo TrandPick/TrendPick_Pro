@@ -6,6 +6,16 @@
 <main layout:fragment="main" class="flex-grow flex items-center justify-center">
     <script>
         $(document).ready(function() {
+            $('#memberRadio').change(function() {
+                if(this.checked) {
+                    $('#tagSelection').show();
+                } else {
+                    $('#tagSelection').hide();
+                }
+            });
+        });
+
+        $(document).ready(function() {
             $('input[type=radio][name="state"]').change(function() {
                 if (this.value === 'BRAND_ADMIN') {
                     $('#brandNameInput').removeClass("hidden");
@@ -128,7 +138,7 @@
                         <input type="radio" id="BRAND_ADMIN" th:field="*{state}" name="BRAND_ADMIN" value="BRAND_ADMIN" class="radio radio-success"/>
                     </label><label>브랜드관리자</label><br/><br/>
                     <label>
-                        <input type="radio" th:field="*{state}" name="MEMBER" value="MEMBER" class="radio radio-success"/>
+                        <input type="radio" th:field="*{state}" name="role" value="MEMBER" id="memberRadio" class="radio radio-success"/>
                     </label><label>사용자</label><br/><br/>
                 </div>
 
@@ -139,7 +149,7 @@
                     </label>
                 </div><br/><br/>
 
-                <div class="form-control">
+                <div class="form-control" id="tagSelection" style="display: none">
                     <h3 class="">
                         <span class="label-text">선호하는 태그를 선택 해주세요!</span>
                     </h3>
