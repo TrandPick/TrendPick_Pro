@@ -15,6 +15,7 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class CartService {
 
 
     // 장바구니 조회
-    public List<CartItem> CartView(Member member, Cart cart) {
+    public List<CartItem> CartView(Cart cart) {
         List<CartItem> cartItems = cartItemRepository.findAll();
         List<CartItem> userItems = new ArrayList<>();
         // 장바구니가 비어있는 경우
@@ -49,10 +50,12 @@ public class CartService {
 
     // 장바구니 상품 추가
     @Transactional
-    public CartItemResponse addItemToCart(Member member, CartItemRequest cartItemRequest) {
+    public RsData<CartItemResponse> addItemToCart(Member member, CartItemRequest cartItemRequest) {
         Cart cart = cartRepository.findByMemberId(member.getId());
-        Product product = getProductById(cartItemRequest.getProductId());
-
+        Product product = productRepository.findById(cartItemRequest.getProductId()).orElse(null);
+        if (product == null) {
+            return RsData.of("F-1", "해당상품을 찾을 수 없습니다.");
+        }
         if (cart == null) {
             // 장바구니가 비어있다면 생성
             cart = Cart.createCart(member);
@@ -72,7 +75,7 @@ public class CartService {
             cart.setTotalCount(cart.getTotalCount() + 1);
             cartItemRepository.save(cartItem);
         }
-        return CartItemResponse.of(cartItem);
+        return RsData.of("S-1", "상품이 추가되었습니다.", CartItemResponse.of(cartItem));
     }
 
 
@@ -84,27 +87,26 @@ public class CartService {
 
     // 상품의 수량 업데이트
     @Transactional
-    public void updateItemCount(Member member, Long cartItemId, int quantity) {
+    public RsData<CartItem> updateItemCount(Long cartItemId, int quantity) {
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
+        if (cartItem == null) {
+            return RsData.of("F-1", "해당 상품은 장바구니에 없습니다.");
+        }
         cartItem.update(quantity);
+        return RsData.of("S-1", "상품 수량이 업데이트 되었습니다.", cartItem);
     }
 
     public Cart getCartByUser(Long memberId) {
         return cartRepository.findByMemberId(memberId);
     }
 
-    private Product getProductById(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
-    }
-
-    public List<CartItem> findCartItems(Member member,List<Long> cartItemIdList)  {
-        Cart cart=getCartByUser(member.getId()); //현재 로그인되어 있는 cart 정보
+    public List<CartItem> findCartItems(Member member, List<Long> cartItemIdList) {
+        Cart cart = getCartByUser(member.getId()); //현재 로그인되어 있는 cart 정보
         List<CartItem> cartItemList = new ArrayList<>();
 
         for (Long id : cartItemIdList) {
-            for(CartItem item : cartItemRepository.findByProductId(id)) {
-                if(item.getCart().getId() == cart.getId()) {
+            for (CartItem item : cartItemRepository.findByProductId(id)) {
+                if (item.getCart().getId() == cart.getId()) {
                     cartItemList.add(item);
                 }
             }
@@ -113,12 +115,8 @@ public class CartService {
     }
 
     @Transactional
-    public void deleteCartItemsByOrder(Member member,List<Long> cartItemIdList) {
-       Cart cart = cartRepository.findByMemberId(member.getId());
-       for(long id: cartItemIdList){
-           CartItem cartItem = cartItemRepository.findById(id).orElse(null);
-       }
-       cartItemRepository.deleteAllByIdInBatch(cartItemIdList);
+    public void deleteCartItemsByOrder(List<Long> cartItemIdList) {
+        cartItemRepository.deleteAllByIdInBatch(cartItemIdList);
     }
 }
 

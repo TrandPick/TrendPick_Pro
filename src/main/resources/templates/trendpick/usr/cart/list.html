@@ -3,99 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <title>장바구니</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table thead th {
+            background-color: #212529;
+            color: #fff;
+            text-align: center;
+        }
+        .mask-squircle {
+            border-radius: 16%;
+        }
+        .opacity-50 {
+            opacity: 0.5;
+        }
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            color: #212529;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid transparent;
+        }
+        .btn-outline-dark {
+            color: #212529;
+            background-color: transparent;
+            border-color: #212529;
+        }
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-<main layout:fragment="main">
+<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col container">
     <div class="table-responsive">
-    <table class="table">
-        <thead class="thead-dark">
-        <tr>
-            <th class="text-center" scope="col"><input type="checkbox" id="selectAllCheckbox" checked></th>
-            <th class="text-center" scope="col">번호</th>
-            <th class="text-center" scope="col">상품ID</th>
-            <th scope="col">상품정보</th>
-            <th class="text-center" scope="col">가격</th>
-            <th class="text-center" scope="col">수량</th>
-            <th class="text-center" scope="col">담은날짜</th>
-            <th class="text-center" scope="col">삭제</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="item, i : ${cartItems}">
-            <td class="text-center">
-                <input type="checkbox" name="selectedItems"
-                       th:data-product-price="${item.getProduct().getPrice()}"
-                       th:data-product-id="${item.getProduct().getId()}"
-                       th:checked="${i.count == 1 ? 'checked' : ''}"
-                       onclick="updateTotalPrice(this)">
-            <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${i.count}">1</span>
-            </td>
-            <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${item.getProduct().getId()}"></span>
-            </td>
-            <td class="text-center">
-                <div class="flex items-center space-x-3">
-                    <div class="avatar">
-                        <div class="mask mask-squircle w-12 h-12">
-                            <img th:src="|/images/${item.getProduct().getFile().getParent()}|" width="100" height="100"/>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="text-center" scope="col"><input type="checkbox" id="selectAllCheckbox" checked></th>
+                <th class="text-center" scope="col">번호</th>
+                <th class="text-center" scope="col">상품ID</th>
+                <th scope="col">상품정보</th>
+                <th class="text-center" scope="col">가격</th>
+                <th class="text-center" scope="col">수량</th>
+                <th class="text-center" scope="col">담은날짜</th>
+                <th class="text-center" scope="col">삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, i : ${cartItems}">
+                <td class="text-center">
+                    <input type="checkbox" name="selectedItems"
+                           th:data-product-price="${item.getProduct().getPrice()}"
+                           th:data-product-id="${item.getProduct().getId()}"
+                           th:checked="${i.count == 1 ? 'checked' : ''}"
+                           onclick="updateTotalPrice(this)">
+                </td>
+                <td class="text-center">
+                    <span th:text="${i.count}">1</span>
+                </td>
+                <td class="text-center">
+                    <span th:text="${item.getProduct().getId()}"></span>
+                </td>
+                <td class="text-center">
+                    <div class="flex items-center space-x-3">
+                        <div class="avatar">
+                            <div class="mask mask-squircle w-12 h-12">
+                                <img th:src="|/images/${item.getProduct().getFile().getFileName()}|" width="100" height="100"/>
+                            </div>
+                        </div>
+                        <div>
+                            <a th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
+                               th:text="${item.getProduct().getName()}"></a>
+                            <div class="text-sm opacity-50" th:text="${item.getProduct().getBrand().getName()}"></div>
                         </div>
                     </div>
-                    <div>
-                        <a th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
-                            th:text="${item.getProduct().getName()}"></a>
-                        <div class="text-sm opacity-50" th:text="${item.getProduct().getBrand().getName()}"></div>
-                    </div>
-                </div>
-            </td>
-            <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${#numbers.formatDecimal(item.getProduct().getPrice(), 0, 'COMMA', 0, 'POINT')} + ' 원'"></span></td>
-            <td class="text-center">
-                <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
-                    <input type="hidden" name="cartItemId" th:value="${item.getId()}">
-                    <div class="quantity_div">
-                        <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1,form)">-
-                        </button>
-                        <input type="number" name="quantity" th:value="${item.getQuantity()}" min="1" class="quantity_input" onchange="updateInputValue(this)" style='text-align:center' readonly>
-                        <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1,form)">+</button>
-                    </div>
-                </form>
-            </td>
-            <td class="text-center">
-                <span class="badge badge-ghost badge-sm" th:text="${#temporals.format(item.getCreateDate(), 'MM/dd')}"></span>
-            </td>
-            <td class="text-center">
-                <a th:href="@{/trendpick/usr/cart/{memberId}/{cartItemId}(memberId=${item.getCart().getMember().getId()}, cartItemId=${item.getId()})}"
-                   style="text-decoration: none; color: grey;">X</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                </td>
+                <td class="text-center">
+                    <span th:text="${#numbers.formatDecimal(item.getProduct().getPrice(), 0, 'COMMA', 0, 'POINT')} + ' 원'"></span></td>
+                <td class="text-center">
+                    <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
+                        <input type="hidden" name="cartItemId" th:value="${item.getId()}">
+                        <div class="quantity_div">
+                            <button type="button" class="quantity_btn minus_btn" onclick="updateQuantity(this, -1,form)">-
+                            </button>
+                            <input type="number" name="quantity" th:value="${item.getQuantity()}" min="1" class="quantity_input" onchange="updateInputValue(this)" style='text-align:center' readonly>
+                            <button type="button" class="quantity_btn plus_btn" onclick="updateQuantity(this, 1,form)">+</button>
+                        </div>
+                    </form>
+                </td>
+                <td class="text-center">
+                    <span th:text="${#temporals.format(item.getCreateDate(), 'MM/dd')}"></span>
+                </td>
+                <td class="text-center">
+                    <a th:href="@{/trendpick/usr/cart/delete/{cartItemId}(cartItemId=${item.getId()})}"
+                       style="text-decoration: none; color: grey;">X</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+<br>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="text-center" scope="col" style="font-size: 20px; background-color: white; color: black; border-top: 2px solid black; border-bottom: 1px solid lightgray;">총 주문금액</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <form th:action="@{/trendpick/orders/cart}" method="post" id="cartForm">
+                <input type="hidden" id="selectedItemsInput" name="selectedItems">
+                <td class="text-center">
+
+                    <br>
+                    <h4><span id="totalPrice" style="font-size: 24px; font-weight: bold; background-color: white; color: black;"> 0원</span></h4>
+                    <br>
+                    <button type="submit" class="btn btn-outline-dark btn-block" style="background-color: white; color: black;" onclick="submitCartForm(this.form)">구매하기</button>
+                </td>
+            </form>
+            </tbody>
+        </table>
     </div>
 
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th class="text-center" scope="col" style="font-size: 20px;"> 총 주문금액</th>
-                </tr>
-                </thead>
-                <tbody>
-                <form th:action="@{/trendpick/orders/cart}" method="post" id="cartForm">
-                    <input type="hidden" id="selectedItemsInput" name="selectedItems">
-                    <td class="text-center">
-                        <br>
-                        <h4><span id="totalPrice" style="font-size: 24px; font-weight: bold;"> 0원</span></h4>
-                        <br>
-                        <button type="submit" class="btn btn-outline-dark btn-block" onclick="submitCartForm(this.form)">구매하기</button>
-                    </td>
-                </form>
-                </tbody>
-            </table>
-        </div>
-
-<script>
+    <script>
     // 수량 변경 시 결제 금액 업데이트
     function updateQuantity(element, amount,form) {
         const quantityInput = element.parentNode.querySelector('.quantity_input');
