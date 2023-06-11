@@ -32,22 +32,27 @@
                     <img th:src="|/images/${product.mainFile}|" alt="Product Image"/>
                 </figure>
                 <div class="card-body">
-                    <h2 class="text-lg font-bold" th:text="${product.name}"></h2>
-                    <div class="badge">Brand: <span th:text="${product.brand}"></span></div>
-                    <div><span class="text-orange-600 font-bold" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span></div>
+                    <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
+                        <h2 class="text-lg font-bold" th:text="${product.name}"></h2>
+                        <div class="badge">Brand: <span th:text="${product.brand}"></span></div>
+                        <div><span class="text-orange-600 font-bold" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span></div>
+                    </a>
                     <div class="justify-end card-actions">
                         <div sec:authorize="isAuthenticated()">
                             <div th:if="${@rq.CheckLoginHtml()}">
-                                <div th:if="${@rq.getBrandName()} == ${product.brand}" class="card-actions">
-                                    <a th:href="@{/trendpick/products/edit/{productId}(productId=${product.id})}" class="btn btn-accent">Edit</a>
-                                    <a href="javascript:;" onclick="if ( confirm('정말로 삭제하시겠습니까?') ) $(this).next().submit();" class="btn btn-accent">Delete</a>
-                                    <form hidden th:action="|/trendpick/products/${product.id}|" method="post">
-                                        <input type="hidden" name="_method" value="delete"/>
-                                    </form>
+                                <div th:if="${@rq.getBrandName()} == ${product.brand}" class="card-actions flex justify-between">
+                                    <div class="w-1/2">
+                                        <a th:href="@{/trendpick/products/edit/{productId}(productId=${product.id})}" class="justify-center btn btn-accent btn-sm">Edit</a>
+                                    </div>
+                                    <div class="w-1/2">
+                                        <a href="javascript:;" onclick="if (confirm('정말로 삭제하시겠습니까?')) $(this).next().submit();" class="justify-center btn btn-accent btn-sm">Delete</a>
+                                        <form hidden th:action="|/trendpick/products/${product.id}|" method="post">
+                                            <input type="hidden" name="_method" value="delete"/>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <a th:href="@{/trendpick/products/{id}(id=${product.id})}" class="btn btn-accent">View More</a>
                     </div>
                 </div>
             </div>
