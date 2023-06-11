@@ -26,6 +26,9 @@ import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
+import project.trendpick_pro.domain.review.entity.Review;
+import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
+import project.trendpick_pro.domain.review.repository.ReviewRepository;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
@@ -70,7 +73,8 @@ public class BaseData {
             ProductRepository productRepository,
             OrderService orderservice,
             CartService cartService,
-            RecommendService recommendService
+            RecommendService recommendService,
+            ReviewRepository reviewRepository
     ) {
         return new CommandLineRunner() {
             @Override
@@ -196,6 +200,32 @@ public class BaseData {
                 orderForm2.setPaymentMethod("신용카드");
                 orderservice.order(findMember2, orderForm2);
                 recommendService.select(member.email());
+                //==리뷰데이터==//
+                CommonFile mainFile = CommonFile.builder()
+                        .fileName("bamin.png")
+                        .build();
+                List<CommonFile> subFiles = new ArrayList<>();
+                subFiles.add(CommonFile.builder()
+                        .fileName("dev-jeans.png")
+                        .build());
+                for (CommonFile subFile : subFiles) {
+                    mainFile.connectFile(subFile);
+                }
+                Product product = productRepository.findById(1L).orElseThrow();
+                Product product2 = productRepository.findById(2L).orElseThrow();
+                ReviewSaveRequest rr = ReviewSaveRequest.builder()
+                        .title("리뷰입니다.")
+                        .content("내용입니다")
+                        .rating(5)
+                        .build();
+                Review review = Review.of(rr, memberService.findByEmail("trendpick@naver.com").get(), product, mainFile);
+                reviewRepository.save(review);
+                Review review2 = Review.of (rr, memberService.findByEmail("hye_0000@naver.com").get(), product, mainFile);
+                reviewRepository.save(review2);
+                Review review3 = Review.of(rr, memberService.findByEmail("trendpick@naver.com").get(), product2, mainFile);
+                reviewRepository.save(review3);
+                Review review4 = Review.of (rr, memberService.findByEmail("hye_0000@naver.com").get(), product2, mainFile);
+                reviewRepository.save(review4);
             }
         };
     }
