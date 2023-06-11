@@ -57,7 +57,6 @@ public class CartController {
            rq.redirectWithMsg("/trendpick/products/list?main-category=상의",cartItemResponse);
        }
         model.addAttribute("cartItemResponse", cartItemResponse);
-        // 쇼핑을 계속 하시겠습니까? 띄우고 yes이면 main no면 cart로
         return rq.redirectWithMsg("/trendpick/usr/cart/list", "상품이 추가되었습니다.");
     }
 
