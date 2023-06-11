@@ -7,6 +7,7 @@ import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.repository.TagRepository;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,12 @@ public class TagService {
 
     public List<Tag> getAllTags() {
         return tagRepository.findAll();
+    }
+
+    public void delete(Set<Tag> tags) {
+        for (Tag tag : tags) {
+            tagRepository.delete(tag);
+        }
     }
 
 }

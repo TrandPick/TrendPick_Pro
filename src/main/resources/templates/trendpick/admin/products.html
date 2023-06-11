@@ -48,8 +48,15 @@
             <td class="text-center" th:text="${product.stock+'개'}"></td>
             <td class="text-center" th:text="${product.saleCount+'개'}"></td>
             <td class="text-center">
-                <span style="margin-right: 5px;" class="mr-2" th:each="star : ${#numbers.sequence(1, 5)}"
-                      th:class="${star <= product.rateAvg} ? 'star-icon filled' : 'star-icon'"><i class="fa-solid fa-star"></i></span>
+                <div style="margin-right: 5px;" class="mr-2">
+                    <div th:each="star : ${#numbers.sequence(1, 5)}" style="display: inline-block;">
+                        <span th:if="${star <= product.rateAvg}"><i class="fa-solid fa-star filled"></i></span>
+                        <span th:if="${star > product.rateAvg and star - 0.5 <= product.rateAvg}"><i
+                                class="fa-solid fa-star-half filled"></i></span>
+                        <span th:if="${star > product.rateAvg and star - 0.5 > product.rateAvg}"><i
+                                class="fa-solid fa-star"></i></span>
+                    </div>
+                </div>
                 <span>(</span><span th:text="${product.rateAvg}"></span><span>)</span>
             </td>
             <td class="text-center">
@@ -64,7 +71,8 @@
             </td>
             <td class="text-center">
                 <div>
-                    <a class="edit-link" th:href="@{/trendpick/products/edit/{productId}(productId=${product.id})}">수정</a>
+                    <a class="edit-link"
+                       th:href="@{/trendpick/products/edit/{productId}(productId=${product.id})}">수정</a>
                     /
                     <a class="delete-link" th:href="@{/trendpick/products/cancel/{productId}(productId=${product.id})}">삭제</a>
                 </div>
@@ -74,11 +82,14 @@
     </table>
     <div class="flex justify-center my-4" th:if="${products != null and not #lists.isEmpty(products.content)}">
         <div class="btn-group">
-            <a th:if="${products.hasPrevious()}" th:href="@{/trendpick/products/admin/list(page=${products.number - 1})}" class="btn">Previous</a>
+            <a th:if="${products.hasPrevious()}"
+               th:href="@{/trendpick/products/admin/list(page=${products.number - 1})}" class="btn">Previous</a>
             <span th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}">
-            <a th:href="@{/trendpick/products/admin/list(page=${i})}" th:text="${i+1}" th:class="${products.number == i ? 'btn btn-active' : 'btn'}"></a>
+            <a th:href="@{/trendpick/products/admin/list(page=${i})}" th:text="${i+1}"
+               th:class="${products.number == i ? 'btn btn-active' : 'btn'}"></a>
         </span>
-            <a th:if="${products.hasNext()}" th:href="@{/trendpick/products/admin/list(page=${products.number + 1})}" class="btn">Next</a>
+            <a th:if="${products.hasNext()}" th:href="@{/trendpick/products/admin/list(page=${products.number + 1})}"
+               class="btn">Next</a>
         </div>
     </div>
     </body>

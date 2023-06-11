@@ -34,7 +34,11 @@
                         </div>
                     </div>
                     <div>
-                        <div class="font-bold" th:text="${order.productName}"></div>
+                        <div class="font-bold" th:text="${order.productName}">
+                            <a th:href="@{/trendpick/products/{productId}(productId=${order.productId})}"
+                               th:text="${order.productName}">
+                            </a>
+                        </div>
                         <div class="text-sm opacity-50" th:text="${order.brandName}"></div>
                     </div>
                 </div>

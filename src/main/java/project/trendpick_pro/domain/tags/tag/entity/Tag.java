@@ -22,6 +22,10 @@ public class Tag {
         this.product = product;
     }
 
+    public void disconnectProduct(){
+        this.product = null;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;

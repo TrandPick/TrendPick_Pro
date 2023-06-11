@@ -51,16 +51,15 @@ public class OrderService {
     private final FavoriteTagService favoriteTagService;
 
     @Transactional
-    public void order(Member member, OrderForm orderForm) {
+    public RsData<Long> order(Member member, OrderForm orderForm) {
 
         Delivery delivery = new Delivery(orderForm.getMemberInfo().getAddress());
-
         List<OrderItem> orderItemList = new ArrayList<>();
         Product product = null;
         for (OrderItemDto orderItemDto : orderForm.getOrderItems()) {
             product = productRepository.findById(orderItemDto.getProductId()).orElseThrow(() ->  new ProductNotFoundException("존재하지 않는 상품 입니다."));
             if (product.getStock() < orderItemDto.getCount()) {
-                throw new ProductStockOutException(product.getName()+"의 재고가 부족합니다.");   // 임시. 나중에 사용자 exception 널을까말까 생각
+                RsData.of("F-2", product.getName()+"의 재고가 부족합니다.");
             }
 
             favoriteTagService.updateTag(member, product, TagType.ORDER);
@@ -77,22 +76,27 @@ public class OrderService {
             cartService.deleteCartItemsByOrder(orderItemIds);
         }
         Order order = Order.createOrder(member, delivery, OrderStatus.ORDERED, orderItemList, orderForm.getPaymentMethod());
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        return RsData.of("S-1", "주문이 성공적으로 처리되었습니다.", savedOrder.getId());
     }
 
     @Transactional
     public RsData cancel(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 주문입니다."));
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if(order==null)
+            return RsData.of("F-4", "존재하지 않는 주문입니다.");
+
         if(order.getStatus() == OrderStatus.CANCELLED)
             return RsData.of("F-1", "이미 취소된 주문입니다.");
 
         if (order.getDelivery().getState() != DeliveryState.COMPLETED) {
-            throw new IllegalStateException("이미 배송완료된 상품은 취소가 불가능합니다.");
+            return RsData.of("F-2", "이미 배송완료된 상품은 취소가 불가능합니다.");
         }
 
         if (order.getDelivery().getState() != DeliveryState.COMPLETED) {
-            throw new IllegalStateException("이미 배송을 시작하여 취소가 불가능합니다.");
+            return RsData.of("F-3", "이미 배송을 시작하여 취소가 불가능합니다.");
         }
+
         order.cancel();
         return RsData.of("S-1", "환불 요청이 정상적으로 진행되었습니다. 환불까지는 최소 2일에서 최대 14일까지 소요될 수 있습니다.");
     }
@@ -105,14 +109,14 @@ public class OrderService {
         return orderRepository.findAll().size();
     }
 
-    public OrderForm cartToOrder(Member member, List<Long> selectedItems) {
+    public RsData<OrderForm> cartToOrder(Member member, List<Long> selectedItems) {
         List<CartItem> cartItems = cartService.findCartItems(member, selectedItems);
         for (CartItem cartItem : cartItems) {
             if (cartItem.getCart().getMember().getId() != member.getId())
-                throw new MemberNotMatchException("현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
+                return RsData.of("F-1","현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
         }
 
-        return new OrderForm(MemberInfoDto.of(member) ,convertToOrderItemDto(cartItems));
+        return RsData.of("S-1", "리다이렉팅중...",new OrderForm(MemberInfoDto.of(member) ,convertToOrderItemDto(cartItems)));
     }
 
     private List<OrderItemDto> convertToOrderItemDto(List<CartItem> cartItems) {
@@ -123,20 +127,27 @@ public class OrderService {
         return orderItemDtoList;
     }
 
-    public OrderForm productToOrder(Member member, ProductOptionForm productOptionForm) {
-        Product product = productRepository.findById(productOptionForm.getProductId())
-                .orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
+    public RsData<OrderForm> productToOrder(Member member, ProductOptionForm productOptionForm) {
+        Product product = productRepository.findById(productOptionForm.getProductId()).orElse(null);
+        if(product==null)
+            return RsData.of("F-1", "존재하지 않는 상품입니다.");
+
         List<OrderItemDto> orderItemDtoList = new ArrayList<>();
         orderItemDtoList.add(OrderItemDto.of(product, productOptionForm.getQuantity()));
-        return new OrderForm(MemberInfoDto.of(member), orderItemDtoList);
+        OrderForm orderForm = new OrderForm(MemberInfoDto.of(member), orderItemDtoList);
+        return RsData.of("S-1", "리다이렉팅중...", orderForm);
     }
 
-    public OrderDetailResponse showOrderItems(Member member, Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new IllegalArgumentException("잘못된 주문번호입니다."));
+    public RsData<OrderDetailResponse> showOrderItems(Member member, Long orderId) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null)
+            return RsData.of("F-1", "잘못된 주문번호입니다. 다시 확인해주세요.");
+
         if (order.getMember().getId() != member.getId())
-            throw new IllegalArgumentException("다른 사용자의 주문에는 접근할 수 없습니다.");
-        return OrderDetailResponse.of(order, orderRepository.findOrderItemsByOrderId(orderId));
+            return RsData.of("F-2", "다른 사용자의 주문에는 접근할 수 없습니다.");
+        OrderDetailResponse orderResponse = OrderDetailResponse.of(order, orderRepository.findOrderItemsByOrderId(orderId));
+        return RsData.of("S-1",
+                orderResponse.getOrderItems().size()+"개의 주문 상품입니다.", orderResponse);
     }
     public Page<OrderResponse> findAllBySeller(Member member, int offset) {
         return orderRepository.findAllBySeller(

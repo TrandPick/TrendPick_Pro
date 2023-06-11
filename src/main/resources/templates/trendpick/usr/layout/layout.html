@@ -66,16 +66,6 @@
                 <div th:if="${@rq.CheckLoginHtml()}">
                     <button class="btn btn-ghost btn-circle" th:if="!${@rq.CheckAdminHtml()}">
                         <div class="indicator">
-                            <a href="/trendpick/member/notification">
-                                <i class="fa-regular fa-bell"></i>
-                                <span class="badge badge-xs badge-accent indicator-item"></span>
-                            </a>
-                        </div>
-                    </button>
-                </div>
-                <div th:if="${@rq.CheckLoginHtml()}">
-                    <button class="btn btn-ghost btn-circle" th:if="!${@rq.CheckAdminHtml()}">
-                        <div class="indicator">
                             <a href="/trendpick/usr/cart/list">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                      stroke="currentColor">

@@ -85,7 +85,7 @@
                     <td>
                         <div class="flex items-center">
                             <div class="mr-2">
-                                <input type="radio" id="creditCard" name="paymentMethod" value="creditCard">
+                                <input type="radio" id="creditCard" name="paymentMethod" value="creditCard" checked="checked">
                                 <label for="creditCard">신용카드</label>
                             </div>
                             <div class="mr-2">
@@ -117,7 +117,7 @@
     </form>
 
     <script>
-        const clientKey = "test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq"
+        const clientKey = "test_ck_Kma60RZblrq6qj1AW0E8wzYWBn14"
         const customerKey = PaymentWidget.ANONYMOUS
         const button = document.getElementById("payment-button")
         const totalPrice = document.getElementById('totalPrice').dataset.totalPrice;
@@ -130,42 +130,20 @@
 
         paymentWidget.renderAgreement('#agreement')
 
+        let formData = new FormData(form);
 
         button.addEventListener("click", function () {
             event.preventDefault();
 
-            let formData = new FormData(form);
-
-            let paymentData = {
+            paymentWidget.requestPayment({
                 orderId: "1rcNIBAny7JdK4TtGVxbQ",
                 orderName: product + " 외..",
                 successUrl: "http://localhost:8080/payment/success",
                 failUrl: "http://localhost:8080/payment/fail",
                 customerEmail: "hyeri0603@naver.com",
                 customerName: "이수호",
-                memberInfo: {
-                    memberId: formData.get('*{memberInfo.memberId}'),
-                    name: formData.get('*{memberInfo.name}'),
-                    email: formData.get('*{memberInfo.email}'),
-                    phone: formData.get('*{memberInfo.phone}'),
-                    address: formData.get('*{memberInfo.address}')
-                },
-                orderItems: formData.getAll('*{orderItems}'),
-                paymentMethod: formData.get('paymentMethod')
-            };
-
-            paymentWidget.requestPayment({
-                paymentData
+                formData: formData
             })
-
-            // paymentWidget.requestPayment({
-            //     orderId: "1rcNIBAny7JdK4TtGVxbQ",
-            //     orderName: product + " 외..",
-            //     successUrl: "http://localhost:8080/payment/success",
-            //     failUrl: "http://localhost:8080/payment/fail",
-            //     customerEmail: "hyeri0603@naver.com",
-            //     customerName: "이수호"
-            // })
         })
 
     </script>

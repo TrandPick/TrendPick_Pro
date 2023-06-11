@@ -44,7 +44,7 @@
                     <a class="w-1/2 justify-center btn btn-accent btn-sm" th:if="${reviewResponse.writer == currentUser}"
                        th:href="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewResponse.id})}"
                        style="display: flex; justify-content: center; border-top: 1px solid #ccc;">수정하기</a>
-                    <a class="w-1/2 justify-center btn btn-accent btn-sm" href="javascript:;"
+                    <a class="w-1/2 justify-center btn btn-accent btn-sm" href="javascript:;" th:if="${reviewResponse.writer == currentUser}"
                        onclick="if (confirm('정말로 삭제하시겠습니까?')) $(this).next().submit();">삭제하기</a>
                     <form hidden th:action="|/trendpick/review/delete/${reviewResponse.id}|" method="post">
                         <input type="hidden" name="_method" value="delete"/>

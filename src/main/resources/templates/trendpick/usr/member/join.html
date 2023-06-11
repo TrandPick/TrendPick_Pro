@@ -20,15 +20,15 @@
     <script>
         function JoinForm__submit(form) {
 
-            form.username.value = form.username.value.trim();
+            form.email.value = form.email.value.trim();
 
-            if (form.username.value.length === 0) {
+            if (form.email.value.length === 0) {
                 toastWarning('아이디를 입력해주세요.');
                 form.username.focus();
                 return;
             }
 
-            if (form.username.value.length < 4) {
+            if (form.email.value.length < 4) {
                 toastWarning('아이디를 4자 이상 입력해주세요.');
                 form.username.focus();
                 return;
@@ -48,13 +48,7 @@
                 return;
             }
 
-            form.passwordConfirm.value = form.passwordConfirm.value.trim();
-
-            if (form.password.value !== form.passwordConfirm.value) {
-                toastWarning('비밀번호 확인이 일치하지 않습니다.');
-                form.passwordConfirm.focus();
-                return;
-            }
+            form.phoneNumber.value = form.phoneNumber.value.trim();
 
             if (form.phoneNumber.value.length === 0) {
                 toastWarning('번호를 입력해주세요.');
@@ -68,9 +62,19 @@
                 return;
             }
 
+            form.username.value = form.username.value.trim();
+
             if (form.username.value.length === 0) {
                 toastWarning('이름을 입력해주세요.');
                 form.username.focus();
+                return;
+            }
+
+            form.role.value = form.role.value.trim();
+
+            if (form.role.value == null) {
+                toastWarning('권한을 골라주세요.');
+                form.role.focus();
                 return;
             }
 
