@@ -138,14 +138,15 @@ public class ProductController {
     @PreAuthorize("permitAll()")
     @GetMapping("/list")
     public String showAllProduct(@RequestParam(value = "page", defaultValue = "0") int offset,
-                                 @RequestParam(value = "main-category") String mainCategory,
+                                 @RequestParam(value = "main-category", defaultValue = "top") String mainCategory,
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
                                  Pageable pageable, Model model) {
         if (mainCategory.equals("recommend")) {
             mainCategory = "추천";
         } else if (mainCategory.equals("top")) {
             mainCategory = "상의";
-        } if (mainCategory.equals("추천")) {
+        }
+        if (mainCategory.equals("추천")) {
             Member member = rq.CheckLogin().orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
             if (member.getRole().getValue().equals("MEMBER")) {
                 model.addAttribute("mainCategoryName", mainCategory);
@@ -156,7 +157,7 @@ public class ProductController {
                 model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             }
-        } if(mainCategory.equals("전체")){
+        } else if(mainCategory.equals("전체")){
             model.addAttribute("mainCategoryName", mainCategory);
             model.addAttribute("productResponses", productService.getAllProducts(pageable));
         } else {

@@ -44,7 +44,7 @@
         <div class="flex justify-between">
             <ul class="menu menu-horizontal px-1">
                 <div th:if="${@rq.CheckLoginHtml()}">
-                    <li th:if="!${@rq.CheckAdminHtml()}"><a href="/trendpick/products/list?main-category=추천">추천</a></li>
+                    <li th:if="!${@rq.CheckAdminHtml()}"><a href="/trendpick/products/list?main-category=recommend">추천</a></li>
                 </div>
                 <li><a href="/trendpick/products/list?main-category=전체">전체</a></li>
                 <li><a href="/trendpick/products/list?main-category=상의">상의</a></li>
