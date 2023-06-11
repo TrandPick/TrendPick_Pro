@@ -23,4 +23,9 @@ public class CommonController {
     public Resource downloadImage(@PathVariable String filename) throws MalformedURLException {
         return new UrlResource("file:" + fileTranslator.getFilePath(filename));
     }
+
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/trendpick/products/list";
+    }
 }
