@@ -25,7 +25,7 @@
         </div>
         <div th:each="product, stat : ${productResponses}" class="grid gap-4" style="grid-template-columns: auto 1fr;">
             <div th:if="${mainCategoryName} == '추천'" class="flex-none bg-gray-200 text-gray-800 text-center rounded-full w-8 h-8 flex items-center justify-center">
-                <span th:text="${stat.count}"></span>
+                <span th:text="${product.id}"></span>
             </div>
             <div class="card bordered flex-grow" th:href="@{/trendpick/products/{id}(id=${product.id})}">
                 <figure>
@@ -63,12 +63,13 @@
     <div class="flex justify-center my-4" th:if="${productResponses != null and not #lists.isEmpty(productResponses.content)}">
         <div class="btn-group">
             <a th:if="${productResponses.hasPrevious()}" th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${productResponses.number - 1}|}" class="btn">Previous</a>
-            <span th:each="i : ${#numbers.sequence(0, productResponses.totalPages - 1)}">
-            <a th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${i}|}" th:text="${i+1}" th:class="${productResponses.number == i ? 'btn btn-active' : 'btn'}"></a>
-        </span>
+            <span th:each="i : ${#numbers.sequence(0, productResponses.totalPages - 1)}" th:if="${i >= (productResponses.number - 3) && i <= (productResponses.number + 3)}">
+                <a th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${i}|}" th:text="${i+1}" th:class="${productResponses.number == i ? 'btn btn-active' : 'btn'}"></a>
+            </span>
             <a th:if="${productResponses.hasNext()}" th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${productResponses.number + 1}|}" class="btn">Next</a>
         </div>
     </div>
+
 </main>
 
 </body>
