@@ -47,6 +47,7 @@ import project.trendpick_pro.global.rsData.RsData;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -176,6 +177,12 @@ public class ProductService {
         return new PageImpl<>(list, pageable, listResponses.getTotalElements());
     }
 
+    public Page<ProductListResponse> getAllProducts(Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), 18);
+        Page<Product> products = productRepository.findAll(pageable);
+        return products.map(this::convertToProductListResponse);
+    }
+
     public List<Product> getRecommendProduct(Member member){
 
         List<ProductByRecommended> tags = productRepository.findRecommendProduct(member.getUsername());
@@ -236,5 +243,15 @@ public class ProductService {
 
         Pageable pageable = PageRequest.of(offset, 20);
         return RsData.of("S-1", "성공", productRepository.findAllBySeller(member.getBrand(), pageable));
+    }
+
+    private ProductListResponse convertToProductListResponse(Product product) {
+        return new ProductListResponse(
+                product.getId(),
+                product.getName(),
+                product.getBrand().getName(),
+                product.getFile().getFileName(),
+                product.getPrice()
+        );
     }
 }
