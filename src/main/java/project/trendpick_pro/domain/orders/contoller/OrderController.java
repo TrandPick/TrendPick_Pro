@@ -140,10 +140,13 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/{orderId}")
     public String showOrder(@PathVariable("orderId") Long orderId, Model model){
-        RsData<OrderDetailResponse> result = orderService.showOrderItems(rq.CheckMember().get(), orderId);
+        Member member = rq.CheckMember().get();
+        RsData<OrderDetailResponse> result = orderService.showOrderItems(member, orderId);
         if(result.isFail())
             return rq.historyBack(result);
 
+        model.addAttribute("address",
+                member.getAddress());
         model.addAttribute("order",
                 result.getData());
         return "trendpick/orders/detail";

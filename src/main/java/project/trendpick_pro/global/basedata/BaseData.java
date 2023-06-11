@@ -34,6 +34,8 @@ import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
+import project.trendpick_pro.global.rsData.RsData;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -122,7 +124,7 @@ public class BaseData {
                         .state("BRAND_ADMIN")
                         .brand("버버리")
                         .build();
-                JoinForm member = JoinForm.builder()
+                JoinForm member1 = JoinForm.builder()
                         .email("trendpick@naver.com")
                         .password("12345")
                         .username("sooho")
@@ -139,11 +141,16 @@ public class BaseData {
                         .tags(List.of("오버핏청바지", "로맨틱룩"))
                         .build();
                 memberService.register(admin);
+
                 memberService.register(brand_admin1);
                 memberService.register(brand_admin2);
                 memberService.register(brand_admin3);
-                memberService.register(member);
-                memberService.register(member2);
+
+                Member Rsmember1 = memberService.register(member1).getData();
+                Rsmember1.connectAddress("서울특별시 어디구 어디로 123");
+                Member Rsmember2 = memberService.register(member2).getData();
+                Rsmember2.connectAddress("경기도 어디구 어디로 456");
+
                 //==상품데이터==//
                 for (int n = 1; n <= 10; n++) {
                     CommonFile mainFile = CommonFile.builder()
@@ -199,7 +206,7 @@ public class BaseData {
                 OrderForm orderForm2 = new OrderForm(memberInfo2, orderItems2);
                 orderForm2.setPaymentMethod("신용카드");
                 orderservice.order(findMember2, orderForm2);
-                recommendService.select(member.email());
+                recommendService.select(member1.email());
                 //==리뷰데이터==//
                 CommonFile mainFile = CommonFile.builder()
                         .fileName("bamin.png")
