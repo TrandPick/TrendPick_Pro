@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.product.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import project.trendpick_pro.domain.category.entity.dto.response.MainCategoryRes
 import project.trendpick_pro.domain.category.entity.dto.response.SubCategoryResponse;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
+import project.trendpick_pro.domain.common.base.PageUrlUpdater;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
@@ -71,7 +73,7 @@ public class ProductController {
         }
 
         model.addAttribute("subCategoriesList", subCategoryList);
-        model.addAttribute("brands", brandService.findAll());
+        model.addAttribute("brands", brandService.findByName(rq.CheckAdmin().get().getBrand()));
         return "/trendpick/products/register";
     }
 
@@ -149,18 +151,22 @@ public class ProductController {
         if (mainCategory.equals("추천")) {
             Member member = rq.CheckLogin().orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
             if (member.getRole().getValue().equals("MEMBER")) {
+                model.addAttribute("subCategoryName", subCategory);
                 model.addAttribute("mainCategoryName", mainCategory);
                 model.addAttribute("productResponses", recommendService.getFindAll(member, offset));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
+                model.addAttribute("subCategoryName", subCategory);
                 model.addAttribute("mainCategoryName", mainCategory);
                 model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             }
         } else if(mainCategory.equals("전체")){
+            model.addAttribute("subCategoryName", subCategory);
             model.addAttribute("mainCategoryName", mainCategory);
             model.addAttribute("productResponses", productService.getAllProducts(pageable));
         } else {
+            model.addAttribute("subCategoryName", subCategory);
             model.addAttribute("mainCategoryName", mainCategory);
             model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
             model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));

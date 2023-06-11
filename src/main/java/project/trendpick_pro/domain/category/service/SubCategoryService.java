@@ -40,8 +40,12 @@ public class SubCategoryService {
     }
 
     public SubCategoryResponse findById(Long id){
-        SubCategory subCategory=subCategoryRepository.findById(id).orElseThrow();
+        SubCategory subCategory = subCategoryRepository.findById(id).orElseThrow();
         return new SubCategoryResponse(subCategory.getName());
+    }
+
+    public SubCategory findByBaseId(Long id){
+        return subCategoryRepository.findById(id).orElseThrow();
     }
 
     public SubCategory findByName(String username){

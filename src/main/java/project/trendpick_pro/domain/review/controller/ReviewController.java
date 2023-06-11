@@ -96,11 +96,13 @@ public class ReviewController {
     @GetMapping("/list")
     public String showAllReview(Pageable pageable, Model model){
         Page<ReviewResponse> reviewResponses = reviewService.showAll(pageable);
-        Optional<Member> member = rq.CheckLogin();
-        Member checkMember = member.get();
-        String currentUser = checkMember.getUsername();
         model.addAttribute("reviewResponses", reviewResponses);
-        model.addAttribute("currentUser", currentUser);
+
+        if (rq.CheckLoginHtml()) {
+            Member checkMember = rq.CheckMember().get();
+            String currentUser = checkMember.getUsername();
+            model.addAttribute("currentUser", currentUser);
+        }
         return "/trendpick/review/list";
     }
 
