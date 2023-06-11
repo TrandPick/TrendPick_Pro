@@ -12,11 +12,14 @@ import java.util.Locale;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class OrderItemDto {
     private Long productId;
     private String productName;
     private int count;
     private int price;
+    private Long cartItemId;
 
     public static OrderItemDto of(Product product, int count) {
         return OrderItemDto.builder()
@@ -24,14 +27,18 @@ public class OrderItemDto {
                 .productName(product.getName())
                 .price(product.getPrice())
                 .count(count)
+                .cartItemId(0L)
                 .build();
     }
-    @Builder
-    public OrderItemDto(Long productId, String productName, int price, int count) {
-        this.productId = productId;
-        this.productName = productName;
-        this.price = price;
-        this.count = count;
+
+    public static OrderItemDto of(Product product, int count, Long cartItemId) {
+        return OrderItemDto.builder()
+                .productId(product.getId())
+                .productName(product.getName())
+                .price(product.getPrice())
+                .count(count)
+                .cartItemId(cartItemId)
+                .build();
     }
 
     public int getTotalPrice(){

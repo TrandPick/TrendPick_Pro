@@ -69,6 +69,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="orderItem, itemStat : ${orderForm.orderItems}" class="bg-blue-50">
+                    <td class="text-center"><input type="hidden" th:field="*{orderItems[__${itemStat.index}__].cartItemId}" th:value="${orderItem.cartItemId}" /></td>
                     <td class="text-center"><input type="hidden" th:field="*{orderItems[__${itemStat.index}__].productId}" th:value="${orderItem.productId}" /></td>
                     <td class="text-center" th:text="${itemStat.count}">1</td>
                     <td class="text-center"><input class="text-center" type="text" id="Product" th:data-total-product="${orderItem.productName}" th:field="*{orderItems[__${itemStat.index}__].productName}" th:value="${orderItem.productName}" readonly="readonly" /></td>

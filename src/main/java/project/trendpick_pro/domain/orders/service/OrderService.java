@@ -68,15 +68,18 @@ public class OrderService {
             orderItemList.add(OrderItem.of(product, orderItemDto));
         }
 
-        // 주문상품 장바구니에서 삭제
-        List<Long> orderItemIds = new ArrayList<>();
-        List<CartItem> cartItems=product.getCartItems();
-        if(!cartItems.isEmpty()) {
-            for (CartItem cartItem : cartItems) {
-                orderItemIds.add(cartItem.getId());
-            }
-            cartService.deleteCartItemsByOrder(orderItemIds);
+        List<Long> cartItemsIds = new ArrayList<>();
+        for (OrderItemDto orderItemDto : orderForm.getOrderItems()) {
+            if(orderItemDto.getCartItemId() != 0L)
+                cartItemsIds.add(orderItemDto.getCartItemId());
         }
+        // 주문상품 장바구니에서 삭제
+//        List<Long> orderItemIds = new ArrayList<>();
+//        List<CartItem> cartItems=product.getCartItems();
+        if(!cartItemsIds.isEmpty()) {
+            cartService.deleteCartItemsByOrder(cartItemsIds);
+        }
+
         Order order = Order.createOrder(member, delivery, OrderStatus.ORDERED, orderItemList, orderForm.getPaymentMethod());
         Order savedOrder = orderRepository.save(order);
         return RsData.of("S-1", "주문이 성공적으로 처리되었습니다.", savedOrder.getId());
@@ -125,8 +128,9 @@ public class OrderService {
         List<OrderItemDto> orderItemDtoList = new ArrayList<>();
 
         for (CartItem cartItem : cartItems) {
-            orderItemDtoList.add(OrderItemDto.of(cartItem.getProduct(), cartItem.getQuantity()));
+            orderItemDtoList.add(OrderItemDto.of(cartItem.getProduct(), cartItem.getQuantity(), cartItem.getId()));
         }
+
         return orderItemDtoList;
     }
 
