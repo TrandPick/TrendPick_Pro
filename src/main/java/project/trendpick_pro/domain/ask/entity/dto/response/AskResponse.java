@@ -14,8 +14,6 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
-@AllArgsConstructor
 public class AskResponse {
 
     private Long askId;
@@ -23,10 +21,20 @@ public class AskResponse {
     private String memberName;
     private Long memberId;
     private String title;
-    private String content;
     private String status;
     private LocalDateTime createdDate;
-    private List<AnswerResponse> answerList;
+
+    @QueryProjection
+    @Builder
+    public AskResponse(Long askId, Long productId, String memberName, Long memberId, String title, String status, LocalDateTime createdDate) {
+        this.askId = askId;
+        this.productId = productId;
+        this.memberName = memberName;
+        this.memberId = memberId;
+        this.title = title;
+        this.status = status;
+        this.createdDate = createdDate;
+    }
 
     public static AskResponse of (Ask ask) {
         return AskResponse.builder()
@@ -35,10 +43,8 @@ public class AskResponse {
                 .memberId(ask.getAuthor().getId())
                 .productId(ask.getProduct().getId())
                 .title(ask.getTitle())
-                .content(ask.getContent())
                 .status(ask.getStatus().getValue())
                 .createdDate(ask.getCreatedDate())
-                .answerList(AnswerResponse.of(ask.getAnswerList()))
                 .build();
     }
 

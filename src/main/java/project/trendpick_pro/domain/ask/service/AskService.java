@@ -14,6 +14,7 @@ import project.trendpick_pro.domain.ask.repository.AskRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.global.rsData.RsData;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,8 +27,7 @@ public class AskService {
     //상품 상세에서 문의 내역 볼 때
     public Page<AskResponse> showAsksByProduct(Long productId, int offset) {
         Pageable pageable = PageRequest.of(offset, 10);
-        Page<Ask> asks = askRepository.findAllByProductId(productId, pageable);
-        return AskResponse.of(asks);
+        return askRepository.findAllByProductId(productId, pageable);
     }
 
     public Page<AskResponse> showAsksByMyPage(Member member, int offset) {
@@ -63,12 +63,13 @@ public class AskService {
     }
 
     @Transactional
-    public AskResponse register(Member member, AskForm askForm) {
-        Product product = productRepository.findById(askForm.getProductId()).orElseThrow();
-        Ask ask = Ask.of(member, product, askForm);
+    public RsData<Long> register(Member member, AskForm askForm) {
+        Product product = productRepository.findById(askForm.getProductId()).orElseThrow(null);
+        if(product == null)
+            return RsData.of("F-1", "해당 상품은 존재하지 않습니다.");
 
-        askRepository.save(ask);
-        return AskResponse.of(ask);
+        Ask savedAsk = askRepository.save(Ask.of(member, product, askForm));
+        return RsData.of("S-1", product.getName()+"에 대한 문의가 등록되었습니다.", savedAsk.getId());
     }
 
 
