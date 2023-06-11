@@ -36,7 +36,7 @@
                 </div>
                 <div class="flex-grow"></div>
                 <div th:if="!${@rq.CheckAdminHtml()}" class="card-actions">
-                    <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" method="post">
+                    <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" method="post" onsubmit="return confirmCart()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="quantity" value="1" min="1" />
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
@@ -107,6 +107,20 @@
                 $('#productOptionQuantity').val(quantity); // assuming the second quantity field has id="productOptionQuantity"
             });
         });
+
+        function confirmCart() {
+            var confirmAction = confirm("해당 상품을 장바구니에 추가하시겠습니까?");
+            if (confirmAction) {
+                // 폼 전송
+                return true;
+            } else {
+                // 폼 전송 후 페이지 이동 취소
+                setTimeout(function() {
+                    window.stop();
+                }, 0);
+                return false;
+            }
+        }
     </script>
 
 </main>
