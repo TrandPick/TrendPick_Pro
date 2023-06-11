@@ -22,6 +22,7 @@
         <thead>
         <tr>
             <th class="text-center" scope="col">상품번호</th>
+            <th class="text-center" scope="col">상품이미지</th>
             <th class="text-center" scope="col">상품명</th>
             <th class="text-center" scope="col">상품금액</th>
             <th class="text-center" scope="col">상품재고</th>
@@ -37,6 +38,11 @@
             <td class="text-center">
                 <a th:href="@{/trendpick/products/{productId}(productId=${product.id})}"
                    th:text="${products.number * 10 + loop.count}">
+                </a>
+            </td>
+            <td class="text-center">
+                <a th:href="@{/trendpick/products/{productId}(productId=${product.id})}">
+                    <img th:src="|/images/${product.mainFile}|" width="120" height="120"/>
                 </a>
             </td>
             <td class="text-center">

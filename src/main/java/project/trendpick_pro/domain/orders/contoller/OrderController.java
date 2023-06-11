@@ -83,8 +83,6 @@ public class OrderController {
 
         redirect.addFlashAttribute("orderForm", result.getData());
         return rq.redirectWithMsg("/trendpick/orders/order-form", "주문폼을 확인하시고 결제 버튼을 눌러주세요.");
-//        return "redirect:/trendpick/orders/order-form";
-        // addFlashAttribute 이거 때문에 그냥 리다이렉트 시켜야 할 수도 있습니다.
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")

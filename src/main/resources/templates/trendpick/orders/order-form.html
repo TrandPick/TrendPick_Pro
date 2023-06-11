@@ -7,6 +7,15 @@
 <body>
 <main layout:fragment="main" class="bg-white">
     <script src="https://js.tosspayments.com/v1/payment-widget"></script>
+    <script>
+        function checkAddress() {
+            var address = document.getElementById('address').value;
+            if (!address) {
+                toastWarning('주소를 입력해주세요.');
+                return false; // 폼 제출을 막기 위해 false 반환
+            }
+        }
+    </script>
     <br/><br/>
     <h1 class="text-center text-5xl font-bold mb-6">주문서</h1>
     <form th:action="@{/trendpick/orders/order}" th:object="${orderForm}" method="post">
@@ -39,7 +48,7 @@
                 <tr>
                     <th scope="row">주소</th>
                     <td>
-                        <input type="text" th:field="*{memberInfo.address}" th:value="${orderForm.memberInfo.address}"/>
+                        <input id="address" type="text" th:field="*{memberInfo.address}" th:value="${orderForm.memberInfo.address}" onchange="checkAddress()"/>
                     </td>
                 </tr>
                 </tbody>
@@ -65,8 +74,8 @@
                     <td class="text-center"><input class="text-center" type="text" id="Product" th:data-total-product="${orderItem.productName}" th:field="*{orderItems[__${itemStat.index}__].productName}" th:value="${orderItem.productName}" readonly="readonly" /></td>
                     <td class="text-center"><input class="text-center" type="number" th:field="*{orderItems[__${itemStat.index}__].count}" th:value="${orderItem.count}" readonly="readonly" /></td>
                     <td class="text-center font-bold">
-                        <input class="text-center" type="hidden" th:field="*{orderItems[__${itemStat.index}__].price}" th:value="${orderItem.price}*${orderItem.getTotalPrice()}" readonly="readonly" />
-                        <span id="totalPrice" th:data-total-price="${SuperTotalPrice}" th:text="${#numbers.formatDecimal(orderItem.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span>
+                        <input class="text-center" type="hidden" th:field="*{orderItems[__${itemStat.index}__].price}" th:value="${orderItem.totalPrice}" readonly="readonly" />
+                        <span id="totalPrice" th:data-total-price="${SuperTotalPrice}" th:text="${orderItem.formattedTotalPrice}"></span>
                     </td>
                 </tr>
                 </tbody>
@@ -111,7 +120,8 @@
 <!--        </div>-->
         <div class="flex justify-center">
             <button id="payment-button" class="btn btn-natural btn-lg"
-                    th:text="${#numbers.formatDecimal(SuperTotalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 결제하기'">
+                    th:text="${#numbers.formatDecimal(SuperTotalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 결제하기'"
+                    onclick="return checkAddress();">
             </button>
         </div>
     </form>
