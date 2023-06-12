@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prod
     include: secret, data
   mvc:
     pathmatch:
@@ -8,3 +8,6 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  data:
+    redis:
+      host: 172.17.0.1

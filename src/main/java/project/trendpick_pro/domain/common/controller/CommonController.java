@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 
 import java.net.MalformedURLException;
@@ -26,6 +27,12 @@ public class CommonController {
 
     @GetMapping("/")
     public String index() {
-        return "redirect:/trendpick/products/list";
+        String mainCategory = "전체";
+        String redirectUrl = UriComponentsBuilder
+                .fromPath("/trendpick/products/list")
+                .queryParam("main-category", mainCategory)
+                .toUriString();
+
+        return "redirect:" + redirectUrl;
     }
 }

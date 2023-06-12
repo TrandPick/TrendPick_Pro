@@ -44,8 +44,8 @@ public class SubCategoryService {
         return new SubCategoryResponse(subCategory.getName());
     }
 
-    public SubCategory findByBaseId(Long id){
-        return subCategoryRepository.findById(id).orElseThrow();
+    public SubCategory findByBaseId(Long id, MainCategory mainCategory){
+        return subCategoryRepository.findByIdInMainCategory(id, mainCategory);
     }
 
     public SubCategory findByName(String username){
