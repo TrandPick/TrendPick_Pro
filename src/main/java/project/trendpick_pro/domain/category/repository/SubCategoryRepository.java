@@ -16,4 +16,7 @@ public interface SubCategoryRepository extends JpaRepository<SubCategory, Long> 
     @Query("select c from SubCategory c where c.mainCategory.name=:mainCategory")
     List<SubCategory> findAllByMainCategory(@Param("mainCategory") String mainCategory);
     List<SubCategory> findAllBy();
+
+    @Query("select c from SubCategory c where c.id=:id and c.mainCategory=:mainCategory")
+    SubCategory findByIdInMainCategory(@Param("id") Long id, @Param("mainCategory") MainCategory mainCategory);
 }

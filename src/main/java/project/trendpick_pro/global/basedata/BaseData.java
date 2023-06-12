@@ -229,29 +229,34 @@ public class BaseData {
                         mainFile.connectFile(subFile);
                     }
 
-                    MainCategory mainCategory = mainCategoryService.findByBaseId(random.nextLong(5) + 1L);
-                    SubCategory subCategory = subCategoryService.findByBaseId(random.nextLong(5) + 1L);
+                    MainCategory mainCategory = mainCategoryService.findByBaseId(random.nextLong(7) + 1L);
 
-                    Product product = Product
-                            .builder()
-                            .name(mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
-                            .description("이 상품은 멋쟁이 티셔츠입니다." + n)
-                            .stock(50 + n)
-                            .price(20000 + n)
-                            .mainCategory(mainCategory)
-                            .subCategory(subCategory)
-                            .brand(brandService.findById(random.nextLong(10)+1L))
-                            .file(mainFile)
-                            .build();
+                    if (!Objects.equals(mainCategory.getName(), "추천")) {
+                        List<SubCategory> subCategories = mainCategory.getSubCategories();
+                        SubCategory subCategory = subCategories.get(random.nextInt(6));
 
-                    Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
-                    for (int i = 1; i <= 5; i++) {
-                        TagName tagName = tagNameService.findById(random.nextLong(30)+1L);
-                        tags.add(new Tag(tagName.getName()));
+                        Product product = Product
+                                .builder()
+                                .name(mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
+                                .description(mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
+                                .stock(random.nextInt(2000))
+                                .price(random.nextInt(20000,600000))
+                                .mainCategory(mainCategory)
+                                .subCategory(subCategory)
+                                .brand(brandService.findById(random.nextLong(10) + 1L))
+                                .file(mainFile)
+                                .build();
+
+                        Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+                        for (int i = 1; i <= 5; i++) {
+                            TagName tagName = tagNameService.findById(random.nextLong(30) + 1L);
+                            tags.add(new Tag(tagName.getName()));
+                        }
+                        product.addTag(tags);
+                        productRepository.save(product);
                     }
-                    product.addTag(tags);
-                    productRepository.save(product);
                 }
+
                 //==장바구니 데이터==//
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),  new CartItemRequest(1L,5));
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(2L,3));
