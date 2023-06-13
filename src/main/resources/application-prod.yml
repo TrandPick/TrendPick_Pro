@@ -17,7 +17,7 @@ spring:
     exclude:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-gv7so.pub-cdb.ntruss.com:3306/trendpick
+    url: jdbc:mysql://db-gv7so.cdb.ntruss.com:3306/trendpick
     username: trendpick
     password: trendpick@111
   jpa:
