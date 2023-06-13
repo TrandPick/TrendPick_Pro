@@ -72,7 +72,7 @@ public class ProductController {
 
         model.addAttribute("subCategoriesList", subCategoryList);
         model.addAttribute("brands", brandService.findByName(rq.CheckAdmin().get().getBrand()));
-        return "/trendpick/products/register";
+        return "trendpick/products/register";
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
@@ -102,7 +102,7 @@ public class ProductController {
 
         Product product = productService.findById(productId);
         model.addAttribute("originProduct", product);
-        return "/trendpick/products/modify";
+        return "trendpick/products/modify";
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
@@ -132,7 +132,7 @@ public class ProductController {
         Page<AskResponse> productAsk = askService.showAsksByProduct(productId, 0);
         model.addAttribute("productReview", productReviews);
         model.addAttribute("productAsk", productAsk);
-        return "/trendpick/products/detailpage";
+        return "trendpick/products/detailpage";
     }
 
     @PreAuthorize("permitAll()")
@@ -169,7 +169,7 @@ public class ProductController {
             model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
             model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
         }
-        return "/trendpick/products/list";
+        return "trendpick/products/list";
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
@@ -178,7 +178,7 @@ public class ProductController {
         Page<ProductListResponseBySeller> products =
                 productService.findProductsBySeller(rq.CheckAdmin().get(), offset).getData();
         model.addAttribute("products", products);
-        return "/trendpick/admin/products";
+        return "trendpick/admin/products";
     }
 }
 // @RequestParam(value = "sort", defaultValue = "1"), Integer sortCode
