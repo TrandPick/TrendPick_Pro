@@ -43,6 +43,7 @@ public class CartController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/add")
+    @ResponseBody
     public String addItemToCart(CartItemRequest cartItemRequests, Model model) {
         model.addAttribute("cartItemRequest", cartItemRequests);
         return "trendpick/usr/cart/add";
