@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.cart.service.CartService;
@@ -36,11 +37,9 @@ import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 import project.trendpick_pro.global.rsData.RsData;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
-
 @Configuration
 @Profile({"dev", "test"})
 public class BaseData {
@@ -62,7 +61,6 @@ public class BaseData {
     private List<String> bags;
     @Value("${accessory}")
     private List<String> accessories;
-
     Random random = new Random();
     @Bean
     CommandLineRunner initData(
@@ -75,7 +73,8 @@ public class BaseData {
             OrderService orderservice,
             CartService cartService,
             RecommendService recommendService,
-            ReviewRepository reviewRepository
+            ReviewRepository reviewRepository,
+            MemberRepository memberRepository
     ) {
         return new CommandLineRunner() {
             @Override
@@ -89,7 +88,6 @@ public class BaseData {
                     mainCategoryService.save(mainCategory);
                 }
                 CreateSubCategories(mainCategoryService, subCategoryService);
-
                 JoinForm admin = JoinForm.builder()
                         .email("admin@naver.com")
                         .password("12345")
@@ -97,9 +95,7 @@ public class BaseData {
                         .phoneNumber("010-1234-1234")
                         .state("ADMIN")
                         .build();
-
                 /////////////////////////////////////////////////
-
                 JoinForm brand_admin1 = JoinForm.builder()
                         .email("brand@naver.com")
                         .password("12345")
@@ -180,16 +176,38 @@ public class BaseData {
                         .state("BRAND_ADMIN")
                         .brand("리복")
                         .build();
-
-                /////////////////////////////////////////////////
-                JoinForm member1 = JoinForm.builder()
+                /////////////////////////////////////////////////// 100명 유저
+                for(int i=1; i<=100; i++){
+                    List<String> tags = new ArrayList<>();  // 상품에 포함시킬 태크 선택하여 저장
+                    for (int j = 1; j <= 5; j++) {
+                        TagName tagName = tagNameService.findById(random.nextLong(30) + 1L);
+                        tags.add(tagName.getName());
+                    }
+                    JoinForm member = JoinForm.builder()
+                            .email("trendpick"+i+"@naver.com")
+                            .password("12345")
+                            .username("sooho"+i)
+                            .phoneNumber("010-1234-1234")
+                            .state("MEMBER")
+                            .tags(tags)
+                            .build();
+                    Member Rsmember1 = memberService.register(member).getData();
+                    Rsmember1.connectAddress("서울특별시 어디구 어디로 123");
+                    recommendService.select(Rsmember1.getEmail());
+                }
+                JoinForm member = JoinForm.builder()
                         .email("trendpick@naver.com")
                         .password("12345")
                         .username("sooho")
                         .phoneNumber("010-1234-1234")
                         .state("MEMBER")
-                        .tags(List.of("오버핏청바지", "로맨틱룩"))
+                        .tags(tags)
                         .build();
+                Member Rsmember1 = memberService.register(member).getData();
+                Rsmember1.connectAddress("서울특별시 진짜 주인공 123");
+                memberRepository.save(Rsmember1);
+
+                recommendService.select(Rsmember1.getEmail());
                 JoinForm member2 = JoinForm.builder()
                         .email("hye_0000@naver.com")
                         .password("12345")
@@ -198,8 +216,11 @@ public class BaseData {
                         .state("MEMBER")
                         .tags(List.of("오버핏청바지", "로맨틱룩"))
                         .build();
-                memberService.register(admin);
+                Member Rsmember2 = memberService.register(member2).getData();
+                Rsmember2.connectAddress("서울특별시 진짜 주인공 123");
+                memberRepository.save(Rsmember2);
 
+                memberService.register(admin);
                 memberService.register(brand_admin1);
                 memberService.register(brand_admin2);
                 memberService.register(brand_admin3);
@@ -210,12 +231,6 @@ public class BaseData {
                 memberService.register(brand_admin8);
                 memberService.register(brand_admin9);
                 memberService.register(brand_admin10);
-
-                Member Rsmember1 = memberService.register(member1).getData();
-                Rsmember1.connectAddress("서울특별시 어디구 어디로 123");
-                Member Rsmember2 = memberService.register(member2).getData();
-                Rsmember2.connectAddress("경기도 어디구 어디로 456");
-
                 //==상품데이터==//
                 for (int n = 1; n <= 1000; n++) {
                     CommonFile mainFile = CommonFile.builder()
@@ -228,29 +243,30 @@ public class BaseData {
                     for (CommonFile subFile : subFiles) {
                         mainFile.connectFile(subFile);
                     }
-
-                    MainCategory mainCategory = mainCategoryService.findByBaseId(random.nextLong(5) + 1L);
-                    SubCategory subCategory = subCategoryService.findByBaseId(random.nextLong(5) + 1L);
-
-                    Product product = Product
-                            .builder()
-                            .name(mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
-                            .description("이 상품은 멋쟁이 티셔츠입니다." + n)
-                            .stock(50 + n)
-                            .price(20000 + n)
-                            .mainCategory(mainCategory)
-                            .subCategory(subCategory)
-                            .brand(brandService.findById(random.nextLong(10)+1L))
-                            .file(mainFile)
-                            .build();
-
-                    Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
-                    for (int i = 1; i <= 5; i++) {
-                        TagName tagName = tagNameService.findById(random.nextLong(30)+1L);
-                        tags.add(new Tag(tagName.getName()));
+                    MainCategory mainCategory = mainCategoryService.findByBaseId(random.nextLong(7) + 1L);
+                    Brand brand = brandService.findById(random.nextLong(10) + 1L);
+                    if (!Objects.equals(mainCategory.getName(), "추천")) {
+                        List<SubCategory> subCategories = mainCategory.getSubCategories();
+                        SubCategory subCategory = subCategories.get(random.nextInt(6));
+                        Product product = Product
+                                .builder()
+                                .name(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
+                                .description(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
+                                .stock(random.nextInt(2000))
+                                .price(random.nextInt(20000,600000))
+                                .mainCategory(mainCategory)
+                                .subCategory(subCategory)
+                                .brand(brand)
+                                .file(mainFile)
+                                .build();
+                        Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+                        for (int i = 1; i <= 5; i++) {
+                            TagName tagName = tagNameService.findById(random.nextLong(30) + 1L);
+                            tags.add(new Tag(tagName.getName()));
+                        }
+                        product.addTag(tags);
+                        productRepository.save(product);
                     }
-                    product.addTag(tags);
-                    productRepository.save(product);
                 }
                 //==장바구니 데이터==//
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),  new CartItemRequest(1L,5));
@@ -258,7 +274,7 @@ public class BaseData {
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(3L,1));
                 //==주문데이터==//
                 Member findMember = memberService.findByEmail("hye_0000@naver.com").get();
-                MemberInfoDto memberInfo = new MemberInfoDto(findMember);
+                MemberInfoDto memberInfo = MemberInfoDto.of(findMember);
                 List<OrderItemDto> orderItems = new ArrayList<>();
                 orderItems.add(OrderItemDto.of(productRepository.findById(1L).get(), 5));
                 orderItems.add(OrderItemDto.of(productRepository.findById(2L).get(), 3));
@@ -266,6 +282,7 @@ public class BaseData {
                 OrderForm orderForm = new OrderForm(memberInfo, orderItems);
                 orderForm.setPaymentMethod("신용카드");
                 orderservice.order(findMember, orderForm);
+
                 //==주문데이터2==//
                 Member findMember2 = memberService.findByEmail("trendpick@naver.com").get();
                 MemberInfoDto memberInfo2 = new MemberInfoDto(findMember2);
@@ -276,7 +293,7 @@ public class BaseData {
                 OrderForm orderForm2 = new OrderForm(memberInfo2, orderItems2);
                 orderForm2.setPaymentMethod("신용카드");
                 orderservice.order(findMember2, orderForm2);
-                recommendService.select(member1.email());
+
                 //==리뷰데이터==//
                 CommonFile mainFile = CommonFile.builder()
                         .fileName("bamin.png")

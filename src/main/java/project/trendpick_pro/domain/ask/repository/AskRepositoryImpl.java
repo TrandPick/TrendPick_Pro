@@ -56,6 +56,6 @@ public class AskRepositoryImpl implements AskRepositoryCustom {
     }
 
     private static BooleanExpression askByProductIdEq(Long productId) {
-        return product.id.eq(productId);
+        return ask.product.id.eq(productId);
     }
 }
