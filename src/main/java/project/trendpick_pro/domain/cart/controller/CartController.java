@@ -43,6 +43,7 @@ public class CartController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/add")
+    @ResponseBody
     public String addItemToCart(CartItemRequest cartItemRequests, Model model) {
         model.addAttribute("cartItemRequest", cartItemRequests);
         return "/trendpick/usr/cart/add";
@@ -51,6 +52,7 @@ public class CartController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/add")
+    @ResponseBody
     public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
         RsData<CartItemResponse> cartItemResponse = cartService.addItemToCart(rq.CheckMember().get(), cartItemRequests);
        if(cartItemResponse.isFail()){
