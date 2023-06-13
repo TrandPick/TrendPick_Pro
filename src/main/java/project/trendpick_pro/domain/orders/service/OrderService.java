@@ -55,6 +55,7 @@ public class OrderService {
 
         if(orderForm.getMemberInfo().getAddress().trim().length() == 0)
             return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
+
         Delivery delivery = new Delivery(orderForm.getMemberInfo().getAddress());
         List<OrderItem> orderItemList = new ArrayList<>();
         Product product = null;
@@ -73,9 +74,7 @@ public class OrderService {
             if(orderItemDto.getCartItemId() != 0L)
                 cartItemsIds.add(orderItemDto.getCartItemId());
         }
-        // 주문상품 장바구니에서 삭제
-//        List<Long> orderItemIds = new ArrayList<>();
-//        List<CartItem> cartItems=product.getCartItems();
+
         if(!cartItemsIds.isEmpty()) {
             cartService.deleteCartItemsByOrder(cartItemsIds);
         }
