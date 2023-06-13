@@ -1,4 +1,4 @@
-name: 'work-1'
+name: 'work-2'
 on:
   push:
     paths:
@@ -8,7 +8,7 @@ on:
       - 'Dockerfile'
       - 'readme.md'
     branches:
-      - 'main'
+      - 'development'
 jobs:
   build:
     name: 빌드
