@@ -13,12 +13,12 @@ management:
 spring:
   profiles:
     include: secret, data
-    mvc:
-      pathmatch:
-        matching-strategy: ant_path_matcher
-      hiddenmethod:
-        filter:
-          enabled: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+    hiddenmethod:
+      filter:
+        enabled: true
   data:
     redis:
       host: redis-1-service
