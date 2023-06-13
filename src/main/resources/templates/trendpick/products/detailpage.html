@@ -8,11 +8,11 @@
     <div>
         <div class="card bordered flex flex-col md:flex-row gap-4" style="height:800px">
             <figure class="flex-1 flex flex-col items-center">
-                <img th:src="|/images/${productResponse.mainFile}|" class="image-main object-cover"
+                <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${productResponse.mainFile}|" class="image-main object-cover"
                      alt="Product Image"/>
                 <div class="mt-4 flex flex-row overflow-x-auto">
                     <div th:each="image : ${productResponse.subFiles}">
-                        <img th:src="|/images/${image}|" class="rounded w-24 mr-2 my-2" alt="Sub Image">
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${image}|" class="rounded w-24 mr-2 my-2" alt="Sub Image">
                     </div>
                 </div>
             </figure>
@@ -76,7 +76,7 @@
                     </td>
                     <td class="border-b">
                         <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
-                            <img th:src="|/images/${review.mainFile}|" class="mx-auto"
+                            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${review.mainFile}|" class="mx-auto"
                                  style="width: 100px; height: 100px;"/>
                         </a>
                     </td>

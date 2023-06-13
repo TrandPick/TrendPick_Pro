@@ -16,20 +16,10 @@ spring:
   autoconfigure:
     exclude:
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://mariadb-1-service:3306/trendpick__prod?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
-    username: lldjlocal
-    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://db-gv7so.pub-cdb.ntruss.com:3306/trendpick
+    username: trendpick
+    password: trendpick@111
   jpa:
     hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        show_sql: false
-        format_sql: false
-        use_sql_comments: false
-logging:
-  level:
-    root: INFO
-    org.hibernate.orm.jdbc.bind: INFO
-    org.hibernate.orm.jdbc.extract: INFO
+      ddl-auto: create
