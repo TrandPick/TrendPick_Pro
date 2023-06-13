@@ -184,7 +184,7 @@ public class BaseData {
                         .brand("리복")
                         .build();
                 /////////////////////////////////////////////////// 100명 유저
-                for(int i=1; i<=10; i++){
+                for(int i=1; i<=100; i++){
                     List<String> tags = new ArrayList<>();  // 상품에 포함시킬 태크 선택하여 저장
                     for (int j = 1; j <= 5; j++) {
                         TagName tagName = tagNameService.findById(random.nextLong(30) + 1L);
@@ -239,7 +239,7 @@ public class BaseData {
                 memberService.register(brand_admin9);
                 memberService.register(brand_admin10);
                 //==상품데이터==//
-                for (int n = 1; n <= 100; n++) {
+                for (int n = 1; n <= 1000; n++) {
                     CommonFile mainFile = CommonFile.builder()
                             .fileName("bamin.png")
                             .build();
