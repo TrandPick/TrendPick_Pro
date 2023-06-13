@@ -33,11 +33,6 @@ public class RecommendService {
     private final ProductService productService;
     private final MemberRepository memberRepository;
 
-
-    @Value("${file.path}")
-    private String filePath;
-    //recommend -> 태그 기반 추천 상품들이 있어야 함
-
     @Transactional
     @Scheduled(cron = "0 0 4 * * *")
     public void select(){
