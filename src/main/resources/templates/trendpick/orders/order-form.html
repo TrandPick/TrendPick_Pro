@@ -3,6 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>주문 폼</title>
+    <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table thead th {
+            background-color: #212529;
+            color: #fff;
+            text-align: center;
+        }
+        .mask-squircle {
+            border-radius: 16%;
+        }
+        .opacity-50 {
+            opacity: 0.5;
+        }
+    </style>
 </head>
 <body>
 <main layout:fragment="main" class="bg-white">
@@ -60,7 +77,6 @@
             <table class="table w-full table-compact mb-8">
                 <thead>
                 <tr>
-                    <th scope="col"></th>
                     <th class="text-center" scope="col">번호</th>
                     <th class="text-center" scope="col">상품명</th>
                     <th class="text-center" scope="col">주문수량</th>
@@ -69,8 +85,8 @@
                 </thead>
                 <tbody>
                 <tr th:each="orderItem, itemStat : ${orderForm.orderItems}" class="bg-blue-50">
-                    <td class="text-center"><input type="hidden" th:field="*{orderItems[__${itemStat.index}__].cartItemId}" th:value="${orderItem.cartItemId}" /></td>
-                    <td class="text-center"><input type="hidden" th:field="*{orderItems[__${itemStat.index}__].productId}" th:value="${orderItem.productId}" /></td>
+                    <input type="hidden" th:field="*{orderItems[__${itemStat.index}__].cartItemId}" th:value="${orderItem.cartItemId}" />
+                    <input type="hidden" th:field="*{orderItems[__${itemStat.index}__].productId}" th:value="${orderItem.productId}" />
                     <td class="text-center" th:text="${itemStat.count}">1</td>
                     <td class="text-center"><input class="text-center" type="text" id="Product" th:data-total-product="${orderItem.productName}" th:field="*{orderItems[__${itemStat.index}__].productName}" th:value="${orderItem.productName}" readonly="readonly" /></td>
                     <td class="text-center"><input class="text-center" type="number" th:field="*{orderItems[__${itemStat.index}__].count}" th:value="${orderItem.count}" readonly="readonly" /></td>

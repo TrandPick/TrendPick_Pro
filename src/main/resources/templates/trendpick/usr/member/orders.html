@@ -3,10 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>주문 목록</title>
+    <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table thead th {
+            background-color: #212529;
+            color: #fff;
+            text-align: center;
+        }
+        .mask-squircle {
+            border-radius: 16%;
+        }
+        .opacity-50 {
+            opacity: 0.5;
+        }
+    </style>
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
     <body>
-    <h1 class="text-center text-5xl font-bold mb-6">나의 주문목록</h1>
     <table class="table">
         <thead>
         <tr>
