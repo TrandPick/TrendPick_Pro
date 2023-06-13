@@ -87,8 +87,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ env.OWNER_LC }}/tredpick-1:${{ needs.tag.outputs.tag_name }},
-            ghcr.io/${{ env.OWNER_LC }}/tredpick-1:latest
+            ghcr.io/${{ env.OWNER_LC }}/trendpick-1:${{ needs.tag.outputs.tag_name }},
+            ghcr.io/${{ env.OWNER_LC }}/trendpick-1:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
   deploy:
@@ -101,4 +101,4 @@ jobs:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
       - run: |
-          kubectl set image deployment.apps/tredpick-1 tredpick-1=ghcr.io/angelsooho/tredpick-1:${{ needs.tag.outputs.tag_name }}
+          kubectl set image deployment.apps/trendpick-1 trendpick-1=ghcr.io/angelsooho/trendpick-1:${{ needs.tag.outputs.tag_name }}
