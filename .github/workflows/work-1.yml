@@ -96,9 +96,12 @@ jobs:
     needs: [tag, docker]
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/k8s-set-context@v2
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-      - run: |
-          kubectl set image deployment.apps/trendpick-1 trendpick-1=ghcr.io/hye-0000/trendpick-1:${{ needs.tag.outputs.tag_name }}
+    - uses: azure/k8s-set-context@v2
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+    - name: List Entire Workspace
+      run: |
+        ls -R $GITHUB_WORKSPACE
+    - run: |
+        kubectl set image deployment.apps/trendpick-1 trendpick-1=ghcr.io/trandpick/trendpick-1:${{ needs.tag.outputs.tag_name }}
