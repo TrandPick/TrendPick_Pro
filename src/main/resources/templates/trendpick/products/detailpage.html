@@ -113,9 +113,10 @@
     </div>
             <div class="mt-4 flex flex-col">
                 <h1 class="text-xl">QnA 상품문의</h1>
-                <div class="flex justify-end">
-                    <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-primary btn-sm">문의하기</a>
-
+                <div th:if="${@rq.checkLogin()}">
+                    <div th:if="${@rq.CheckMemberHtml()}" class="flex justify-end">
+                        <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-primary btn-sm">문의하기</a>
+                    </div>
                 </div>
                 <table class="w-full mt-6" th:if="${productAsk != null}">
                     <tr class="border-b border-t">
