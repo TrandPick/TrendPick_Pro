@@ -52,7 +52,6 @@ public class CartController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/add")
-    @ResponseBody
     public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
         RsData<CartItemResponse> cartItemResponse = cartService.addItemToCart(rq.CheckMember().get(), cartItemRequests);
        if(cartItemResponse.isFail()){
