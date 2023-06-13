@@ -104,4 +104,4 @@ jobs:
       run: |
         ls -R $GITHUB_WORKSPACE
     - run: |
-        kubectl set image deployment.apps/trendpick-1 trendpick-1=ghcr.io/trandpick/trendpick-1:${{ needs.tag.outputs.tag_name }}
+        kubectl set image deployment.apps/trendpick-1 trendpick-1=ghcr.io/hye-0000/trendpick-1:${{ needs.tag.outputs.tag_name }}
