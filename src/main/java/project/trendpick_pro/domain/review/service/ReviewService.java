@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.review.service;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,8 +37,13 @@ public class ReviewService {
     private final ProductRepository productRepository;
     private final FileTranslator fileTranslator;
 
-    @Value("${file.path}")
-    private static String filePath;
+    private final AmazonS3 amazonS3;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+
+    @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
+    private String filePath;
 
 
     public ReviewResponse showReview(Long productId) {
@@ -45,7 +51,6 @@ public class ReviewService {
 
         return ReviewResponse.of(review);
     }
-
 
     public Review findById(Long id) {
         return reviewRepository.findById(id).orElseThrow();
@@ -58,11 +63,10 @@ public class ReviewService {
         return reviewRepository.findAllByProductId(productId, pageable);
     }
 
-
-
     @Transactional
     public void delete(Long reviewId) {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
+        review.getFile().deleteFile(amazonS3, bucket);
         reviewRepository.delete(review);
     }
 
@@ -73,7 +77,7 @@ public class ReviewService {
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
         List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
 
-        for(CommonFile subFile : subFiles){
+        for (CommonFile subFile : subFiles) {
             mainFile.connectFile(subFile);
         }
 
@@ -88,24 +92,10 @@ public class ReviewService {
     public RsData<ReviewResponse> modify(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
-        CommonFile mainFile = review.getFile();
-        List<CommonFile> subFiles = review.getFile().getChild();
+        review.getFile().deleteFile(amazonS3, bucket);
 
-        if(requestMainFile != null){
-            //  기존 이미지 삭제
-            FileUtils.delete(new File(mainFile.getFileName()));
-        }
-        // 이미지 업데이트
-        mainFile = fileTranslator.translateFile(requestMainFile);
-
-        if(requestSubFiles != null){
-            // 기존 이미지 삭제
-            for(CommonFile subFile : subFiles){
-                FileUtils.delete(new File(subFile.getFileName()));
-            }
-        }
-        // 이미지 업데이트
-        subFiles = fileTranslator.translateFileList(requestSubFiles);
+        CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
+        List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
 
         for (CommonFile subFile : subFiles) {
             mainFile.connectFile(subFile);

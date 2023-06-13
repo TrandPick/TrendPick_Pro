@@ -1,6 +1,7 @@
 package project.trendpick_pro.domain.product.service;
 
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +68,12 @@ public class ProductService {
 
     private final Rq rq;
 
-    @Value("${file.path}")
+    private final AmazonS3 amazonS3;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+
+    @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
     private String filePath;
 
     public Product findById(Long id) {
@@ -108,22 +114,11 @@ public class ProductService {
         rq.CheckAdmin();
 
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
-        CommonFile mainFile = product.getFile();
-        List<CommonFile> subFiles = product.getFile().getChild();
 
-        if (requestMainFile != null) {
-            FileUtils.delete(new File(mainFile.getFileName()));
-        }
+        product.getFile().deleteFile(amazonS3, bucket);
 
-        mainFile = fileTranslator.translateFile(requestMainFile);
-
-        if (requestSubFiles != null) {
-            for (CommonFile subFile : subFiles) {
-                FileUtils.delete(new File(subFile.getFileName()));
-            }
-        }
-
-        subFiles = fileTranslator.translateFileList(requestSubFiles);
+        CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
+        List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
 
         for (CommonFile subFile : subFiles) {
             mainFile.connectFile(subFile);
@@ -144,6 +139,7 @@ public class ProductService {
     public void delete(Long productId) {
         rq.CheckAdmin();
         Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
+        product.getFile().deleteFile(amazonS3, bucket);
         productRepository.delete(product);
     }
 

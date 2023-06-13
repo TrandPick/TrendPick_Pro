@@ -1,4 +1,7 @@
 package project.trendpick_pro.global.basedata;
+import com.amazonaws.services.s3.AmazonS3;
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -41,10 +44,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
 @Configuration
-@Profile({"dev", "test"})
+@Profile({"dev", "test", "prod"})
+@RequiredArgsConstructor
 public class BaseData {
-    @Value("${file.path}")
-    private String filePath;
     @Value("${tag}")
     private List<String> tags;
     @Value("${main-category}")
@@ -74,7 +76,8 @@ public class BaseData {
             CartService cartService,
             RecommendService recommendService,
             ReviewRepository reviewRepository,
-            MemberRepository memberRepository
+            MemberRepository memberRepository,
+            EntityManager em
     ) {
         return new CommandLineRunner() {
             @Override
@@ -88,6 +91,10 @@ public class BaseData {
                     mainCategoryService.save(mainCategory);
                 }
                 CreateSubCategories(mainCategoryService, subCategoryService);
+
+                em.flush();
+                em.clear();
+
                 JoinForm admin = JoinForm.builder()
                         .email("admin@naver.com")
                         .password("12345")
@@ -177,7 +184,7 @@ public class BaseData {
                         .brand("리복")
                         .build();
                 /////////////////////////////////////////////////// 100명 유저
-                for(int i=1; i<=100; i++){
+                for(int i=1; i<=10; i++){
                     List<String> tags = new ArrayList<>();  // 상품에 포함시킬 태크 선택하여 저장
                     for (int j = 1; j <= 5; j++) {
                         TagName tagName = tagNameService.findById(random.nextLong(30) + 1L);
@@ -232,7 +239,7 @@ public class BaseData {
                 memberService.register(brand_admin9);
                 memberService.register(brand_admin10);
                 //==상품데이터==//
-                for (int n = 1; n <= 1000; n++) {
+                for (int n = 1; n <= 100; n++) {
                     CommonFile mainFile = CommonFile.builder()
                             .fileName("bamin.png")
                             .build();
