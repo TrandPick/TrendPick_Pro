@@ -1,14 +1,12 @@
 package project.trendpick_pro.global.basedata;
-import com.amazonaws.services.s3.AmazonS3;
+
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
@@ -19,7 +17,6 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
@@ -29,24 +26,19 @@ import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
-import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
-import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
-import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
-import project.trendpick_pro.global.rsData.RsData;
-import java.io.File;
-import java.io.FileInputStream;
+
 import java.util.*;
 @Configuration
 @Profile({"dev", "test", "prod"})
-@RequiredArgsConstructor
 public class BaseData {
+
     @Value("${tag}")
     private List<String> tags;
     @Value("${main-category}")
@@ -63,7 +55,7 @@ public class BaseData {
     private List<String> bags;
     @Value("${accessory}")
     private List<String> accessories;
-    Random random = new Random();
+
     @Bean
     CommandLineRunner initData(
             TagNameService tagNameService,
@@ -83,6 +75,9 @@ public class BaseData {
             @Override
             @Transactional
             public void run(String... args) {
+
+                long result;
+
                 //원활한 테스트를 위해 잠깐 주석처리
                 for (String tag : tags) {
                     tagNameService.save(tag);
@@ -187,7 +182,8 @@ public class BaseData {
                 for(int i=1; i<=100; i++){
                     List<String> tags = new ArrayList<>();  // 상품에 포함시킬 태크 선택하여 저장
                     for (int j = 1; j <= 5; j++) {
-                        TagName tagName = tagNameService.findById(random.nextLong(30) + 1L);
+                        result = (long) (Math.random() * 30);
+                        TagName tagName = tagNameService.findById(result + 1L);
                         tags.add(tagName.getName());
                     }
                     JoinForm member = JoinForm.builder()
@@ -250,17 +246,26 @@ public class BaseData {
                     for (CommonFile subFile : subFiles) {
                         mainFile.connectFile(subFile);
                     }
-                    MainCategory mainCategory = mainCategoryService.findByBaseId(random.nextLong(7) + 1L);
-                    Brand brand = brandService.findById(random.nextLong(10) + 1L);
+                    result = (long) (Math.random() * 7);
+                    MainCategory mainCategory = mainCategoryService.findByBaseId(result + 1L);
+
+                    result = (long) (Math.random() * 10);
+                    Brand brand = brandService.findById(result + 1L);
                     if (!Objects.equals(mainCategory.getName(), "추천")) {
+
                         List<SubCategory> subCategories = mainCategory.getSubCategories();
-                        SubCategory subCategory = subCategories.get(random.nextInt(6));
+
+                        result = (int) (Math.random() * 6);
+                        SubCategory subCategory = subCategories.get((int) result);
+
+                        int result1 = (int) (Math.random() * 2000);
+                        int result2 = (int) (Math.random() * (600000 - 20000 + 1)) + 20000;
                         Product product = Product
                                 .builder()
                                 .name(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
                                 .description(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
-                                .stock(random.nextInt(2000))
-                                .price(random.nextInt(20000,600000))
+                                .stock(result1)
+                                .price(result2)
                                 .mainCategory(mainCategory)
                                 .subCategory(subCategory)
                                 .brand(brand)
@@ -268,7 +273,8 @@ public class BaseData {
                                 .build();
                         Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
                         for (int i = 1; i <= 5; i++) {
-                            TagName tagName = tagNameService.findById(random.nextLong(30) + 1L);
+                            result = (long) (Math.random() * 30);
+                            TagName tagName = tagNameService.findById(result + 1L);
                             tags.add(new Tag(tagName.getName()));
                         }
                         product.addTag(tags);
