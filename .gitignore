@@ -38,6 +38,7 @@ out/
 
 ### secret yml ###
 src/main/resources/application-secret.yml
+src/main/resources/application-db.yml
 
 ### generated ###
 src/main/generated

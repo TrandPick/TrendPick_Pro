@@ -1,20 +1,13 @@
 spring:
   profiles:
     active: dev
-    include: secret, data
+    include: secret, data, db
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
     hiddenmethod:
       filter:
         enabled: true
-  data:
-    redis:
-      host: 172.17.0.1
-#  autoconfigure:
-#    exclude:
-#      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-#      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
 management:
   endpoint:
     health:
