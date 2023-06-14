@@ -147,11 +147,14 @@ public class ProductController {
             mainCategory = "상의";
         }
         if (mainCategory.equals("추천")) {
-            Member member = rq.CheckLogin().orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-            if (member.getRole().getValue().equals("MEMBER")) {
+            RsData<Member> member = rq.RsCheckLogin();
+            if (member.isFail()) {
+                return rq.historyBack(member);
+            }
+            if (member.getData().getRole().getValue().equals("MEMBER")) {
                 model.addAttribute("subCategoryName", subCategory);
                 model.addAttribute("mainCategoryName", mainCategory);
-                model.addAttribute("productResponses", recommendService.getFindAll(member, offset));
+                model.addAttribute("productResponses", recommendService.getFindAll(member.getData(), offset));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
                 model.addAttribute("subCategoryName", subCategory);
