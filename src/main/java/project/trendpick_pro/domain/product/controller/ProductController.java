@@ -25,6 +25,7 @@ import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.service.ProductService;
