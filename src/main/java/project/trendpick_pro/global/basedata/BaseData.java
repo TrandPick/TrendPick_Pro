@@ -87,9 +87,6 @@ public class BaseData {
                 }
                 CreateSubCategories(mainCategoryService, subCategoryService);
 
-                em.flush();
-                em.clear();
-
                 JoinForm admin = JoinForm.builder()
                         .email("admin@naver.com")
                         .password("12345")
@@ -333,6 +330,9 @@ public class BaseData {
                 reviewRepository.save(review3);
                 Review review4 = Review.of (rr, memberService.findByEmail("hye_0000@naver.com").get(), product2, mainFile);
                 reviewRepository.save(review4);
+
+                em.flush();
+                em.clear();
             }
         };
     }
