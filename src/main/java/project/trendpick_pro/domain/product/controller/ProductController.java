@@ -149,7 +149,10 @@ public class ProductController {
         if (mainCategory.equals("추천")) {
             RsData<Member> member = rq.RsCheckLogin();
             if (member.isFail()) {
-                return rq.historyBack(member);
+                model.addAttribute("subCategoryName", subCategory);
+                model.addAttribute("mainCategoryName", mainCategory);
+                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+                model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             }
             if (member.getData().getRole().getValue().equals("MEMBER")) {
                 model.addAttribute("subCategoryName", subCategory);
