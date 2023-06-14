@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    driver-class-name: ${db.driver}
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+logging.level:
+  org:
+    hibernate.SQL: debug
+

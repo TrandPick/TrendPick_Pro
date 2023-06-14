@@ -1,0 +1,28 @@
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+  <title>계좌번호 관리</title>
+</head>
+<body>
+<main layout:fragment="main">
+  <div class="mt-4 text-2xl">
+    <div class="flex justify-between mt-3">
+      <div></div>
+      <div class="flex justify-end">
+        <p><span th:text="${MemberInfo.name}" class="text-[#37cdbe]"></span> 회원님 반갑습니다!</p>
+      </div>
+    </div>
+    <div class="mt-4">
+      <table class="table border mb-4 w-full text-xl">
+        <tr>
+          <th class="border">주소</th>
+          <td><span th:text="${MemberInfo.address}"></span></td>
+        </tr>
+      </table>
+      <div class="flex justify-end">
+        <a th:href="@{/trendpick/member/edit/address}" class="btn btn-accent btn-sm ml-4">주소 수정하기</a>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

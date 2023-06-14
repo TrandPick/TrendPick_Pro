@@ -1,27 +1,25 @@
 spring:
   profiles:
-    include: secret
+    active: prod
+    include: secret, data
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  datasource:
-  #    H2
-#      driver-class-name: org.h2.Driver
-#      url: jdbc:h2:tcp://localhost/~/db/TrendPick
-#      username: sa
-#      password:
-#      mariaDB
-      driver-class-name: org.mariadb.jdbc.Driver
-      url: jdbc:mariadb://127.0.0.1:3306/TrendPick__dev?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
-      username: root
-      password:
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-        use_sql_comments: true
-logging.level:
-  org:
-    hibernate.SQL: debug
+    hiddenmethod:
+      filter:
+        enabled: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true

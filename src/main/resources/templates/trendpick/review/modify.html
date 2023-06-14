@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 수정</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  </head>
+  <main layout:fragment="main" class="flex-grow flex items-center justify-center">
+    <div class="w-full px-4">
+      <form th:action="@{/trendpick/review/edit/{reviewId}(reviewId=${reviewId})}" th:object="${reviewSaveRequst}" method="post"
+            enctype="multipart/form-data" class="flex flex-col gap-6">
+
+        <div class="form-control h-full">
+          <label class="label">
+            <span class="label-text">제목</span>
+          </label>
+          <input type="text" name="title" th:value="${originReview.title}" placeholder="제목" class="input input-bordered input-accent w-full max-w-xs" autofocus/>
+        </div>
+
+        <div class="form-control h-full">
+          <label class="label">
+            <span class="label-text">내용</span>
+          </label>
+          <input type="text" name="content" th:value="${originReview.content}" placeholder="내용" class="input input-bordered input-accent w-full max-w-xs" autofocus/>
+        </div>
+
+        <div class="form-control h-full">
+          <label class="label">
+            <span class="label-text">메인 사진</span>
+          </label>
+          <input type="file" id="mainFile" name="mainFile" required>
+        </div>
+
+        <div class="form-control h-full">
+          <label class="label">
+            <span class="label-text">서브 사진들</span>
+          </label>
+          <input type="file" id="subFiles" name="subFiles" multiple="multiple" required>
+        </div>
+
+        <div class="form-control h-full">
+          <label class="label">
+              <span class="label-text">별점</span>
+          </label>
+          <select name="rating" class="input input-bordered" autofocus>
+            <option value="1" th:selected="${originReview.rating == 1}">1</option>
+            <option value="2" th:selected="${originReview.rating == 2}">2</option>
+            <option value="3" th:selected="${originReview.rating == 3}">3</option>
+            <option value="4" th:selected="${originReview.rating == 4}">4</option>
+            <option value="5" th:selected="${originReview.rating == 5}">5</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-accent">리뷰 수정</button>
+      </form>
+    </div>
+  </main>
+</html>

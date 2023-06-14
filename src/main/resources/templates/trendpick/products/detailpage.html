@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>TrendPick</title>
+</head>
+<body>
+<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col" style="max-width:100%;">
+    <div>
+        <div class="card bordered flex flex-col md:flex-row gap-4" style="height:800px">
+            <figure class="flex-1 flex flex-col items-center">
+                <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${productResponse.mainFile}|" class="image-main object-cover"
+                     alt="Product Image"/>
+                <div class="mt-4 flex flex-row overflow-x-auto">
+                    <div th:each="image : ${productResponse.subFiles}">
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${image}|" class="rounded w-24 mr-2 my-2" alt="Sub Image">
+                    </div>
+                </div>
+            </figure>
+
+            <div class="card-body flex-1">
+                <div class="mb-4 flex flex-wrap overflow-auto">
+                    <div th:each="tag : ${productResponse.tags}" class="badge-large mr-2 mb-2">
+                        <span th:text="${tag.name}"></span>
+                    </div>
+                </div>
+                <hr>
+                <h2 class="text-2xl font-bold" th:text="${productResponse.name}"></h2>
+                <div class="badge my-2">Brand: <span th:text="${productResponse.brand}"></span></div>
+                <p class="mb-4" th:text="${productResponse.description}"></p>
+                <ul class="mb-8">
+                    <li>가격: <span class="text-orange-600 font-bold text-lg"
+                                  th:text="${#numbers.formatDecimal(productResponse.price, 0, 'COMMA', 0, 'POINT')} + ' 원'">Price</span>
+                    </li>
+                    <li>재고: <span th:text="|${productResponse.stock} 개|">Stock</span></li>
+                </ul>
+                <div class="mb-4">
+                    <label for="quantity" class="font-bold">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" min="1" max="10" value="1"
+                           class="w-16 border border-gray-300 rounded-md px-2 py-1">
+                </div>
+                <div class="card-actions flex" th:if="${not @rq.checkAdminOrBrandAdminHtml()}">
+                    <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" th:object="${ProductOptionForm}"
+                          method="post" onsubmit="return confirmCart()">
+                        <input type="hidden" name="productId" th:value="${productResponse.id}">
+                        <input type="hidden" id="addToCartQuantity" name="quantity" value="1" min="1"/>
+                        <button type="submit" class="btn btn-accent">Add to Cart</button>
+                    </form>
+                    <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${ProductOptionForm}"
+                          method="POST" onsubmit="return confirmOrder()">
+                        <input type="hidden" name="productId" th:value="${productResponse.id}">
+                        <input type="hidden" id="productOptionQuantity" name="quantity" value="1" min="1"/>
+                        <button type="submit" class="btn btn-accent">Buy Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4 flex flex-col">
+        <h1 class="text-xl">리뷰 보기</h1>
+        <table class="w-full mt-6" th:if="${productReview != null}">
+            <tr class="border-b border-t">
+                <th class="text-center" scope="col">제목</th>
+                <th scope="col">리뷰 이미지</th>
+                <th class="text-center" scope="col">내용</th>
+                <th class="text-center" scope="col">작성자</th>
+                <th class="text-center" scope="col">별점</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="review : ${productReview}">
+                <tr>
+                    <td class="text-center border-b">
+                        <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
+                            <h2 th:text="${review.title}"></h2>
+                        </a>
+                    </td>
+                    <td class="border-b">
+                        <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
+                            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${review.mainFile}|" class="mx-auto"
+                                 style="width: 100px; height: 100px;"/>
+                        </a>
+                    </td>
+                    <td class="text-center border-b">
+                        <p th:text="${review.content}"></p>
+                    </td>
+                    <td class="text-center border-b">
+                        <p th:text="${review.writer}"></p>
+                    </td>
+                    <td class="text-center border-b">
+                        <span th:text="${review.rating}"></span>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-4" th:if="${productReview.totalPages > 1}">
+        <div class="flex justify-center my-4">
+            <div class="btn-group">
+                <a th:if="${productReview.hasPrevious()}"
+                   th:href="@{/trendpick/products/{productId}(page=${productReview.number-1}, productId=${productId})}">Previous</a>
+                <span th:each="pageNumber : ${#numbers.sequence(0, productReview.totalPages-1)}" class="ml-4">
+                        <a th:href="@{/trendpick/products/{productId}(page=${pageNumber}, productId=${productId})}"
+                           th:text="${pageNumber+1}"
+                           th:class="${pageNumber == productReview.number ? 'current-page' : ''}"></a>
+                    </span>
+                <a th:if="${productReview.hasNext()}"
+                   th:href="@{/trendpick/products/{productId}(page=${productReview.number+1}, productId=${productId})}"
+                   class="ml-4">Next</a>
+            </div>
+        </div>
+    </div>
+    </div>
+            <div class="mt-4 flex flex-col">
+                <h1 class="text-xl">QnA 상품문의</h1>
+                <div th:if="${@rq.checkLogin()}">
+                    <div th:if="${@rq.CheckMemberHtml()}" class="flex justify-end">
+                        <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-primary btn-sm">문의하기</a>
+                    </div>
+                </div>
+                <table class="w-full mt-6" th:if="${productAsk != null}">
+                    <tr class="border-b border-t">
+                        <th class="text-center" scope="col">번호</th>
+                        <th scope="col">답변여부</th>
+                        <th class="text-center" scope="col">제목</th>
+                        <th class="text-center" scope="col">작성자</th>
+                        <th class="text-center" scope="col">문의일자</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="ask, loop : ${productAsk}">
+                        <tr>
+                            <td class="text-center border-b">
+                                <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
+                                   th:text="${productAsk.number * 10 + loop.count}">
+                                </a>
+                            </td>
+                            <td class="text-center border-b">
+                                <div th:if="${ask.status} == 'YET'">
+                                    <p>답변예정</p>
+                                </div>
+                                <div th:unless="${ask.status} == 'YET'">
+                                    <p>답변완료</p>
+                                </div>
+                            </td>
+                            <td class="text-center border-b">
+                                <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
+                                   th:text="${ask.title}">
+                                </a>
+                            </td>
+                            <td class="text-center border-b">
+                                <p th:text="${ask.memberName}"></p>
+                            </td>
+                            <td class="text-center border-b">
+                                <span th:text="${#temporals.format(ask.createdDate, 'YY/MM/dd')}"></span>
+                            </td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+    <script>
+        $(document).ready(function () {
+            $('#quantity').on('input', function () {
+                var quantity = $(this).val();
+                $('#addToCartQuantity').val(quantity);
+            });
+
+            $('#quantity').on('input', function () {
+                var quantity = $(this).val();
+                $('#productOptionQuantity').val(quantity);
+            });
+        });
+
+
+        function confirmCart() {
+            var confirmAction = confirm("해당 상품을 장바구니에 추가하시겠습니까?");
+            if (confirmAction) {
+                // 폼 전송
+                return true;
+            } else {
+                // 폼 전송 후 페이지 이동 취소
+                setTimeout(function () {
+                    window.stop();
+                }, 0);
+                return false;
+            }
+        }
+
+        function confirmOrder() {
+            var confirmAction = confirm("해당 상품을 주문하시겠습니까 ?");
+            if (confirmAction) {
+                // 폼 전송
+                return true;
+            } else {
+                // 폼 전송 후 페이지 이동 취소
+                setTimeout(function () {
+                    window.stop();
+                }, 0);
+                return false;
+            }
+        }
+    </script>
+
+</main>
+</body>
+</html>

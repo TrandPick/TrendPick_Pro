@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의내용</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+<h2 class="border-bottom py-2" th:text="${askResponse.title}"></h2>
+<div class="card my-3">
+    <div class="card-body">
+        <div class="d-flex card-text" style="white-space: pre-line;" th:text="${askResponse.content}"></div>
+        <div class="d-flex justify-content-end">
+            <div class="badge bg-light text-dark p-2 text-start">
+                <div class="mb-2">
+                    <span th:if="${askResponse.memberId != null}" th:text="${askResponse.memberName}"></span>
+                </div>
+                <div th:text="${#temporals.format(askResponse.createdDate, 'yyyy-MM-dd')}"></div>
+            </div>
+        </div>
+        <div class="my-3">
+            <a th:if="${askResponse.memberName == #authentication.getName()}"
+               th:href="@{|/trendpick/customerservice/asks/edit/${askResponse.askId}|}" class="btn btn-sm btn-outline-secondary"
+               th:text="수정"></a>
+        </div>
+    </div>
+</div>
+<!--<h5 class="border-bottom my-3 py-2" th:if="${askResponse.status != 'COMPLETED'}"-->
+<!--    th:text="답변 예정중입니다."></h5>-->
+<!-- 답변 반복 시작 -->
+<div class="card my-3" th:each="answer : ${askResponse.answerList}">
+    <div class="card-body">
+        <div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
+        <div class="d-flex justify-content-end">
+            <div class="badge bg-light text-dark p-2 text-start">
+                <div th:text="${#temporals.format(answer.createdDate, 'yyyy-MM-dd')}"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 답변 반복 끝  -->
+<!-- 답변 작성 -->
+<form th:action="@{|/trendpick/customerservice/answers/register/${askResponse.askId}|}" th:object="${answerForm}" method="post" class="my-3">
+    <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control" rows="10"></textarea>
+    <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
+    <input type="submit" value="답변등록" class="btn btn-primary my-2">
+</form>
+</div>
+</body>
+</html>

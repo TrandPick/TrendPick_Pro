@@ -1,0 +1,173 @@
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>회원 가입</title>
+</head>
+<body>
+<main layout:fragment="main" class="flex-grow flex items-center justify-center">
+    <script>
+        $(document).ready(function() {
+            $('#memberRadio').change(function() {
+                if(this.checked) {
+                    $('#tagSelection').show();
+                } else {
+                    $('#tagSelection').hide();
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            $('input[type=radio][name="state"]').change(function() {
+                if (this.value === 'BRAND_ADMIN') {
+                    $('#brandNameInput').removeClass("hidden");
+                }
+                else {
+                    $('#brandNameInput').addClass("hidden");
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function JoinForm__submit(form) {
+
+            form.email.value = form.email.value.trim();
+
+            if (form.email.value.length === 0) {
+                toastWarning('아이디를 입력해주세요.');
+                form.username.focus();
+                return;
+            }
+
+            if (form.email.value.length < 4) {
+                toastWarning('아이디를 4자 이상 입력해주세요.');
+                form.username.focus();
+                return;
+            }
+
+            form.password.value = form.password.value.trim();
+
+            if (form.password.value.length === 0) {
+                form.password.focus();
+                toastWarning('비밀번호를 입력해주세요.');
+                return;
+            }
+
+            if (form.password.value.length < 4) {
+                toastWarning('비밀번호를 4자 이상 입력해주세요.');
+                form.password.focus();
+                return;
+            }
+
+            form.phoneNumber.value = form.phoneNumber.value.trim();
+
+            if (form.phoneNumber.value.length === 0) {
+                toastWarning('번호를 입력해주세요.');
+                form.phoneNumber.focus();
+                return;
+            }
+
+            if (form.phoneNumber.value.length < 4) {
+                toastWarning('번호를 11자 이상 입력해주세요.');
+                form.phoneNumber.focus();
+                return;
+            }
+
+            form.username.value = form.username.value.trim();
+
+            if (form.username.value.length === 0) {
+                toastWarning('이름을 입력해주세요.');
+                form.username.focus();
+                return;
+            }
+
+            form.role.value = form.role.value.trim();
+
+            if (form.role.value == null) {
+                toastWarning('권한을 골라주세요.');
+                form.role.focus();
+                return;
+            }
+
+            form.submit(); // 폼 발송
+        }
+    </script>
+
+    <div class="w-full px-4">
+        <form th:action method="post" class="flex flex-col gap-6" onsubmit="JoinForm__submit(this); return false;" th:object="${joinForm}">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">이메일</span>
+                </label>
+                <label>
+                    <input type="text" name="email" placeholder="이메일을 입력해주세요." class="input input-bordered input-accent w-full max-w-xs" autoFocus/>
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">비밀번호</span>
+                </label>
+                <label>
+                    <input type="password" name="password" placeholder="비밀번호를 입력해주세요." class="input input-bordered input-accent w-full max-w-xs" autoFocus/>
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">이름</span>
+                </label>
+                <label>
+                    <input type="text" name="username" placeholder="이름을 입력해주세요." class="input input-bordered input-accent w-full max-w-xs" autoFocus/>
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">전화번호</span>
+                </label>
+                <label>
+                    <input type="tel" name="phoneNumber" placeholder="휴대폰 번호를 입력해주세요." class="input input-bordered input-accent w-full max-w-xs" autoFocus/>
+                </label>
+            </div>
+            <div class="form-control">
+                <h3>
+                    <span class="label-text">어떤 용도로 사용하시나요?</span>
+                </h3>
+                <div class="btn-group">
+                    <label>
+                        <input type="radio" th:field="*{state}" name="ADMIN" value="ADMIN" class="radio radio-success" autoFocus/>
+                    </label><label>관리자</label><br/><br/>
+                    <label>
+                        <input type="radio" id="BRAND_ADMIN" th:field="*{state}" name="BRAND_ADMIN" value="BRAND_ADMIN" class="radio radio-success"/>
+                    </label><label>브랜드관리자</label><br/><br/>
+                    <label>
+                        <input type="radio" th:field="*{state}" name="role" value="MEMBER" id="memberRadio" class="radio radio-success"/>
+                    </label><label>사용자</label><br/><br/>
+                </div>
+
+                <div id="brandNameInput" data-type-1="BRAND_ADMIN" class="hidden">
+                    <label>브랜드 이름:</label>
+                    <label>
+                        <input type="text" name="brand" placeholder="브랜드 이름을 입력해주세요." class="input input-bordered input-accent w-full max-w-xs" autoFocus/>
+                    </label>
+                </div><br/><br/>
+
+                <div class="form-control" id="tagSelection" style="display: none">
+                    <h3 class="">
+                        <span class="label-text">선호하는 태그를 선택 해주세요!</span>
+                    </h3>
+                    <div class="grid grid-cols-5 gap-4 cursor-pointer label">
+                        <div th:each="tag, iterStat : ${allTags}">
+                            <input type="checkbox" th:field="*{tags}" th:name="${tag.name}" th:value="${tag.name}" id="tag_${iterStat.index}" class="checkbox checkbox-success" />
+                            <label th:for="'tag_' + ${iterStat.index}" th:text="${tag.name}"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="btn-join-1 w-min" class="btn btn-accent">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>회원가입</span>
+            </button>
+        </form>
+        <a href="/trendpick/member/login" class="link link-accent float-right">이미 계정이 있나요?</a>
+    </div>
+</main>
+</body>
+</html>

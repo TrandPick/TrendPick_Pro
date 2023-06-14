@@ -1,0 +1,28 @@
+server:
+  shutdown: graceful
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 1m
+  autoconfigure:
+    exclude:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://db-gv7so.pub-cdb.ntruss.com:3306/trendpick
+    username: trendpick
+    password: trendpick@111
+  jpa:
+    hibernate:
+      ddl-auto: create
+  data:
+    redis:
+      host: 10.96.10.86

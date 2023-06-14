@@ -1,0 +1,56 @@
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <title>계좌번호 관리</title>
+</head>
+<body>
+<main layout:fragment="main" class="flex-grow flex items-center justify-center">
+
+    <script>
+        function AccountForm__submit(form) {
+
+            form.bankName.value = form.bankName.value.trim();
+
+            if (form.bankName.value.length === 0) {
+                toastWarning('은행명을 입력해주세요.');
+                form.bankName.focus();
+                return;
+            }
+
+            form.bankAccount.value = form.bankAccount.value.trim();
+
+            if (form.bankAccount.value.length === 0) {
+                form.bankAccount.focus();
+                toastWarning('계좌번호를 입력해주세요.');
+                return;
+            }
+            form.submit(); // 폼 발송
+        }
+    </script>
+
+    <div class="w-full px-4">
+        <form th:action method="post" class="flex flex-col gap-6" onsubmit="AccountForm__submit(this); return false;">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">은행</span>
+                </label>
+                <label>
+                    <input type="text" name="bankName" placeholder="은행 이름을 입력해주세요." class="input input-bordered input-accent w-full max-w-xs" autoFocus/>
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">계좌번호</span>
+                </label>
+                <label>
+                    <input type="text" name="bankAccount" placeholder="계좌번호를 입력해주세요." class="input input-bordered input-accent w-full max-w-xs" autoFocus/>
+                </label>
+            </div>
+            <button id="btn-join-1 w-min" class="btn btn-accent">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>등록하기</span>
+            </button>
+        </form>
+    </div>
+</main>
+</body>
+</html>
