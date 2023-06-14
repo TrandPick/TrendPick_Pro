@@ -23,6 +23,3 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-  data:
-    redis:
-      host: 10.96.10.86
