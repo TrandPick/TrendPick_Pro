@@ -14,6 +14,7 @@ import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.LocaleResolver;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.member.service.MemberService;
@@ -179,6 +180,18 @@ public class Rq {
             throw new MemberNotFoundException("존재하지 않는 회원입니다.");
         }
     }
+
+    public RsData<Member> RsCheckLogin() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
+        Optional<Member> member = memberService.findByEmail(username);
+
+        if (memberService.findByEmail(member.get().getEmail()).isPresent()) {
+            return RsData.of("F-1", "로그인된 상태가 아닙니다.", member.get());
+        }
+        return RsData.of("S-1", "추천 카테고리입니다.", member.get());
+    }
+
     public boolean checkLogin(){
         String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
         Optional<Member> member = memberService.findByEmail(username);
