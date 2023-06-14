@@ -8,6 +8,9 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  data:
+    redis:
+      host: 172.17.0.1
 #  autoconfigure:
 #    exclude:
 #      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
