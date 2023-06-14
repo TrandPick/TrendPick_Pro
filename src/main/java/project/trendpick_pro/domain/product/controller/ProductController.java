@@ -153,12 +153,12 @@ public class ProductController {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             Optional<Member> member = memberService.findByEmail(username);
             if (member.isEmpty()) {
-                model.addAttribute("subCategoryName", subCategory);
-                model.addAttribute("mainCategoryName", mainCategory);
+                model.addAttribute("subCategoryName", "전체");
+                model.addAttribute("mainCategoryName", "전체");
                 model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
-                model.addAttribute("subCategoryName", subCategory);
+                model.addAttribute("subCategoryName", "전체");
                 model.addAttribute("mainCategoryName", mainCategory);
                 model.addAttribute("productResponses", recommendService.getFindAll(member.get(), offset));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
