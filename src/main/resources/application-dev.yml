@@ -11,6 +11,10 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
 logging.level:
   org:
     hibernate.SQL: debug
