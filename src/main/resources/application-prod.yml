@@ -25,4 +25,4 @@ spring:
       ddl-auto: create
   data:
     redis:
-      client-name: redis-1
+      host: 10.96.10.86
