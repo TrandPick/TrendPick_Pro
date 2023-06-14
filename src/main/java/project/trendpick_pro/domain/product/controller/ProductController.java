@@ -152,7 +152,7 @@ public class ProductController {
         if (mainCategory.equals("추천")) {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             Optional<Member> member = memberService.findByEmail(username);
-            if (member.isPresent()) {
+            if (member.isEmpty()) {
                 model.addAttribute("subCategoryName", subCategory);
                 model.addAttribute("mainCategoryName", mainCategory);
                 model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
