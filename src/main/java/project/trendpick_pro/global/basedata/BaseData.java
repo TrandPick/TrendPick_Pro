@@ -195,19 +195,7 @@ public class BaseData {
                     Rsmember1.connectAddress("서울특별시 어디구 어디로 123");
                     recommendService.select(Rsmember1.getEmail());
                 }
-                JoinForm member = JoinForm.builder()
-                        .email("trendpick@naver.com")
-                        .password("12345")
-                        .username("sooho")
-                        .phoneNumber("010-1234-1234")
-                        .state("MEMBER")
-                        .tags(tags)
-                        .build();
-                Member Rsmember1 = memberService.register(member).getData();
-                Rsmember1.connectAddress("서울특별시 진짜 주인공 123");
-                memberRepository.save(Rsmember1);
 
-                recommendService.select(Rsmember1.getEmail());
                 JoinForm member2 = JoinForm.builder()
                         .email("hye_0000@naver.com")
                         .password("12345")
@@ -278,6 +266,20 @@ public class BaseData {
                         productRepository.save(product);
                     }
                 }
+
+                JoinForm member = JoinForm.builder()
+                        .email("trendpick@naver.com")
+                        .password("12345")
+                        .username("sooho")
+                        .phoneNumber("010-1234-1234")
+                        .state("MEMBER")
+                        .tags(tags)
+                        .build();
+                Member Rsmember1 = memberService.register(member).getData();
+                Rsmember1.connectAddress("서울특별시 진짜 주인공 123");
+                memberRepository.save(Rsmember1);
+                recommendService.select(Rsmember1.getEmail());
+
                 //==장바구니 데이터==//
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(),  new CartItemRequest(1L,5));
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(2L,3));
