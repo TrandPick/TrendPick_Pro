@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,10 @@ import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
+import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -45,6 +48,7 @@ public class ProductController {
 
     private final ProductService productService;
     private final RecommendService recommendService;
+    private final MemberService memberService;
 
     private final TagNameService tagNameService;
     private final BrandService brandService;
@@ -147,19 +151,17 @@ public class ProductController {
             mainCategory = "상의";
         }
         if (mainCategory.equals("추천")) {
-            RsData<Member> member = rq.RsCheckLogin();
-            if (member.isFail()) {
-                return rq.historyBack(member);
-            }
-            if (member.getData().getRole().getValue().equals("MEMBER")) {
-                model.addAttribute("subCategoryName", subCategory);
-                model.addAttribute("mainCategoryName", mainCategory);
-                model.addAttribute("productResponses", recommendService.getFindAll(member.getData(), offset));
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            Optional<Member> member = memberService.findByEmail(username);
+            if (member.isEmpty()) {
+                model.addAttribute("subCategoryName", "전체");
+                model.addAttribute("mainCategoryName", "전체");
+                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
-                model.addAttribute("subCategoryName", subCategory);
+                model.addAttribute("subCategoryName", "전체");
                 model.addAttribute("mainCategoryName", mainCategory);
-                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+                model.addAttribute("productResponses", recommendService.getFindAll(member.get(), offset));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             }
         } else if(mainCategory.equals("전체")){

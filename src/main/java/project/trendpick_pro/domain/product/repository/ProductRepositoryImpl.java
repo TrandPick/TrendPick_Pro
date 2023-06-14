@@ -28,11 +28,9 @@ import static project.trendpick_pro.domain.tags.tag.entity.QTag.tag;
 public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-    private final JPAQuery<Long> subQuery;
 
     public ProductRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
-        this.subQuery = new JPAQuery<>(em);
     }
 
     @Override

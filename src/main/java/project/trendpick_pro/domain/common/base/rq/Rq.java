@@ -181,17 +181,6 @@ public class Rq {
         }
     }
 
-    public RsData<Member> RsCheckLogin() {
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
-        Optional<Member> member = memberService.findByEmail(username);
-
-        if (memberService.findByEmail(member.get().getEmail()).isPresent()) {
-            return RsData.of("F-1", "로그인된 상태가 아닙니다.", member.get());
-        }
-        return RsData.of("S-1", "추천 카테고리입니다.", member.get());
-    }
-
     public boolean checkLogin(){
         String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
         Optional<Member> member = memberService.findByEmail(username);
