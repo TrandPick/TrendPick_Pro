@@ -153,16 +153,10 @@ public class ProductController {
                 model.addAttribute("mainCategoryName", mainCategory);
                 model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
-            }
-            if (member.getData().getRole().getValue().equals("MEMBER")) {
-                model.addAttribute("subCategoryName", subCategory);
-                model.addAttribute("mainCategoryName", mainCategory);
-                model.addAttribute("productResponses", recommendService.getFindAll(member.getData(), offset));
-                model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
                 model.addAttribute("subCategoryName", subCategory);
                 model.addAttribute("mainCategoryName", mainCategory);
-                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+                model.addAttribute("productResponses", recommendService.getFindAll(member.getData(), offset));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             }
         } else if(mainCategory.equals("전체")){
