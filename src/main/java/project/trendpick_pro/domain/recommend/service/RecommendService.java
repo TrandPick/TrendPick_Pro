@@ -2,7 +2,6 @@ package project.trendpick_pro.domain.recommend.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -14,14 +13,11 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
-import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.entity.Recommend;
 import project.trendpick_pro.domain.recommend.repository.RecommendRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,11 +28,6 @@ public class RecommendService {
     private final RecommendRepository recommendRepository;
     private final ProductService productService;
     private final MemberRepository memberRepository;
-
-
-    @Value("${file.path}")
-    private String filePath;
-    //recommend -> 태그 기반 추천 상품들이 있어야 함
 
     @Transactional
     @Scheduled(cron = "0 0 4 * * *")

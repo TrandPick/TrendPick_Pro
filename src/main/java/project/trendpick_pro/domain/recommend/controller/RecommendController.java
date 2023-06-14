@@ -32,6 +32,6 @@ public class RecommendController {
     @GetMapping("/admin/getrecommendset")
     public String getRecommend(Model model, @RequestParam("page") int offset){
         model.addAttribute("recommend", recommendService.getFindAll(rq.CheckMember().get(), offset));
-        return "/main";
+        return "main";
     }
 }

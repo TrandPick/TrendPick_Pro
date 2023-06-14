@@ -30,13 +30,12 @@ import java.util.Optional;
 @RequestMapping("/trendpick/review")
 public class ReviewController {
     private final ReviewService reviewService;
-    private final MemberRepository memberRepository;
     private final Rq rq;
 
     @GetMapping("/register/{productId}")
     public String registerReview(@PathVariable("productId") Long productId, Model model) {
         model.addAttribute("productId", productId);
-        return "/trendpick/review/register";
+        return "trendpick/review/register";
     }
 
     @PostMapping("/register/{productId}")
@@ -64,7 +63,7 @@ public class ReviewController {
             String writer = checkMember.getUsername();
             model.addAttribute("currentUser", writer);
         }
-        return "/trendpick/review/detail";
+        return "trendpick/review/detail";
     }
 
     @DeleteMapping("/delete/{reviewId}")
@@ -103,7 +102,7 @@ public class ReviewController {
             String currentUser = checkMember.getUsername();
             model.addAttribute("currentUser", currentUser);
         }
-        return "/trendpick/review/list";
+        return "trendpick/review/list";
     }
 
     @GetMapping("/user")
@@ -114,6 +113,6 @@ public class ReviewController {
         Page<ReviewResponse> reviewResponses = reviewService.showOwnReview(writer, pageable);
         model.addAttribute("reviewResponses", reviewResponses);
         model.addAttribute("currentUser", writer);
-        return "/trendpick/review/list";
+        return "trendpick/review/list";
     }
 }

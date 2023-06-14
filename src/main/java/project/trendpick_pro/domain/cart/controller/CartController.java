@@ -38,7 +38,7 @@ public class CartController {
         Cart carts = cartService.getCartByUser(member.getId());
         List<CartItem> cartItems = cartService.CartView(carts);
         model.addAttribute("cartItems", cartItems);
-        return "/trendpick/usr/cart/list";
+        return "trendpick/usr/cart/list";
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
@@ -46,7 +46,7 @@ public class CartController {
     @ResponseBody
     public String addItemToCart(CartItemRequest cartItemRequests, Model model) {
         model.addAttribute("cartItemRequest", cartItemRequests);
-        return "/trendpick/usr/cart/add";
+        return "trendpick/usr/cart/add";
     }
 
 

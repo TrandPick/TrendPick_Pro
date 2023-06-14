@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
+import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
@@ -45,6 +47,7 @@ public class ProductController {
 
     private final ProductService productService;
     private final RecommendService recommendService;
+    private final MemberService memberService;
 
     private final TagNameService tagNameService;
     private final BrandService brandService;
@@ -72,7 +75,7 @@ public class ProductController {
 
         model.addAttribute("subCategoriesList", subCategoryList);
         model.addAttribute("brands", brandService.findByName(rq.CheckAdmin().get().getBrand()));
-        return "/trendpick/products/register";
+        return "trendpick/products/register";
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
@@ -102,7 +105,7 @@ public class ProductController {
 
         Product product = productService.findById(productId);
         model.addAttribute("originProduct", product);
-        return "/trendpick/products/modify";
+        return "trendpick/products/modify";
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
@@ -132,7 +135,7 @@ public class ProductController {
         Page<AskResponse> productAsk = askService.showAsksByProduct(productId, 0);
         model.addAttribute("productReview", productReviews);
         model.addAttribute("productAsk", productAsk);
-        return "/trendpick/products/detailpage";
+        return "trendpick/products/detailpage";
     }
 
     @PreAuthorize("permitAll()")
@@ -147,16 +150,17 @@ public class ProductController {
             mainCategory = "상의";
         }
         if (mainCategory.equals("추천")) {
-            Member member = rq.CheckLogin().orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-            if (member.getRole().getValue().equals("MEMBER")) {
-                model.addAttribute("subCategoryName", subCategory);
-                model.addAttribute("mainCategoryName", mainCategory);
-                model.addAttribute("productResponses", recommendService.getFindAll(member, offset));
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            Optional<Member> member = memberService.findByEmail(username);
+            if (member.isEmpty()) {
+                model.addAttribute("subCategoryName", "전체");
+                model.addAttribute("mainCategoryName", "전체");
+                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
-                model.addAttribute("subCategoryName", subCategory);
+                model.addAttribute("subCategoryName", "전체");
                 model.addAttribute("mainCategoryName", mainCategory);
-                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+                model.addAttribute("productResponses", recommendService.getFindAll(member.get(), offset));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             }
         } else if(mainCategory.equals("전체")){
@@ -169,7 +173,7 @@ public class ProductController {
             model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
             model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
         }
-        return "/trendpick/products/list";
+        return "trendpick/products/list";
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
@@ -178,7 +182,7 @@ public class ProductController {
         Page<ProductListResponseBySeller> products =
                 productService.findProductsBySeller(rq.CheckAdmin().get(), offset).getData();
         model.addAttribute("products", products);
-        return "/trendpick/admin/products";
+        return "trendpick/admin/products";
     }
 }
 // @RequestParam(value = "sort", defaultValue = "1"), Integer sortCode

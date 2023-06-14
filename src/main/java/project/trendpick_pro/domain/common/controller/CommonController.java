@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 @Controller
 @RequiredArgsConstructor
 public class CommonController {
+
     private final FileTranslator fileTranslator;
 
     @ResponseBody
