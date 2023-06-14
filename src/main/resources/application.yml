@@ -8,6 +8,11 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
+
 management:
   endpoint:
     health:
