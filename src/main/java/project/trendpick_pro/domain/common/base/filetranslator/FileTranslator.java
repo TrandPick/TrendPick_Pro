@@ -36,7 +36,7 @@ public class FileTranslator {
         ObjectMetadata oj = new ObjectMetadata();
         oj.setContentLength(multipartFile.getInputStream().available());
 
-        amazonS3.putObject(bucket, translatedFileName, multipartFile.getInputStream(), oj);
+        amazonS3.putObject(bucket, "images/" + translatedFileName, multipartFile.getInputStream(), oj);
         return CommonFile.builder()
                 .fileName(translatedFileName)
                 .build();
