@@ -9,17 +9,13 @@ import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
-import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.dto.request.TagRequest;
 import project.trendpick_pro.global.rsData.RsData;
 
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -86,6 +82,50 @@ public class MemberService {
         memberRepository.save(member);
 
         return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
+    }
+
+    @Transactional
+    public List<Member> registerAll(List<JoinForm> List) {
+        List<Member> list = new ArrayList<>();
+        for (JoinForm joinForm : List) {
+            if (memberRepository.findByEmail(joinForm.email()).isPresent()) {
+                return null;
+            }
+            String brand = "";
+            RoleType roleType;
+            if (Objects.equals(joinForm.state(), RoleType.ADMIN.getValue())) {
+                roleType = RoleType.ADMIN;
+            } else if (joinForm.state().equals(RoleType.BRAND_ADMIN.getValue())) {
+                roleType = RoleType.BRAND_ADMIN;
+                brand = joinForm.brand();
+            } else {
+                roleType = RoleType.MEMBER;
+            }
+            Member member = Member
+                    .builder()
+                    .email(joinForm.email())
+                    .password(passwordEncoder.encode(joinForm.password()))
+                    .username(joinForm.username())
+                    .phoneNumber(joinForm.phoneNumber())
+                    .role(roleType)
+                    .build();
+            member.connectBrand(brand);
+
+            if(brand.length() != 0)
+                brandService.save(brand);
+
+            if (joinForm.tags() != null) {
+                Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();
+                for (String tag : joinForm.tags()) {
+                    FavoriteTag favoriteTag = new FavoriteTag(tag);
+                    favoriteTags.add(favoriteTag);
+                }
+                member.changeTags(favoriteTags);
+            }
+            list.add(member);
+        }
+        memberRepository.saveAll(list);
+        return list;
     }
 
     @Transactional
