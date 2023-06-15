@@ -25,6 +25,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RecommendService {
+
     private final RecommendRepository recommendRepository;
     private final ProductService productService;
     private final MemberRepository memberRepository;

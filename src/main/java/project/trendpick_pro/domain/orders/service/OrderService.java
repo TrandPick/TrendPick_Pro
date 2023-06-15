@@ -1,43 +1,36 @@
 package project.trendpick_pro.domain.orders.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
-import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.delivery.entity.DeliveryState;
-import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
-import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
-import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
-import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
-import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
+import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
-import project.trendpick_pro.domain.product.exception.ProductStockOutException;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
+import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -46,7 +39,6 @@ import java.util.Optional;
 public class OrderService {
     private final CartService cartService;
     private final OrderRepository orderRepository;
-    private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final FavoriteTagService favoriteTagService;
 
