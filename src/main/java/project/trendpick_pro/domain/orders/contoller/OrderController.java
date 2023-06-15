@@ -78,10 +78,10 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @PostMapping("/order/product")
-    public String orderProduct(@ModelAttribute ProductOptionForm productOptionForm, Model model) {
+    @GetMapping("/order/product")
+    public String orderProduct(@RequestParam("productId") Long id, Model model) {
         List<Long> selectedItems = new ArrayList<>();
-        selectedItems.add(productOptionForm.getProductId());
+        selectedItems.add(id);
         RsData<Order> order = orderService.cartToOrder(rq.CheckMember().get(), selectedItems);
 
         if(order.isFail()) {
