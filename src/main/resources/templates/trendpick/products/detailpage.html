@@ -48,7 +48,6 @@
                     <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${ProductOptionForm}"
                           method="get" onsubmit="return confirmOrder()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
-                        <input type="hidden" id="productOptionQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Buy Now</button>
                     </form>
                 </div>
