@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.member.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import project.trendpick_pro.domain.member.entity.Member;
 
@@ -7,10 +8,19 @@ import project.trendpick_pro.domain.member.entity.Member;
 @NoArgsConstructor
 @Setter
 public class MemberInfoDto {
+    private String bankAccount;
+
+    private String address;
+
+    private String phone;
+
+    private String name;
+
+    private String bankName;
+
+    private String email;
 
     private Long memberId;
-    private String name;
-    private String email;
 
     @Builder
     public MemberInfoDto (Member member) {
@@ -26,12 +36,6 @@ public class MemberInfoDto {
     public static MemberInfoDto of(Member member){
         return new MemberInfoDto(member);
     }
-
-    private String phone;
-    private String address;
-
-    private String bankName;
-    private String bankAccount;
 
     @Override
     public String toString() {

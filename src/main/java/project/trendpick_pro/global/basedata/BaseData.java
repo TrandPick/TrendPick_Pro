@@ -243,7 +243,7 @@ public class BaseData {
                         result = (int) (Math.random() * 6);
                         SubCategory subCategory = subCategories.get((int) result);
 
-                        int result1 = (int) (Math.random() * 2000);
+                        int result1 = (int) (Math.random() * 2000) + 20;
                         int result2 = (int) (Math.random() * (600000 - 20000 + 1)) + 20000;
                         Product product = Product
                                 .builder()
