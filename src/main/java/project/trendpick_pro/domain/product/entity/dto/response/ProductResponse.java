@@ -9,13 +9,12 @@ import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductResponse implements Serializable {
+public class ProductResponse {
 
     private Long id;
     private String name;
