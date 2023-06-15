@@ -22,7 +22,7 @@ public class NcpS3Config {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    @Value("${cloud.aws.endpoint}")
+    @Value("${cloud.aws.endPoint}")
     private String endPoint;
 
     @Bean
