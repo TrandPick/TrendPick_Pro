@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +46,7 @@ public class ReviewService {
     @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
     private String filePath;
 
-
+    @Cacheable(value = "reviewCache", key = "#productId")
     public ReviewResponse showReview(Long productId) {
         Review review = reviewRepository.findById(productId).orElseThrow();
 
@@ -55,8 +56,6 @@ public class ReviewService {
     public Review findById(Long id) {
         return reviewRepository.findById(id).orElseThrow();
     }
-
-
 
     public Page<ReviewProductResponse> getProductReviews(Long productId, Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), 6);
@@ -107,6 +106,7 @@ public class ReviewService {
     }
 
     @Transactional
+    @Cacheable(value = "reviewPageCache", key = "#pageable.pageNumber")
     public Page<ReviewResponse> showAll(Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), 6);
         Page<Review> reviewPage = reviewRepository.findAll(pageable);

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.product.entity.Product;
 
@@ -33,7 +34,7 @@ public class OrderItem {
 
     private OrderItem(Product product,  int count) {
         this.product = product;
-        this.orderPrice = product.getPrice() * count;
+        this.orderPrice = product.getPrice();
         this.count = count;
 
         product.removeStock(count);
@@ -42,6 +43,10 @@ public class OrderItem {
 
     public static OrderItem of(Product product, OrderItemDto orderItemDto) {
         return new OrderItem(product, orderItemDto.getCount());
+    }
+
+    public static OrderItem of(Product product, CartItem cartItem) {
+        return new OrderItem(product, cartItem.getQuantity());
     }
 
     public void connectOrder(Order order) {

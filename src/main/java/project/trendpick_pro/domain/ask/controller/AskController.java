@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.RequestScope;
 import project.trendpick_pro.domain.answer.entity.form.AnswerForm;
+import project.trendpick_pro.domain.answer.service.AnswerService;
 import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
 import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
@@ -20,6 +21,7 @@ import project.trendpick_pro.global.rsData.RsData;
 @RequestMapping("/trendpick/customerservice/asks")
 public class AskController {
     private final AskService askService;
+    private final AnswerService answerService;
     private final Rq rq;
 
     @PreAuthorize("isAuthenticated()")
@@ -37,36 +39,47 @@ public class AskController {
         if(result.isFail())
             return rq.redirectWithMsg("/trendpick/products/%s".formatted(askForm.getProductId()), result);
 
-        return rq.redirectWithMsg("/trendpick/products/%s".formatted(result.getData()), result);
+        return rq.redirectWithMsg("/trendpick/products/%s".formatted(askForm.getProductId()), result);
     }
 
     @GetMapping("/{askId}")
     public String showAsk(@PathVariable Long askId, AnswerForm answerForm, Model model) {
-        model.addAttribute("askResponse", askService.show(askId));
+        model.addAttribute("ask", askService.show(askId));
+        model.addAttribute("answers", answerService.showAll(askId));
+        model.addAttribute("answerForm", new AnswerForm());
         return "trendpick/customerservice/asks/detail";
-    }
-
-    @GetMapping("/list")
-    public String showAsksByProduct(@RequestParam("page") int offset, @RequestParam("product") Long productId, Model model) {
-        model.addAttribute("askResponse", askService.showAsksByProduct(productId, offset));
-        return "trendpick/customerservice/asks/list";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{askId}")
     public String deleteAsk(@PathVariable Long askId) {
-        askService.delete(rq.getMember(), askId);
+        RsData<Long> result = askService.delete(rq.CheckMember().get(), askId);
+        if(result.isFail())
+            return rq.historyBack(result);
 
-        return "redirect:/trendpick/customerservice/asks/list";
+        return rq.redirectWithMsg("/trendpick/products/%s".formatted(result.getData()), result);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/edit/{askId}")
+    public String modifyForm(@PathVariable Long askId, Model model) {
+        AskResponse ask = askService.show(askId);
+        if(ask.getMemberId() != rq.CheckMember().get().getId())
+            return rq.historyBack("자신이 올린 문의글에 대해서만 수정 권한이 있습니다.");
+
+        model.addAttribute("askForm", new AskForm(ask.getAskId(), ask.getTitle(), ask.getContent()));
+
+        return "trendpick/customerservice/asks/register";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/edit/{askId}")
-    public String modifyAsk(@PathVariable Long askId, @Valid AskRequest askRequest, Model model) {
-        AskResponse askResponse = askService.modify(rq.getMember(), askId, askRequest);
+    public String modifyAsk(@PathVariable Long askId, @Valid AskForm askForm) {
+        RsData<AskResponse> result = askService.modify(rq.CheckMember().get(), askId, askForm);
+        if (result.isFail())
+            return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), result);
 
-        model.addAttribute("askResponse", askResponse);
-        return "redirect:/trendpick/customerservice/asks/%s".formatted(askId);
+        return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), "문의글 수정이 완료되었습니다.");
     }
 
 }

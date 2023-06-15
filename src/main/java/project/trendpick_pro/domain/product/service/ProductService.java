@@ -2,15 +2,16 @@ package project.trendpick_pro.domain.product.service;
 
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,32 +24,26 @@ import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
-import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
-import project.trendpick_pro.domain.recommend.service.RecommendService;
-import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
-import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
-import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
-import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
-import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
+import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
+import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
 import project.trendpick_pro.global.rsData.RsData;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -109,11 +104,12 @@ public class ProductService {
     }
 
     @Transactional
+    @CachePut(value = "products", key = "#productId")
     public RsData<Long> modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
         rq.CheckAdmin();
 
-        Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
 
         product.getFile().deleteFile(amazonS3, bucket);
 
@@ -136,32 +132,39 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = "products", key = "#productId")
     public void delete(Long productId) {
         rq.CheckAdmin();
-        Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
         product.getFile().deleteFile(amazonS3, bucket);
         productRepository.delete(product);
     }
 
+    @Cacheable(value = "product", key = "#productId")
     public ProductResponse show(Long productId) {
 
-        Product product = productRepository.findById(productId).orElseThrow(null);// 임시. 나중에 테스트
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
 
         if(rq.checkLogin()){
             updateFavoriteTag(product);
         }
 
-        return ProductResponse.of(filePath, product);
+        return ProductResponse.of(product);
+    }
+
+    @Cacheable(value = "products", key = "#productId")
+    public ProductListResponse getProduct(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
+        return ProductListResponse.of(product);
     }
 
     private void updateFavoriteTag(Product product) {
         Member member = rq.GetMember();
-
         if(member.getRole().equals(RoleType.MEMBER))
             favoriteTagService.updateTag(member, product, TagType.SHOW);
     }
 
-    public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory) { //, Integer sortCode
+    public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory) {
 
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
         PageRequest pageable = PageRequest.of(offset, 18);
@@ -169,6 +172,7 @@ public class ProductService {
         Page<ProductListResponse> listResponses = productRepository.findAllByCategoryId(cond, pageable);
 
         List<ProductListResponse> list = listResponses.getContent().stream()
+                .map(product -> getProduct(product.getId()))
                 .peek(product -> {
                     String updatedMainFile = product.getMainFile();
                     product.setMainFile(updatedMainFile);

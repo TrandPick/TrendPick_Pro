@@ -54,6 +54,19 @@
                 <li><a href="/trendpick/review/list">리뷰</a></li>
             </ul>
             <ul class="menu menu-horizontal flex justify-end flex-1 px-2 float-right">
+
+                <li class="ml-2 mt-1" th:if="${@rq.checkLogin()}">
+                    <div class="badge badge-accent" th:if="${@rq.CheckMemberHtml()}">
+                        <span th:text="${@rq.GetMember().username}+'님'"></span>
+                    </div>
+                    <div class="badge badge-accent" th:if="${@rq.CheckBrandAdminHtml()}">
+                        <span th:text="${@rq.GetMember().brand}+' 관리자'"></span>
+                    </div>
+                    <div class="badge badge-accent" th:if="${@rq.GetMember().role.value == 'ADMIN'}">
+                        <span>관리자 계정</span>
+                    </div>
+                </li>
+
                 <li><a href="/trendpick/member/register" sec:authorize="isAnonymous()">회원가입</a></li>
                 <li><a href="/trendpick/member/login" sec:authorize="isAnonymous()">로그인</a></li>
                 <li>

@@ -45,7 +45,7 @@ public class ProductResponse {
         this.tags = tags;
     }
 
-    public static ProductResponse of (String filePath, Product product) {
+    public static ProductResponse of (Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -54,14 +54,14 @@ public class ProductResponse {
                 .brand(product.getBrand().getName())
                 .description(product.getDescription())
                 .mainFile(product.getFile().getFileName())
-                .subFiles(subFiles(filePath, product.getFile().getChild()))
+                .subFiles(subFiles(product.getFile().getChild()))
                 .price(product.getPrice())
                 .stock(product.getStock())
                 .tags(new ArrayList<>(product.getTags()))
                 .build();
     }
 
-    private static List<String> subFiles(String filePath, List<CommonFile> subFiles) {
+    private static List<String> subFiles(List<CommonFile> subFiles) {
         List<String> tmpList = new ArrayList<>();
 
         for (CommonFile subFile : subFiles) {
