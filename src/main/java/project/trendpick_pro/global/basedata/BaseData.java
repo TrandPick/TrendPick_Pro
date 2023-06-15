@@ -17,11 +17,8 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
-import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
@@ -65,7 +62,6 @@ public class BaseData {
             SubCategoryService subCategoryService,
             BrandService brandService,
             ProductRepository productRepository,
-            OrderService orderservice,
             CartService cartService,
             RecommendService recommendService,
             ReviewRepository reviewRepository
