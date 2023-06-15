@@ -31,7 +31,6 @@ import project.trendpick_pro.global.rsData.RsData;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.ArrayList;
 
 
 @Slf4j
@@ -78,18 +77,13 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("/order/product")
-    public String orderProduct(@RequestParam("productId") Long id, Model model) {
-        List<Long> selectedItems = new ArrayList<>();
-        selectedItems.add(id);
-        RsData<Order> order = orderService.cartToOrder(rq.CheckMember().get(), selectedItems);
-
-        if(order.isFail()) {
-            return rq.historyBack(order);
-        }
-
-        model.addAttribute("order", order.getData());
-        return "trendpick/orders/order-form";
+    @PostMapping("/order/product")
+    public String orderProduct(@ModelAttribute ProductOptionForm productOptionForm, RedirectAttributes redirect) {
+        RsData<OrderForm> result = orderService.productToOrder(rq.CheckMember().get(), productOptionForm);
+        if(result.isFail())
+            return rq.historyBack(result);
+        redirect.addFlashAttribute("order", result.getData());
+        return rq.redirectWithMsg("/trendpick/orders/order-form", "주문폼을 확인하시고 결제 버튼을 눌러주세요.");
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
