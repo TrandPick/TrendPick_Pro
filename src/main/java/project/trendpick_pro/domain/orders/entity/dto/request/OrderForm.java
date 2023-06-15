@@ -18,10 +18,8 @@ import java.util.Locale;
 @NoArgsConstructor
 public class OrderForm {
 
-    @NotBlank
     private MemberInfoDto memberInfo;
 
-    @NotBlank
     private List<OrderItemDto> orderItems;
 
     @NotBlank

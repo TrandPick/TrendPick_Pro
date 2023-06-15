@@ -3,9 +3,14 @@ package project.trendpick_pro.global.jmeter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
@@ -14,19 +19,17 @@ import project.trendpick_pro.domain.member.repository.MemberRepository;
 @RequiredArgsConstructor
 @RequestMapping("/jmeter")
 public class JmeterController {
+    private final Rq rq;
 
     private final MemberRepository memberRepository;
 
-    @GetMapping("/member/info")
-    public MemberInfoDto getMemberInfo(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("memberId") == null) {
-            throw new RuntimeException("세션이 없거나 로그인되어 있지 않습니다.");
-        }
+    @GetMapping("/member/login")
+    public ResponseEntity<MemberInfoDto> getMemberInfo(HttpServletRequest request) {
+        Member member = rq.CheckMember().get();
+        MemberInfoDto memberInfoDto = MemberInfoDto.of(member);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
-        Long memberId = (Long) session.getAttribute("memberId");
-        // memberId를 사용하여 회원 정보를 조회하고 MemberInfoDto 객체를 생성하여 반환합니다.
-        Member member = memberRepository.findById(memberId).get();
-        return MemberInfoDto.of(member);
+        return new ResponseEntity<>(memberInfoDto, headers, HttpStatus.OK);
     }
 }
