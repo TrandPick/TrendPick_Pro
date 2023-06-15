@@ -45,36 +45,6 @@ public class OrderService {
     private final FavoriteTagService favoriteTagService;
 
     @Transactional
-    public RsData<Long> order(Member member, OrderForm orderForm) {
-
-//        if(orderForm.getMemberInfo().getAddress().trim().length() == 0)
-//            return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
-//
-//        Delivery delivery = new Delivery(orderForm.getMemberInfo().getAddress());
-//        List<OrderItem> orderItemList = new ArrayList<>();
-//
-//        for (OrderItemDto orderItemDto : orderForm.getOrderItems()) {
-//            Product product = productService.findById(orderItemDto.getProductId());
-//            if (product.getStock() < orderItemDto.getCount()) {
-//                RsData.of("F-2", product.getName()+"의 재고가 부족합니다.");
-//            }
-//            favoriteTagService.updateTag(member, product, TagType.ORDER);
-//            orderItemList.add(OrderItem.of(product, orderItemDto));
-//        }
-//
-//        List<Long> cartItemsIds = new ArrayList<>();
-//        for (OrderItemDto orderItemDto : orderForm.getOrderItems()) {
-//            if(orderItemDto.getCartItemId() != 0L)
-//                cartItemsIds.add(orderItemDto.getCartItemId());
-//        }
-//        cartService.deleteAll(cartItemsIds);
-//
-//        Order order = Order.createOrder(member, delivery, OrderStatus.ORDERED, orderItemList, orderForm.getPaymentMethod());
-//        Order savedOrder = orderRepository.save(order);
-//        return RsData.of("S-1", "주문이 성공적으로 처리되었습니다.", savedOrder.getId());
-        return null;
-    }
-
     public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) {
 
         if(member.getAddress().trim().length() == 0) {
