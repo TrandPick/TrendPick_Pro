@@ -125,28 +125,6 @@ public class BaseData {
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(2L,3));
                 cartService.addItemToCart(memberService.findByEmail("trendpick@naver.com").get(), new CartItemRequest(3L,1));
 
-                //==주문데이터==//
-                Member findMember = memberService.findByEmail("hye_0000@naver.com").get();
-                MemberInfoDto memberInfo = MemberInfoDto.of(findMember);
-                List<OrderItemDto> orderItems = new ArrayList<>();
-                orderItems.add(OrderItemDto.of(productRepository.findById(1L).get(), 5));
-                orderItems.add(OrderItemDto.of(productRepository.findById(2L).get(), 3));
-                orderItems.add(OrderItemDto.of(productRepository.findById(3L).get(), 2));
-                OrderForm orderForm = new OrderForm(memberInfo, orderItems);
-                orderForm.setPaymentMethod("신용카드");
-                orderservice.order(findMember, orderForm);
-
-                //==주문데이터2==//
-                Member findMember2 = memberService.findByEmail("trendpick@naver.com").get();
-                MemberInfoDto memberInfo2 = new MemberInfoDto(findMember2);
-                List<OrderItemDto> orderItems2 = new ArrayList<>();
-                orderItems2.add(OrderItemDto.of(productRepository.findById(1L).get(), 5));
-                orderItems2.add(OrderItemDto.of(productRepository.findById(2L).get(), 3));
-                orderItems2.add(OrderItemDto.of(productRepository.findById(3L).get(), 2));
-                OrderForm orderForm2 = new OrderForm(memberInfo2, orderItems2);
-                orderForm2.setPaymentMethod("신용카드");
-                orderservice.order(findMember2, orderForm2);
-
                 //==리뷰데이터==//
                 CommonFile mainFile = CommonFile.builder()
                         .fileName("bamin.png")
