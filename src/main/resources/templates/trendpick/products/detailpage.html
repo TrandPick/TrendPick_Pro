@@ -46,7 +46,7 @@
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
                     <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${ProductOptionForm}"
-                          method="POST" onsubmit="return confirmOrder()">
+                          method="get" onsubmit="return confirmOrder()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" id="productOptionQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Buy Now</button>
