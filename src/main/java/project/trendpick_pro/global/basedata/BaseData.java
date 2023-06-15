@@ -82,10 +82,10 @@ public class BaseData {
                 SaveAllSubCategories(mainCategoryService, subCategoryService);
 
                 //==멤버데이터==//
-                SaveMember(100, tagNameService, memberService, recommendService);
+                SaveMember(10, tagNameService, memberService, recommendService);
                 log.info("Member Data Save");
                 //==상품데이터==//
-                SaveProduct(1000, mainCategoryService, brandService, tagNameService, productRepository);
+                SaveProduct(100, mainCategoryService, brandService, tagNameService, productRepository);
                 log.info("Product Data Save");
 
                 JoinForm admin = JoinForm.builder()
@@ -174,9 +174,7 @@ public class BaseData {
                 Review review4 = Review.of (rr, memberService.findByEmail("hye_0000@naver.com").get(), product2, mainFile);
                 reviewRepository.save(review4);
 
-                log.info("==========================================================================");
-                log.info("==============================INIT_DATA_SAVE==============================");
-                log.info("==========================================================================");
+                log.info("Base Data Success");
             }
         };
     }
