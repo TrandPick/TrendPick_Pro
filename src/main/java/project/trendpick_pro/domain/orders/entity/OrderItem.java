@@ -31,9 +31,9 @@ public class OrderItem {
     @Column(name = "count", nullable = false)
     private int count;
 
-    private OrderItem(Product product, int orderPrice, int count) {
+    private OrderItem(Product product,  int count) {
         this.product = product;
-        this.orderPrice = orderPrice;
+        this.orderPrice = product.getPrice() * count;
         this.count = count;
 
         product.removeStock(count);
@@ -41,7 +41,7 @@ public class OrderItem {
     }
 
     public static OrderItem of(Product product, OrderItemDto orderItemDto) {
-        return new OrderItem(product, orderItemDto.getPrice(), orderItemDto.getCount());
+        return new OrderItem(product, orderItemDto.getCount());
     }
 
     public void connectOrder(Order order) {

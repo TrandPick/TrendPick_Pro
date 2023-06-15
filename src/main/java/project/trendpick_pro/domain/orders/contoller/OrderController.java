@@ -64,6 +64,9 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order")
     public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
+        log.info("name", orderForm.getMemberInfo().getName());
+        log.info("paymentMethod", orderForm.getPaymentMethod());
+
         Member member = rq.CheckMember().get();
         if (!Objects.equals(member.getId(), orderForm.getMemberInfo().getMemberId()))
             throw new RuntimeException("잘못된 접근입니다.");
