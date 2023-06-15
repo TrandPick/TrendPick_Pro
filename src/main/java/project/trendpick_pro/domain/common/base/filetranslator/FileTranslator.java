@@ -22,7 +22,7 @@ public class FileTranslator {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
+    @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/images/")
     private String filePath;
 
     public String getFilePath(String filename) {
