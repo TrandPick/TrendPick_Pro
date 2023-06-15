@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.service.OrderService;
@@ -20,10 +21,12 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PaymentService {
 
     private final OrderService orderService;
 
+    @Transactional
     public ResponseEntity<JsonNode> request(String paymentKey, String orderId, Integer amount, Long ProOrderId) throws JsonProcessingException {
 
         RestTemplate restTemplate = new RestTemplate(); // 스프링 외부 api 요청/응답 클래스
