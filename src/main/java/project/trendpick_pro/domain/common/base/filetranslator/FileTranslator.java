@@ -39,12 +39,11 @@ public class FileTranslator {
         oj.setContentLength(multipartFile.getInputStream().available());
 
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, translatedFileName, multipartFile.getInputStream(), new ObjectMetadata());
-
-// 객체의 권한을 공개로 설정
+        // 객체의 권한을 공개로 설정
         putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
-
-// 파일 업로드
+        // 파일 업로드
         amazonS3.putObject(putObjectRequest);
+
         return CommonFile.builder()
                 .fileName(translatedFileName)
                 .build();
