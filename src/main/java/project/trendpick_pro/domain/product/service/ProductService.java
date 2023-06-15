@@ -104,7 +104,6 @@ public class ProductService {
     }
 
     @Transactional
-    @CachePut(value = "products", key = "#productId")
     public RsData<Long> modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
         rq.CheckAdmin();
@@ -132,7 +131,6 @@ public class ProductService {
     }
 
     @Transactional
-    @CacheEvict(value = "products", key = "#productId")
     public void delete(Long productId) {
         rq.CheckAdmin();
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
@@ -140,7 +138,6 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    @Cacheable(value = "product", key = "#productId")
     public ProductResponse show(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
@@ -152,7 +149,6 @@ public class ProductService {
         return ProductResponse.of(product);
     }
 
-    @Cacheable(value = "products", key = "#productId")
     public ProductListResponse getProduct(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         return ProductListResponse.of(product);
