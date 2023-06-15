@@ -8,25 +8,18 @@ import project.trendpick_pro.domain.member.entity.Member;
 @NoArgsConstructor
 @Setter
 public class MemberInfoDto {
-    @JsonProperty("bankAccount")
     private String bankAccount;
 
-    @JsonProperty("address")
     private String address;
 
-    @JsonProperty("phone")
     private String phone;
 
-    @JsonProperty("name")
     private String name;
 
-    @JsonProperty("bankName")
     private String bankName;
 
-    @JsonProperty("email")
     private String email;
 
-    @JsonProperty("memberId")
     private Long memberId;
 
     @Builder
