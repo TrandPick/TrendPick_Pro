@@ -4,15 +4,15 @@
     <title>TrendPick</title>
 </head>
 <body>
-<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col pb-4" style="max-width: 100%; flex-grow: 1;">
+<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col" style="max-width:100%;">
     <div>
         <div class="card bordered flex flex-col md:flex-row gap-4" style="height:800px">
             <figure class="flex-1 flex flex-col items-center">
-                <img th:src="|/images/${productResponse.mainFile}|" class="image-main object-cover"
+                <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${productResponse.mainFile}|" class="image-main object-cover"
                      alt="Product Image"/>
                 <div class="mt-4 flex flex-row overflow-x-auto">
                     <div th:each="image : ${productResponse.subFiles}">
-                        <img th:src="|/images/${image}|" class="rounded w-24 mr-2 my-2" alt="Sub Image">
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${image}|" class="rounded w-24 mr-2 my-2" alt="Sub Image">
                     </div>
                 </div>
             </figure>
@@ -76,7 +76,7 @@
                     </td>
                     <td class="border-b">
                         <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
-                            <img th:src="|/images/${review.mainFile}|" class="mx-auto"
+                            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${review.mainFile}|" class="mx-auto"
                                  style="width: 100px; height: 100px;"/>
                         </a>
                     </td>
@@ -111,7 +111,7 @@
         </div>
     </div>
     </div>
-    <div class="mt-4 mb-4 flex flex-col">
+    <div class="mt-4 flex flex-col">
         <h1 class="text-xl">QnA 상품문의</h1>
         <div th:if="${@rq.checkLogin()}">
             <div th:if="${@rq.CheckMemberHtml()}" class="flex justify-end">
@@ -201,6 +201,7 @@
             }
         }
     </script>
+
 </main>
 </body>
 </html>
