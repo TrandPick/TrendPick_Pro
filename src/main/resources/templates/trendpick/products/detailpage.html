@@ -4,15 +4,15 @@
     <title>TrendPick</title>
 </head>
 <body>
-<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col" style="max-width:100%;">
+<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col pb-4" style="max-width: 100%; flex-grow: 1;">
     <div>
         <div class="card bordered flex flex-col md:flex-row gap-4" style="height:800px">
             <figure class="flex-1 flex flex-col items-center">
-                <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${productResponse.mainFile}|" class="image-main object-cover"
+                <img th:src="|/images/${productResponse.mainFile}|" class="image-main object-cover"
                      alt="Product Image"/>
                 <div class="mt-4 flex flex-row overflow-x-auto">
                     <div th:each="image : ${productResponse.subFiles}">
-                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${image}|" class="rounded w-24 mr-2 my-2" alt="Sub Image">
+                        <img th:src="|/images/${image}|" class="rounded w-24 mr-2 my-2" alt="Sub Image">
                     </div>
                 </div>
             </figure>
@@ -76,7 +76,7 @@
                     </td>
                     <td class="border-b">
                         <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
-                            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${review.mainFile}|" class="mx-auto"
+                            <img th:src="|/images/${review.mainFile}|" class="mx-auto"
                                  style="width: 100px; height: 100px;"/>
                         </a>
                     </td>
@@ -111,54 +111,54 @@
         </div>
     </div>
     </div>
-            <div class="mt-4 flex flex-col">
-                <h1 class="text-xl">QnA 상품문의</h1>
-                <div th:if="${@rq.checkLogin()}">
-                    <div th:if="${@rq.CheckMemberHtml()}" class="flex justify-end">
-                        <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-primary btn-sm">문의하기</a>
-                    </div>
-                </div>
-                <table class="w-full mt-6" th:if="${productAsk != null}">
-                    <tr class="border-b border-t">
-                        <th class="text-center" scope="col">번호</th>
-                        <th scope="col">답변여부</th>
-                        <th class="text-center" scope="col">제목</th>
-                        <th class="text-center" scope="col">작성자</th>
-                        <th class="text-center" scope="col">문의일자</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <th:block th:each="ask, loop : ${productAsk}">
-                        <tr>
-                            <td class="text-center border-b">
-                                <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
-                                   th:text="${productAsk.number * 10 + loop.count}">
-                                </a>
-                            </td>
-                            <td class="text-center border-b">
-                                <div th:if="${ask.status} == 'YET'">
-                                    <p>답변예정</p>
-                                </div>
-                                <div th:unless="${ask.status} == 'YET'">
-                                    <p>답변완료</p>
-                                </div>
-                            </td>
-                            <td class="text-center border-b">
-                                <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
-                                   th:text="${ask.title}">
-                                </a>
-                            </td>
-                            <td class="text-center border-b">
-                                <p th:text="${ask.memberName}"></p>
-                            </td>
-                            <td class="text-center border-b">
-                                <span th:text="${#temporals.format(ask.createdDate, 'YY/MM/dd')}"></span>
-                            </td>
-                        </tr>
-                    </th:block>
-                    </tbody>
-                </table>
+    <div class="mt-4 mb-4 flex flex-col">
+        <h1 class="text-xl">QnA 상품문의</h1>
+        <div th:if="${@rq.checkLogin()}">
+            <div th:if="${@rq.CheckMemberHtml()}" class="flex justify-end">
+                <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-primary btn-sm">문의하기</a>
             </div>
+        </div>
+        <table class="w-full mt-6" th:if="${productAsk != null}">
+            <tr class="border-b border-t">
+                <th class="text-center" scope="col">번호</th>
+                <th scope="col">답변여부</th>
+                <th class="text-center" scope="col">제목</th>
+                <th class="text-center" scope="col">작성자</th>
+                <th class="text-center" scope="col">문의일자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="ask, loop : ${productAsk}">
+                <tr>
+                    <td class="text-center border-b">
+                        <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
+                           th:text="${productAsk.number * 10 + loop.count}">
+                        </a>
+                    </td>
+                    <td class="text-center border-b">
+                        <div th:if="${ask.status} == 'YET'">
+                            <p>답변예정</p>
+                        </div>
+                        <div th:unless="${ask.status} == 'YET'">
+                            <p>답변완료</p>
+                        </div>
+                    </td>
+                    <td class="text-center border-b">
+                        <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
+                           th:text="${ask.title}">
+                        </a>
+                    </td>
+                    <td class="text-center border-b">
+                        <p th:text="${ask.memberName}"></p>
+                    </td>
+                    <td class="text-center border-b">
+                        <span th:text="${#temporals.format(ask.createdDate, 'YY/MM/dd')}"></span>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
     <script>
         $(document).ready(function () {
             $('#quantity').on('input', function () {
@@ -201,7 +201,6 @@
             }
         }
     </script>
-
 </main>
 </body>
 </html>

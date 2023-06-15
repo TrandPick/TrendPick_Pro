@@ -38,9 +38,9 @@ public class AskRepositoryImpl implements AskRepositoryCustom {
                         ask.createdDate
                 ))
                 .from(ask)
-                .join(ask.product, product)
+                .innerJoin(ask.product, product)
                 .on(askByProductIdEq(productId))
-                .join(ask.author, member)
+                .innerJoin(ask.author, member)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -48,9 +48,9 @@ public class AskRepositoryImpl implements AskRepositoryCustom {
         JPAQuery<Long> count = queryFactory
                 .select(ask.count())
                 .from(ask)
-                .join(ask.product, product)
+                .innerJoin(ask.product, product)
                 .on(askByProductIdEq(productId))
-                .join(ask.author, member);
+                .innerJoin(ask.author, member);
 
         return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
     }

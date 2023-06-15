@@ -1,52 +1,78 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>문의내용</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <title>TrendPick</title>
 </head>
 <body>
-<h2 class="border-bottom py-2" th:text="${askResponse.title}"></h2>
-<div class="card my-3">
-    <div class="card-body">
-        <div class="d-flex card-text" style="white-space: pre-line;" th:text="${askResponse.content}"></div>
-        <div class="d-flex justify-content-end">
-            <div class="badge bg-light text-dark p-2 text-start">
-                <div class="mb-2">
-                    <span th:if="${askResponse.memberId != null}" th:text="${askResponse.memberName}"></span>
+<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col" style="max-width:100%;">
+    <div class="border p-4 rounded-lg">
+        <!-- 문의글 -->
+        <div class="border-b mb-4 pb-2">
+            <span class="badge bg-accent text-white">상품 문의글</span>
+            <hr class="my-2">
+            <div class="mb-2 flex">
+                <strong>작성자 : </strong>
+                <p th:text=" ${ask.memberName}"></p>
+            </div>
+            <hr class="my-2">
+            <div class="mb-2 flex">
+                <strong>제목 :</strong>
+                <p th:text=" ${ask.title}"></p>
+            </div>
+            <hr class="my-2">
+            <strong>내용:</strong>
+            <div class="mb-2 border rounded p-2">
+                <p th:text="${ask.content}" readonly></p>
+            </div>
+            <div th:if="${@rq.checkLogin()}">
+                <div class="flex justify-end" th:if="${@rq.GetMember().id} == ${ask.memberId}">
+                    <a th:href="@{|/trendpick/customerservice/asks/edit/${ask.askId}|}" class="mr-2">수정</a>
+                    <form th:action="@{|/trendpick/customerservice/asks/delete/${ask.askId}|}" method="post" style="display: inline;">
+                        <input type="hidden" name="_method" value="POST" />
+                        <button type="submit" class="mr-2">삭제</button>
+                    </form>
                 </div>
-                <div th:text="${#temporals.format(askResponse.createdDate, 'yyyy-MM-dd')}"></div>
             </div>
         </div>
-        <div class="my-3">
-            <a th:if="${askResponse.memberName == #authentication.getName()}"
-               th:href="@{|/trendpick/customerservice/asks/edit/${askResponse.askId}|}" class="btn btn-sm btn-outline-secondary"
-               th:text="수정"></a>
-        </div>
-    </div>
-</div>
-<!--<h5 class="border-bottom my-3 py-2" th:if="${askResponse.status != 'COMPLETED'}"-->
-<!--    th:text="답변 예정중입니다."></h5>-->
-<!-- 답변 반복 시작 -->
-<div class="card my-3" th:each="answer : ${askResponse.answerList}">
-    <div class="card-body">
-        <div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
-        <div class="d-flex justify-content-end">
-            <div class="badge bg-light text-dark p-2 text-start">
-                <div th:text="${#temporals.format(answer.createdDate, 'yyyy-MM-dd')}"></div>
+
+        <!-- 답변 -->
+        <div th:if="${!answers.isEmpty()}">
+            <span class="badge bg-accent text-white">답변 (관리자)</span>
+            <hr class="my-2">
+            <!-- 답변 목록 반복 -->
+            <div th:each="answer : ${answers}" class="mb-4">
+                <div class="border-b pb-2">
+                    <div class="mb-2" th:text="${answer.content}"></div>
+                    <div class="text-sm text-gray-500">
+                        <strong>작성일:</strong>
+                        <p th:text="${answer.createdDate}"></p>
+                    </div>
+                    <div th:if="${@rq.checkLogin()}">
+                        <div class="flex justify-end" th:if="${@rq.CheckBrandAdminHtml()}">
+                            <form th:action="@{|/trendpick/customerservice/answers/delete/${answer.answerId}|}" method="post" style="display: inline;">
+                                <input type="hidden" name="_method" value="POST" />
+                                <button type="submit" class="mr-2">삭제</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <!-- 답변 목록 반복 끝 -->
+        </div>
+
+        <!-- 답글 등록 폼 -->
+        <div th:if="${@rq.checkAdminOrBrandAdminHtml()}">
+            <form th:object="${answerForm}" method="post" th:action="@{|/trendpick/customerservice/answers/register?ask=${ask.askId}|}">
+                <div class="mb-3">
+                    <label for="content" class="form-label">답변</label>
+                    <div class="border rounded">
+                        <textarea th:field="*{content}" class="form-control form-control-lg" rows="5" style="width: 100%; resize: vertical;"></textarea>
+                    </div>
+                </div>
+                <input type="submit" value="답변달기" class="btn btn-accent btn-lg my-2">
+            </form>
         </div>
     </div>
-</div>
-<!-- 답변 반복 끝  -->
-<!-- 답변 작성 -->
-<form th:action="@{|/trendpick/customerservice/answers/register/${askResponse.askId}|}" th:object="${answerForm}" method="post" class="my-3">
-    <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control" rows="10"></textarea>
-    <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
-    <input type="submit" value="답변등록" class="btn btn-primary my-2">
-</form>
-</div>
+</main>
 </body>
 </html>

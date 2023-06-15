@@ -115,8 +115,8 @@ public class CartService {
     }
 
     @Transactional
-    public void deleteCartItemsByOrder(List<Long> cartItemIdList) {
-        cartItemRepository.deleteAllByIdInBatch(cartItemIdList);
+    public void deleteAll(List<CartItem> cartItemIdList) {
+        cartItemRepository.deleteAllInBatch(cartItemIdList);
     }
 }
 

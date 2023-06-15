@@ -14,6 +14,9 @@ import project.trendpick_pro.domain.ask.repository.AskRepository;
 import project.trendpick_pro.domain.ask.service.AskService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.global.rsData.RsData;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,24 +26,45 @@ public class AnswerService {
     private final AskRepository askRepository;
 
     @Transactional
-    public void register(Long askId, AnswerForm answerForm) {
-        Ask ask = askRepository.findById(askId).orElseThrow();
+    public RsData<Long> register(Member member, Long askId, AnswerForm answerForm) {
+        Ask ask = askRepository.findById(askId).orElseThrow(
+                () -> new IllegalArgumentException("해당 문의는 없는 문의입니다.")
+        );
+        if (member.getBrand() != ask.getProduct().getBrand().getName())
+            return RsData.of("F-1", "타 브랜드 상품에 대한 문의글에는 답변 권한이 없습니다.");
+
         Answer answer = Answer.write(ask, answerForm);
         answerRepository.save(answer);
+        return RsData.of("S-1", "답변이 성공적으로 등록되었습니다.", ask.getId());
     }
 
     @Transactional
-    public AnswerResponse delete(Long answerId) {
-        Answer answer = answerRepository.findById(answerId).orElseThrow();
+    public RsData<Long> delete(Member member, Long answerId) {
+        Answer answer = answerRepository.findById(answerId).orElseThrow(
+                () -> new IllegalArgumentException("해당 답변은 없는 답변입니다.")
+        );
+
+        if(answer.getAsk().getAuthor().getBrand() != member.getBrand())
+            return RsData.of("F-1", "접근 권한이 없습니다.");
         answerRepository.delete(answer);
         answer.getAsk().getAnswerList().remove(answer);
-
-        return AnswerResponse.of(answer);
+        return RsData.of("S-1", "답변이 삭제되었습니다.", answer.getAsk().getId());
     }
 
-    public AnswerResponse modify(Long answerId, AnswerForm answerForm) {
-        Answer answer = answerRepository.findById(answerId).orElseThrow();
+    public RsData<Long> modify(Member member, Long answerId, AnswerForm answerForm) {
+        Answer answer = answerRepository.findById(answerId).orElseThrow(
+                () -> new IllegalArgumentException("해당 답변은 없는 답변입니다.")
+        );
+
+        if(answer.getAsk().getAuthor().getBrand() != member.getBrand())
+            return RsData.of("F-1", "접근 권한이 없습니다.");
         answer.update(answerForm);
-        return AnswerResponse.of(answer);
+
+        return RsData.of("S-1", "답변이 수정되었습니다.", answer.getAsk().getId());
+    }
+
+    public List<AnswerResponse> showAll(Long askId) {
+        List<Answer> answers = answerRepository.findAllByAskId(askRepository.findById(askId).get());
+        return AnswerResponse.of(answers);
     }
 }

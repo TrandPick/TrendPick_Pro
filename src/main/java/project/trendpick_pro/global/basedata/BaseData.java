@@ -232,8 +232,8 @@ public class BaseData {
                 result = (int) (Math.random() * 6);
                 SubCategory subCategory = subCategories.get((int) result);
 
-                int result1 = (int) (Math.random() * 2000)+ 100;
-                int result2 = (int) (Math.random() * (600000 - 20000 + 1)) + 20000;
+                int result1 = (int) (Math.random() * 200)+ 100;
+                int result2 = (int) (Math.random() * (300000 - 20000 + 1)) + 20000;
                 Product product = Product
                         .builder()
                         .name(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
