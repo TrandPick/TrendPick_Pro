@@ -92,7 +92,6 @@
         const product = document.getElementById('Product').innerText;
         const id = document.getElementById('orderId').innerText;
 
-        const method = document.getElementById("payment-method")
         const paymentWidget = PaymentWidget(clientKey, customerKey)
 
         paymentWidget.renderPaymentMethods("#payment-method", {value: totalPrice})
@@ -103,11 +102,10 @@
             paymentWidget.requestPayment({
                 orderId: "Order_" + id + "_" + (Math.random() + "").substring(5),
                 orderName: product + " 외..",
-                successUrl: "http://localhost:8080/payment/" + id  + "/" + method + "/success",
-                failUrl: "http://localhost:8080/payment/" + id + "/" + method + "/fail",
+                successUrl: "https://trendpick.k8s-1.suho.info/payment/" + id + "/success",
+                failUrl: "https://trendpick.k8s-1.suho.info/payment/" + id + "/fail",
                 customerEmail: "hyeri0603@naver.com",
-                customerName: "이수호",
-                method: method
+                customerName: "이수호"
             })
         })
     </script>
