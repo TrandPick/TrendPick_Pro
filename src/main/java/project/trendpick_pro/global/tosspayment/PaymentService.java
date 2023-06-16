@@ -29,11 +29,11 @@ public class PaymentService {
     @Transactional
     public ResponseEntity<JsonNode> request(String paymentKey, String orderId, Integer amount, Long ProOrderId) throws JsonProcessingException {
 
-        RestTemplate restTemplate = new RestTemplate(); // 스프링 외부 api 요청/응답 클래스
-        HttpHeaders headers = new HttpHeaders(); // 헤더 클래스
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
         ObjectMapper objectMapper = new ObjectMapper();
         String encodedAuth = new String(Base64.getEncoder().encode(("test_sk_4vZnjEJeQVxqjRyWaKOrPmOoBN0k" + ":").getBytes(StandardCharsets.UTF_8)));
-        headers.setBasicAuth(encodedAuth); // Base64로 인코딩한 값을 헤더 설정 정보에 넣음
+        headers.setBasicAuth(encodedAuth);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String, String> payloadMap = new HashMap<>();
