@@ -45,7 +45,7 @@
                     <div class="mb-2" th:text="${answer.content}"></div>
                     <div class="text-sm text-gray-500">
                         <strong>작성일:</strong>
-                        <p th:text="${answer.createdDate}"></p>
+                        <p th:text="${#temporals.format(answer.createdDate, 'YY-MM-dd')}"></p>
                     </div>
                     <div th:if="${@rq.checkLogin()}">
                         <div class="flex justify-end" th:if="${@rq.CheckBrandAdminHtml()}">
