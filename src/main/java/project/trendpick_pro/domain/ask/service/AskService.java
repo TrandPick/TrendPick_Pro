@@ -42,24 +42,26 @@ public class AskService {
     }
 
     @Transactional
-    public void delete(Member member, Long askId) {
+    public RsData<Long> delete(Member member, Long askId) {
         Ask ask = askRepository.findById(askId).orElseThrow();
+        Long productId = ask.getProduct().getId();
 
-        if(validateAccess(member, ask))
-            throw new RuntimeException("해당 문의에 대한 삭제 권한이 없습니다.");
+        if(!validateAccess(member, ask))
+            return RsData.of("F-1", "해당 문의에 대한 삭제 권한이 없습니다.");
 
         askRepository.delete(ask);
+        return RsData.of("S-1", "상품 문의글이 삭제되었습니다.", productId);
     }
 
     @Transactional
-    public AskResponse modify(Member member, Long askId, AskRequest askRequest) {
+    public RsData<AskResponse> modify(Member member, Long askId, AskForm askForm) {
         Ask ask = askRepository.findById(askId).orElseThrow();
 
-        if(validateAccess(member, ask))
-            throw new RuntimeException("해당 문의에 대한 수정 권한이 없습니다.");
+        if(!validateAccess(member, ask))
+            return RsData.of("F-1", "해당 문의에 대한 수정 권한이 없습니다.");
 
-        ask.update(askRequest);
-        return AskResponse.of(ask);
+        ask.update(askForm);
+        return RsData.of("S-1", "상품 문의글 수정이 정상적으로 처리되었습니다.", AskResponse.of(ask));
     }
 
     @Transactional
@@ -74,8 +76,6 @@ public class AskService {
 
 
     private boolean validateAccess(Member member, Ask ask) {
-        if(ask.getAuthor().getId() == member.getId())
-            return true;
-        return false;
+        return ask.getAuthor().getId() == member.getId();
     }
 }

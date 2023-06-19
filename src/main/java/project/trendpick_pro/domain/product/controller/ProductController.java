@@ -1,6 +1,5 @@
 package project.trendpick_pro.domain.product.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
@@ -37,7 +35,10 @@ import project.trendpick_pro.global.rsData.RsData;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -130,7 +131,6 @@ public class ProductController {
     public String showProduct(@PathVariable Long productId, Pageable pageable, ProductOptionForm productOptionForm, Model model) {
         model.addAttribute("productResponse", productService.show(productId));
         model.addAttribute("ProductOptionForm", productOptionForm);
-        model.addAttribute("productOptionForm", new ProductOptionForm());
         Page<ReviewProductResponse> productReviews = reviewService.getProductReviews(productId, pageable);
         Page<AskResponse> productAsk = askService.showAsksByProduct(productId, 0);
         model.addAttribute("productReview", productReviews);

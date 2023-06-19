@@ -7,6 +7,7 @@ import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.entity.dto.TagNameResponse;
 import project.trendpick_pro.global.basedata.tagname.repository.TagNameRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,6 +20,15 @@ public class TagNameService {
     @Transactional
     public void save(String name) {
         tagNameRepository.save(new TagName(name));
+    }
+
+    @Transactional
+    public void saveAll(List<String> name) {
+        List<TagName> list = new ArrayList<>();
+        for (String s : name) {
+            list.add(new TagName(s));
+        }
+        tagNameRepository.saveAll(list);
     }
 
     public TagName findByName(String name) {

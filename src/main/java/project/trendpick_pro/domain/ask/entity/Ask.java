@@ -55,8 +55,11 @@ public class Ask extends BaseTimeEntity {
                 ;
     }
 
-    public void update(AskRequest askRequest) {
-        this.title = askRequest.getTitle();
-        this.content = askRequest.getContent();
+    public void update(AskForm askForm) {
+        this.title = askForm.getTitle();
+        this.content = askForm.getContent();
+    }
+    public void changeStatus(){
+        this.status = AskStatus.COMPLETED;
     }
 }

@@ -16,6 +16,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.service.MemberService;
+import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderForm;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
@@ -62,27 +63,17 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @PostMapping("/order")
-    public synchronized String processOrder(@ModelAttribute("orderForm") OrderForm orderForm) {
-        Member member = rq.CheckMember().get();
-        if (!Objects.equals(member.getId(), orderForm.getMemberInfo().getMemberId()))
-            throw new RuntimeException("잘못된 접근입니다.");
+    @GetMapping("/order")
+    public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model) {
 
-        RsData<Long> result = orderService.order(member, orderForm);
-        if(result.isFail())
-            return rq.redirectWithMsg("/trendpick/products/list?main-category=상의", result);
-        return rq.redirectWithMsg("/trendpick/orders/%s".formatted(result.getData()), result);
-    }
+        RsData<Order> order = orderService.cartToOrder(rq.CheckMember().get(), selectedItems);
 
-    @PreAuthorize("hasAuthority({'MEMBER'})")
-    @PostMapping("/cart")
-    public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, RedirectAttributes redirect) {
-        RsData<OrderForm> result = orderService.cartToOrder(rq.CheckMember().get(), selectedItems);
-        if(result.isFail())
-            return rq.historyBack(result);
+        if(order.isFail()) {
+            return rq.historyBack(order);
+        }
 
-        redirect.addFlashAttribute("orderForm", result.getData());
-        return rq.redirectWithMsg("/trendpick/orders/order-form", "주문폼을 확인하시고 결제 버튼을 눌러주세요.");
+        model.addAttribute("order", order.getData());
+        return "trendpick/orders/order-form";
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
@@ -91,9 +82,8 @@ public class OrderController {
         RsData<OrderForm> result = orderService.productToOrder(rq.CheckMember().get(), productOptionForm);
         if(result.isFail())
             return rq.historyBack(result);
-        redirect.addFlashAttribute("orderForm", result.getData());
+        redirect.addFlashAttribute("order", result.getData());
         return rq.redirectWithMsg("/trendpick/orders/order-form", "주문폼을 확인하시고 결제 버튼을 눌러주세요.");
-//        return "redirect:/trendpick/orders/order-form";
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")

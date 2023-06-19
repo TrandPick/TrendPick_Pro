@@ -45,6 +45,7 @@ public class AskResponse {
                 .memberId(ask.getAuthor().getId())
                 .productId(ask.getProduct().getId())
                 .title(ask.getTitle())
+                .content(ask.getContent())
                 .status(ask.getStatus().getValue())
                 .createdDate(ask.getCreatedDate())
                 .build();

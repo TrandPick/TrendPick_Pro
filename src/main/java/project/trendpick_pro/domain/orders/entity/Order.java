@@ -39,10 +39,14 @@ public class Order extends BaseTimeEntity {
     private OrderStatus status;
 
     @Column(name = "total_price", nullable = false)
-    private int totalPrice;
+    private int totalPrice = 0;
 
     public void connectUser(Member member) {
         this.member = member;
+    }
+
+    public void connectPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public void connectDelivery(Delivery delivery) {
@@ -64,6 +68,20 @@ public class Order extends BaseTimeEntity {
         }
         order.status = status;
         order.paymentMethod = paymentMethod;
+
+        return order;
+    }
+
+    public static Order createOrder(Member member, Delivery delivery, OrderStatus status, List<OrderItem> orderItems) {
+        Order order = new Order();
+        order.connectUser(member);
+        order.connectDelivery(delivery);
+        for (OrderItem orderItem : orderItems) {
+            order.addOrderItem(orderItem);
+            order.totalPrice += orderItem.getTotalPrice();
+        }
+        order.status = status;
+        order.paymentMethod = "";
 
         return order;
     }

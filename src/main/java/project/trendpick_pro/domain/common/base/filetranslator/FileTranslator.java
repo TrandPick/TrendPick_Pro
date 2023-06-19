@@ -1,7 +1,9 @@
 package project.trendpick_pro.domain.common.base.filetranslator;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,7 +38,12 @@ public class FileTranslator {
         ObjectMetadata oj = new ObjectMetadata();
         oj.setContentLength(multipartFile.getInputStream().available());
 
-        amazonS3.putObject(bucket, translatedFileName, multipartFile.getInputStream(), oj);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, translatedFileName, multipartFile.getInputStream(), new ObjectMetadata());
+        // 객체의 권한을 공개로 설정
+        putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+        // 파일 업로드
+        amazonS3.putObject(putObjectRequest);
+
         return CommonFile.builder()
                 .fileName(translatedFileName)
                 .build();

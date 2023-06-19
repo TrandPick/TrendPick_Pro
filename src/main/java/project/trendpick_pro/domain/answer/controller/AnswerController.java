@@ -5,12 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import project.trendpick_pro.domain.answer.entity.dto.request.AnswerRequest;
-import project.trendpick_pro.domain.answer.entity.dto.response.AnswerResponse;
 import project.trendpick_pro.domain.answer.entity.form.AnswerForm;
 import project.trendpick_pro.domain.answer.service.AnswerService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.global.rsData.RsData;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,27 +19,32 @@ public class AnswerController {
     private final Rq rq;
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("register/{askId}")
-    public String register(@PathVariable Long askId, @Valid AnswerForm answerForm){
-        rq.CheckAdmin().get();
-        answerService.register(askId, answerForm);
+    @PostMapping("register")
+    public String register(@RequestParam("ask") Long askId, @Valid AnswerForm answerForm){
+        Member member = rq.CheckAdmin().get();
+        RsData<Long> result = answerService.register(member, askId, answerForm);
+        if(result.isFail())
+            return rq.historyBack(result);
 
-        return "redirect:/trendpick/customerservice/asks/{askId}".formatted(askId);
+        return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), result);
     }
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{answerId}")
     public String deleteAnswer(@PathVariable Long answerId){
-        rq.CheckAdmin().get();
-        AnswerResponse answerResponse = answerService.delete(answerId);
+        RsData<Long> result = answerService.delete(rq.CheckAdmin().get(), answerId);
+        if(result.isFail())
+            return rq.historyBack(result);
 
-        return "redirect:/trendpick/customerservice/asks/%s".formatted(answerResponse.getAskId());
+        return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(result.getData()), result);
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/moidfy/{answerId}")
     public String modifyAnswer(@PathVariable Long answerId, @Valid AnswerForm answerForm){
-        rq.CheckAdmin().get();
-        AnswerResponse answerResponse = answerService.modify(answerId, answerForm);
-        return "redirect:/trendpick/customerservice/asks/%s".formatted(answerResponse.getAskId());
+        RsData<Long> result = answerService.modify(rq.CheckAdmin().get(), answerId, answerForm);
+        if(result.isFail())
+            return rq.historyBack(result);
+
+        return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(result.getData()), result);
     }
 }

@@ -57,8 +57,8 @@ public class ReviewController {
     public String showReview(@PathVariable Long reviewId, Model model){
         ReviewResponse reviewResponse = reviewService.showReview(reviewId);
         model.addAttribute("reviewResponse", reviewResponse);
-        if (rq.CheckLoginHtml()) {
-            Optional<Member> member = rq.CheckLogin();
+        if (rq.CheckLoginHtml() && !rq.CheckAdminHtml()) {
+            Optional<Member> member = rq.CheckMember();
             Member checkMember = member.get();
             String writer = checkMember.getUsername();
             model.addAttribute("currentUser", writer);
@@ -97,7 +97,7 @@ public class ReviewController {
         Page<ReviewResponse> reviewResponses = reviewService.showAll(pageable);
         model.addAttribute("reviewResponses", reviewResponses);
 
-        if (rq.CheckLoginHtml()) {
+        if (rq.CheckLoginHtml() && !rq.CheckAdminHtml()) {
             Member checkMember = rq.CheckMember().get();
             String currentUser = checkMember.getUsername();
             model.addAttribute("currentUser", currentUser);
