@@ -79,6 +79,8 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/product")
     public String orderProduct(@ModelAttribute ProductOptionForm productOptionForm, RedirectAttributes redirect) {
+        if(!rq.checkLogin())
+            return rq.historyBack("로그인 후 이용하실 수 있습니다.");
         RsData<OrderForm> result = orderService.productToOrder(rq.CheckMember().get(), productOptionForm);
         if(result.isFail())
             return rq.historyBack(result);

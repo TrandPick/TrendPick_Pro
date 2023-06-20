@@ -143,9 +143,10 @@ public class ProductService {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
 
         if(rq.checkLogin()){
-            updateFavoriteTag(product);
+            if(rq.CheckMemberHtml()){
+                updateFavoriteTag(product);
+            }
         }
-
         return ProductResponse.of(product);
     }
 
