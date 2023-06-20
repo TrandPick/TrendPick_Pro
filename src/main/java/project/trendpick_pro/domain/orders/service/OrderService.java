@@ -142,4 +142,8 @@ public class OrderService {
     public Order findById(Long id) {
         return orderRepository.findById(id).get();
     }
+
+    public Page<OrderResponse> findCancelledOrders(Member member, int offset) {
+        return orderRepository.findAllByMember(new OrderSearchCond(member.getId(), OrderStatus.CANCELLED), PageRequest.of(offset, 10));
+    }
 }

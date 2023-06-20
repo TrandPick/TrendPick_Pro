@@ -20,13 +20,14 @@ public class OrderResponse {
     private String productName;
     private int count;
     private LocalDateTime orderDate;
+    private LocalDateTime cancelledDate;
     private int productPrice;
     private String orderStatus;
     private String deliveryStatus;
 
     @Builder
     @QueryProjection
-    public OrderResponse(Long orderId, Long productId, String productFilePath, String brandName, String productName, int count,int productPrice, LocalDateTime orderDate, String orderStatus, String deliveryStatus) {
+    public OrderResponse(Long orderId, Long productId, String productFilePath, String brandName, String productName, int count,int productPrice, LocalDateTime orderDate, LocalDateTime cancelledDate,  String orderStatus, String deliveryStatus) {
         this.orderId = orderId;
         this.productId = productId;
         this.productFilePath = productFilePath;
@@ -35,6 +36,7 @@ public class OrderResponse {
         this.count = count;
         this.productPrice = productPrice;
         this.orderDate = orderDate;
+        this.cancelledDate = cancelledDate;
         this.orderStatus = orderStatus;
         this.deliveryStatus = deliveryStatus;
     }

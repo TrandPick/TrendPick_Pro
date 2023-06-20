@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.orders.repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -40,6 +41,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.count,
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
+                        orderItem.order.modifiedDate,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )
@@ -47,6 +49,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .join(orderItem.order, order)
                 .join(order.member, member)
                 .on(member.id.eq(orderSearchCond.getMemberId()))
+                .where(statusEq(orderSearchCond))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(orderItem.order.createdDate.desc())
@@ -61,6 +64,13 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }
 
+    //동적 처리, 환불 내역을 볼 때만 값을 지정
+    private static BooleanExpression statusEq(OrderSearchCond orderSearchCond) {
+        if(orderSearchCond.getStatus() == null)
+            return null;
+        return order.status.stringValue().eq(orderSearchCond.getStatus());
+    }
+
     @Override
     public List<OrderResponse> findOrderItemsByOrderId(Long orderId) {
         return queryFactory
@@ -73,6 +83,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.count,
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
+                        orderItem.order.modifiedDate,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )
@@ -95,6 +106,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.count,
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
+                        orderItem.order.modifiedDate,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )

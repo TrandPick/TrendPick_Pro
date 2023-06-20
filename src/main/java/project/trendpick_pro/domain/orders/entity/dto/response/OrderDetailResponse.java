@@ -17,6 +17,7 @@ import java.util.Locale;
 @AllArgsConstructor
 public class OrderDetailResponse {
     private Long orderId;
+    private String orderStatus;
     private List<OrderResponse> orderItems;
     private int totalPrice = 0;
     private String paymentMethod;
@@ -25,6 +26,7 @@ public class OrderDetailResponse {
     public static OrderDetailResponse of(Order order, List<OrderResponse> orderItems){
         OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
         orderDetailResponse.orderId = order.getId();
+        orderDetailResponse.orderStatus = order.getStatus().getValue();
         orderDetailResponse.orderItems = orderItems;
         orderDetailResponse.orderDate = order.getCreatedDate();
         orderDetailResponse.paymentMethod = order.getPaymentMethod();

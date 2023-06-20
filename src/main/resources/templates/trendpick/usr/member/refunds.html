@@ -2,22 +2,19 @@
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>주문 목록</title>
+    <title>환불 목록</title>
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
     <body>
-    <h1 class="text-center text-5xl font-bold mb-6">나의 주문내역</h1>
+    <h1 class="text-center text-5xl font-bold mb-6">나의 환불내역</h1>
     <table class="table">
         <thead>
         <tr>
-            <th class="text-center" scope="col">주문번호</th>
+            <th class="text-center" scope="col">번호</th>
             <th class="text-center" scope="col">상품정보</th>
-            <th class="text-center" scope="col">주문수량</th>
-            <th class="text-center" scope="col">주문금액</th>
-            <th class="text-center" scope="col">주문일시</th>
-            <th class="text-center" scope="col">주문상태</th>
-            <th class="text-center" scope="col">배송상태</th>
-            <th class="text-center" scope="col">리뷰등록</th>
+            <th class="text-center" scope="col">수량</th>
+            <th class="text-center" scope="col">환불금액</th>
+            <th class="text-center" scope="col">환불일시</th>
         </tr>
         </thead>
         <tbody>
@@ -52,30 +49,7 @@
                 <span class="badge badge-ghost badge-m" th:text="${order.formattedTotalPrice}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-m" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
-            </td>
-            <td class="text-center">
-                <span class="badge badge-ghost badge-m" th:text="${order.orderStatus}"></span>
-            </td>
-            <td class="text-center">
-                <span class="badge badge-ghost badge-m" th:text="${order.deliveryStatus}"></span>
-            </td>
-            <td class="text-center">
-                <div th:if="${order.orderStatus} == 'ORDERED'">
-                    <div th:if="${order.deliveryStatus} == 'COMPLETED'">
-                        <a th:href="@{|/trendpick/review/register/${order.productId}|}">
-                            리뷰달기
-                        </a>
-                    </div>
-                    <div th:unless="${order.deliveryStatus} == 'COMPLETED'">
-                        <a th:href="@{|/trendpick/delivery/status/${order.orderId}|}">
-                            배송완료 후 리뷰작성 가능
-                        </a>
-                    </div>
-                </div>
-                <div th:unless="${order.orderStatus} == 'ORDERED'">
-                    <p>리뷰작성 불가</p>
-                </div>
+                <span class="badge badge-ghost badge-m" th:text="${#temporals.format(order.cancelledDate, 'MM/dd')}"></span>
             </td>
         </tr>
         </tbody>
@@ -112,15 +86,15 @@
         </div>
     </div>
 
-<!--    <div class="flex justify-center my-4" th:if="orderList != null">-->
-<!--        <div class="btn-group">-->
-<!--            <a th:if="${orderList.hasPrevious()}" th:href="@{/trendpick/orders/usr/list(page=${orderList.number - 1})}" class="btn">Previous</a>-->
-<!--            <span th:each="i : ${#numbers.sequence(0, orderList.totalPages - 1)}">-->
-<!--            <a th:href="@{/trendpick/orders/usr/list(page=${i})}" th:text="${i+1}" th:class="${orderList.number == i ? 'btn btn-active' : 'btn'}"></a>-->
-<!--        </span>-->
-<!--            <a th:if="${orderList.hasNext()}" th:href="@{/trendpick/orders/usr/list(page=${orderList.number + 1})}" class="btn">Next</a>-->
-<!--        </div>-->
-<!--    </div>-->
+    <!--    <div class="flex justify-center my-4" th:if="orderList != null">-->
+    <!--        <div class="btn-group">-->
+    <!--            <a th:if="${orderList.hasPrevious()}" th:href="@{/trendpick/orders/usr/list(page=${orderList.number - 1})}" class="btn">Previous</a>-->
+    <!--            <span th:each="i : ${#numbers.sequence(0, orderList.totalPages - 1)}">-->
+    <!--            <a th:href="@{/trendpick/orders/usr/list(page=${i})}" th:text="${i+1}" th:class="${orderList.number == i ? 'btn btn-active' : 'btn'}"></a>-->
+    <!--        </span>-->
+    <!--            <a th:if="${orderList.hasNext()}" th:href="@{/trendpick/orders/usr/list(page=${orderList.number + 1})}" class="btn">Next</a>-->
+    <!--        </div>-->
+    <!--    </div>-->
     </body>
 </main>
 </html>
