@@ -138,6 +138,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    @Transactional
     public ProductResponse show(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
@@ -154,6 +155,7 @@ public class ProductService {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         return ProductListResponse.of(product);
     }
+
 
     private void updateFavoriteTag(Product product) {
         Member member = rq.GetMember();

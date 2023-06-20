@@ -48,6 +48,13 @@
             </tbody>
         </table>
     </div>
+    <div class="flex justify-center">
+        <form th:action="@{|/trendpick/orders/cancel/${order.orderId}|}" method="post">
+            <button class="btn btn-natural btn-lg" type="submit">
+                구매취소
+            </button>
+        </form>
+    </div>
 <!--    <form th:action="@{|/trendpick/orders/cancel/${order.orderId}/|}" method="post">-->
 <!--        <button id="payment-button" class="btn btn-natural btn-lg"-->
 <!--                type="submit" class="w-100 btn btn-lg btn-outline-primary">환불-->
