@@ -9,6 +9,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.tag.repository.TagRepository;
 
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class FavoriteTagService {
     private final FavoriteTagRepository favoriteTagRepository;
+    private final TagRepository tagRepository;
 
     public Set<FavoriteTag> getAllTags(Member member) {
         List<FavoriteTag> list = favoriteTagRepository.findAll();
@@ -26,8 +28,8 @@ public class FavoriteTagService {
 
     @Transactional
     public void updateTag(Member member, Product product, TagType type) {
-        Set<Tag> tagList = product.getTags();
-        Set<FavoriteTag> tags = member.getTags();
+        List<Tag> tagList = tagRepository.findAllByProduct(product);
+        List<FavoriteTag> tags = favoriteTagRepository.findAllByMember(member);
 
         for(Tag tagByProduct : tagList){
             boolean hasTag = false;
@@ -42,6 +44,7 @@ public class FavoriteTagService {
                 FavoriteTag favoriteTag = new FavoriteTag(tagByProduct.getName());
                 favoriteTag.increaseScore(type);
                 member.addTag(favoriteTag);
+                favoriteTagRepository.save(favoriteTag);
             }
         }
     }
