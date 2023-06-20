@@ -34,7 +34,8 @@
             <div class="card bordered flex flex-col w-full md:flex-row gap-4">
                 <div class="md:flex w-full md:items-start ">
                     <div class="md:w-1/2 pr-4" >
-                        <img th:="|https://kr.object.ncloudstorage.com/trendpick/${reviewResponse.mainFile}|"/></br>
+                        <img th:src="@{|https://kr.object.ncloudstorage.com/trendpick/${reviewResponse.mainFile}|}" alt="main Image"/><br>
+
                     </div>
                     <div class="md:w-1/2 ml-auto pl-4" style="border-left: 1px solid #ccc;">
                         <h2 class="text-xl font-bold text-gray-800 mb-2 mt-2">제품명</h2>
@@ -64,7 +65,7 @@
                 <h2 class="mt-5">더 많은 후기 사진</h2>
                 <div class="mt-4 grid grid-cols-3 gap-4 w-full">
                     <div th:each="subFile : ${reviewResponse.subFiles}">
-                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${subFile}|" class="mx-auto w-full" style="height: 300px;" />
+                        <img th:src="@{|https://kr.object.ncloudstorage.com/trendpick/${subFile}|}" alt="sub Image" class="mx-auto w-full" style="height: 300px;"  />
                     </div>
                 </div>
             </div>
