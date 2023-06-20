@@ -18,6 +18,7 @@ public class AskResponse {
 
     private Long askId;
     private Long productId;
+    private String productName;
     private String memberName;
     private Long memberId;
     private String title;
@@ -27,9 +28,10 @@ public class AskResponse {
 
     @QueryProjection
     @Builder
-    public AskResponse(Long askId, Long productId, String memberName, Long memberId, String title,String content, String status, LocalDateTime createdDate) {
+    public AskResponse(Long askId, Long productId, String productName, String memberName, Long memberId, String title,String content, String status, LocalDateTime createdDate) {
         this.askId = askId;
         this.productId = productId;
+        this.productName = productName;
         this.memberName = memberName;
         this.memberId = memberId;
         this.title = title;
@@ -44,6 +46,7 @@ public class AskResponse {
                 .memberName(ask.getAuthor().getUsername())
                 .memberId(ask.getAuthor().getId())
                 .productId(ask.getProduct().getId())
+                .productName(ask.getProduct().getName())
                 .title(ask.getTitle())
                 .content(ask.getContent())
                 .status(ask.getStatus().getValue())

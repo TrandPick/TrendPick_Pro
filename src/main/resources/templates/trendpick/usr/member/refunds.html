@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>환불 목록</title>
+</head>
+<main class="min-h-screen flex flex-col" layout:fragment="main">
+    <body>
+    <h1 class="text-center text-5xl font-bold mb-6">나의 환불내역</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="text-center" scope="col">번호</th>
+            <th class="text-center" scope="col">상품정보</th>
+            <th class="text-center" scope="col">수량</th>
+            <th class="text-center" scope="col">환불금액</th>
+            <th class="text-center" scope="col">환불일시</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order, loop : ${orderList}">
+            <td class="text-center">
+                <a th:href="@{/trendpick/orders/{orderId}(orderId=${order.orderId})}"
+                   th:text="${orderList.number * 10 + loop.count}">
+                </a>
+            </td>
+            <td class="text-center">
+                <div class="flex items-center space-x-3">
+                    <div class="avatar">
+                        <div class="mask mask-squircle w-12 h-12">
+                            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${order.productFilePath}|" width="100" height="100"/>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="font-bold">
+                            <a th:href="@{/trendpick/products/{productId}(productId=${order.productId})}"
+                               th:text="${order.productName}">
+                            </a>
+                        </div>
+                        <div class="text-sm opacity-50" th:text="${order.brandName}"></div>
+                    </div>
+                </div>
+            </td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-m" th:text="${order.count+'개'}"></span>
+            </td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-m" th:text="${order.formattedTotalPrice}"></span>
+            </td>
+            <td class="text-center">
+                <span class="badge badge-ghost badge-m" th:text="${#temporals.format(order.cancelledDate, 'MM/dd')}"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="flex justify-center my-4"
+         th:if="${orderList != null and not #lists.isEmpty(orderList.content)}">
+        <div class="btn-group">
+            <div th:if="${orderList.hasPrevious()}">
+                <a th:href="@{/trendpick/orders/usr/list?page=${orderList.number - 1}}"
+                   class="btn">Previous</a>
+            </div>
+
+            <div th:if="${orderList.number/5 * 5 + 1 + 4} < ${orderList.totalPages}">
+                <div class="flex">
+                    <div th:each="i : ${#numbers.sequence(orderList.number/5 * 5 + 1, orderList.number/5 * 5 + 1 + 4)}">
+                        <a th:href="@{|/trendpick/orders/usr/list?page=${i - 1}|}"
+                           th:text="${i}" th:class="${orderList.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                    </div>
+                </div>
+            </div>
+            <div th:unless="${orderList.number/5 + 1 + 4} < ${orderList.totalPages}">
+                <div class="flex">
+                    <div th:each="i : ${#numbers.sequence(orderList.number/5 * 5 + 1, orderList.totalPages)}">
+                        <a th:href="@{|/trendpick/orders/usr/list?page=${i - 1}|}"
+                           th:text="${i}" th:class="${orderList.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${orderList.hasNext()}">
+                <a th:href="@{/trendpick/orders/usr/list(page=${orderList.number + 1})}"
+                   class="btn">Next</a>
+            </div>
+        </div>
+    </div>
+
+    <!--    <div class="flex justify-center my-4" th:if="orderList != null">-->
+    <!--        <div class="btn-group">-->
+    <!--            <a th:if="${orderList.hasPrevious()}" th:href="@{/trendpick/orders/usr/list(page=${orderList.number - 1})}" class="btn">Previous</a>-->
+    <!--            <span th:each="i : ${#numbers.sequence(0, orderList.totalPages - 1)}">-->
+    <!--            <a th:href="@{/trendpick/orders/usr/list(page=${i})}" th:text="${i+1}" th:class="${orderList.number == i ? 'btn btn-active' : 'btn'}"></a>-->
+    <!--        </span>-->
+    <!--            <a th:if="${orderList.hasNext()}" th:href="@{/trendpick/orders/usr/list(page=${orderList.number + 1})}" class="btn">Next</a>-->
+    <!--        </div>-->
+    <!--    </div>-->
+    </body>
+</main>
+</html>

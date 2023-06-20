@@ -82,11 +82,11 @@ public class OrderService {
         if(order.getStatus() == OrderStatus.CANCELLED)
             return RsData.of("F-1", "이미 취소된 주문입니다.");
 
-        if (order.getDelivery().getState() != DeliveryState.COMPLETED) {
+        if (order.getDelivery().getState() == DeliveryState.COMPLETED) {
             return RsData.of("F-2", "이미 배송완료된 상품은 취소가 불가능합니다.");
         }
 
-        if (order.getDelivery().getState() != DeliveryState.COMPLETED) {
+        if (order.getDelivery().getState() == DeliveryState.DELIVERY_ING) {
             return RsData.of("F-3", "이미 배송을 시작하여 취소가 불가능합니다.");
         }
 
@@ -141,5 +141,9 @@ public class OrderService {
 
     public Order findById(Long id) {
         return orderRepository.findById(id).get();
+    }
+
+    public Page<OrderResponse> findCancelledOrders(Member member, int offset) {
+        return orderRepository.findAllByMember(new OrderSearchCond(member.getId(), OrderStatus.CANCELLED), PageRequest.of(offset, 10));
     }
 }

@@ -60,13 +60,36 @@
             </div>
         </div>
     </div>
-    <div class="flex justify-center my-4" th:if="${productResponses != null and not #lists.isEmpty(productResponses.content)}">
+    <div class="flex justify-center my-4"
+         th:if="${productResponses != null and not #lists.isEmpty(productResponses.content)}">
         <div class="btn-group">
-            <a th:if="${productResponses.hasPrevious()}" th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${productResponses.number - 1}|}" class="btn">Previous</a>
-            <span th:each="i : ${#numbers.sequence(0, productResponses.totalPages - 1)}" th:if="${i >= (productResponses.number - 3) && i <= (productResponses.number + 3)}">
-                <a th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${i}|}" th:text="${i+1}" th:class="${productResponses.number == i ? 'btn btn-active' : 'btn'}"></a>
-            </span>
-            <a th:if="${productResponses.hasNext()}" th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${productResponses.number + 1}|}" class="btn">Next</a>
+            <div th:if="${productResponses.hasPrevious()}">
+                <a th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${productResponses.number - 1}|}"
+                   class="btn">Previous</a>
+            </div>
+
+            <div th:if="${productResponses.number/5 * 5 + 1 + 4} < ${productResponses.totalPages}">
+                <div class="flex">
+                    <div th:each="i : ${#numbers.sequence(productResponses.number/5 * 5 + 1, productResponses.number/5 * 5 + 1 + 4)}">
+                        <a th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${i - 1}|}"
+                           th:text="${i}" th:class="${productResponses.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                    </div>
+                </div>
+            </div>
+            <div th:unless="${productResponses.number/5 + 1 + 4} < ${productResponses.totalPages}">
+                <div class="flex">
+                    <div th:each="i : ${#numbers.sequence(productResponses.number/5 * 5 + 1, productResponses.totalPages)}">
+                        <a th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${i - 1}|}"
+                           th:text="${i}" th:class="${productResponses.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div th:if="${productResponses.hasNext()}">
+                <a th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${productResponses.number + 1}|}"
+                   class="btn">Next</a>
+            </div>
         </div>
     </div>
 

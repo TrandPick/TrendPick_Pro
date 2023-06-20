@@ -79,6 +79,8 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/product")
     public String orderProduct(@ModelAttribute ProductOptionForm productOptionForm, RedirectAttributes redirect) {
+        if(!rq.checkLogin())
+            return rq.historyBack("로그인 후 이용하실 수 있습니다.");
         RsData<OrderForm> result = orderService.productToOrder(rq.CheckMember().get(), productOptionForm);
         if(result.isFail())
             return rq.historyBack(result);
@@ -87,17 +89,12 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("usr/list")
+    @GetMapping("usr/orders")
     public String orderListByMember(
             @RequestParam(value = "page", defaultValue = "0") int offset,
             Model model) {
         Page<OrderResponse> orderList = orderService.findAllByMember(rq.CheckMember().get(), offset);
-        int blockPage = 5;
-        int startPage = (offset / blockPage) * blockPage + 1;
-        int endPage = Math.min(startPage + blockPage - 1, orderList.getTotalPages());
         model.addAttribute("orderList", orderList);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
         return "trendpick/usr/member/orders";
     }
 
@@ -107,12 +104,7 @@ public class OrderController {
             @RequestParam(value = "page", defaultValue = "0") int offset,
             Model model) {
         Page<OrderResponse> orderList = orderService.findAllBySeller(rq.CheckAdmin().get(), offset);
-        int blockPage = 5;
-        int startPage = (offset / blockPage) * blockPage + 1;
-        int endPage = Math.min(startPage + blockPage - 1, orderList.getTotalPages());
         model.addAttribute("orderList", orderList);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
         return "trendpick/admin/sales";
     }
 
@@ -122,7 +114,7 @@ public class OrderController {
         RsData result = orderService.cancel(orderId);
         if(result.isFail())
             return rq.historyBack(result);
-        return rq.redirectWithMsg("/trendpick/orders/usr/list", result);
+        return rq.redirectWithMsg("/trendpick/orders/usr/orders", result);
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
@@ -138,5 +130,14 @@ public class OrderController {
         model.addAttribute("order",
                 result.getData());
         return "trendpick/orders/detail";
+    }
+
+    @GetMapping("/usr/refunds")
+    @PreAuthorize("hasAuthority({'MEMBER'})")
+    public String showCanceledOrderListByMember(@RequestParam(value = "page", defaultValue = "0") int offset,
+                                                Model model){
+        Page<OrderResponse> orderList = orderService.findCancelledOrders(rq.CheckMember().get(), offset);
+        model.addAttribute("orderList", orderList);
+        return "trendpick/usr/member/refunds";
     }
 }

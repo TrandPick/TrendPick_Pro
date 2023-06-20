@@ -132,8 +132,17 @@ public class BaseData {
                 for (CommonFile subFile : subFiles) {
                     mainFile.connectFile(subFile);
                 }
+                CommonFile mainFile2 = CommonFile.builder()
+                        .fileName("bamin.png")
+                        .build();
+                List<CommonFile> subFiles2 = new ArrayList<>();
+                subFiles2.add(CommonFile.builder()
+                        .fileName("dev-jeans.png")
+                        .build());
+                for (CommonFile subFile : subFiles2) {
+                    mainFile2.connectFile(subFile);
+                }
                 Product product = productRepository.findById(1L).orElseThrow();
-                Product product2 = productRepository.findById(2L).orElseThrow();
                 ReviewSaveRequest rr = ReviewSaveRequest.builder()
                         .title("리뷰입니다.")
                         .content("내용입니다")
@@ -141,12 +150,8 @@ public class BaseData {
                         .build();
                 Review review = Review.of(rr, memberService.findByEmail("trendpick@naver.com").get(), product, mainFile);
                 reviewRepository.save(review);
-                Review review2 = Review.of (rr, memberService.findByEmail("hye_0000@naver.com").get(), product, mainFile);
+                Review review2 = Review.of (rr, memberService.findByEmail("hye_0000@naver.com").get(), product, mainFile2);
                 reviewRepository.save(review2);
-                Review review3 = Review.of(rr, memberService.findByEmail("trendpick@naver.com").get(), product2, mainFile);
-                reviewRepository.save(review3);
-                Review review4 = Review.of (rr, memberService.findByEmail("hye_0000@naver.com").get(), product2, mainFile);
-                reviewRepository.save(review4);
 
                 log.info("Base Data Success");
             }

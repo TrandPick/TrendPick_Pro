@@ -5,7 +5,12 @@
     <title>주문 상세</title>
 </head>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
-    <h1>주문상세</h1>
+    <div th:if="${order.orderStatus} == 'ORDERED'">
+        <h1>주문상세</h1>
+    </div>
+    <div th:unless="${order.orderStatus} == 'ORDERED'">
+        <h1>취소된 주문</h1>
+    </div>
     <div class="border p-4 mb-4">
         <table class="table">
             <thead>
@@ -47,6 +52,13 @@
             </tr>
             </tbody>
         </table>
+    </div>
+    <div th:if="${order.orderStatus} == 'ORDERED'" class="flex justify-center">
+        <form th:action="@{|/trendpick/orders/cancel/${order.orderId}|}" method="post">
+            <button class="btn btn-natural btn-lg" type="submit">
+                구매취소
+            </button>
+        </form>
     </div>
 <!--    <form th:action="@{|/trendpick/orders/cancel/${order.orderId}/|}" method="post">-->
 <!--        <button id="payment-button" class="btn btn-natural btn-lg"-->
