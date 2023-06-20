@@ -18,6 +18,7 @@ import project.trendpick_pro.domain.member.entity.form.AccountForm;
 import project.trendpick_pro.domain.member.entity.form.AddressForm;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
+import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 import project.trendpick_pro.global.rsData.RsData;
@@ -32,6 +33,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final TagNameService tagNameService;
+    private final RecommendService recommendService;
 
     private final Rq rq;
 
@@ -48,9 +50,11 @@ public class MemberController {
     public String register(@ModelAttribute @Valid JoinForm joinForm) {
 
         RsData<Member> member = memberService.register(joinForm);
-        if (member.isFail()) {
+        if (member.isFail())
             return rq.historyBack(member);
-        }
+
+        if(member.getData().getRole().getValue().equals("MEMBER"))
+            recommendService.select(member.getData().getEmail());
 
         return rq.redirectWithMsg("/trendpick/member/login", member);
     }
