@@ -21,7 +21,7 @@ public class AnswerController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("register")
     public String register(@RequestParam("ask") Long askId, @Valid AnswerForm answerForm){
-        Member member = rq.CheckAdmin().get();
+        Member member = rq.getAdmin();
         RsData<Long> result = answerService.register(member, askId, answerForm);
         if(result.isFail())
             return rq.historyBack(result);
@@ -31,7 +31,7 @@ public class AnswerController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{answerId}")
     public String deleteAnswer(@PathVariable Long answerId){
-        RsData<Long> result = answerService.delete(rq.CheckAdmin().get(), answerId);
+        RsData<Long> result = answerService.delete(rq.getAdmin(), answerId);
         if(result.isFail())
             return rq.historyBack(result);
 
@@ -41,7 +41,7 @@ public class AnswerController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/moidfy/{answerId}")
     public String modifyAnswer(@PathVariable Long answerId, @Valid AnswerForm answerForm){
-        RsData<Long> result = answerService.modify(rq.CheckAdmin().get(), answerId, answerForm);
+        RsData<Long> result = answerService.modify(rq.getAdmin(), answerId, answerForm);
         if(result.isFail())
             return rq.historyBack(result);
 

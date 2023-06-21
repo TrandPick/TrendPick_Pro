@@ -26,8 +26,8 @@
             <div class="mb-2 border rounded p-2">
                 <p th:text="${ask.content}" readonly></p>
             </div>
-            <div th:if="${@rq.checkLogin()}">
-                <div class="flex justify-end" th:if="${@rq.GetMember().id} == ${ask.memberId}">
+            <div th:if="${@rq.checkMember()()}">
+                <div class="flex justify-end" th:if="${@rq.getMember().id} == ${ask.memberId}">
                     <a th:href="@{|/trendpick/customerservice/asks/edit/${ask.askId}|}" class="mr-2">수정</a>
                     <form th:action="@{|/trendpick/customerservice/asks/delete/${ask.askId}|}" method="post"
                           style="display: inline;">
@@ -51,7 +51,7 @@
                         <p th:text="${#temporals.format(answer.createdDate, 'YY-MM-dd')}"></p>
                     </div>
                     <div th:if="${@rq.checkLogin()}">
-                        <div class="flex justify-end" th:if="${@rq.CheckBrandAdminHtml()}">
+                        <div class="flex justify-end" th:if="${@rq.CheckBrand()}">
                             <form th:action="@{|/trendpick/customerservice/answers/delete/${answer.answerId}|}"
                                   method="post" style="display: inline;">
                                 <input type="hidden" name="_method" value="POST"/>
@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div th:if="${@rq.checkAdminOrBrandAdminHtml()}">
+        <div th:if="${@rq.checkAdminOrBrand()}">
             <form th:object="${answerForm}" method="post"
                   th:action="@{|/trendpick/customerservice/answers/register?ask=${ask.askId}|}">
                 <div class="mb-3">

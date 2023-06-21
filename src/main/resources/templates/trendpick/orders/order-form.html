@@ -47,6 +47,7 @@
             <thead>
             <tr>
                 <th class="text-center" scope="col">번호</th>
+                <th></th>
                 <th class="text-center" scope="col">상품명</th>
                 <th class="text-center" scope="col">주문수량</th>
                 <th class="text-center" scope="col">주문금액</th>
@@ -56,6 +57,9 @@
             <span class="hidden" id="orderId" th:text="${order.id}" th:value="${order.id}"></span>
             <tr th:each="orderItem, itemStat : ${order.orderItems}" class="bg-blue-50">
                 <td class="text-center" th:text="${itemStat.count}">1</td>
+                <td class="image-main" style="width: 100px; height: 100px;">
+                    <img th:src="|/images/${orderItem.product.getFile().getFileName()}|"  alt="Product Image"/>
+                </td>
                 <td class="text-center">
                     <span class="text-center" id="Product" th:text="${orderItem.product.name}"></span>
                 </td>

@@ -71,7 +71,7 @@ public class ProductService {
     @Transactional
     public RsData<Long> register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        rq.CheckAdmin();
+        rq.getAdmin();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
         List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
@@ -99,7 +99,7 @@ public class ProductService {
     @Transactional
     public RsData<Long> modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        rq.CheckAdmin();
+        rq.getAdmin();
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
 
@@ -126,7 +126,7 @@ public class ProductService {
 
     @Transactional
     public void delete(Long productId) {
-        rq.CheckAdmin();
+        rq.getAdmin();
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         fileTranslator.deleteFile(product.getFile());
         productRepository.delete(product);
@@ -138,7 +138,7 @@ public class ProductService {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
 
         if(rq.checkLogin()){
-            if(rq.CheckMemberHtml()){
+            if(rq.checkMember()){
                 updateFavoriteTag(product);
             }
         }
@@ -152,7 +152,7 @@ public class ProductService {
 
 
     private void updateFavoriteTag(Product product) {
-        Member member = rq.GetMember();
+        Member member = rq.getMember();
         if(member.getRole().equals(RoleType.MEMBER))
             favoriteTagService.updateTag(member, product, TagType.SHOW);
     }

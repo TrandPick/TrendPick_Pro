@@ -7,7 +7,7 @@
 <main layout:fragment="main">
     <div class="mt-3" style="width:100%; margin-right: 0;">
         <div class="flex justify-end mt-3">
-            <div th:if="${@rq.CheckLoginHtml()}">
+            <div th:if="${@rq.checkLogin()}">
                 <div th:if="${reviewResponse.writer == currentUser}">
                     <a class="btn btn-accent btn-sm mr-2"
                        th:href="@{|/trendpick/review/edit/${reviewResponse.id}|}" style="width: 100px;">수정하기</a>

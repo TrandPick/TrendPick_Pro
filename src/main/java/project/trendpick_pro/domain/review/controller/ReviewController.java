@@ -18,7 +18,6 @@ import project.trendpick_pro.global.rsData.RsData;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -38,9 +37,7 @@ public class ReviewController {
                                @RequestParam("mainFile") MultipartFile mainFile,
                                @RequestParam("subFiles") List<MultipartFile> subFiles,
                                @PathVariable("productId") Long productId, Model model) throws Exception {
-        Optional<Member> member = rq.CheckLogin();
-        Member checkMember = member.get();
-
+        Member checkMember = rq.getLogin();
         RsData<ReviewResponse> reviewResponse = reviewService.createReview(checkMember, productId, reviewCreateRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
@@ -51,9 +48,8 @@ public class ReviewController {
     public String showReview(@PathVariable Long reviewId, Model model){
         ReviewResponse reviewResponse = reviewService.showReview(reviewId);
         model.addAttribute("reviewResponse", reviewResponse);
-        if (rq.CheckLoginHtml() && !rq.CheckAdminHtml()) {
-            Optional<Member> member = rq.CheckMember();
-            Member checkMember = member.get();
+        if (rq.checkLogin() && !rq.checkAdmin()) {
+            Member checkMember = rq.getMember();
             String writer = checkMember.getUsername();
             model.addAttribute("currentUser", writer);
         }
@@ -91,8 +87,8 @@ public class ReviewController {
         Page<ReviewResponse> reviewResponses = reviewService.showAll(pageable);
         model.addAttribute("reviewResponses", reviewResponses);
 
-        if (rq.CheckLoginHtml() && !rq.CheckAdminHtml()) {
-            Member checkMember = rq.CheckMember().get();
+        if (rq.checkLogin() && !rq.checkAdmin()) {
+            Member checkMember = rq.getMember();
             String currentUser = checkMember.getUsername();
             model.addAttribute("currentUser", currentUser);
         }
@@ -101,8 +97,7 @@ public class ReviewController {
 
     @GetMapping("/user")
     public String showOwnReview(Pageable pageable, Model model){
-        Optional<Member> member = rq.CheckLogin();
-        Member checkMember = member.get();
+        Member checkMember = rq.getLogin();
         String writer = checkMember.getUsername();
         Page<ReviewResponse> reviewResponses = reviewService.showOwnReview(writer, pageable);
         model.addAttribute("reviewResponses", reviewResponses);

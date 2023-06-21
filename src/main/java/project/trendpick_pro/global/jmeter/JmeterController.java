@@ -29,7 +29,7 @@ public class JmeterController {
 
     @GetMapping("/member/login")
     public ResponseEntity<MemberInfoDto> getMemberInfo() {
-        Member member = rq.CheckMember().get();
+        Member member = rq.getMember();
         MemberInfoDto memberInfoDto = MemberInfoDto.of(member);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
