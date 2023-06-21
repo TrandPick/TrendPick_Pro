@@ -77,6 +77,7 @@ public class Product extends BaseTimeEntity {
 
     private int reviewCount = 0;
     private double rateAvg = 0;
+    private int saleCount = 0;
     private int askCount = 0;
 
     @Builder
@@ -127,6 +128,13 @@ public class Product extends BaseTimeEntity {
 
     public void disconnectFile(){
         this.file = null;
+    }
+
+    public void increaseSaleCount(int quantity){
+        this.saleCount += quantity;
+    }
+    public void decreaseSaleCount(int quantity){
+        this.saleCount -= quantity;
     }
 
     public void addReview(int rating){
