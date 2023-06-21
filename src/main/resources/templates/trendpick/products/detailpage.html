@@ -190,24 +190,21 @@
         }
 
         function increaseValue() {
-            var stock = document.getElementById('stock').innerText.replace(/[^\d]/g, '');
-            var value = parseInt(document.getElementById('quantity').value);
+            var value = parseInt(document.getElementById('quantity').value, 10);
             value = isNaN(value) ? 1 : value;
-            if(value < stock) {
-                value++;
-                document.getElementById('quantity').value = value;
-            }
+            value++;
+            document.getElementById('quantity').value = value;
+            document.getElementById('buyQuantity').value = value; // This line was added
         }
 
         function decreaseValue() {
-            var value = parseInt(document.getElementById('quantity').value);
+            var value = parseInt(document.getElementById('quantity').value, 10);
             value = isNaN(value) ? 1 : value;
-            if (value <= 1) {
-                value = 1;
-            } else {
+            if(value > 1){
                 value--;
             }
             document.getElementById('quantity').value = value;
+            document.getElementById('buyQuantity').value = value; // This line was added
         }
 
         function syncQuantities() {
