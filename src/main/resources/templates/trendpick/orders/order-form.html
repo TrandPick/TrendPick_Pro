@@ -82,7 +82,7 @@
     <div id="agreement"></div>
 
     <div class="flex justify-center">
-        <button id="payment-button" class="btn btn-accent btn-lg"
+        <button id="payment-button" class="btn btn-wide btn-lg"
                 th:text="${#numbers.formatDecimal(order.getTotalPrice(), 0, 'COMMA', 0, 'POINT')} + ' 원 결제하기'">
         </button>
     </div>

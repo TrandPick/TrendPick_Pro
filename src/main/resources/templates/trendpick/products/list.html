@@ -33,7 +33,7 @@
             <div class="card bordered flex-grow" th:href="@{/trendpick/products/{id}(id=${product.id})}">
                 <figure>
                     <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
-                        <img th:src="|/images/${product.mainFile}|" alt="Product Image"/>
+                        <img th:src="|/images/${product.mainFile}|" alt="Product Image" width="100%" height="100%"/>
                     </a>
                 </figure>
                 <div class="card-body">
