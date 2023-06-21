@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
+import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.Product;
@@ -32,6 +33,8 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
     private final FileTranslator fileTranslator;
+
+    private final Rq rq;
 
     private final AmazonS3 amazonS3;
 
@@ -57,13 +60,6 @@ public class ReviewService {
     }
 
     @Transactional
-    public void delete(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow();
-        review.getFile().deleteFile(amazonS3, bucket);
-        reviewRepository.delete(review);
-    }
-
-    @Transactional
     public RsData<ReviewResponse> createReview(Member actor, Long productId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws Exception {
         Product product = productRepository.findById(productId).orElseThrow();
 
@@ -85,7 +81,8 @@ public class ReviewService {
     public RsData<ReviewResponse> modify(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
-        review.getFile().deleteFile(amazonS3, bucket);
+        fileTranslator.deleteFile(review.getFile());
+        review.disconnectFile();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
         List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
@@ -97,6 +94,14 @@ public class ReviewService {
         review.update(reviewSaveRequest, mainFile);
 
         return RsData.of("S-1", "리뷰 수정이 완료되었습니다.", ReviewResponse.of(review));
+    }
+
+    @Transactional
+    public void delete(Long reviewId) {
+        rq.CheckAdmin();
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+        fileTranslator.deleteFile(review.getFile());
+        reviewRepository.delete(review);
     }
 
     @Transactional

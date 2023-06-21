@@ -12,8 +12,8 @@ import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
-import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.recommend.entity.Recommend;
 import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
@@ -60,25 +60,23 @@ public class Product extends BaseTimeEntity {
     @Column(name = "stock", nullable = false)
     private int stock;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Tag> tags = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CartItem> cartItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Recommend> recommendList;
 
-
     private int reviewCount = 0;
     private double rateAvg = 0;
-    private int saleCount = 0;
     private int askCount = 0;
 
     @Builder
@@ -95,8 +93,7 @@ public class Product extends BaseTimeEntity {
         this.tags = tags;
     }
 
-    public static Product of(ProductSaveRequest request, MainCategory mainCategory
-            , SubCategory subCategory, Brand brand,CommonFile file) {
+    public static Product of(ProductSaveRequest request, MainCategory mainCategory, SubCategory subCategory, Brand brand,CommonFile file) {
         return Product.builder()
                 .name(request.getName())
                 .mainCategory(mainCategory)
@@ -121,18 +118,15 @@ public class Product extends BaseTimeEntity {
         this.stock = restStock;
     }
 
-    public void increaseSaleCount(int quantity){
-        this.saleCount += quantity;
-    }
-    public void decreaseSaleCount(int quantity){
-        this.saleCount -= quantity;
-    }
-
     public void increaseAskCount(){
         this.askCount++;
     }
     public void decreaseAskCount(){
         this.askCount--;
+    }
+
+    public void disconnectFile(){
+        this.file = null;
     }
 
     public void addReview(int rating){
@@ -141,8 +135,6 @@ public class Product extends BaseTimeEntity {
         this.reviewCount++;
         this.rateAvg = Math.round(total / reviewCount * 10) / 10.0;
     }
-
-
 
     public void update(ProductSaveRequest request, CommonFile file) {
         this.name = request.getName();

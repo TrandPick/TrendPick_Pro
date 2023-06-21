@@ -41,6 +41,10 @@ public class Review extends BaseTimeEntity {
 
     private int rating;
 
+    public void disconnectFile() {
+        this.file = null;
+    }
+
     @Builder
     public Review(Member member, Product product, CommonFile file, String title, String content, int rating){
         this.writer = member.getUsername();
