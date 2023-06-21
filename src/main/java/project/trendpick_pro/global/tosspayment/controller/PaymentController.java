@@ -1,0 +1,61 @@
+package project.trendpick_pro.global.tosspayment.controller;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import project.trendpick_pro.domain.cart.service.CartService;
+import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.orders.entity.Order;
+import project.trendpick_pro.domain.orders.entity.OrderStatus;
+import project.trendpick_pro.domain.orders.service.OrderService;
+import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.tosspayment.dto.PaymentResultResponse;
+import project.trendpick_pro.global.tosspayment.service.PaymentService;
+
+@Slf4j
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/payment")
+public class PaymentController {
+
+    private final PaymentService paymentService;
+    private final OrderService orderService;
+    private final CartService cartService;
+
+    private final Rq rq;
+
+    @Transactional
+    @GetMapping(value = "/{id}/success")
+    public synchronized String PaymentTry(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "orderId") String orderId,
+            @RequestParam(value = "amount") Integer amount,
+            @RequestParam(value = "paymentKey") String paymentKey) {
+
+        PaymentResultResponse response = paymentService.requestPayment(paymentKey, orderId, amount);
+
+        Order order = orderService.findById(id);
+        order.connectPaymentMethod("TossPayments " + response.getMethod());
+        order.connectPaymentKey(response.getPaymentKey());
+        order.modifyStatus(OrderStatus.ORDERED);
+
+        if (response.getStatus().equals("DONE")) {
+            cartService.deleteCartItemsByOrder(order);
+            return rq.redirectWithMsg("/trendpick/orders/%s".formatted(id), "주문이 완료되었습니다.");
+        } else {
+            return rq.historyBack(RsData.of("F-1", "주문이 완료되지 않았습니다."));
+        }
+    }
+
+    @GetMapping(value = "/{id}/cancel")
+    public String paymentCancel(@PathVariable("id") Long id) {
+        orderService.cancel(id);
+        paymentService.cancelPayment(orderService.findById(id).getPaymentKey());
+        return rq.redirectWithMsg("/trendpick/orders/usr/orders", "주문을 취소했습니다.");
+    }
+}

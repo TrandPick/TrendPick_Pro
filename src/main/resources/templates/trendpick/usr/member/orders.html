@@ -2,38 +2,24 @@
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>주문 목록</title>
-    <style>
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .table thead th {
-            background-color: #212529;
-            color: #fff;
-            text-align: center;
-        }
-        .mask-squircle {
-            border-radius: 16%;
-        }
-        .opacity-50 {
-            opacity: 0.5;
-        }
-    </style>
+    <title>TrendPick | 주문 내역</title>
 </head>
+<body>
 <main class="min-h-screen flex flex-col" layout:fragment="main">
-    <body>
+    <br/><br/>
+
+    <h1 class="text-center text-5xl font-bold mb-6">나의 주문내역</h1>
     <table class="table">
         <thead>
         <tr>
-            <th class="text-center" scope="col">주문번호</th>
-            <th class="text-center" scope="col">상품정보</th>
-            <th class="text-center" scope="col">주문수량</th>
-            <th class="text-center" scope="col">주문금액</th>
-            <th class="text-center" scope="col">주문일시</th>
-            <th class="text-center" scope="col">주문상태</th>
-            <th class="text-center" scope="col">배송상태</th>
-            <th class="text-center" scope="col">리뷰등록</th>
+            <th class="text-center" scope="col">주문 번호</th>
+            <th class="text-center" scope="col">상품 정보</th>
+            <th class="text-center" scope="col">주문 수량</th>
+            <th class="text-center" scope="col">주문 금액</th>
+            <th class="text-center" scope="col">주문 일시</th>
+            <th class="text-center" scope="col">주문 상태</th>
+            <th class="text-center" scope="col">배송 상태</th>
+            <th class="text-center" scope="col">리뷰 등록</th>
         </tr>
         </thead>
         <tbody>
@@ -57,7 +43,7 @@
                                th:text="${order.productName}">
                             </a>
                         </div>
-                        <div class="text-sm opacity-50" th:text="${order.brandName}"></div>
+                        <div class="text-sm opacity-50 text-left" th:text="${order.brandName}"></div>
                     </div>
                 </div>
             </td>
@@ -65,7 +51,7 @@
                 <span class="badge badge-ghost badge-m" th:text="${order.count+'개'}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-m" th:text="${order.formattedTotalPrice}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span>
             </td>
             <td class="text-center">
                 <span class="badge badge-ghost badge-m" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
@@ -77,23 +63,54 @@
                 <span class="badge badge-ghost badge-m" th:text="${order.deliveryStatus}"></span>
             </td>
             <td class="text-center">
-                <a th:href="@{|/trendpick/review/register/${order.productId}|}">
-                    리뷰달기
-                </a>
+                <div th:if="${order.orderStatus} == 'ORDERED'">
+                    <div th:if="${order.deliveryStatus} == 'COMPLETED'">
+                        <a th:href="@{|/trendpick/review/register/${order.productId}|}">
+                            리뷰달기
+                        </a>
+                    </div>
+                    <div th:unless="${order.deliveryStatus} == 'COMPLETED'">
+                        <a th:href="@{|/trendpick/delivery/status/${order.orderId}|}">
+                            배송완료 후 리뷰작성 가능
+                        </a>
+                    </div>
+                </div>
+                <div th:if="${order.orderStatus} == 'CANCELED'">
+                    <p>리뷰작성 불가</p>
+                </div>
             </td>
         </tr>
         </tbody>
     </table>
 
-    <div class="flex justify-center my-4" th:if="orderList != null">
-        <div class="btn-group">
-            <a th:if="${orderList.hasPrevious()}" th:href="@{/trendpick/orders/usr/list(page=${orderList.number - 1})}" class="btn">Previous</a>
-            <span th:each="i : ${#numbers.sequence(0, orderList.totalPages - 1)}">
-            <a th:href="@{/trendpick/orders/usr/list(page=${i})}" th:text="${i+1}" th:class="${orderList.number == i ? 'btn btn-active' : 'btn'}"></a>
-        </span>
-            <a th:if="${orderList.hasNext()}" th:href="@{/trendpick/orders/usr/list(page=${orderList.number + 1})}" class="btn">Next</a>
+    <div class="flex justify-center my-4"
+         th:if="${orderList != null and not #lists.isEmpty(orderList.content)}">
+        <div th:if="${orderList.hasPrevious()}">
+            <a th:href="@{/trendpick/orders/usr/list?page=${orderList.number - 1}}"
+               class="btn">Previous</a>
+        </div>
+
+        <div th:if="${orderList.number/5 * 5 + 1 + 4} < ${orderList.totalPages}">
+            <div class="flex">
+                <div th:each="i : ${#numbers.sequence(orderList.number/5 * 5 + 1, orderList.number/5 * 5 + 1 + 4)}">
+                    <a th:href="@{|/trendpick/orders/usr/list?page=${i - 1}|}"
+                       th:text="${i}" th:class="${orderList.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                </div>
+            </div>
+        </div>
+        <div th:unless="${orderList.number/5 + 1 + 4} < ${orderList.totalPages}">
+            <div class="flex">
+                <div th:each="i : ${#numbers.sequence(orderList.number/5 * 5 + 1, orderList.totalPages)}">
+                    <a th:href="@{|/trendpick/orders/usr/list?page=${i - 1}|}"
+                       th:text="${i}" th:class="${orderList.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                </div>
+            </div>
+        </div>
+        <div th:if="${orderList.hasNext()}">
+            <a th:href="@{/trendpick/orders/usr/list(page=${orderList.number + 1})}"
+               class="btn">Next</a>
         </div>
     </div>
-    </body>
 </main>
+</body>
 </html>

@@ -20,7 +20,6 @@ public class ProductListResponseBySeller {
     private int price;
     private int stock;
     private LocalDateTime createdDate;
-    private int saleCount;
 
     private double rateAvg;
     private int reviewCount;
@@ -28,14 +27,14 @@ public class ProductListResponseBySeller {
 
     @Builder
     @QueryProjection
-    public ProductListResponseBySeller(Long id, String name, String mainFile, int price, int stock, LocalDateTime createdDate, int saleCount, double rateAvg, int reviewCount, int ask) {
+    public ProductListResponseBySeller(Long id, String name, String mainFile, int price, int stock,
+                                       LocalDateTime createdDate, double rateAvg, int reviewCount, int ask) {
         this.id = id;
         this.name = name;
         this.mainFile = mainFile;
         this.price = price;
         this.stock = stock;
         this.createdDate = createdDate;
-        this.saleCount = saleCount;
         this.rateAvg = rateAvg;
         this.reviewCount = reviewCount;
         this.ask = ask;

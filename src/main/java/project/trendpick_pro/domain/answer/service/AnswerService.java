@@ -17,6 +17,7 @@ import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,7 +57,7 @@ public class AnswerService {
                 () -> new IllegalArgumentException("해당 답변은 없는 답변입니다.")
         );
 
-        if(answer.getAsk().getAuthor().getBrand() != member.getBrand())
+        if(!Objects.equals(answer.getAsk().getAuthor().getBrand(), member.getBrand()))
             return RsData.of("F-1", "접근 권한이 없습니다.");
         answer.update(answerForm);
 

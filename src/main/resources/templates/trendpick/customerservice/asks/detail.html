@@ -61,15 +61,13 @@
                     </div>
                 </div>
             </div>
-            <!-- 답변 목록 반복 끝 -->
         </div>
 
-        <!-- 답글 등록 폼 -->
         <div th:if="${@rq.checkAdminOrBrandAdminHtml()}">
             <form th:object="${answerForm}" method="post"
                   th:action="@{|/trendpick/customerservice/answers/register?ask=${ask.askId}|}">
                 <div class="mb-3">
-                    <label for="content" class="form-label">답변</label>
+                    <label class="form-label">답변</label>
                     <div class="border rounded">
                         <textarea th:field="*{content}" class="form-control form-control-lg" rows="5"
                                   style="width: 100%; resize: vertical;"></textarea>

@@ -2,24 +2,7 @@
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="">
 <head>
     <meta charset="UTF-8">
-    <title>주문 폼</title>
-    <style>
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .table thead th {
-            background-color: #212529;
-            color: #fff;
-            text-align: center;
-        }
-        .mask-squircle {
-            border-radius: 16%;
-        }
-        .opacity-50 {
-            opacity: 0.5;
-        }
-    </style>
+    <title>TrendPick | 주문</title>
 </head>
 <body>
 <main layout:fragment="main" class="bg-white">
@@ -30,30 +13,30 @@
     <div class="border p-4 mb-4">
         <table class="table">
             <tbody>
-                <tr>
-                    <th scope="row">회원 이름</th>
-                    <td>
-                        <span th:text="${order.member.username}"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">이메일</th>
-                    <td>
-                        <span th:text="${order.member.email}"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">번호</th>
-                    <td>
-                        <span th:text="${order.member.phoneNumber}"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">주소</th>
-                    <td>
-                        <span id="address" th:text="${order.member.address}" th:value="${order.member.address}"></span>
-                    </td>
-                </tr>
+            <tr>
+                <th scope="row">회원 이름</th>
+                <td>
+                    <span id="username" th:text="${order.member.username}"></span>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">이메일</th>
+                <td>
+                    <span id="email" th:text="${order.member.email}"></span>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">번호</th>
+                <td>
+                    <span th:text="${order.member.phoneNumber}"></span>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">주소</th>
+                <td>
+                    <span id="address" th:text="${order.member.address}" th:value="${order.member.address}"></span>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -77,10 +60,10 @@
                     <span class="text-center" id="Product" th:text="${orderItem.product.name}"></span>
                 </td>
                 <td class="text-center">
-                    <span class="text-center" th:text="${orderItem.count}"></span>
+                    <span class="text-center" th:text="${orderItem.quantity}"></span>
                 </td>
                 <td class="text-center font-bold">
-                    <span th:text="${#numbers.formatDecimal(orderItem.getTotalPrice(), 0, 'COMMA', 0, 'POINT')}" th:value="${order.getTotalPrice()}"></span> 원
+                    <span th:text="${#numbers.formatDecimal(orderItem.getTotalPrice, 0, 'COMMA', 0, 'POINT')}" th:value="${order.getTotalPrice}"></span> 원
                 </td>
             </tr>
             </tbody>
@@ -95,38 +78,41 @@
     <div id="agreement"></div>
 
     <div class="flex justify-center">
-        <button id="payment-button" class="btn btn-natural btn-lg"
+        <button id="payment-button" class="btn btn-accent btn-lg"
                 th:text="${#numbers.formatDecimal(order.getTotalPrice(), 0, 'COMMA', 0, 'POINT')} + ' 원 결제하기'">
         </button>
     </div>
 
     <script src="https://js.tosspayments.com/v1/payment-widget"></script>
+    <link id="clientKey" th:data-contextPath="${@environment.getProperty('toss.clientKey')}"/>
     <script>
-        const clientKey = "test_ck_Kma60RZblrq6qj1AW0E8wzYWBn14"
+        const clientKey = document.querySelector("#clientKey").getAttribute("data-contextPath");
         const customerKey = PaymentWidget.ANONYMOUS
         const button = document.getElementById("payment-button")
+
         const totalPrice = document.getElementById('totalPrice').innerText;
         const product = document.getElementById('Product').innerText;
         const id = document.getElementById('orderId').innerText;
+        const username = document.getElementById('username').innerText;
+        const email = document.getElementById('email').innerText;
 
         const paymentWidget = PaymentWidget(clientKey, customerKey)
 
         paymentWidget.renderPaymentMethods("#payment-method", {value: totalPrice})
         paymentWidget.renderAgreement('#agreement')
 
-        button.addEventListener("click", function (event) {
-            event.preventDefault();
+        button.addEventListener("click", function () {
             paymentWidget.requestPayment({
-                orderId: "Order_" + id + "_" + (Math.random() + "").substring(5),
+                orderId: "ORD_" + self.crypto.randomUUID(),
                 orderName: product + " 외..",
-                successUrl: "https://trendpick.k8s-1.suho.info/payment/" + id + "/success",
-                failUrl: "https://trendpick.k8s-1.suho.info/payment/" + id + "/fail",
-                customerEmail: "hyeri0603@naver.com",
-                customerName: "이수호"
+                successUrl: "http://localhost:8080/payment/" + id + "/success",
+                failUrl: "http://localhost:8080/payment/" + id + "/fail",
+                customerEmail: email,
+                customerName: username
             })
         })
     </script>
-
+    <br/><br/><br/><br/><br/><br/><br/>
 </main>
 </body>
 </html>

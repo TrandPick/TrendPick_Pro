@@ -61,9 +61,9 @@ public class BaseData {
             MainCategoryService mainCategoryService,
             SubCategoryService subCategoryService,
             BrandService brandService,
-            ProductRepository productRepository,
             CartService cartService,
             RecommendService recommendService,
+            ProductRepository productRepository,
             ReviewRepository reviewRepository
     ) {
         return new CommandLineRunner() {

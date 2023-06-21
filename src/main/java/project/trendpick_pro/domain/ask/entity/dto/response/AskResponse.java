@@ -55,6 +55,6 @@ public class AskResponse {
     }
 
     public static Page<AskResponse> of(Page<Ask> asks){
-        return asks.map(ask -> AskResponse.of(ask));
+        return asks.map(AskResponse::of);
     }
 }

@@ -7,18 +7,15 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.QOrderResponse;
 
 import java.util.List;
 
-import static project.trendpick_pro.domain.delivery.entity.QDelivery.*;
-import static project.trendpick_pro.domain.member.entity.QMember.*;
-import static project.trendpick_pro.domain.orders.entity.QOrder.*;
-import static project.trendpick_pro.domain.orders.entity.QOrderItem.*;
-import static project.trendpick_pro.domain.product.entity.QProduct.*;
+import static project.trendpick_pro.domain.member.entity.QMember.member;
+import static project.trendpick_pro.domain.orders.entity.QOrder.order;
+import static project.trendpick_pro.domain.orders.entity.QOrderItem.orderItem;
 
 public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
@@ -38,7 +35,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.product.file.fileName,
                         orderItem.product.brand.name,
                         orderItem.product.name,
-                        orderItem.count,
+                        orderItem.quantity,
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
                         orderItem.order.modifiedDate,
@@ -64,13 +61,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }
 
-    //동적 처리, 환불 내역을 볼 때만 값을 지정
-    private static BooleanExpression statusEq(OrderSearchCond orderSearchCond) {
-        if(orderSearchCond.getStatus() == null)
-            return null;
-        return order.status.stringValue().eq(orderSearchCond.getStatus());
-    }
-
     @Override
     public List<OrderResponse> findOrderItemsByOrderId(Long orderId) {
         return queryFactory
@@ -80,7 +70,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.product.file.fileName,
                         orderItem.product.brand.name,
                         orderItem.product.name,
-                        orderItem.count,
+                        orderItem.quantity,
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
                         orderItem.order.modifiedDate,
@@ -103,7 +93,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.product.file.fileName,
                         orderItem.product.brand.name,
                         orderItem.product.name,
-                        orderItem.count,
+                        orderItem.quantity,
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
                         orderItem.order.modifiedDate,
@@ -123,8 +113,15 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .select(order.count())
                 .from(order)
                 .join(order.member, member)
-                .on(orderItem.product.brand.name.eq(orderSearchCond.getBrand()))
-                ;
+                .on(orderItem.product.brand.name.eq(orderSearchCond.getBrand()));
+
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
+    }
+
+    //동적 처리, 환불 내역을 볼 때만 값을 지정
+    private static BooleanExpression statusEq(OrderSearchCond orderSearchCond) {
+        if(orderSearchCond.getStatus() == null)
+            return null;
+        return order.status.stringValue().eq(orderSearchCond.getStatus());
     }
 }

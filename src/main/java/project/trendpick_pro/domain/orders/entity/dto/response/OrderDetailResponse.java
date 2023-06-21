@@ -4,7 +4,6 @@ package project.trendpick_pro.domain.orders.entity.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import project.trendpick_pro.domain.orders.entity.Order;
 
 import java.text.NumberFormat;
@@ -35,10 +34,4 @@ public class OrderDetailResponse {
         }
         return orderDetailResponse;
     }
-
-    public String getFormattedPaymentPrice(){
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
-        return numberFormat.format(getTotalPrice());
-    }
-
 }

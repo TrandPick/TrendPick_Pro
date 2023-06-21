@@ -32,18 +32,25 @@
     <title>TrendPick</title>
 </head>
 <body class="mx-auto" style="width:80%; min-height:100vh; display: flex; flex-direction: column;">
-
 <div class="bg-base-100 flex-wrap border-b-2 border-gray-300">
     <div class="nav3">
-        <a class="px-2 lg:flex-none" href="/trendpick/products/list?main-category=전체">
-            <div class="flex items-center">
-                <img src="https://kr.object.ncloudstorage.com/trendpick/trendpick_logo.png" width="100px" alt="TrendPick"/>
-                <h1 class="text-4xl font-bold ml-4">TrendPick</h1>
-            </div>
-        </a>
+
+        <br/>
+        <!-- Title Image Section -->
+        <div class="px-2 lg:flex-none w-16 h-16">
+            <a  href="/trendpick/products/list?main-category=전체">
+                <div class="flex items-center w-16 h-16">
+                    <img th:src="|/images/trendpick_logo.png|" alt="TrendPick"/>
+                    <h1 class="text-4xl font-bold ml-4">TrendPick</h1>
+                </div>
+            </a>
+        </div>
+        <br/>
+
         <div class="flex justify-between">
             <ul class="menu menu-horizontal px-1">
-                <li th:if="${@rq.CheckLoginHtml()} and !${@rq.CheckAdminHtml()}"><a href="/trendpick/products/list?main-category=recommend">추천</a></li>
+                <li th:if="${@rq.CheckLoginHtml()} and !${@rq.CheckAdminHtml()}"><a
+                        href="/trendpick/products/list?main-category=recommend">추천</a></li>
                 <li><a href="/trendpick/products/list?main-category=전체">전체</a></li>
                 <li><a href="/trendpick/products/list?main-category=상의">상의</a></li>
                 <li><a href="/trendpick/products/list?main-category=아우터">아우터</a></li>
@@ -54,21 +61,25 @@
                 <li><a href="/trendpick/review/list">리뷰</a></li>
             </ul>
             <ul class="menu menu-horizontal flex justify-end flex-1 px-2 float-right">
-
-                <li class="ml-2 mt-1" th:if="${@rq.checkLogin()}">
-                    <div class="badge badge-accent" th:if="${@rq.CheckMemberHtml()}">
-                        <span th:text="${@rq.GetMember().username}+'님'"></span>
-                    </div>
-                    <div class="badge badge-accent" th:if="${@rq.CheckBrandAdminHtml()}">
-                        <span th:text="${@rq.GetMember().brand}+' 관리자'"></span>
-                    </div>
-                    <div class="badge badge-accent" th:if="${@rq.GetMember().role.value == 'ADMIN'}">
-                        <span>관리자 계정</span>
-                    </div>
-                </li>
-
                 <li><a href="/trendpick/member/register" sec:authorize="isAnonymous()">회원가입</a></li>
                 <li><a href="/trendpick/member/login" sec:authorize="isAnonymous()">로그인</a></li>
+                <li class="ml-2 mt-1" th:if="${@rq.checkLogin()}">
+                    <div th:if="${@rq.CheckMemberHtml()}" class="centered">
+                        <div class="badge badge-accent badge-outline text-black">
+                            <span th:text="${@rq.GetMember().username}+' 님'"></span>
+                        </div>
+                    </div>
+                    <div th:if="${@rq.CheckBrandAdminHtml()}" class="centered">
+                        <div class="badge badge-accent badge-outline text-black">
+                            <span th:text="${@rq.GetMember().brand}+' 관리자'"></span>
+                        </div>
+                    </div>
+                    <div th:if="${@rq.GetMember().role.value == 'ADMIN'}" class="centered">
+                        <div class="badge badge-accent">
+                            <span>관리자 계정</span>
+                        </div>
+                    </div>
+                </li>
                 <li>
                     <form th:action="|/trendpick/member/logout|" sec:authorize="isAuthenticated()" method="POST"
                           style="display: inline;">
@@ -90,57 +101,59 @@
                 </div>
                 <div th:if="${@rq.CheckLoginHtml()}">
                     <div class="dropdown" th:if="${@rq.CheckMemberHtml()}">
+                        <label tabindex="0" class="flex btn btn-ghost btn-circle">
+                            <div class="flex justify-center items-center">
+                                <i class="fa-solid fa-bars"></i>
+                            </div>
+                        </label>
+                        <ul tabindex="0"
+                            class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-64">
+                            <li>
+                                  <span>
+                                    <a th:href="@{/trendpick/member/info}"><span>내 정보</span></a>
+                                  </span>
+                            </li>
+                            <li>
+                                  <span>
+                                    <a th:href="@{/trendpick/orders/usr/orders}"><span>내 주문내역</span></a>
+                                  </span>
+                            </li>
+                            <li>
+                                  <span>
+                                    <a th:href="@{/trendpick/orders/usr/refunds}"><span>내 환불내역</span></a>
+                                  </span>
+                            </li>
+                            <li>
+                                  <span>
+                                    <a th:href="@{/trendpick/member/info/address}"><span>배송지 관리</span></a>
+                                  </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="dropdown" th:unless="${@rq.CheckMemberHtml()}">
                         <label tabindex="0" class="btn btn-ghost btn-circle">
                             <i class="fa-solid fa-bars"></i>
                         </label>
                         <ul tabindex="0"
                             class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-64">
                             <li>
-                  <span>
-                    <a th:href="@{/trendpick/member/info}"><span>내 정보</span></a>
-                  </span>
+                                  <span>
+                                    <a th:href="@{|/trendpick/products/admin/list?page=0|}"><span>상품관리</span></a>
+                                  </span>
                             </li>
                             <li>
-                  <span>
-                    <a th:href="@{/trendpick/orders/usr/orders}"><span>내 주문내역</span></a>
-                  </span>
-                            </li>
-                            <li>
-                  <span>
-                    <a th:href="@{/trendpick/orders/usr/refunds}"><span>내 환불내역</span></a>
-                  </span>
-                            </li>
-                            <li>
-                  <span>
-                    <a th:href="@{/trendpick/member/info/address}"><span>배송지 관리</span></a>
-                  </span>
+                                  <span>
+                                    <a th:href="@{|/trendpick/orders/admin/list?page=0|}"><span>판매내역</span></a>
+                                  </span>
                             </li>
                         </ul>
                     </div>
-                  <div class="dropdown" th:unless="${@rq.CheckMemberHtml()}">
-                    <label tabindex="0" class="btn btn-ghost btn-circle">
-                      <i class="fa-solid fa-bars"></i>
-                    </label>
-                    <ul tabindex="0"
-                        class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-64">
-                      <li>
-                  <span>
-                    <a th:href="@{|/trendpick/products/admin/list?page=0|}"><span>상품관리</span></a>
-                  </span>
-                      </li>
-                      <li>
-                  <span>
-                    <a th:href="@{|/trendpick/orders/admin/list?page=0|}"><span>판매내역</span></a>
-                  </span>
-                      </li>
-                    </ul>
-                  </div>
                 </div>
             </ul>
         </div>
     </div>
 </div>
-
+</body>
 <main layout:fragment="main"></main>
 
 <script th:inline="javascript">
