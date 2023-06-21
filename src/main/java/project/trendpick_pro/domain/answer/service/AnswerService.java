@@ -17,6 +17,7 @@ import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,7 +31,7 @@ public class AnswerService {
         Ask ask = askRepository.findById(askId).orElseThrow(
                 () -> new IllegalArgumentException("해당 문의는 없는 문의입니다.")
         );
-        if (member.getBrand() != ask.getProduct().getBrand().getName())
+        if (!member.getBrand().equals(ask.getProduct().getBrand().getName()))
             return RsData.of("F-1", "타 브랜드 상품에 대한 문의글에는 답변 권한이 없습니다.");
 
         Answer answer = Answer.write(ask, answerForm);
@@ -44,7 +45,7 @@ public class AnswerService {
                 () -> new IllegalArgumentException("해당 답변은 없는 답변입니다.")
         );
 
-        if(answer.getAsk().getAuthor().getBrand() != member.getBrand())
+        if(!answer.getAsk().getAuthor().getBrand().equals(member.getBrand()))
             return RsData.of("F-1", "접근 권한이 없습니다.");
         answerRepository.delete(answer);
         answer.getAsk().getAnswerList().remove(answer);
@@ -56,7 +57,7 @@ public class AnswerService {
                 () -> new IllegalArgumentException("해당 답변은 없는 답변입니다.")
         );
 
-        if(answer.getAsk().getAuthor().getBrand() != member.getBrand())
+        if(!Objects.equals(answer.getAsk().getAuthor().getBrand(), member.getBrand()))
             return RsData.of("F-1", "접근 권한이 없습니다.");
         answer.update(answerForm);
 

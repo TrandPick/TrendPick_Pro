@@ -71,10 +71,6 @@ public class ProductService {
     @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
     private String filePath;
 
-    public Product findById(Long id) {
-        return productRepository.findById(id).orElseThrow();
-    }
-
     @Transactional
     public RsData<Long> register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
@@ -138,14 +134,16 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    @Transactional
     public ProductResponse show(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
 
         if(rq.checkLogin()){
-            updateFavoriteTag(product);
+            if(rq.CheckMemberHtml()){
+                updateFavoriteTag(product);
+            }
         }
-
         return ProductResponse.of(product);
     }
 
@@ -153,6 +151,7 @@ public class ProductService {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         return ProductListResponse.of(product);
     }
+
 
     private void updateFavoriteTag(Product product) {
         Member member = rq.GetMember();
@@ -253,5 +252,9 @@ public class ProductService {
                 product.getFile().getFileName(),
                 product.getPrice()
         );
+    }
+
+    public Product findById(Long id) {
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
     }
 }

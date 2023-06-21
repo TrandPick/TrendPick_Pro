@@ -8,7 +8,9 @@
     <div class="border p-4 rounded-lg">
         <!-- 문의글 -->
         <div class="border-b mb-4 pb-2">
-            <span class="badge bg-accent text-white">상품 문의글</span>
+            <a th:href="@{|/trendpick/products/${ask.productId}|}">
+                <span class="badge bg-accent text-white" th:text="${ask.productName} + ' 상품 문의'"></span>
+            </a>
             <hr class="my-2">
             <div class="mb-2 flex">
                 <strong>작성자 : </strong>
@@ -27,8 +29,9 @@
             <div th:if="${@rq.checkLogin()}">
                 <div class="flex justify-end" th:if="${@rq.GetMember().id} == ${ask.memberId}">
                     <a th:href="@{|/trendpick/customerservice/asks/edit/${ask.askId}|}" class="mr-2">수정</a>
-                    <form th:action="@{|/trendpick/customerservice/asks/delete/${ask.askId}|}" method="post" style="display: inline;">
-                        <input type="hidden" name="_method" value="POST" />
+                    <form th:action="@{|/trendpick/customerservice/asks/delete/${ask.askId}|}" method="post"
+                          style="display: inline;">
+                        <input type="hidden" name="_method" value="POST"/>
                         <button type="submit" class="mr-2">삭제</button>
                     </form>
                 </div>
@@ -45,28 +48,29 @@
                     <div class="mb-2" th:text="${answer.content}"></div>
                     <div class="text-sm text-gray-500">
                         <strong>작성일:</strong>
-                        <p th:text="${answer.createdDate}"></p>
+                        <p th:text="${#temporals.format(answer.createdDate, 'YY-MM-dd')}"></p>
                     </div>
                     <div th:if="${@rq.checkLogin()}">
                         <div class="flex justify-end" th:if="${@rq.CheckBrandAdminHtml()}">
-                            <form th:action="@{|/trendpick/customerservice/answers/delete/${answer.answerId}|}" method="post" style="display: inline;">
-                                <input type="hidden" name="_method" value="POST" />
+                            <form th:action="@{|/trendpick/customerservice/answers/delete/${answer.answerId}|}"
+                                  method="post" style="display: inline;">
+                                <input type="hidden" name="_method" value="POST"/>
                                 <button type="submit" class="mr-2">삭제</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- 답변 목록 반복 끝 -->
         </div>
 
-        <!-- 답글 등록 폼 -->
         <div th:if="${@rq.checkAdminOrBrandAdminHtml()}">
-            <form th:object="${answerForm}" method="post" th:action="@{|/trendpick/customerservice/answers/register?ask=${ask.askId}|}">
+            <form th:object="${answerForm}" method="post"
+                  th:action="@{|/trendpick/customerservice/answers/register?ask=${ask.askId}|}">
                 <div class="mb-3">
-                    <label for="content" class="form-label">답변</label>
+                    <label class="form-label">답변</label>
                     <div class="border rounded">
-                        <textarea th:field="*{content}" class="form-control form-control-lg" rows="5" style="width: 100%; resize: vertical;"></textarea>
+                        <textarea th:field="*{content}" class="form-control form-control-lg" rows="5"
+                                  style="width: 100%; resize: vertical;"></textarea>
                     </div>
                 </div>
                 <input type="submit" value="답변달기" class="btn btn-accent btn-lg my-2">

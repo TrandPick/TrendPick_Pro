@@ -30,6 +30,7 @@ public class AskRepositoryImpl implements AskRepositoryCustom {
                 .select(new QAskResponse(
                         ask.id,
                         product.id,
+                        product.name,
                         member.username,
                         member.id,
                         ask.title,

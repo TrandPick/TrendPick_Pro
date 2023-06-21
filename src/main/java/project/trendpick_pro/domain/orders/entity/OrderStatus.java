@@ -1,8 +1,12 @@
 package project.trendpick_pro.domain.orders.entity;
 
+import lombok.Getter;
+
+@Getter
 public enum OrderStatus {
+    TEMP("TEMP"),
     ORDERED("ORDERED"),
-    CANCELLED("CANCELLED");
+    CANCELED("CANCELED");
 
     private String value;
 

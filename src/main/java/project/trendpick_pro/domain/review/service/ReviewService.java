@@ -1,10 +1,8 @@
 package project.trendpick_pro.domain.review.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.querydsl.core.util.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +21,8 @@ import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
 import project.trendpick_pro.global.rsData.RsData;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 
 @Service

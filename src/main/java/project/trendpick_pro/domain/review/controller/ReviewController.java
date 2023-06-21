@@ -4,17 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
-import project.trendpick_pro.domain.member.repository.MemberRepository;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewResponse;
@@ -49,7 +44,6 @@ public class ReviewController {
         RsData<ReviewResponse> reviewResponse = reviewService.createReview(checkMember, productId, reviewCreateRequest, mainFile, subFiles);
 
         model.addAttribute("reviewResponse", reviewResponse);
-//        return "redirect:/trendpick/review/list";
         return rq.redirectWithMsg("/trendpick/review/list", reviewResponse);
     }
 

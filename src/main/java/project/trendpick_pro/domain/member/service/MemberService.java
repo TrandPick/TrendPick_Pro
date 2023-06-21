@@ -11,6 +11,7 @@ import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.dto.request.TagRequest;
 import project.trendpick_pro.global.rsData.RsData;
@@ -25,6 +26,7 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final RecommendService recommendService;
 
     private final BrandService brandService;
 
@@ -79,7 +81,8 @@ public class MemberService {
             member.changeTags(favoriteTags);
         }
 
-        memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
+        recommendService.select(savedMember.getEmail());
 
         return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
     }

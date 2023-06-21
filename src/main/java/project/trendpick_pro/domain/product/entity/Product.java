@@ -72,8 +72,8 @@ public class Product extends BaseTimeEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Recommend recommends;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Recommend> recommendList;
 
 
     private int reviewCount = 0;
@@ -129,10 +129,10 @@ public class Product extends BaseTimeEntity {
     }
 
     public void increaseAskCount(){
-        this.askCount += 1;
+        this.askCount++;
     }
     public void decreaseAskCount(){
-        this.askCount -= 1;
+        this.askCount--;
     }
 
     public void addReview(int rating){

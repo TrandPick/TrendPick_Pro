@@ -4,7 +4,6 @@ package project.trendpick_pro.domain.orders.entity.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import project.trendpick_pro.domain.orders.entity.Order;
 
 import java.text.NumberFormat;
@@ -17,6 +16,7 @@ import java.util.Locale;
 @AllArgsConstructor
 public class OrderDetailResponse {
     private Long orderId;
+    private String orderStatus;
     private List<OrderResponse> orderItems;
     private int totalPrice = 0;
     private String paymentMethod;
@@ -25,6 +25,7 @@ public class OrderDetailResponse {
     public static OrderDetailResponse of(Order order, List<OrderResponse> orderItems){
         OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
         orderDetailResponse.orderId = order.getId();
+        orderDetailResponse.orderStatus = order.getStatus().getValue();
         orderDetailResponse.orderItems = orderItems;
         orderDetailResponse.orderDate = order.getCreatedDate();
         orderDetailResponse.paymentMethod = order.getPaymentMethod();
@@ -33,10 +34,4 @@ public class OrderDetailResponse {
         }
         return orderDetailResponse;
     }
-
-    public String getFormattedPaymentPrice(){
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
-        return numberFormat.format(getTotalPrice());
-    }
-
 }

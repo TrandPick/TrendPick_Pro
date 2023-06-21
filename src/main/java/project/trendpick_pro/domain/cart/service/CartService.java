@@ -10,15 +10,17 @@ import project.trendpick_pro.domain.cart.entity.dto.response.CartItemResponse;
 import project.trendpick_pro.domain.cart.repository.CartItemRepository;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.repository.MemberRepository;
+import project.trendpick_pro.domain.orders.entity.Order;
+import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,9 +28,9 @@ import java.util.List;
 public class CartService {
 
     private final CartRepository cartRepository;
-    private final MemberRepository memberRepository;
-    private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
+
+    private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
 
 
@@ -52,7 +54,7 @@ public class CartService {
     @Transactional
     public RsData<CartItemResponse> addItemToCart(Member member, CartItemRequest cartItemRequest) {
         Cart cart = cartRepository.findByMemberId(member.getId());
-        Product product = productRepository.findById(cartItemRequest.getProductId()).orElse(null);
+        Product product = productService.findById(cartItemRequest.getProductId());
         if (product == null) {
             return RsData.of("F-1", "해당상품을 찾을 수 없습니다.");
         }
@@ -106,7 +108,7 @@ public class CartService {
 
         for (Long id : cartItemIdList) {
             for (CartItem item : cartItemRepository.findByProductId(id)) {
-                if (item.getCart().getId() == cart.getId()) {
+                if (Objects.equals(item.getCart().getId(), cart.getId())) {
                     cartItemList.add(item);
                 }
             }
@@ -115,8 +117,9 @@ public class CartService {
     }
 
     @Transactional
-    public void deleteAll(List<CartItem> cartItemIdList) {
-        cartItemRepository.deleteAllInBatch(cartItemIdList);
+    public void deleteCartItemsByOrder(Order order) {
+        List<CartItem> cartItems = order.getCartItems();
+        cartItemRepository.deleteAllInBatch(cartItems);
     }
 }
 

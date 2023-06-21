@@ -1,16 +1,19 @@
 package project.trendpick_pro.domain.cart.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
+import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.product.entity.Product;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartItem {
 
@@ -21,11 +24,13 @@ public class CartItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
     private int quantity; // 해당 상품 수량
 
     @DateTimeFormat(pattern = "yyyy-mm-dd")
@@ -57,4 +62,8 @@ public class CartItem {
         this.quantity=quantity;
         this.cart.updateTotalCount();
     }
+    public void connectOrder(Order order) {
+        this.order = order;
+    }
+
 }

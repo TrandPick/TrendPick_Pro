@@ -2,56 +2,59 @@
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>주문 상세</title>
+    <title>trendPick | 주문 상세</title>
 </head>
-<main class="min-h-screen flex flex-col" layout:fragment="main">
-    <h1>주문상세</h1>
-    <div class="border p-4 mb-4">
-        <table class="table">
-            <thead>
-            <tr>
-                <th class="text-center" scope="col">번호</th>
-                <th class="text-center" scope="col">상품명</th>
-                <th class="text-center" scope="col">주문수량</th>
-                <th class="text-center" scope="col">주문금액</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="orderItem, loop : ${order.orderItems}">
-                <td class="text-center" th:text="${loop.count}"></td>
-                <td class="text-center" th:text="${orderItem.productName}"></td>
-                <td class="text-center" th:text="${orderItem.count}"></td>
-                <td class="text-center" th:text="${orderItem.formattedTotalPrice}"></td>
-            </tr>
-            </tbody>
-        </table>
+<main class="min-h-screen flex flex-col p-10" layout:fragment="main">
+    <h1 class="text-2xl font-bold mb-8">주문 상세 내역</h1>
+    <div class="bg-white shadow-md rounded-lg p-4 mb-8">
+        <div th:each="orderItem, loop : ${order.orderItems}" class="mb-4 last:mb-0">
+            <div class="flex items-center">
+                <div>
+                    <div class="font-bold" th:text="${orderItem.productName}"></div>
+                    <div class="text-sm text-gray-500" th:text="${orderItem.brandName}"></div>
+                </div>
+            </div>
+            <div class="flex justify-between mt-2">
+                <!--                <div class="text-sm text-gray-500" th:text="'사이즈: ' + ${orderItem.size}"></div>-->
+                <div class="text-sm text-gray-500" th:text="'수량: ' + ${orderItem.count}"></div>
+                <div th:text="'금액: ' + ${#numbers.formatDecimal(orderItem.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></div>
+            </div>
+        </div>
+        <div class="flex justify-end mt-6" th:if="${order.orderStatus} != 'CANCELED'">
+            <form th:action="|/payment/${order.orderId}/cancel|" method="get">
+                <button type="submit" class="btn btn-accent">주문 취소</button>
+            </form>
+        </div>
     </div>
-    <div class="border p-4 mb-4">
-        <table class="table">
-            <tbody>
-            <tr>
-                <th scope="row">주문일시</th>
-                <td class="text-center" th:text="${#temporals.format(order.orderDate, 'YY-MM-dd')}"></td>
-            </tr>
-            <tr>
-                <th scope="row">결제수단</th>
-                <td class="text-center" th:text="${order.paymentMethod}"></td>
-            </tr>
-            <tr>
-                <th scope="row">총 결제금액</th>
-                <td class="text-center" th:text="${order.formattedPaymentPrice} + '원'"></td>
-            </tr>
-            <tr>
-                <th scope="row">배송지</th>
-                <td class="text-center" th:text="${address}"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="bg-white shadow-md rounded-lg p-4 mt-8">
+        <div class="flex justify-between mb-2">
+            <div class="font-bold">주문일시</div>
+            <div th:text="${#temporals.format(order.orderDate, 'YY-MM-dd')}"></div>
+        </div>
+        <div class="flex justify-between mb-2">
+            <div class="font-bold">결제수단</div>
+            <div th:text="${order.paymentMethod}"></div>
+        </div>
+        <div class="flex justify-between mb-2">
+            <div class="font-bold">총 결제금액</div>
+            <div th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></div>
+        </div>
+        <div class="flex justify-between mb-2">
+            <div class="font-bold">배송지</div>
+            <div th:text="${address}"></div>
+        </div>
     </div>
-<!--    <form th:action="@{|/trendpick/orders/cancel/${order.orderId}/|}" method="post">-->
-<!--        <button id="payment-button" class="btn btn-natural btn-lg"-->
-<!--                type="submit" class="w-100 btn btn-lg btn-outline-primary">환불-->
-<!--        </button>-->
-<!--    </form>-->
+    <script>
+        window.onload = function() {
+            var tds = document.querySelectorAll('td');
+            for(var i = 0; i < tds.length; i++){
+                var text = tds[i].innerText;
+                if(text.length > 20){
+                    tds[i].innerText = text.substring(0,20) + "...";
+                }
+            }
+        }
+    </script>
+
 </main>
 </html>

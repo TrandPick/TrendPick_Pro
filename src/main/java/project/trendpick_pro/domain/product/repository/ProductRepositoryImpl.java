@@ -100,7 +100,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.price,
                         product.stock,
                         product.createdDate,
-                        product.saleCount,
                         product.rateAvg,
                         product.reviewCount,
                         product.askCount
