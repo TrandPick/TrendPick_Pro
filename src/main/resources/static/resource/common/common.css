@@ -88,3 +88,45 @@ html > body .label-text {
     text-align: center;
     justify-content: center;
 }
+
+/* 추가한 CSS 스타일 */
+.login-form {
+    display: flex;
+    justify-content: center;
+    padding-top: 100px; /* 로그인 폼을 상단에 띄움 */
+}
+
+.login-container {
+    width: 400px; /* 폼의 너비를 조정하여 크게 만듦 */
+    padding: 50px; /* 내부 여백을 조정하여 폼을 더 크게 만듦 */
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-form .form-control {
+    margin-bottom: 20px;
+}
+
+.login-form .input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.login-form .btn:hover {
+    background-color: #222;
+}
+
+.login-form .link {
+    display: block;
+    text-align: right;
+    margin-top: 10px;
+    color: #999;
+}

@@ -22,24 +22,6 @@ import java.util.Set;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-//    @Bean
-//    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .formLogin(
-//                        formLogin -> formLogin
-//                                .loginPage("/trendpick/member/login")
-//                                .loginProcessingUrl("/login_proc")
-//                                .defaultSuccessUrl("/trendpick/products/list?main-category=추천")
-//                )
-//                .logout(
-//                        logout -> logout
-//                                .logoutUrl("/trendpick/member/logout")
-//                                .logoutSuccessUrl("/trendpick/products/list?main-category=상의")
-//                );
-//        return http.build();
-//    }
-
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -55,10 +37,10 @@ public class SecurityConfig {
                 .successHandler(new AuthenticationSuccessHandler() {
                     @Override
                     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                                        Authentication authentication) throws IOException, ServletException {
+                                                        Authentication authentication) throws IOException {
                         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
                         if (roles.contains("ADMIN") || roles.contains("BRAND_ADMIN")) {
-                            response.sendRedirect("/trendpick/products/list?main-category=top");
+                            response.sendRedirect("/trendpick/products/list?main-category=all");
                         } else if (roles.contains("MEMBER")) {
                             response.sendRedirect("/trendpick/products/list?main-category=recommend");
                         } else {
@@ -70,7 +52,7 @@ public class SecurityConfig {
                 .and()
                 .logout()
                 .logoutUrl("/trendpick/member/logout")
-                .logoutSuccessUrl("/trendpick/products/list?main-category=top")
+                .logoutSuccessUrl("/trendpick/products/list?main-category=all")
                 .permitAll();
         return http.build();
     }
