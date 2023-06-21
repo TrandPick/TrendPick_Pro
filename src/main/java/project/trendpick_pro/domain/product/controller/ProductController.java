@@ -184,5 +184,11 @@ public class ProductController {
         model.addAttribute("products", products);
         return "trendpick/admin/products";
     }
+
+    @PostMapping("admin/discount/{productId}")
+    public String applyDiscount(@PathVariable Long productId, @RequestParam double discountRate) {
+        productService.applyDiscount(productId, discountRate);
+        return "redirect:/trendpick/products/admin/list?page=0";
+    }
+
 }
-// @RequestParam(value = "sort", defaultValue = "1"), Integer sortCode

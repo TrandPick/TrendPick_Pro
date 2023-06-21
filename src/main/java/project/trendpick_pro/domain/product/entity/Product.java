@@ -80,6 +80,12 @@ public class Product extends BaseTimeEntity {
     private int saleCount = 0;
     private int askCount = 0;
 
+
+    private double discountRate;
+
+    private int discountedPrice;
+
+
     @Builder
     public Product(String name, MainCategory mainCategory, SubCategory subCategory, Brand brand,
                    String description, CommonFile file, int price, int stock, Set<Tag> tags) {
@@ -150,6 +156,11 @@ public class Product extends BaseTimeEntity {
         this.price = request.getPrice();
         this.stock = request.getStock();
         this.file = file;
+    }
+
+    public void applyDiscount(double discountRate) {
+        this.discountRate = discountRate;
+        this.discountedPrice = (int) (price * (1 - discountRate/100));
     }
 
     @Override

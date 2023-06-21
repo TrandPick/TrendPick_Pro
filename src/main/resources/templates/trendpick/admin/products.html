@@ -31,6 +31,7 @@
             <th class="text-center" scope="col">상품리뷰</th>
             <th class="text-center" scope="col">문의내역</th>
             <th class="text-center" scope="col">관리</th>
+            <th class="text-center" scope="col">할인율</th>
         </tr>
         </thead>
         <tbody>
@@ -85,6 +86,12 @@
                         <input type="hidden" name="_method" value="delete"/>
                     </form>
                 </div>
+            </td>
+            <td>
+                <form id="discountForm" th:action="@{/trendpick/products/admin/discount/{productId}(productId=${product.id})}" method="post">
+                    <input type="text" name="discountRate" style="width: 30px;" class="border border-gray-300"></br>
+                    <button type="submit">적용</button>
+                </form>
             </td>
         </tr>
         </tbody>

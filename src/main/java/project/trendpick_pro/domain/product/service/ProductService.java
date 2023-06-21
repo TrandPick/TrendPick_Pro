@@ -242,6 +242,14 @@ public class ProductService {
         return RsData.of("S-1", "성공", productRepository.findAllBySeller(member.getBrand(), pageable));
     }
 
+    @Transactional
+    public void applyDiscount(Long productId, double discountRate) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
+        int discountedPrice = (int) (product.getPrice() * (1 - discountRate / 100));
+        product.applyDiscount(discountRate);
+        //productRepository.updatePrice(product.getId(), discountedPrice);
+    }
+
     private ProductListResponse convertToProductListResponse(Product product) {
         return new ProductListResponse(
                 product.getId(),
