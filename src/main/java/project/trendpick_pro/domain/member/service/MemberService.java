@@ -30,18 +30,6 @@ public class MemberService {
 
     private final BrandService brandService;
 
-    public Optional<Member> findByUsername(String username) {
-        return memberRepository.findByUsername(username);
-    }
-
-    public Optional<Member> findByEmail(String username){
-        return memberRepository.findByEmail(username);
-    }
-
-    public Member findByMember(Long id){
-        return memberRepository.findById(id).get();
-    }
-
     @Transactional
     public RsData<Member> register(JoinForm joinForm) {
 
@@ -88,7 +76,7 @@ public class MemberService {
     }
 
     @Transactional
-    public List<Member> registerAll(List<JoinForm> List) {
+    public List<Member> saveAll(List<JoinForm> List) {
         List<Member> list = new ArrayList<>();
         for (JoinForm joinForm : List) {
             if (memberRepository.findByEmail(joinForm.email()).isPresent()) {
@@ -154,5 +142,17 @@ public class MemberService {
     public RsData<Member> manageAccount(Member member, String bank_name, String account){
         member.connectBank(bank_name, account);
         return RsData.of("S-1", "계좌 수정이 완료되었습니다.", member);
+    }
+
+    public Member findById(Long id) {
+        return memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+    }
+
+    public Optional<Member> findByUsername(String username) {
+        return memberRepository.findByUsername(username);
+    }
+
+    public Optional<Member> findByEmail(String username){
+        return memberRepository.findByEmail(username);
     }
 }
