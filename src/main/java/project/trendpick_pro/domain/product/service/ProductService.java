@@ -71,10 +71,6 @@ public class ProductService {
     @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
     private String filePath;
 
-    public Product findById(Long id) {
-        return productRepository.findById(id).orElseThrow();
-    }
-
     @Transactional
     public RsData<Long> register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
@@ -256,5 +252,9 @@ public class ProductService {
                 product.getFile().getFileName(),
                 product.getPrice()
         );
+    }
+
+    public Product findById(Long id) {
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
     }
 }

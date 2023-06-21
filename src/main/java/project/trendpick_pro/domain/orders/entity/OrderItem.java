@@ -30,19 +30,26 @@ public class OrderItem {
     private int orderPrice;
 
     @Column(name = "count", nullable = false)
-    private int count;
+    private int quantity;
 
-    private OrderItem(Product product,  int count) {
+    private OrderItem(Product product,  int quantity) {
         this.product = product;
         this.orderPrice = product.getPrice();
-        this.count = count;
+        this.quantity = quantity;
 
-        product.removeStock(count);
-        product.increaseSaleCount(count);
+        product.removeStock(quantity);
+    }
+
+    public void modifyQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public static OrderItem of(Product product, OrderItemDto orderItemDto) {
-        return new OrderItem(product, orderItemDto.getCount());
+        return new OrderItem(product, orderItemDto.getQuantity());
+    }
+
+    public static OrderItem of(Product product, int quantity) {
+        return new OrderItem(product, quantity);
     }
 
     public static OrderItem of(Product product, CartItem cartItem) {
@@ -54,11 +61,10 @@ public class OrderItem {
     }
 
     public void cancel() {
-        this.product.addStock(count);
-        this.product.decreaseSaleCount(count);
+        this.product.addStock(quantity);
     }
 
     public int getTotalPrice() {
-        return getOrderPrice() * getCount();
+        return this.orderPrice * this.quantity;
     }
 }

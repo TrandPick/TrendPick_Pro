@@ -1,23 +1,12 @@
 <!DOCTYPE html>
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
-    <title>리뷰 상세 페이지</title>
+    <title>TrendPick | 리뷰</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .star-icon {
-            color: gray; /* 비어있는 별 아이콘의 색상 */
-        }
-
-        .filled {
-            color: red; /* 채워진 별 아이콘의 색상 */
-        }
-
-    </style>
 </head>
 <main layout:fragment="main">
-
     <div class="mt-3" style="width:100%; margin-right: 0;">
-        <div class="flex justify-end mt-3" >
+        <div class="flex justify-end mt-3">
             <div th:if="${@rq.CheckLoginHtml()}">
                 <div th:if="${reviewResponse.writer == currentUser}">
                     <a class="btn btn-accent btn-sm mr-2"
@@ -32,46 +21,65 @@
         </div>
         <div class="flex flex-col mt-5 justify-center items-start">
             <div class="card bordered flex flex-col w-full md:flex-row gap-4">
-                <div class="md:flex w-full md:items-start ">
-                    <div class="md:w-1/2 pr-4" >
-                        <img th:src="@{|https://kr.object.ncloudstorage.com/trendpick/${reviewResponse.mainFile}|}" alt="main Image"/><br>
-
+                <div class="md:flex w-full md:items-start">
+                    <div class="md:w-1/2 pr-4">
+                        <img th:src="|/images/${reviewResponse.mainFile}|" class="w-2/4 h-auto rounded-lg mx-auto" onclick="openModal()"/>
                     </div>
-                    <div class="md:w-1/2 ml-auto pl-4" style="border-left: 1px solid #ccc;">
-                        <h2 class="text-xl font-bold text-gray-800 mb-2 mt-2">제품명</h2>
-                        <p class="mb-4" th:text="${reviewResponse.productName}"></p>
+                    <div class="md:w-1/2 ml-auto pl-4 border-l border-gray-300">
+                        <br/><br/>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2 mt-2">제품명</h2>
+                        <p class="text-gray-700 mb-4" th:text="${reviewResponse.productName}"></p>
 
-                        <h2 class="text-xl font-bold text-gray-800 mb-2">작성자</h2>
-                        <p class="mb-4" th:text="${reviewResponse.writer}"></p>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">작성자</h2>
+                        <p class="text-gray-700 mb-4" th:text="${reviewResponse.writer}"></p>
 
-                        <h2 class="text-xl font-bold text-gray-800 mb-2">별점</h2>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">별점</h2>
                         <p class="mb-4">
-                            <span style="margin-right: 5px;" class="mr-2" th:each="star : ${#numbers.sequence(1, 5)}"
-                            th:class="${star <= reviewResponse.rating} ? 'star-icon filled' : 'star-icon'"><i class="fa-solid fa-star"></i></span>
-                            <span>(</span><span th:text="${reviewResponse.rating}"></span><span>)</span>
+                    <span style="margin-right: 5px;" class="mr-2" th:each="star : ${#numbers.sequence(1, 5)}"
+                          th:class="${star <= reviewResponse.rating} ? 'text-yellow-400 text-xl' : 'text-gray-400 text-xl'"><i class="fas fa-star"></i></span>
                         </p>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">제목</h2>
+                        <p class="text-gray-700 mb-4" th:text="${reviewResponse.title}"></p>
 
-<!--                        <p class="mb-4"><span th:text="${reviewResponse.rating}"></span>/5</p>-->
-
-                        <h2 class="text-xl font-bold text-gray-800 mb-2">제목</h2>
-                        <p class="mb-4" th:text="${reviewResponse.title}"></p>
-
-                        <h2 class="text-xl font-bold text-gray-800 mb-2">내용</h2>
-                        <p class="mb-4" th:text="${reviewResponse.content}"></p>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">내용</h2>
+                        <p class="text-gray-700 mb-4" th:text="${reviewResponse.content}"></p>
                     </div>
                 </div>
             </div>
             <div class="flex flex-col justify-center w-full mb-8">
-                <h2 class="mt-5">더 많은 후기 사진</h2>
-                <div class="mt-4 grid grid-cols-3 gap-4 w-full">
+                <h2 class="mt-5 text-2xl text-gray-800">더 많은 후기 사진</h2>
+                <div class="mt-4 grid grid-cols-1 gap-0 w-full">
                     <div th:each="subFile : ${reviewResponse.subFiles}">
-                        <img th:src="@{|https://kr.object.ncloudstorage.com/trendpick/${subFile}|}" alt="sub Image" class="mx-auto w-full" style="height: 300px;"  />
+                        <img th:src="${'/images/' + subFile}" class="mx-auto w-1/4 rounded-lg object-cover h-auto" onclick="openModal()"/>
                     </div>
                 </div>
             </div>
         </div>
-
+        <div id="myModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="inline-block align-middle bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div>
+                        <img id="modalImage" class="w-full" src="" alt="Sub Image">
+                    </div>
+                    <div class="mt-5 sm:mt-6">
+                        <button type="button" class="btn btn-accent" onclick="closeModal()">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <script>
+        function openModal() {
+            document.getElementById("myModal").classList.remove("hidden");
+            document.getElementById("modalImage").src = event.target.src;
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").classList.add("hidden");
+        }
+    </script>
 </main>
 </html>

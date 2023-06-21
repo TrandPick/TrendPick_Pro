@@ -19,7 +19,9 @@ public class Delivery extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY)
     private Order order;
+
     private String address;
+
     @Enumerated(EnumType.STRING)
     private DeliveryState state;
 
@@ -28,4 +30,7 @@ public class Delivery extends BaseTimeEntity {
         state = DeliveryState.READY; //주문과 함께 생성시 초기에는 준비중.
     }
 
+    public void canceledDelivery(){
+        state = DeliveryState.CANCELED;
+    }
 }

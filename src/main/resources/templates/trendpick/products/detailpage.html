@@ -4,41 +4,58 @@
     <title>TrendPick</title>
 </head>
 <body>
-<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col" style="max-width:100%;">
-    <div>
-        <div class="card bordered flex flex-col md:flex-row gap-4" style="height:800px">
-            <figure class="flex-1 flex flex-col items-center">
-                <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${productResponse.mainFile}|" class="image-main object-cover"
-                     alt="Product Image"/>
-                <div class="mt-4 flex flex-row overflow-x-auto">
-                    <div th:each="image : ${productResponse.subFiles}">
-                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${image}|" class="rounded w-24 mr-2 my-2" alt="Sub Image">
-                    </div>
+<main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col pb-4" style="max-width: 100%; flex-grow: 1;">
+    <div class="flex flex-col md:flex-row gap-4 bg-white border rounded-md p-4" style="height:800px">
+        <figure class="flex-1 flex flex-col items-center">
+            <img th:src="|/images/${productResponse.mainFile}|" class="image-main object-cover cursor-pointer"
+                 alt="Product Image" onclick="openModal()"/>
+            <div class="mt-4 flex flex-row overflow-x-auto space-x-2">
+                <div th:each="image : ${productResponse.subFiles}">
+                    <img th:src="|/images/${image}|" class="rounded w-24 mr-2 my-2 cursor-pointer" alt="Sub Image" onclick="openModal()">
                 </div>
-            </figure>
 
-            <div class="card-body flex-1">
-                <div class="mb-4 flex flex-wrap overflow-auto">
-                    <div th:each="tag : ${productResponse.tags}" class="badge-large mr-2 mb-2">
-                        <span th:text="${tag.name}"></span>
+                <div id="myModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+                    <div class="flex items-center justify-center min-h-screen">
+                        <div class="inline-block align-middle bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                            <div>
+                                <img id="modalImage" class="w-full" src="" alt="Sub Image">
+                            </div>
+                            <div class="mt-5 sm:mt-6">
+                                <button type="button" class="btn btn-accent" onclick="closeModal()">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <hr>
-                <h2 class="text-2xl font-bold" th:text="${productResponse.name}"></h2>
-                <div class="badge my-2">Brand: <span th:text="${productResponse.brand}"></span></div>
-                <p class="mb-4" th:text="${productResponse.description}"></p>
-                <ul class="mb-8">
-                    <li>가격: <span class="text-orange-600 font-bold text-lg"
-                                  th:text="${#numbers.formatDecimal(productResponse.price, 0, 'COMMA', 0, 'POINT')} + ' 원'">Price</span>
-                    </li>
-                    <li>재고: <span th:text="|${productResponse.stock} 개|">Stock</span></li>
-                </ul>
-                <div class="mb-4">
-                    <label for="quantity" class="font-bold">Quantity:</label>
-                    <input type="number" id="quantity" name="quantity" min="1" max="10" value="1"
-                           class="w-16 border border-gray-300 rounded-md px-2 py-1">
+            </div>
+        </figure>
+
+        <div class="flex-1 px-4">
+            <div class="mb-4 flex flex-wrap overflow-auto space-x-2">
+                <div th:each="tag : ${productResponse.tags}" class="badge-large mr-2 mb-2">
+                    <span th:text="'#'+${tag.name}" class="text-gray-400"></span>
                 </div>
-                <div class="card-actions flex" th:if="${not @rq.checkAdminOrBrandAdminHtml()}">
+            </div>
+            <hr class="my-4">
+            <h2 class="text-2xl font-bold" th:text="${productResponse.name}"></h2>
+            <div class="badge my-2"><span th:text="${productResponse.brand}"></span></div>
+            <p class="mb-4" th:text="${productResponse.description}"></p>
+            <div class="mb-8">
+                <div>가격: <span class="text-orange-600 font-bold text-lg"
+                               th:text="${#numbers.formatDecimal(productResponse.price, 0, 'COMMA', 0, 'POINT')} + ' 원'">Price</span>
+                </div>
+            </div>
+            <div class="flex flex-col space-y-2" th:if="${@rq.CheckLoginHtml()} and !${@rq.CheckAdminHtml()}">
+                <div class="mb-4">
+                    <div class="flex items-center">
+                        <button onclick="decreaseValue()" class="px-3 py-2 bg-gray-200 text-gray-800">-</button>
+                        <input type="number" id="quantity" name="quantity" min="1" th:max="${productResponse.stock}" value="1"
+                               class="w-16 text-center mx-2 py-2 text-gray-800 border-none">
+                        <button onclick="increaseValue()" class="px-3 py-2 bg-gray-200 text-gray-800">+</button>
+                    </div>
+                </div>
+                <div class="form-container">
                     <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" th:object="${ProductOptionForm}"
                           method="post" onsubmit="return confirmCart()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
@@ -46,120 +63,165 @@
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
                     <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${ProductOptionForm}"
-                          method="post" onsubmit="return confirmOrder()">
+                          method="get" onsubmit="return confirmOrder()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
-                        <input type="hidden" id="productOptionQuantity" name="quantity" value="1" min="1"/>
+                        <input type="hidden" id="buyQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Buy Now</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <div class="mt-4 flex flex-col">
-        <h1 class="text-xl">리뷰 보기</h1>
-        <table class="w-full mt-6" th:if="${productReview != null}">
-            <tr class="border-b border-t">
-                <th class="text-center" scope="col">제목</th>
-                <th scope="col">리뷰 이미지</th>
-                <th class="text-center" scope="col">내용</th>
-                <th class="text-center" scope="col">작성자</th>
-                <th class="text-center" scope="col">별점</th>
-            </tr>
-            </thead>
-            <tbody>
-            <th:block th:each="review : ${productReview}">
-                <tr>
-                    <td class="text-center border-b">
-                        <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
-                            <h2 th:text="${review.title}"></h2>
-                        </a>
-                    </td>
-                    <td class="border-b">
-                        <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
-                            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${review.mainFile}|" class="mx-auto"
-                                 style="width: 100px; height: 100px;"/>
-                        </a>
-                    </td>
-                    <td class="text-center border-b">
-                        <p th:text="${review.content}"></p>
-                    </td>
-                    <td class="text-center border-b">
-                        <p th:text="${review.writer}"></p>
-                    </td>
-                    <td class="text-center border-b">
-                        <span th:text="${review.rating}"></span>
-                    </td>
-                </tr>
-            </th:block>
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-4" th:if="${productReview.totalPages > 1}">
-        <div class="flex justify-center my-4">
-            <div class="btn-group">
-                <a th:if="${productReview.hasPrevious()}"
-                   th:href="@{/trendpick/products/{productId}(page=${productReview.number-1}, productId=${productId})}">Previous</a>
-                <span th:each="pageNumber : ${#numbers.sequence(0, productReview.totalPages-1)}" class="ml-4">
-                        <a th:href="@{/trendpick/products/{productId}(page=${pageNumber}, productId=${productId})}"
-                           th:text="${pageNumber+1}"
-                           th:class="${pageNumber == productReview.number ? 'current-page' : ''}"></a>
-                    </span>
-                <a th:if="${productReview.hasNext()}"
-                   th:href="@{/trendpick/products/{productId}(page=${productReview.number+1}, productId=${productId})}"
-                   class="ml-4">Next</a>
+    <!-- Review Section -->
+    <div class="mt-4 flex flex-col space-y-4">
+        <h1 class="text-2xl font-semibold">리뷰 보기</h1>
+        <div class="bg-white rounded-md shadow p-4" th:if="${productReview != null}">
+            <div class="grid grid-cols-5 gap-4 border-b pb-2">
+                <h3 class="text-center font-semibold py-2">제목</h3>
+                <h3 class="text-center font-semibold py-2">리뷰 이미지</h3>
+                <h3 class="text-center font-semibold py-2">내용</h3>
+                <h3 class="text-center font-semibold py-2">작성자</h3>
+                <h3 class="text-center font-semibold py-2">별점</h3>
+            </div>
+
+            <style>
+                .black-link {
+                    color: black;
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    text-decoration: none;
+                }
+
+                .black-link:hover {
+                    text-decoration: none;
+                }
+
+                .custom-text {
+                    font-size: 1.2em;
+                    font-weight: bold;
+                }
+
+                .star-icon {
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    color: gold;
+                }
+            </style>
+
+            <div th:each="review : ${productReview}" class="grid grid-cols-5 gap-4 border-b py-2">
+                <div class="text-center py-2">
+                    <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}" class="black-link">
+                        <p th:text="${review.title}" class="custom-text"></p>
+                    </a>
+                </div>
+                <div class="flex justify-center py-2">
+                    <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
+                        <img th:src="|/images/${review.mainFile}|" class="object-cover w-24 h-24 rounded-full" alt="Review image"/>
+                    </a>
+                </div>
+                <div class="text-center py-2">
+                    <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}" class="black-link">
+                        <p th:text="${review.content}" class="custom-text"></p>
+                    </a>
+                </div>
+                <div class="text-center py-2">
+                    <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}" class="black-link">
+                        <p th:text="${review.writer}" class="custom-text"></p>
+                    </a>
+                </div>
+                <div class="text-center py-2">
+                    <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
+                        <span th:text="${#strings.repeat('★', review.rating)}" class="star-icon"></span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-    </div>
-    <div class="mt-4 flex flex-col">
-        <h1 class="text-xl">QnA 상품문의</h1>
+
+    <!-- QnA Section -->
+    <div class="mt-4 flex flex-col space-y-4">
+        <h1 class="text-2xl font-semibold">QnA 상품문의</h1>
         <div th:if="${@rq.checkLogin()}">
             <div th:if="${@rq.CheckMemberHtml()}" class="flex justify-end">
-                <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-primary btn-sm">문의하기</a>
+                <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-accent btn-sm">문의하기</a>
             </div>
         </div>
-        <table class="w-full mt-6" th:if="${productAsk != null}">
-            <tr class="border-b border-t">
-                <th class="text-center" scope="col">번호</th>
-                <th scope="col">답변여부</th>
-                <th class="text-center" scope="col">제목</th>
-                <th class="text-center" scope="col">작성자</th>
-                <th class="text-center" scope="col">문의일자</th>
-            </tr>
-            </thead>
-            <tbody>
-            <th:block th:each="ask, loop : ${productAsk}">
-                <tr>
-                    <td class="text-center border-b">
-                        <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
-                           th:text="${productAsk.number * 10 + loop.count}">
-                        </a>
-                    </td>
-                    <td class="text-center border-b">
-                        <div th:if="${ask.status} == 'YET'">
-                            <p>답변예정</p>
-                        </div>
-                        <div th:unless="${ask.status} == 'YET'">
-                            <p>답변완료</p>
-                        </div>
-                    </td>
-                    <td class="text-center border-b">
-                        <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}"
-                           th:text="${ask.title}">
-                        </a>
-                    </td>
-                    <td class="text-center border-b">
-                        <p th:text="${ask.memberName}"></p>
-                    </td>
-                    <td class="text-center border-b">
-                        <span th:text="${#temporals.format(ask.createdDate, 'YY/MM/dd')}"></span>
-                    </td>
-                </tr>
-            </th:block>
-            </tbody>
-        </table>
+        <div class="bg-white rounded-md shadow p-4" th:if="${productAsk != null}">
+            <div class="grid grid-cols-5 gap-4 border-b pb-2">
+                <h3 class="text-center font-semibold py-2">번호</h3>
+                <h3 class="text-center font-semibold py-2">답변 여부</h3>
+                <h3 class="text-center font-semibold py-2">제목</h3>
+                <h3 class="text-center font-semibold py-2">작성자</h3>
+                <h3 class="text-center font-semibold py-2">문의 일자</h3>
+            </div>
+
+            <div th:each="ask, loop : ${productAsk}" class="grid grid-cols-5 gap-4 border-b py-2">
+                <div class="text-center py-2">
+                    <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}" class="text-blue-600 hover:underline">
+                        <span th:text="${productAsk.number * 10 + loop.count}"></span>
+                    </a>
+                </div>
+                <div class="text-center py-2">
+                    <p th:if="${ask.status} == 'YET'">답변 예정</p>
+                    <p th:unless="${ask.status} == 'YET'">답변 완료</p>
+                </div>
+                <div class="text-center py-2">
+                    <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}" class="text-blue-600 hover:underline">
+                        <p th:text="${ask.title}"></p>
+                    </a>
+                </div>
+                <div class="text-center py-2">
+                    <p th:text="${ask.memberName}"></p>
+                </div>
+                <div class="text-center py-2">
+                    <span th:text="${#temporals.format(ask.createdDate, 'YY/MM/dd')}"></span>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
+        function openModal() {
+            document.getElementById("myModal").classList.remove("hidden");
+            document.getElementById("modalImage").src = event.target.src;
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").classList.add("hidden");
+        }
+
+        function increaseValue() {
+            var stock = document.getElementById('stock').innerText.replace(/[^\d]/g, '');
+            var value = parseInt(document.getElementById('quantity').value);
+            value = isNaN(value) ? 1 : value;
+            if(value < stock) {
+                value++;
+                document.getElementById('quantity').value = value;
+            }
+        }
+
+        function decreaseValue() {
+            var value = parseInt(document.getElementById('quantity').value);
+            value = isNaN(value) ? 1 : value;
+            if (value <= 1) {
+                value = 1;
+            } else {
+                value--;
+            }
+            document.getElementById('quantity').value = value;
+        }
+
+        function syncQuantities() {
+            const quantity = document.getElementById('quantity').value;
+            document.getElementById('addToCartQuantity').value = quantity;
+            document.getElementById('buyQuantity').value = quantity;
+        }
+
+        // 페이지 로딩 완료 시에 수량 동기화
+        window.addEventListener('load', syncQuantities);
+
+        // quantity 값 변경 시에 수량 동기화
+        document.getElementById('quantity').addEventListener('change', syncQuantities);
+
         $(document).ready(function () {
             $('#quantity').on('input', function () {
                 var quantity = $(this).val();
@@ -171,7 +233,6 @@
                 $('#productOptionQuantity').val(quantity);
             });
         });
-
 
         function confirmCart() {
             var confirmAction = confirm("해당 상품을 장바구니에 추가하시겠습니까?");
@@ -201,7 +262,6 @@
             }
         }
     </script>
-
 </main>
 </body>
 </html>

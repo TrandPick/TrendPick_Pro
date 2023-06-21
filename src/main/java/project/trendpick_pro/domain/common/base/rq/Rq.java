@@ -128,9 +128,8 @@ public class Rq {
     public Boolean checkAdminOrBrandAdminHtml(){
         if(!checkLogin()) //로그인 안되있으면 false
             return false;
-        if(CheckLogin().get().getRole().equals(RoleType.MEMBER)) //Member면 false
-            return false;
-        return true;
+        //Member면 false
+        return !CheckLogin().get().getRole().equals(RoleType.MEMBER);
     }
 
     public Boolean CheckBrandAdminHtml() {

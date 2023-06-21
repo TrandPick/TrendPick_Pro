@@ -1,9 +1,6 @@
 package project.trendpick_pro.domain.orders.entity.dto.response;
 
 import lombok.*;
-import project.trendpick_pro.domain.cart.entity.Cart;
-import project.trendpick_pro.domain.cart.entity.CartItem;
-import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.product.entity.Product;
 
 import java.text.NumberFormat;
@@ -17,32 +14,32 @@ import java.util.Locale;
 public class OrderItemDto {
     private Long productId;
     private String productName;
-    private int count;
+    private int quantity;
     private int price;
     private Long cartItemId;
 
-    public static OrderItemDto of(Product product, int count) {
+    public static OrderItemDto of(Product product, int quantity) {
         return OrderItemDto.builder()
                 .productId(product.getId())
                 .productName(product.getName())
                 .price(product.getPrice())
-                .count(count)
+                .quantity(quantity)
                 .cartItemId(0L)
                 .build();
     }
 
-    public static OrderItemDto of(Product product, int count, Long cartItemId) {
+    public static OrderItemDto of(Product product, int quantity, Long cartItemId) {
         return OrderItemDto.builder()
                 .productId(product.getId())
                 .productName(product.getName())
                 .price(product.getPrice())
-                .count(count)
+                .quantity(quantity)
                 .cartItemId(cartItemId)
                 .build();
     }
 
     public int getTotalPrice(){
-        return this.price * this.count;
+        return this.price * this.quantity;
     }
 
     public String getFormattedTotalPrice(){
@@ -55,7 +52,7 @@ public class OrderItemDto {
         return "OrderItemDto{" +
                 "productId=" + productId +
                 ", productName='" + productName + '\'' +
-                ", count=" + count +
+                ", count=" + quantity +
                 ", price=" + price +
                 '}';
     }

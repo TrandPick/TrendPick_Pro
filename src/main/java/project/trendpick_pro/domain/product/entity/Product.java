@@ -129,10 +129,10 @@ public class Product extends BaseTimeEntity {
     }
 
     public void increaseAskCount(){
-        this.askCount += 1;
+        this.askCount++;
     }
     public void decreaseAskCount(){
-        this.askCount -= 1;
+        this.askCount--;
     }
 
     public void addReview(int rating){
