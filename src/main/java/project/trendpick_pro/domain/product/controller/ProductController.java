@@ -75,7 +75,7 @@ public class ProductController {
         }
 
         model.addAttribute("subCategoriesList", subCategoryList);
-        model.addAttribute("brands", brandService.findByName(rq.CheckAdmin().get().getBrand()));
+        model.addAttribute("brands", brandService.findByName(rq.getAdmin().getBrand()));
         return "trendpick/products/register";
     }
 
@@ -180,7 +180,7 @@ public class ProductController {
     @GetMapping("admin/list")
     public String showAllProductBySeller(@RequestParam("page") int offset, Model model) {
         Page<ProductListResponseBySeller> products =
-                productService.findProductsBySeller(rq.CheckAdmin().get(), offset).getData();
+                productService.findProductsBySeller(rq.getAdmin(), offset).getData();
         model.addAttribute("products", products);
         return "trendpick/admin/products";
     }

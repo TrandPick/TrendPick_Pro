@@ -34,7 +34,7 @@ public class CartController {
     @PreAuthorize("hasAuthority('MEMBER')")
     @GetMapping("/list")
     public String showCart( Model model) {
-        Member member = rq.CheckMember().get();
+        Member member = rq.getMember();
         Cart carts = cartService.getCartByUser(member.getId());
         List<CartItem> cartItems = cartService.CartView(carts);
         model.addAttribute("cartItems", cartItems);
@@ -54,7 +54,7 @@ public class CartController {
     public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
         if(!rq.checkLogin())
             return rq.historyBack("로그인 후 이용하실 수 있습니다.");
-        RsData<CartItemResponse> cartItemResponse = cartService.addItemToCart(rq.CheckMember().get(), cartItemRequests);
+        RsData<CartItemResponse> cartItemResponse = cartService.addItemToCart(rq.getMember(), cartItemRequests);
        if(cartItemResponse.isFail()){
            return rq.redirectWithMsg("/trendpick/products/list?main-category=상의",cartItemResponse);
        }

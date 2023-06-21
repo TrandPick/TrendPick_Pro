@@ -52,7 +52,7 @@
             </td>
             <td class="text-center" th:text="${product.formattedPrice}"></td>
             <td class="text-center" th:text="${product.stock+'개'}"></td>
-            <td class="text-center" th:text="${product.saleCount+'개'}"></td>
+            <td class="text-center" th:text="${product.stock+'개'}"></td>
             <td class="text-center">
                 <div style="margin-right: 5px;" class="mr-2">
                     <div th:each="star : ${#numbers.sequence(1, 5)}" style="display: inline-block;">

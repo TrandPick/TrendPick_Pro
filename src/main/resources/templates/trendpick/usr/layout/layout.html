@@ -49,7 +49,7 @@
 
         <div class="flex justify-between">
             <ul class="menu menu-horizontal px-1">
-                <li th:if="${@rq.CheckLoginHtml()} and !${@rq.CheckAdminHtml()}"><a
+                <li th:if="${@rq.checkLogin()} and !${@rq.checkAdmin()}"><a
                         href="/trendpick/products/list?main-category=recommend">추천</a></li>
                 <li><a href="/trendpick/products/list?main-category=전체">전체</a></li>
                 <li><a href="/trendpick/products/list?main-category=상의">상의</a></li>
@@ -64,17 +64,17 @@
                 <li><a href="/trendpick/member/register" sec:authorize="isAnonymous()">회원가입</a></li>
                 <li><a href="/trendpick/member/login" sec:authorize="isAnonymous()">로그인</a></li>
                 <li class="ml-2 mt-1" th:if="${@rq.checkLogin()}">
-                    <div th:if="${@rq.CheckMemberHtml()}" class="centered">
+                    <div th:if="${@rq.checkMember()}" class="centered">
                         <div class="badge badge-accent badge-outline text-black">
-                            <span th:text="${@rq.GetMember().username}+' 님'"></span>
+                            <span th:text="${@rq.getMember().username}+' 님'"></span>
                         </div>
                     </div>
-                    <div th:if="${@rq.CheckBrandAdminHtml()}" class="centered">
+                    <div th:if="${@rq.CheckBrand()}" class="centered">
                         <div class="badge badge-accent badge-outline text-black">
-                            <span th:text="${@rq.GetMember().brand}+' 관리자'"></span>
+                            <span th:text="${@rq.getLogin().brand}+' 관리자'"></span>
                         </div>
                     </div>
-                    <div th:if="${@rq.GetMember().role.value == 'ADMIN'}" class="centered">
+                    <div th:if="${@rq.getLogin().role.value == 'ADMIN'}" class="centered">
                         <div class="badge badge-accent">
                             <span>관리자 계정</span>
                         </div>
@@ -86,8 +86,8 @@
                         <input class="link link-hover" type="submit" value="로그아웃">
                     </form>
                 </li>
-                <div th:if="${@rq.CheckLoginHtml()}">
-                    <button class="btn btn-ghost btn-circle" th:if="!${@rq.CheckAdminHtml()}">
+                <div th:if="${@rq.checkLogin()}">
+                    <button class="btn btn-ghost btn-circle" th:if="!${@rq.checkAdmin()}">
                         <div class="indicator">
                             <a href="/trendpick/usr/cart/list">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -99,8 +99,8 @@
                         </div>
                     </button>
                 </div>
-                <div th:if="${@rq.CheckLoginHtml()}">
-                    <div class="dropdown" th:if="${@rq.CheckMemberHtml()}">
+                <div th:if="${@rq.checkLogin()}">
+                    <div class="dropdown" th:if="${@rq.checkMember()}">
                         <label tabindex="0" class="flex btn btn-ghost btn-circle">
                             <div class="flex justify-center items-center">
                                 <i class="fa-solid fa-bars"></i>
@@ -130,7 +130,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="dropdown" th:unless="${@rq.CheckMemberHtml()}">
+                    <div class="dropdown" th:unless="${@rq.checkMember()}">
                         <label tabindex="0" class="btn btn-ghost btn-circle">
                             <i class="fa-solid fa-bars"></i>
                         </label>

@@ -98,7 +98,7 @@ public class ReviewService {
 
     @Transactional
     public void delete(Long reviewId) {
-        rq.CheckAdmin();
+        rq.getAdmin();
         Review review = reviewRepository.findById(reviewId).orElseThrow();
         fileTranslator.deleteFile(review.getFile());
         reviewRepository.delete(review);

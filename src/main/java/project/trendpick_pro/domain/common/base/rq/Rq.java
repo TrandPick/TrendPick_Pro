@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.context.MessageSource;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -14,7 +13,6 @@ import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.LocaleResolver;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
-import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.member.service.MemberService;
@@ -30,13 +28,16 @@ import java.util.Optional;
 @RequestScope
 public class Rq {
     private final MemberService memberService;
+
     private final MessageSource messageSource;
     private final LocaleResolver localeResolver;
     private Locale locale;
+
     private final HttpServletRequest req;
     private final HttpServletResponse resp;
     private final HttpSession session;
     private final User user;
+
     private Member member = null; // 레이지 로딩, 처음부터 넣지 않고, 요청이 들어올 때 넣는다.
 
     public Rq(MemberService memberService, MessageSource messageSource, LocaleResolver localeResolver, HttpServletRequest req,
@@ -68,26 +69,19 @@ public class Rq {
         return "trendpick/common/js";
     }
 
-    // 뒤로가기 + 메세지
     public String historyBack(RsData rsData) {
         return historyBack(rsData.getMsg());
     }
-
-    // 302 + 메세지
     public String redirectWithMsg(String url, RsData rsData) {
         return redirectWithMsg(url, rsData.getMsg());
     }
-
-    // 302 + 메세지
     public String redirectWithMsg(String url, String msg) {
         return "redirect:" + urlWithMsg(url, msg);
     }
-
     private String urlWithMsg(String url, String msg) {
         // 기존 URL에 혹시 msg 파라미터가 있다면 그것을 지우고 새로 넣는다.
         return Ut.url.modifyQueryParam(url, "msg", msgWithTtl(msg));
     }
-
     private String msgWithTtl(String msg) {
         return Ut.url.encode(msg) + ";ttl=" + new Date().getTime();
     }
@@ -95,99 +89,75 @@ public class Rq {
     public boolean isLogin() {
         return user != null;
     }
-
-    // 로그아웃 되어 있는지 체크
     public boolean isLogout() {
         return !isLogin();
     }
-
-    public Member getMember() {
+    public Member GetMember() {
         if (isLogout()) return null;
 
         // 데이터가 없는지 체크
         if (member == null) {
-            member = memberService.findByUsername(user.getUsername()).orElseThrow();
-        }
-
-        return member;
-    }
-
-    public Optional<Member> CheckAdmin() {
-        Optional<Member> member = CheckLogin();
-        Member checkMember = member.get();
-        if (checkMember.getRole().equals(RoleType.MEMBER)) {
-            throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+            member = memberService.findByUsername(user.getUsername()).orElseThrow(() -> new MemberNotFoundException("존재 하지 않는 회원입니다."));
         }
         return member;
     }
 
-    public Boolean CheckAdminHtml() {
-        return !CheckMemberHtml();
-    }
-
-    public Boolean checkAdminOrBrandAdminHtml(){
-        if(!checkLogin()) //로그인 안되있으면 false
-            return false;
-        //Member면 false
-        return !CheckLogin().get().getRole().equals(RoleType.MEMBER);
-    }
-
-    public Boolean CheckBrandAdminHtml() {
-        Member checkMember = CheckLogin().get();
-        return checkMember.getRole().equals(RoleType.BRAND_ADMIN);
-    }
-
-    public String getBrandName(){
-        return CheckLogin().get().getBrand();
-    }
-
-    public Boolean CheckMemberHtml() {
-        Member checkMember = CheckLogin().get();
-        return checkMember.getRole().equals(RoleType.MEMBER);
-    }
-
-    public Optional<Member> CheckMember() {
-        Optional<Member> member = CheckLogin();
-        Member checkMember = member.get();
-        if (checkMember.getRole().equals(RoleType.MEMBER)) {
-            return member;
-        }
-        throw new MemberNotMatchException("허용된 권한이 아닙니다.");
-    }
-
-    public Member GetMember() {
-        return  CheckLogin().orElse(null);
-    }
-
-    public Boolean CheckLoginHtml() {
+    public Boolean checkLogin() {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
         Optional<Member> member = memberService.findByEmail(username);
 
         return member.isPresent();
     }
-
-    public Optional<Member> CheckLogin() {
+    public Member getLogin() {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
         Optional<Member> member = memberService.findByEmail(username);
 
         if (member.isPresent()) {
-            return member;
+            return member.get();
         }
         else {
             throw new MemberNotFoundException("존재하지 않는 회원입니다.");
         }
     }
 
-    public boolean checkLogin(){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
-        Optional<Member> member = memberService.findByEmail(username);
-
-        if (member.isPresent()) {
-            return true;
+    public Boolean checkMember() {
+        return getLogin().getRole().equals(RoleType.MEMBER);
+    }
+    public Member getMember() {
+        Member member = getLogin();
+        if (member.getRole().equals(RoleType.MEMBER)) {
+            return member;
         }
-        return false;
+        throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+    }
+    public Boolean checkAdmin() {
+        return !checkMember();
+    }
+
+    public Member getAdmin() {
+        Member checkMember = getLogin();
+        if (checkMember.getRole().equals(RoleType.MEMBER)) {
+            throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+        }
+        return checkMember;
+    }
+
+    public Boolean checkAdminOrBrand(){
+        if(!checkLogin()) {
+            return false;
+        } else {
+            return !getLogin().getRole().equals(RoleType.MEMBER);
+        }
+    }
+
+    public Boolean CheckBrand() {
+        return getLogin().getRole().equals(RoleType.BRAND_ADMIN);
+    }
+
+    public String getBrandName(){
+        return getLogin().getBrand();
     }
 
     public void setSessionAttr(String name, String value) {

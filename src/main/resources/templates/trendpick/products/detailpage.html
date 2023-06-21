@@ -46,7 +46,7 @@
                                th:text="${#numbers.formatDecimal(productResponse.price, 0, 'COMMA', 0, 'POINT')} + ' 원'">Price</span>
                 </div>
             </div>
-            <div class="flex flex-col space-y-2" th:if="${@rq.CheckLoginHtml()} and !${@rq.CheckAdminHtml()}">
+            <div class="flex flex-col space-y-2" th:if="${@rq.checkLogin()} and !${@rq.checkAdmin()}">
                 <div class="mb-4">
                     <div class="flex items-center">
                         <button onclick="decreaseValue()" class="px-3 py-2 bg-gray-200 text-gray-800">-</button>
@@ -142,7 +142,7 @@
     <div class="mt-4 flex flex-col space-y-4">
         <h1 class="text-2xl font-semibold">QnA 상품문의</h1>
         <div th:if="${@rq.checkLogin()}">
-            <div th:if="${@rq.CheckMemberHtml()}" class="flex justify-end">
+            <div th:if="${@rq.checkMember()}" class="flex justify-end">
                 <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-accent btn-sm">문의하기</a>
             </div>
         </div>

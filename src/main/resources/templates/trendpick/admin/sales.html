@@ -48,7 +48,7 @@
                 <span class="badge badge-ghost badge-m" th:text="${order.count+'개'}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-m" th:text="${order.formattedTotalPrice}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${order.totalPrice}"></span>
             </td>
             <td class="text-center">
                 <span class="badge badge-ghost badge-m" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
