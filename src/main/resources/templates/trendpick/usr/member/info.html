@@ -1,28 +1,37 @@
+<!DOCTYPE html>
 <html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
 <head>
-  <title>계좌번호 관리</title>
+  <title>TrendPick | 내 정보</title>
 </head>
+
 <body>
-<main layout:fragment="main">
-  <div class="mt-4 text-2xl">
-    <div class="flex justify-between mt-3">
-      <div></div>
-      <div class="flex justify-end">
-        <p><span th:text="${MemberInfo.name}" class="text-[#37cdbe]"></span> 회원님 반갑습니다!</p>
-      </div>
+<main layout:fragment="main" class="container mx-auto px-6 py-8">
+  <div class="bg-white rounded-xl shadow-md p-8 space-y-6">
+    <div class="border-b border-gray-200 pb-4">
+      <h1 class="text-2xl font-semibold">내 정보</h1>
+      <p class="text-gray-600 font-light text-lg mt-2">
+        <span th:text="${MemberInfo.name}" class="text-gray-800 font-medium"></span> 회원님, 반갑습니다.
+      </p>
     </div>
-    <div class="mt-4">
-      <table class="table border mb-4 w-full text-xl">
+
+    <div class="mt-6">
+      <table class="w-full text-lg leading-6 text-gray-700">
         <tr>
-          <th class="border">주소</th>
-          <td><span th:text="${MemberInfo.address}"></span></td>
+          <th class="py-4 text-left font-light text-gray-600">주소</th>
+          <td class="py-4 font-medium"><span th:text="${MemberInfo.address}"></span></td>
         </tr>
       </table>
-      <div class="flex justify-end">
-        <a th:href="@{/trendpick/member/edit/address}" class="btn btn-accent btn-sm ml-4">주소 수정하기</a>
+
+      <div class="flex justify-end mt-4">
+        <a th:href="@{/trendpick/member/edit/address}"
+           class="inline-flex items-center px-5 py-2 border border-gray-300 text-base font-medium rounded-md text-gray-800 hover:bg-gray-200">
+          주소 수정하기
+        </a>
       </div>
     </div>
   </div>
 </main>
 </body>
+
 </html>

@@ -91,6 +91,7 @@ public class MemberController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/edit/address")
     public String editAddress(AddressForm addressForm, Model model) {
+        model.addAttribute("originalAdrress", rq.getMember().getAddress());
         model.addAttribute("addressForm", addressForm);
         return "trendpick/usr/member/address";
     }
