@@ -12,6 +12,7 @@ import project.trendpick_pro.domain.store.repository.StoreRepository;
 public class StoreService {
     private final StoreRepository storeRepository;
 
+    @Transactional
     public Store save(Store store){
         return storeRepository.save(store);
     }
