@@ -107,8 +107,10 @@ public class MemberService {
                     .build();
             member.connectBrand(brand);
 
-            if(brand.length() != 0)
+            if(brand.length() != 0 && !brandService.isPresent(brand)){
                 brandService.save(brand);
+                storeService.save(new Store(brand));
+            }
 
             if (joinForm.tags() != null) {
                 Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();

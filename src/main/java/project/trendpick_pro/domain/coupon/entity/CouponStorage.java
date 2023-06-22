@@ -25,14 +25,15 @@ public class CouponStorage extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reciptient")
     private Member member;
-
     @Enumerated(EnumType.STRING)
     private CouponStatus status;
 
     @Column(name = "used_date")
     private LocalDateTime usedDate;
+
     @Column(name = "start_date")
     private LocalDateTime startDate;
+
     @Column(name = "end_date")
     private LocalDateTime endDate;
 }

@@ -1,31 +1,43 @@
 package project.trendpick_pro.domain.coupon.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.common.base.rq.Rq;
-import project.trendpick_pro.domain.coupon.entity.dto.CouponDto;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
-import project.trendpick_pro.domain.coupon.repository.CouponRepository;
 import project.trendpick_pro.domain.coupon.service.CouponService;
 import project.trendpick_pro.global.rsData.RsData;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 @Controller
-@RequestMapping("/trendpick/coupon")
+@RequestMapping("/trendpick/coupons")
 @RequiredArgsConstructor
 public class CouponController {
     private final CouponService couponService;
     private final Rq rq;
 
-    @PostMapping("/{storeId}/register")
-    public String issue(@RequestParam("storeId") Long storeId, StoreCouponSaveRequest storeCouponSaveRequest){
-        RsData<Long> result = couponService.issue(storeId, storeCouponSaveRequest);
-        if (result.isFail())
-            rq.historyBack(result);
-        return "trendpick/index";
+    @GetMapping("/{storeName}/issue")
+    public String issue(@PathVariable("storeName") String storeName, StoreCouponSaveRequest storeCouponSaveRequest, Model model) {
+        model.addAttribute("couponForm", storeCouponSaveRequest);
+        model.addAttribute("storeName", storeName);
+        return "trendpick/store/coupon/issue";
     }
 
+    @PostMapping("/{storeName}/issue")
+    public String issue(@PathVariable("storeName") String storeName, @Valid StoreCouponSaveRequest storeCouponSaveRequest) throws UnsupportedEncodingException {
+        RsData<String> result = couponService.issue(storeName, storeCouponSaveRequest);
+        if (result.isFail())
+            return rq.historyBack(result);
+        return rq.redirectWithMsg("/trendpick/coupons/%s/list".formatted(storeName), "쿠폰이 성공적으로 발급되었습니다.");
+    }
 
+    @GetMapping("/{storeName}/list")
+    public String list(@PathVariable("storeName") String storeName, Model model){
+
+        return "trendpick/store/coupon/list";
+    }
 }

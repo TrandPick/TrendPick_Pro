@@ -18,6 +18,7 @@ public class Store extends BaseTimeEntity {
 
     //    @OneToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "brand")
+    @Column(unique = true)
     private String brand; //임시
 
     public Store(String brand){
