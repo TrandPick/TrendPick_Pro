@@ -81,16 +81,23 @@ public class BaseData {
                 memberService.saveAll(makeBrandMembers(brands));
                 mainCategoryService.saveAll(mainCategories);
 
+                int memberCount = 10;
                 int productCount = 100;
+                int reviewCount = 100;
+                int cartCount = 10;
+                String brandName = "포터리";
 
                 SaveAllSubCategories(mainCategoryService, subCategoryService);
-                saveMembers(10, tagNameService, memberService, recommendService);
-                saveProducts(productCount, filePath, mainCategoryService, brandService, tagNameService, productRepository);
+                saveMembers(memberCount, tagNameService, memberService, recommendService);
+                saveUniqueMembers(memberService, brandName);
 
-                saveUniqueMembers(memberService, recommendService);
-                saveReviews(100, filePath, memberService, productService ,reviewRepository);
-                saveCarts(10, productCount, cartService, memberService);
-                log.info("Base Data Success");
+                saveProducts(productCount, filePath, mainCategoryService, brandService, tagNameService, productRepository, brandName);
+                updateRecommends(memberService, recommendService);
+
+                saveReviews(reviewCount, filePath, memberService, productService ,reviewRepository);
+                saveCarts(cartCount, productCount, cartService, memberService);
+
+                log.info("BASE_DATA_SUCCESS");
             }
         };
     }
@@ -136,7 +143,7 @@ public class BaseData {
         return brandList;
     }
 
-    private void saveUniqueMembers(MemberService memberService, RecommendService recommendService) {
+    private void saveUniqueMembers(MemberService memberService, String brandName) {
         JoinForm admin = JoinForm.builder()
                 .email("admin@naver.com")
                 .password("12345")
@@ -152,7 +159,7 @@ public class BaseData {
                 .username("brand")
                 .phoneNumber("010-1234-1234")
                 .state("BRAND_ADMIN")
-                .brand("포터리")
+                .brand(brandName)
                 .build();
         memberService.register(brandAdmin);
 
@@ -164,9 +171,8 @@ public class BaseData {
                 .state("MEMBER")
                 .tags(tags)
                 .build();
-        Member Rsmember1 = memberService.register(member).getData();
-        Rsmember1.connectAddress("서울특별시 진짜 주인공 123");
-        recommendService.select(Rsmember1.getEmail());
+        Member RsMember1 = memberService.register(member).getData();
+        RsMember1.connectAddress("서울특별시 진짜 주인공 123");
 
         JoinForm member2 = JoinForm.builder()
                 .email("hye_0000@naver.com")
@@ -176,8 +182,16 @@ public class BaseData {
                 .state("MEMBER")
                 .tags(List.of("오버핏청바지", "로맨틱룩"))
                 .build();
-        Member Rsmember2 = memberService.register(member2).getData();
-        Rsmember2.connectAddress("서울특별시 진짜 주인공 123");
+        Member RsMember2 = memberService.register(member2).getData();
+        RsMember2.connectAddress("서울특별시 진짜 주인공 123");
+    }
+
+    public void updateRecommends(MemberService memberService, RecommendService recommendService) {
+        Optional<Member> findMember = memberService.findByEmail("trendpick@naver.com");
+        findMember.ifPresent(member -> recommendService.select(member.getEmail()));
+        findMember = memberService.findByEmail("hye_0000@naver.com");
+        findMember.ifPresent(member -> recommendService.select(member.getEmail()));
+
     }
 
     private static void saveCarts(int count, int productCount, CartService cartService, MemberService memberService) {
@@ -192,7 +206,7 @@ public class BaseData {
         }
     }
 
-    private static void saveProducts(int count, String filePath, MainCategoryService mainCategoryService, BrandService brandService, TagNameService tagNameService, ProductRepository productRepository) {
+    private static void saveProducts(int count, String filePath, MainCategoryService mainCategoryService, BrandService brandService, TagNameService tagNameService, ProductRepository productRepository, String brandName) {
         long result;
         List<Product> products = new ArrayList<>();
         for (int n = 1; n <= count; n++) {
@@ -202,6 +216,12 @@ public class BaseData {
 
             result = (long) (Math.random() * brandService.count());
             Brand brand = brandService.findById(result + 1L);
+            Brand UniqueBrand = brandService.findByName(brandName);
+
+            if (Math.random() < 0.1) {
+                brand = UniqueBrand;
+            }
+
             if (!Objects.equals(mainCategory.getName(), "추천")) {
 
                 List<SubCategory> subCategories = mainCategory.getSubCategories();
