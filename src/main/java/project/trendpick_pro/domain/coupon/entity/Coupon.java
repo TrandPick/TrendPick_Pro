@@ -52,10 +52,17 @@ public class Coupon extends BaseTimeEntity{
         this.couponNumber = UUID.randomUUID().toString();
     }
 
-//    public static Coupon of(StoreCouponSaveRequest storeCouponSaveRequest){
-//        return Coupon
-//                .builder()
-//                .issuer(storeCouponSaveRequest)
-//                .build()
-//    }
+    public static Coupon issue(Store issuer, StoreCouponSaveRequest storeCouponSaveRequest){
+        return Coupon
+                .builder()
+                .issuer(issuer)
+                .name(storeCouponSaveRequest.getName())
+                .limitCount(storeCouponSaveRequest.getLimitCount())
+                .discountPercent(storeCouponSaveRequest.getDiscountPercent())
+                .startDate(storeCouponSaveRequest.getStartDate())
+                .endDate(storeCouponSaveRequest.getEndDate())
+                .build()
+                ;
+    }
+
 }

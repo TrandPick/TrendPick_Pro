@@ -10,6 +10,7 @@ import project.trendpick_pro.domain.coupon.entity.dto.CouponDto;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
 import project.trendpick_pro.domain.coupon.repository.CouponRepository;
 import project.trendpick_pro.domain.coupon.service.CouponService;
+import project.trendpick_pro.global.rsData.RsData;
 
 @Controller
 @RequestMapping("/trendpick/coupon")
@@ -20,7 +21,9 @@ public class CouponController {
 
     @PostMapping("/{storeId}/register")
     public String issue(@RequestParam("storeId") Long storeId, StoreCouponSaveRequest storeCouponSaveRequest){
-        CouponDto couponDto = couponService.issue(storeId, storeCouponSaveRequest);
+        RsData<Long> result = couponService.issue(storeId, storeCouponSaveRequest);
+        if (result.isFail())
+            rq.historyBack(result);
         return "trendpick/index";
     }
 

@@ -16,4 +16,10 @@ public class StoreService {
     public Store save(Store store){
         return storeRepository.save(store);
     }
+
+    public Store findById(Long storeId) {
+        return storeRepository.findById(storeId).orElseThrow(
+                () -> new IllegalArgumentException("해당 스토어는 존재하지 않는 스토어입니다.")
+        );
+    }
 }
