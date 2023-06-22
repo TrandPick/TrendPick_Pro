@@ -181,7 +181,7 @@
         </div>
 
         <div class="mb-4">
-            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${originProduct.file.fileName}|" alt="Main Image" class="mb-2" style="width:400px; height:400px;">
+            <img th:src="|/images/${originProduct.file.fileName}|" alt="Main Image" class="mb-2" style="width:400px; height:400px;">
         </div>
 
         <div class="mb-4">
@@ -191,7 +191,7 @@
 
         <div class="mb-4 flex flex-wrap">
             <div th:each="imageUrl : ${originProduct.file.child}" class="mr-2 mb-2">
-                <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${imageUrl.fileName}|" alt="Sub Image" class="w-24 h-24">
+                <img th:src="|/images/${imageUrl.fileName}|" alt="Sub Image" class="w-24 h-24">
             </div>
         </div>
 
