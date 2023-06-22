@@ -23,6 +23,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.dto.response.ProductDiscountResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -177,12 +178,20 @@ public class ProductController {
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
-    @GetMapping("admin/list")
+    @GetMapping("/admin/list")
     public String showAllProductBySeller(@RequestParam("page") int offset, Model model) {
         Page<ProductListResponseBySeller> products =
                 productService.findProductsBySeller(rq.getAdmin(), offset).getData();
         model.addAttribute("products", products);
         return "trendpick/admin/products";
     }
+
+
+    @PostMapping("/admin/discount/{productId}")
+    public String applyDiscount(@PathVariable Long productId, @RequestParam double discountRate, Model model) {
+        productService.applyDiscount(productId, discountRate);
+//        ProductDiscountResponse productDiscountResponse = ProductDiscountResponse.of(productService.findById(productId));
+//        model.addAttribute("discountProduct", productDiscountResponse);
+        return "redirect:/trendpick/products/admin/list?page=0";
+    }
 }
-// @RequestParam(value = "sort", defaultValue = "1"), Integer sortCode
