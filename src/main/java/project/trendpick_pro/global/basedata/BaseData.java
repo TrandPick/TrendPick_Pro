@@ -94,7 +94,7 @@ public class BaseData {
                 saveProducts(productCount, filePath, mainCategoryService, brandService, tagNameService, productRepository, brandName);
                 updateRecommends(memberService, recommendService);
 
-                saveReviews(reviewCount, filePath, memberService, productService ,reviewRepository);
+                saveReviews(reviewCount, productCount, filePath, memberService, productService ,reviewRepository);
                 saveCarts(cartCount, productCount, cartService, memberService);
 
                 log.info("BASE_DATA_SUCCESS");
@@ -255,11 +255,11 @@ public class BaseData {
         productRepository.saveAll(products);
     }
 
-    private void saveReviews(int count, String filePath, MemberService memberService, ProductService productService, ReviewRepository reviewRepository) {
+    private void saveReviews(int count, int productCount, String filePath, MemberService memberService, ProductService productService, ReviewRepository reviewRepository) {
         List<Review> reviews = new ArrayList<>();
         for(int i=1; i<=count; i++){
             CommonFile commonFile = makeFiles(filePath);
-            Product product = productService.findById(1L);
+            Product product = productService.findById((long) (Math.random() * (productCount/2))+1L);
             ReviewSaveRequest rr = ReviewSaveRequest.builder()
                     .title("리뷰입니다.")
                     .content("내용입니다")
