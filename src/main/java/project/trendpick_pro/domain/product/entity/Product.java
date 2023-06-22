@@ -159,8 +159,13 @@ public class Product extends BaseTimeEntity {
     }
 
     public void applyDiscount(double discountRate) {
-        this.discountRate = discountRate;
-        this.discountedPrice = (int) (price * (1 - discountRate/100));
+        if (discountRate == 0) {
+            this.discountRate = 0;
+            this.discountedPrice = 0;
+        } else {
+            this.discountRate = discountRate;
+            this.discountedPrice = (int) (price * (1 - discountRate / 100));
+        }
     }
 
     @Override

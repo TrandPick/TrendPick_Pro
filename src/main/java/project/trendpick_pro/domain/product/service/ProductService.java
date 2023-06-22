@@ -26,10 +26,7 @@ import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductResponse;
+import project.trendpick_pro.domain.product.entity.dto.response.*;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
@@ -245,9 +242,7 @@ public class ProductService {
     @Transactional
     public void applyDiscount(Long productId, double discountRate) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
-        int discountedPrice = (int) (product.getPrice() * (1 - discountRate / 100));
         product.applyDiscount(discountRate);
-        //productRepository.updatePrice(product.getId(), discountedPrice);
     }
 
     private ProductListResponse convertToProductListResponse(Product product) {

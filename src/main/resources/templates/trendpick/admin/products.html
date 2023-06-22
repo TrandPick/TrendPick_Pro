@@ -89,8 +89,9 @@
             </td>
             <td>
                 <form id="discountForm" th:action="@{/trendpick/products/admin/discount/{productId}(productId=${product.id})}" method="post">
-                    <input type="text" name="discountRate" style="width: 30px;" class="border border-gray-300"></br>
-                    <button type="submit">적용</button>
+                    <input type="text" name="discountRate" style="width: 30px;" class="border border-gray-300 text-center" th:value="${product.discountRate} > 0 ? ${product.discountRate} : 0">%</br>
+                    <button type="submit">적용</button><br>
+                    <span th:if="${product.discountedPrice != null && product.discountedPrice > 0}" th:text="${product.discountedPrice}">원</span>
                 </form>
             </td>
         </tr>

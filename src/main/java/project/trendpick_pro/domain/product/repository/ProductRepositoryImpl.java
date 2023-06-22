@@ -129,7 +129,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.saleCount,
                         product.rateAvg,
                         product.reviewCount,
-                        product.askCount
+                        product.askCount,
+                        product.discountRate,
+                        product.discountedPrice
                 ))
                 .from(product)
                 .leftJoin(product.file, commonFile)
