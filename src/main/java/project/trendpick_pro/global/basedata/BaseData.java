@@ -85,7 +85,7 @@ public class BaseData {
                 int productCount = 100;
                 int reviewCount = 100;
                 int cartCount = 10;
-                String brandName = "포터리";
+                String brandName = "polo";
 
                 SaveAllSubCategories(mainCategoryService, subCategoryService);
                 saveMembers(memberCount, tagNameService, memberService, recommendService);

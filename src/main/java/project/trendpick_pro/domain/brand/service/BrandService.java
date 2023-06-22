@@ -16,6 +16,10 @@ public class BrandService {
     
     private final BrandRepository brandRepository;
 
+    public boolean isPresent(String name){
+        return brandRepository.findByName(name).isPresent();
+    }
+
     @Transactional
     public void save(String name){
         brandRepository.save(new Brand(name));
@@ -33,7 +37,7 @@ public class BrandService {
 
     public Brand findByName(String name) {
         try {
-            return brandRepository.findByName(name);
+            return brandRepository.findByName(name).get();
         } catch (Exception e) {
             return brandRepository.save(new Brand(name));
         }
