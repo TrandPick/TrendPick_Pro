@@ -42,4 +42,8 @@ public class BrandService {
     public Brand findById(Long id) {
         return brandRepository.findById(id).orElseThrow();
     }
+
+    public Long count() {
+        return brandRepository.count();
+    }
 }

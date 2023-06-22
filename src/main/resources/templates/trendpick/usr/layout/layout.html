@@ -65,17 +65,17 @@
                 <li><a href="/trendpick/member/login" sec:authorize="isAnonymous()">로그인</a></li>
                 <li class="ml-2 mt-1" th:if="${@rq.checkLogin()}">
                     <div th:if="${@rq.checkMember()}" class="centered">
-                        <div class="badge badge-accent badge-outline text-black">
+                        <div class="badge badge-black badge-outline text-black">
                             <span th:text="${@rq.getMember().username}+' 님'"></span>
                         </div>
                     </div>
                     <div th:if="${@rq.CheckBrand()}" class="centered">
-                        <div class="badge badge-accent badge-outline text-black">
+                        <div class="badge badge-black badge-outline text-black">
                             <span th:text="${@rq.getLogin().brand}+' 관리자'"></span>
                         </div>
                     </div>
                     <div th:if="${@rq.getLogin().role.value == 'ADMIN'}" class="centered">
-                        <div class="badge badge-accent">
+                        <div class="badge badge-black">
                             <span>관리자 계정</span>
                         </div>
                     </div>

@@ -143,7 +143,7 @@
         <h1 class="text-2xl font-semibold">QnA 상품문의</h1>
         <div th:if="${@rq.checkLogin()}">
             <div th:if="${@rq.checkMember()}" class="flex justify-end">
-                <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-accent btn-sm">문의하기</a>
+                <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-outline btn-accent text-black btn-sm">문의 하기</a>
             </div>
         </div>
         <div class="bg-white rounded-md shadow p-4" th:if="${productAsk != null}">
@@ -179,6 +179,7 @@
             </div>
         </div>
     </div>
+    <br/><br/><br/><br/><br/>
     <script>
         function openModal() {
             document.getElementById("myModal").classList.remove("hidden");

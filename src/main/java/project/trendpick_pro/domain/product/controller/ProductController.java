@@ -141,13 +141,13 @@ public class ProductController {
     @PreAuthorize("permitAll()")
     @GetMapping("/list")
     public String showAllProduct(@RequestParam(value = "page", defaultValue = "0") int offset,
-                                 @RequestParam(value = "main-category", defaultValue = "top") String mainCategory,
+                                 @RequestParam(value = "main-category", defaultValue = "all") String mainCategory,
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
                                  Pageable pageable, Model model) {
         if (mainCategory.equals("recommend")) {
             mainCategory = "추천";
-        } else if (mainCategory.equals("top")) {
-            mainCategory = "상의";
+        } else if (mainCategory.equals("all")) {
+            mainCategory = "전체";
         }
         if (mainCategory.equals("추천")) {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();

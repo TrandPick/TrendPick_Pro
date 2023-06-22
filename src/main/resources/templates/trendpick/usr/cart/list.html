@@ -70,7 +70,9 @@
 
             <td class="px-4 py-3 flex items-center space-x-3 text-center">
                 <div>
-                    <img th:src="|/images/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
+                    <a th:href="|/trendpick/products/${item.product.id}|">
+                        <img th:src="|/images/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
+                    </a>
                 </div>
                 <div>
                     <a th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
@@ -166,8 +168,10 @@
                 if (checkboxes[i].checked) {
                     var quantityInput = checkboxes[i].parentNode.parentNode.querySelector('.quantity_input');
                     var quantity = parseInt(quantityInput.value);
-                    var price = parseInt(checkboxes[i].getAttribute('data-product-price'));
+                    var priceAttr = checkboxes[i].getAttribute('data-product-price');
+                    var price = priceAttr ? parseInt(priceAttr) : 0;
                     totalPrice += price * quantity;
+
                 }
             }
             var totalPriceElement = document.getElementById('totalPrice');
@@ -186,6 +190,11 @@
             }
             calculateTotalPrice();
         });
+
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].addEventListener('click', calculateTotalPrice);
+        }
 
         // 개별 상품 체크박스 클릭 시 결제 금액 업데이트
         function updateTotalPrice(element) {
