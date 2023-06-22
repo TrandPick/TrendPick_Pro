@@ -39,7 +39,7 @@
                 <div class="card-body">
                     <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
                         <h2 class="text-lg font-bold" th:text="${product.name}"></h2>
-                        <div class="badge">Brand: <span th:text="${product.brand}"></span></div>
+                        <div class="badge"><span th:text="${product.brand}"></span></div>
                         <div><span class="text-orange-600 font-bold"
                                    th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span>
                         </div>

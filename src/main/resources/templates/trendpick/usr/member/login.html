@@ -4,6 +4,39 @@
 </head>
 <body>
 <main layout:fragment="main" class="login-form">
+
+  <script>
+    function LoginForm__submit(form) {
+
+      form.username.value = form.username.value.trim();
+
+      if (form.username.value.length === 0) {
+        toastWarning('아이디를 입력해주세요.');
+        form.username.focus();
+        return;
+      }
+      if (form.username.value.length < 4) {
+        toastWarning('아이디를 4자 이상 입력해주세요.');
+        form.username.focus();
+        return;
+      }
+
+      form.password.value = form.password.value.trim();
+
+      if (form.password.value.length === 0) {
+        form.password.focus();
+        toastWarning('비밀번호를 입력해주세요.');
+        return;
+      }
+      if (form.password.value.length < 4) {
+        toastWarning('비밀번호를 4자 이상 입력해주세요.');
+        form.password.focus();
+        return;
+      }
+      form.submit(); // 폼 발송
+    }
+  </script>
+
   <div class="login-container">
     <h2>로그인</h2>
     <form th:action method="post" class="flex flex-col" onsubmit="LoginForm__submit(this); return false;">

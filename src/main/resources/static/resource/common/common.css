@@ -82,6 +82,10 @@ html > body .label-text {
     font-weight: bold;
 }
 
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
 .centered {
     display: flex;
     align-items: center;
