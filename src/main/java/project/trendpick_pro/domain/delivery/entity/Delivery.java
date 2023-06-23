@@ -31,6 +31,6 @@ public class Delivery extends BaseTimeEntity {
     }
 
     public void canceledDelivery(){
-        state = DeliveryState.CANCELED;
+        state = DeliveryState.ORDER_CANCELED;
     }
 }

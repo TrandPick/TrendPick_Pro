@@ -3,10 +3,13 @@ package project.trendpick_pro.domain.member.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import project.trendpick_pro.domain.cart.entity.Cart;
+import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -41,6 +44,9 @@ public class Member {
     private Cart cart;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FavoriteTag> tags = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Order> Orders = new ArrayList<>();
 
     private String bankName;
     private String bankAccount;
