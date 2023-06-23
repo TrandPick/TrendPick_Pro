@@ -12,7 +12,9 @@ import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.global.rsData.RsData;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,15 +30,18 @@ public class NotificationService {
         if(order==null){
             return RsData.of("F-1","해당 주문은 존재하지 않습니다.");
         }
-
         if(!order.getOrderState().equals("미결제")) {
             notification = Notification.of(member, order);
             notificationRepository.save(notification);
         }
         return RsData.of("S-1", "알림 메세지가 생성되었습니다.", NotificationResponse.of(notification));
     }
+
     public List<Notification> findByMember(Long memberId) {
-        return notificationRepository.findByMemberId(memberId);
+        List<Notification> notifications = notificationRepository.findByMemberId(memberId);
+        return notifications.stream()
+                .sorted(Comparator.comparing(Notification::getCreateDate).reversed()) // 생성일자 내림차순 정렬
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -57,5 +62,9 @@ public class NotificationService {
         return RsData.of("S-1","주문상태 업데이트 되었습니다.",notification);
     }
 
+    @Transactional
+    public void removeNotification(Long notifiactionId) {
+        notificationRepository.deleteById(notifiactionId);
+    }
 
 }

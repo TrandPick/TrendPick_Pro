@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.notification.entity.Notification;
 
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -18,12 +19,15 @@ public class NotificationResponse {
 
     private String deliveryState;
 
+    private LocalDateTime createDate;
+
     @Builder
     @QueryProjection
-    public NotificationResponse(Long id, String orderState, String deliveryState) {
+    public NotificationResponse(Long id, String orderState, String deliveryState, LocalDateTime createDate) {
         this.id = id;
         this.orderState=orderState;
         this.deliveryState = deliveryState;
+        this.createDate=createDate;
     }
 
     public static NotificationResponse of (Notification notification) {
@@ -31,6 +35,7 @@ public class NotificationResponse {
                 .id(notification.getId())
                 .orderState(notification.getOrder().getOrderState())
                 .deliveryState(notification.getOrder().getDeliveryState())
+                .createDate(notification.getCreateDate())
                 .build();
     }
 
