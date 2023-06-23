@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.notification.service.NotificationService;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.service.OrderService;
@@ -26,7 +29,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final OrderService orderService;
     private final CartService cartService;
-
+    private final NotificationService notificationService;
     private final Rq rq;
 
     @Transactional
@@ -38,6 +41,7 @@ public class PaymentController {
             @RequestParam(value = "paymentKey") String paymentKey) {
 
         PaymentResultResponse response = paymentService.requestPayment(paymentKey, orderId, amount);
+        Member member=rq.getMember();
 
         Order order = orderService.findById(id);
         order.connectPaymentMethod("TossPayments " + response.getMethod());
@@ -46,6 +50,7 @@ public class PaymentController {
 
         if (response.getStatus().equals("DONE")) {
             cartService.deleteCartItemsByOrder(order);
+            notificationService.make(member, order.getId());
             return rq.redirectWithMsg("/trendpick/orders/%s".formatted(id), "주문이 완료되었습니다.");
         } else {
             return rq.historyBack(RsData.of("F-1", "주문이 완료되지 않았습니다."));

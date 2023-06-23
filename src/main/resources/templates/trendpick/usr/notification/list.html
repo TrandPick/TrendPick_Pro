@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>알림</title>
+</head>
+
+<body>
+
+<main layout:fragment="main" class="flex-grow flex items-center justify-center">
+    <div class="max-w-2xl w-full px-4">
+        <h1 class="mb-4">
+            <i class="fa-regular fa-bell"></i>
+            알림
+        </h1>
+
+        <div class="text-center mt-10" th:if="${#lists.isEmpty(notifications)}">
+            <i class="fa-regular fa-face-laugh"></i> 최근에 받은 알림이 없습니다.
+        </div>
+
+        </div>
+    </div>
+</main>
+</body>
+</html>
