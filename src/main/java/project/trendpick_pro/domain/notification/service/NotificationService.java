@@ -29,7 +29,7 @@ public class NotificationService {
             return RsData.of("F-1","해당 주문은 존재하지 않습니다.");
         }
 
-        if(!order.getOrderState().equals("미결제") && !order.getOrderState().equals("")) {
+        if(!order.getOrderState().equals("미결제")) {
             notification = Notification.of(member, order);
             notificationRepository.save(notification);
         }
@@ -38,4 +38,24 @@ public class NotificationService {
     public List<Notification> findByMember(Long memberId) {
         return notificationRepository.findByMemberId(memberId);
     }
+
+    @Transactional
+    public RsData<Notification> updateStatus(Long orderId){
+        Order order=orderService.findById(orderId);
+        Notification notification=notificationRepository.findByOrderId(orderId);
+
+        if(notification==null){
+            return RsData.of("F-1","해당 주문내역은 없습니다.");
+        }
+        if (!notification.getOrderState().equals(order.getOrderState())
+                || !notification.getDeliveryState().equals(order.getDeliveryState())) {
+            Notification newNotification = Notification.of(notification.getMember(), order);
+            notificationRepository.save(newNotification);
+        }
+
+      //  notification.updateOrderState(order.getOrderState(), order.getDeliveryState());
+        return RsData.of("S-1","주문상태 업데이트 되었습니다.",notification);
+    }
+
+
 }

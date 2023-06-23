@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -33,16 +34,16 @@ public class Notification {
     private String orderState;
 
     private String deliveryState;
-    @DateTimeFormat(pattern = "yyyy-mm-dd")
-    private LocalDate notificationDate;
+    @DateTimeFormat(pattern = "yyyy-mm-dd hh:mm:ss")
+    private LocalDateTime createDate;
 
     @PrePersist
     public void createDate() {
-        this.notificationDate = LocalDate.now();
+        this.createDate = LocalDateTime.now();
     }
 
     public boolean isRead(){
-        return notificationDate!=null;
+        return createDate!=null;
     }
 
     public static Notification of(Member member,Order order){
@@ -53,5 +54,10 @@ public class Notification {
                 .deliveryState(order.getDeliveryState())
                 .build();
     }
+
+     public void updateOrderState(String orderState, String deliveryState){
+        this.orderState=orderState;
+        this.deliveryState=deliveryState;
+     }
 
 }

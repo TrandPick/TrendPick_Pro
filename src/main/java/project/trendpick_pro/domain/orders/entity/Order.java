@@ -121,7 +121,7 @@ public class Order extends BaseTimeEntity {
 
     public String getOrderState(){
         return switch (status.getValue()){
-            case "ORDERED"->"주문완료";
+            case "ORDERED"->"결제완료";
             case "CANCELED"->"주문취소";
             default -> "미결제";
         };
@@ -131,7 +131,8 @@ public class Order extends BaseTimeEntity {
         return switch (delivery.getState().getValue()){
             case "DELIVERY_ING"->"배송중";
             case "COMPLETED"->"배송완료";
-            case "CANCELED"->"환불신청";
+            case "DELIVERY_CANCELED"->"환불신청";
+            case "ORDER_CANCELED"->"배송전취소";
             default -> "준비중";
         };
     }

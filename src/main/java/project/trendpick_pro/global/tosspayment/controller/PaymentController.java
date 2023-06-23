@@ -61,6 +61,7 @@ public class PaymentController {
     public String paymentCancel(@PathVariable("id") Long id) {
         orderService.cancel(id);
         paymentService.cancelPayment(orderService.findById(id).getPaymentKey());
+        notificationService.updateStatus(id);
         return rq.redirectWithMsg("/trendpick/orders/usr/orders", "주문을 취소했습니다.");
     }
 }
