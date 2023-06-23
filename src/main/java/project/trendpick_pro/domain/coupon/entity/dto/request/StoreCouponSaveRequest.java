@@ -23,8 +23,13 @@ public class StoreCouponSaveRequest {
     @Max(value = 95, message = "할인률은 최대 95% 이하여야 합니다.")
     private int discountPercent;
 
+    @NotBlank(message = "만료 타입을 설정해주셔야 합니다.")
+    private String expirationType;
     @NotNull(message = "시작 날짜를 정해주세요.")
     private LocalDateTime startDate;
     @NotNull(message = "마감 날짜를 정해주세요.")
     private LocalDateTime endDate;
+    @Min(value = 1, message = "적어도 마감기한은 하루 이상이어야 합니다.")
+    @Max(value = 365, message = "최대 365일까지 입니다.")
+    private int issueAfterDate;
 }
