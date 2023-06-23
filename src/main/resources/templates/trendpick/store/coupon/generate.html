@@ -8,7 +8,7 @@
 <main class="min-h-screen flex flex-col" layout:fragment="main">
     <h1 class="text-center text-5xl font-bold mb-6" th:text="${storeName} + ' 쿠폰 발급관'"></h1>
 
-    <form th:action="@{/trendpick/coupons/{storeName}/issue(storeName=${storeName})}" method="post" th:object="${couponForm}">
+    <form th:action="@{/trendpick/coupons/{storeName}/generate(storeName=${storeName})}" method="post" th:object="${couponForm}">
         <div class="mb-4">
             <label for="name" class="block mb-2">쿠폰 이름:</label>
             <input type="text" id="name" name="name" required th:field="*{name}" class="border border-gray-300 px-4 py-2 rounded-md w-full">
