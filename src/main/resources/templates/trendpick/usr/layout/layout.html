@@ -141,6 +141,11 @@
                                     <a th:href="@{/trendpick/orders/usr/refunds}"><span>내 환불내역</span></a>
                                   </span>
                             </li>
+                            <li>
+                                  <span>
+                                    <a th:href="@{/trendpick/coupons/list}"><span>받을 수 있는 쿠폰목록(임시)</span></a>
+                                  </span>
+                            </li>
                         </ul>
                     </div>
                     <div class="dropdown" th:unless="${@rq.checkMember()}">
@@ -166,7 +171,7 @@
                             </li>
                             <li>
                                   <span>
-                                    <a th:href="@{|/trendpick/coupons/${@rq.getBrandName()}/issue|}"><span>쿠폰발급</span></a>
+                                    <a th:href="@{|/trendpick/coupons/${@rq.getBrandName()}/generate|}"><span>쿠폰발급</span></a>
                                   </span>
                             </li>
                         </ul>

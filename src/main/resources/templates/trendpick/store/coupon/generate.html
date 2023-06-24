@@ -5,60 +5,131 @@
     <title>쿠폰발급</title>
 </head>
 <body>
-<main class="min-h-screen flex flex-col" layout:fragment="main">
-    <h1 class="text-center text-5xl font-bold mb-6" th:text="${storeName} + ' 쿠폰 발급관'"></h1>
+<main layout:fragment="main" class="coupon-generate-form flex flex-column">
+    <div class="w-full max-w-md px-8 py-6 bg-white rounded-lg shadow-2xl">
+        <h2 th:text="${storeName}+ ' 쿠폰등록'"></h2>
+        <form th:action="@{/trendpick/coupons/{storeName}/generate(storeName=${storeName})}" method="post"
+              th:object="${couponForm}">
+            <div class="form-control mt-3">
+                <label class="label text-gray-700">
+                    쿠폰 이름:
+                </label>
+                <label>
+                    <input type="text" id="name" name="name" placeholder="쿠폰명을 입력해주세요." th:field="*{name}"
+                           class="input input-bordered input-accent w-full max-w-xs py-2 px-4 bg-gray-100 mt-1 rounded border border-gray-300"
+                           autoFocus/>
+                </label>
+                <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500"></p>
+            </div>
+            <div class="form-control mt-3">
+                <label class="label text-gray-700">
+                    발급 제한 일수:
+                </label>
+                <label>
+                    <input type="number" id="limitIssueDate" name="limitIssueDate" required min="1" placeholder="발급 제한일수를 입력해주세요."
+                           th:field="*{limitIssueDate}"
+                           class="input input-bordered input-accent w-full max-w-xs py-2 px-4 bg-gray-100 mt-1 rounded border border-gray-300"
+                           autoFocus/>
+                </label>
+                <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500"></p>
+            </div>
+            <div class="form-control mt-3">
+                <label class="label text-gray-700">
+                    제한 수량:
+                </label>
+                <label>
+                    <input type="number" id="limitCount" name="limitCount" required min="100" th:field="*{limitCount}" placeholder="제한수량을 입력해주세요"
+                           class="input input-bordered input-accent w-full max-w-xs py-2 px-4 bg-gray-100 mt-1 rounded border border-gray-300"
+                           autoFocus/>
+                </label>
+                <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500"></p>
+            </div>
+            <div class="form-control mt-3">
+                <label class="label text-gray-700">
+                    최소 주문금액:
+                </label>
+                <label>
+                    <input type="number" id="minimumPurchaseAmount" name="minimumPurchaseAmount" required min="100" placeholder="최소 주문금액을 입력해주세요."
+                           th:field="*{minimumPurchaseAmount}"
+                           class="input input-bordered input-accent w-full max-w-xs py-2 px-4 bg-gray-100 mt-1 rounded border border-gray-300"
+                           autoFocus/>
+                </label>
+            </div>
+            <div class="form-control mt-3">
+                <label class="label text-gray-700">
+                    할인률(%):
+                </label>
+                <label>
+                    <input type="number" id="discountPercent" name="discountPercent" required min="5" max="95" placeholder="할인률(%)을 입력해주세요."
+                           th:field="*{discountPercent}"
+                           class="input input-bordered input-accent w-full max-w-xs py-2 px-4 bg-gray-100 mt-1 rounded border border-gray-300"
+                           autoFocus/>
+                </label>
+                <p th:if="${#fields.hasErrors('discountPercent')}" th:errors="*{discountPercent}"
+                   class="text-red-500"></p>
+            </div>
+            <div class="form-control mt-3">
+                <h3>
+                    <span class="label-text">쿠폰사용 유효기간 타입을 선택하세요 !</span>
+                </h3>
+                <div class="btn-group mt-3">
+                    <label class="mr-2">
+                        <input type="radio" id="PERIOD" th:field="*{expirationType}" name="PERIOD" value="PERIOD"
+                               class="radio radio-success" autoFocus/>
+                    </label><label class="mr-2">날짜 직접설정</label>
+                    <label class="mr-2">
+                        <input type="radio" id="AFTER_DATE" th:field="*{expirationType}" name="AFTER_DATE"
+                               value="AFTER_DATE" class="radio radio-success"/>
+                    </label><label class="mr-2">발급날로부터의 기간설정</label>
+                </div>
+                <div id="AFTER-DATE-SELECT" data-type-1="AFTER_DATE" class="hidden">
+                    <h3>
+                        <span class="label-text">쿠폰발급 후 사용 유효기간을 입력해주세요 !</span>
+                    </h3>
+                    <label class="block mt-2 text-sm text-gray-600">유효기간:</label>
+                    <label>
+                        <input type="number" name="issueAfterDate" th:field="*{issueAfterDate}" required min="1" placeholder="발급 후 유효기간을 입력해주세요."
+                               class="input input-bordered input-accent w-full max-w-xs py-2 px-4 bg-gray-100 mt-2 rounded border border-gray-300"
+                               autoFocus/>
+                    </label>
+                </div>
 
-    <form th:action="@{/trendpick/coupons/{storeName}/generate(storeName=${storeName})}" method="post" th:object="${couponForm}">
-        <div class="mb-4">
-            <label for="name" class="block mb-2">쿠폰 이름:</label>
-            <input type="text" id="name" name="name" required th:field="*{name}" class="border border-gray-300 px-4 py-2 rounded-md w-full">
-            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500"></p>
-        </div>
-        <div class="mb-4">
-            <label for="limitCount" class="block mb-2">제한 수량:</label>
-            <input type="number" id="limitCount" name="limitCount" required min="100" th:field="*{limitCount}" class="border border-gray-300 px-4 py-2 rounded-md w-full">
-            <p th:if="${#fields.hasErrors('limitCount')}" th:errors="*{limitCount}" class="text-red-500"></p>
-        </div>
-        <div class="mb-4">
-            <label for="discountPercent" class="block mb-2">할인률 (%):</label>
-            <input type="number" id="discountPercent" name="discountPercent" required min="5" max="95" th:field="*{discountPercent}" class="border border-gray-300 px-4 py-2 rounded-md w-full">
-            <p th:if="${#fields.hasErrors('discountPercent')}" th:errors="*{discountPercent}" class="text-red-500"></p>
-        </div>
-        <div class="mb-4">
-            <label for="startDate" class="block mb-2">시작 날짜:</label>
-            <input type="datetime-local" id="startDate" name="startDate" required th:field="*{startDate}" class="border border-gray-300 px-4 py-2 rounded-md w-full">
-            <p th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}" class="text-red-500"></p>
-        </div>
-        <div class="mb-4">
-            <label for="endDate" class="block mb-2">마감 날짜:</label>
-            <input type="datetime-local" id="endDate" name="endDate" required th:field="*{endDate}" class="border border-gray-300 px-4 py-2 rounded-md w-full">
-            <p th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" class="text-red-500"></p>
-        </div>
-        <div class="mt-8">
-            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">쿠폰 생성</button>
-        </div>
-    </form>
+                <div class="form-control hidden" id="PERIOD-SELECT">
+                    <h3>
+                        <span class="label-text">쿠폰카드의 시작날짜와 마감날짜를 정해주세요 !</span>
+                    </h3>
+                    <div class="mb-2">
+                        <label for="startDate" class="block mb-2">시작 날짜:</label>
+                        <input type="datetime-local" id="startDate" name="startDate" required th:field="*{startDate}"
+                               class="border border-gray-300 px-4 py-2 rounded-md w-full">
+                        <p th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}" class="text-red-500"></p>
+                    </div>
+                    <div class="mb-2">
+                        <label for="endDate" class="block mb-2">마감 날짜:</label>
+                        <input type="datetime-local" id="endDate" name="endDate" required th:field="*{endDate}"
+                               class="border border-gray-300 px-4 py-2 rounded-md w-full">
+                        <p th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" class="text-red-500"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-control mt-2">
+                <button id="btn-join-1 w-min"
+                        class="btn w-full py-2 bg-black text-white rounded hover:bg-black-700 transition duration-200 ease-in-out">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>쿠폰생성</span>
+                </button>
+            </div>
+        </form>
+    </div>
 
     <script>
-        window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', function () {
             var startDateInput = document.getElementById('startDate');
             var endDateInput = document.getElementById('endDate');
             var submitButton = document.getElementById('submitButton');
 
-            // 다음 날 오전 0시의 Date 객체 생성 (한국 시간대 기준)
-            var tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0);
-
-            // UTC 기준의 시간을 한국 시간대로 변환
-            var timezoneOffset = tomorrow.getTimezoneOffset() * 60000;
-            tomorrow = new Date(tomorrow.getTime() + timezoneOffset);
-
-            // 시작 날짜 필드에 기본값으로 다음 날 0시 설정 (한국 시간대 기준)
-            startDateInput.value = tomorrow.toISOString().slice(0, 16);
-
             // 날짜 선택 이벤트 처리
-            startDateInput.addEventListener('change', function() {
+            startDateInput.addEventListener('change', function () {
                 var selectedDate = new Date(this.value);
                 var today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -73,8 +144,35 @@
                 }
             });
 
-            endDateInput.addEventListener('change', function() {
+            endDateInput.addEventListener('change', function () {
                 submitButton.disabled = false;
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('input[type=radio][name="expirationType"]').change(function () {
+                if (this.value === 'PERIOD') {
+                    $('#PERIOD-SELECT').show();
+                    $('#startDate').prop('required', true);
+                    $('#endDate').prop('required', true);
+                } else {
+                    $('#PERIOD-SELECT').hide();
+                    $('#startDate').prop('required', false);
+                    $('#endDate').prop('required', false);
+                }
+
+                if (this.value === 'AFTER_DATE') {
+                    $('#AFTER-DATE-SELECT').show();
+                    $('#issueAfterDate').prop('required', true);
+                    $('#issueAfterDate').prop('min', '1');
+
+                } else {
+                    $('#AFTER-DATE-SELECT').hide();
+                    $('#issueAfterDate').prop('required', false);
+                    $('#issueAfterDate').prop('min', '');
+                }
             });
         });
     </script>
