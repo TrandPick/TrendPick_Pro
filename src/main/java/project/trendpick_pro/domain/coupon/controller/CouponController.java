@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
 import project.trendpick_pro.domain.coupon.service.CouponService;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 @Controller
 @RequestMapping("/trendpick/coupons")
@@ -20,24 +20,24 @@ public class CouponController {
     private final CouponService couponService;
     private final Rq rq;
 
-    @GetMapping("/{storeName}/issue")
-    public String issue(@PathVariable("storeName") String storeName, StoreCouponSaveRequest storeCouponSaveRequest, Model model) {
+    @GetMapping("/{storeName}/generate")
+    public String generate(@PathVariable("storeName") String storeName, StoreCouponSaveRequest storeCouponSaveRequest, Model model) {
         model.addAttribute("couponForm", storeCouponSaveRequest);
         model.addAttribute("storeName", storeName);
-        return "trendpick/store/coupon/issue";
+        return "/trendpick/store/coupon/generate";
     }
 
-    @PostMapping("/{storeName}/issue")
-    public String issue(@PathVariable("storeName") String storeName, @Valid StoreCouponSaveRequest storeCouponSaveRequest) throws UnsupportedEncodingException {
-        RsData<String> result = couponService.issue(storeName, storeCouponSaveRequest);
+    @PostMapping("/{storeName}/generate")
+    public String generate(@PathVariable("storeName") String storeName, @Valid StoreCouponSaveRequest storeCouponSaveRequest) throws UnsupportedEncodingException {
+        RsData<String> result = couponService.generate(storeName, storeCouponSaveRequest);
         if (result.isFail())
             return rq.historyBack(result);
-        return rq.redirectWithMsg("/trendpick/coupons/%s/list".formatted(storeName), "쿠폰이 성공적으로 발급되었습니다.");
+        return rq.redirectWithMsg("/trendpick/coupons/store/%s/list".formatted(storeName), "쿠폰이 성공적으로 발급되었습니다.");
     }
 
-    @GetMapping("/{storeName}/list")
-    public String list(@PathVariable("storeName") String storeName, Model model){
-
-        return "trendpick/store/coupon/list";
+    @GetMapping("/list")
+    public String allCoupons(Model model){
+        model.addAttribute("coupons", couponService.findAllCoupons());
+        return "trendpick/coupons/list";
     }
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>쿠폰 </title>
+</head>
+<body>
+<main layout:fragment="main" class="bg-white">
+    <div class="grid grid-flow-row-dense grid-cols-4 gap-4 m-2">
+        <div th:each="coupon, stat : ${coupons}">
+            <div class="card bg-base-80 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <span><i class="fa-regular fa-credit-card"></i></span>
+                        <span th:text="${coupon.couponName}"></span>
+                    </h3>
+                    <div th:if="${coupon.minimumPurchaseAmount != null}">
+                        <div class="badge" th:text="${coupon.formattedMinimumPurchaseAmount}"></div>
+                        이상 구매시
+                        <div class="badge" th:text="${coupon.discountPercent} +'%'"></div>
+                        할인
+                    </div>
+                    <span class="text-red-400"
+                          th:text="${#temporals.format(coupon.issueDeadLine, 'YY.MM.dd') + ' 11:59까지 발급 가능'}"></span>
+
+                    <div class="text-gray-500 text-sm mt-2">
+                        <div th:if="${coupon.issueAfterDate == null}">
+                            <span>유효기간 |</span>
+                            <span class="text-red-400"
+                                  th:text="${#temporals.format(coupon.couponCardStartDate, 'YY.MM.dd')}"></span>
+                            ~
+                            <span class="text-red-400"
+                                  th:text="${#temporals.format(coupon.couponCardEndDate, 'YY.MM.dd')}"></span>
+                        </div>
+                        <div th:unless="${coupon.issueAfterDate == null}">
+                            <span>유효기간 |</span>
+                            <span>발급일 기준</span>
+                            <span class="text-red-400"
+                                  th:text="${coupon.issueAfterDate} +'일'"></span>
+                        </div>
+                        <div>
+                            <span>남은개수 |</span>
+                            <span class="text-red-400" th:text="${coupon.remaining}"></span>
+                        </div>
+                        <form class="card-actions justify-end" th:action="@{|/trendpick/usr/couponCards/${coupon.couponId}/issue|}"
+                              method="POST">
+                            <button type="submit" class="btn btn-sm btn-outline">
+                                <i class="fa-solid fa-circle-down"></i>
+                                쿠폰받기
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</main>
+</body>
+</html>
