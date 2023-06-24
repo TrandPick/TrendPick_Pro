@@ -16,6 +16,10 @@ import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
+import project.trendpick_pro.domain.coupon.entity.Coupon;
+import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
+import project.trendpick_pro.domain.coupon.repository.CouponRepository;
+import project.trendpick_pro.domain.coupon.service.CouponService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
@@ -26,6 +30,9 @@ import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
+import project.trendpick_pro.domain.store.entity.Store;
+import project.trendpick_pro.domain.store.repository.StoreRepository;
+import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
@@ -70,7 +77,10 @@ public class BaseData {
             RecommendService recommendService,
             ProductService productService,
             ProductRepository productRepository,
-            ReviewRepository reviewRepository
+            ReviewRepository reviewRepository,
+            CouponRepository couponRepository,
+            StoreRepository storeRepository
+
     ) {
         return new CommandLineRunner() {
             @Override
@@ -85,6 +95,7 @@ public class BaseData {
                 int productCount = 100;
                 int reviewCount = 100;
                 int cartCount = 10;
+                int couponCount = 50;
                 String brandName = "polo";
 
                 SaveAllSubCategories(mainCategoryService, subCategoryService);
@@ -96,7 +107,7 @@ public class BaseData {
 
                 saveReviews(reviewCount, productCount, filePath, memberService, productService ,reviewRepository);
                 saveCarts(cartCount, productCount, cartService, memberService);
-
+                saveStoreCoupon(couponCount, storeRepository, couponRepository, brandService);
                 log.info("BASE_DATA_SUCCESS");
             }
         };
@@ -268,6 +279,31 @@ public class BaseData {
             reviews.add(Review.of(rr, memberService.findByEmail("trendpick@naver.com").get(), product, commonFile));
         }
         reviewRepository.saveAll(reviews);
+    }
+    private void saveStoreCoupon(int couponCount, StoreRepository storeRepository, CouponRepository couponRepository, BrandService brandService){
+        List<Coupon> coupons = new ArrayList<>();
+        for(int i=1; i<couponCount; i++){
+            int limitCount = (int) (Math.random() * 200)+ 100;
+            int limitIssueDate = (int) (Math.random() * 360) + 1;
+            int minimumPurchaseAmount = (int) (Math.random() * 50000) + 1000;
+            int discountPercent = (int) (Math.random() * 90) + 5;
+            int issueAfterDate = (int) (Math.random() * 20) + 7;
+            long result = (long) (Math.random() * 7) + 1L;
+            Store store = storeRepository.findById(result + 1L).get();
+            StoreCouponSaveRequest storeCouponSaveRequest = new StoreCouponSaveRequest(
+                    "쿠폰" + i,
+                    limitCount,
+                    limitIssueDate,
+                    minimumPurchaseAmount,
+                    discountPercent,
+                    "ISSUE_AFTER_DATE",
+                    null,
+                    null,
+                    issueAfterDate
+            );
+            coupons.add(Coupon.generate(store, storeCouponSaveRequest));
+        }
+        couponRepository.saveAll(coupons);
     }
 
     private void SaveAllSubCategories(MainCategoryService mainCategoryService, SubCategoryService subCategoryService) {
