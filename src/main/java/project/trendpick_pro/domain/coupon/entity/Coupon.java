@@ -41,12 +41,16 @@ public class Coupon extends BaseTimeEntity {
     @Column(name = "limit_issue_date", nullable = false)
     private int limitIssueDate;
 
+    @Column(name = "minimum_purchase_amount")
+    private Integer minimumPurchaseAmount;
+
     @Builder
-    private Coupon(Store store, String name, int limitCount, int limitIssueDate, int discountPercent, ExpirationPeriod expirationPeriod) {
+    private Coupon(Store store, String name, int limitCount, int limitIssueDate,Integer minimumPurchaseAmount, int discountPercent, ExpirationPeriod expirationPeriod) {
         this.store = store;
-        this.name = name;
+        this.name = "["+store.getBrand()+"]"+" "+name;
         this.limitCount = limitCount;
         this.limitIssueDate = limitIssueDate;
+        this.minimumPurchaseAmount = minimumPurchaseAmount;
         this.discountPercent = discountPercent;
         this.expirationPeriod = expirationPeriod;
         this.issueCount = 0;
@@ -59,6 +63,7 @@ public class Coupon extends BaseTimeEntity {
                 .name(storeCouponSaveRequest.getName())
                 .limitCount(storeCouponSaveRequest.getLimitCount())
                 .limitIssueDate(storeCouponSaveRequest.getLimitIssueDate())
+                .minimumPurchaseAmount(storeCouponSaveRequest.getMinimumPurchaseAmount())
                 .discountPercent(storeCouponSaveRequest.getDiscountPercent())
                 .build();
         coupon.assignExpirationPeriod(storeCouponSaveRequest);
