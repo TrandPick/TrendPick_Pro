@@ -37,20 +37,20 @@ public class ExpirationPeriod {
     }
 
     //스토어쿠폰이 만들어질때
-    public static ExpirationPeriod assignIssueAfterDate(Integer issueAfterDate){
-        return new ExpirationPeriod(ExpirationType.ISSUE_AFTER_DATE, issueAfterDate, null ,null);
+    public static ExpirationPeriod assignIssueAfterDate(Integer issueAfterDate) {
+        return new ExpirationPeriod(ExpirationType.ISSUE_AFTER_DATE, issueAfterDate, null, null);
     }
 
     //스토어쿠폰이 만들어질때
-    public static ExpirationPeriod assignPeriod(LocalDateTime startDate, LocalDateTime endDate){
+    public static ExpirationPeriod assignPeriod(LocalDateTime startDate, LocalDateTime endDate) {
         return new ExpirationPeriod(ExpirationType.PERIOD, null, startDate, endDate);
     }
 
     //만들어진 쿠폰을 회원이 발급받을때
-    public ExpirationPeriod CopyExpirationPeriod(){
-        if(this.expirationType == ExpirationType.PERIOD)
-            return new ExpirationPeriod(ExpirationType.ISSUE_AFTER_DATE, null, LocalDateTime.now(), LocalDateTime.now().plusDays(this.getIssueAfterDate()));
-        return new ExpirationPeriod(ExpirationType.PERIOD, null, this.getStartDate(), this.getEndDate());
+    public ExpirationPeriod CopyExpirationPeriod() {
+        if (this.expirationType == ExpirationType.PERIOD)
+            return new ExpirationPeriod(ExpirationType.PERIOD, null, this.getStartDate(), this.getEndDate());
+        return new ExpirationPeriod(ExpirationType.ISSUE_AFTER_DATE, null, LocalDateTime.now(), LocalDateTime.now().plusDays(this.getIssueAfterDate()));
     }
 
 

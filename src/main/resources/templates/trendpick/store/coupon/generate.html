@@ -78,11 +78,11 @@
                                class="radio radio-success" autoFocus/>
                     </label><label class="mr-2">날짜 직접설정</label>
                     <label class="mr-2">
-                        <input type="radio" id="AFTER_DATE" th:field="*{expirationType}" name="AFTER_DATE"
-                               value="AFTER_DATE" class="radio radio-success"/>
+                        <input type="radio" id="ISSUE_AFTER_DATE" th:field="*{expirationType}" name="ISSUE_AFTER_DATE"
+                               value="ISSUE_AFTER_DATE" class="radio radio-success"/>
                     </label><label class="mr-2">발급날로부터의 기간설정</label>
                 </div>
-                <div id="AFTER-DATE-SELECT" data-type-1="AFTER_DATE" class="hidden">
+                <div id="AFTER-DATE-SELECT" data-type-1="ISSUE_AFTER_DATE" class="hidden">
                     <h3>
                         <span class="label-text">쿠폰발급 후 사용 유효기간을 입력해주세요 !</span>
                     </h3>
@@ -163,7 +163,7 @@
                     $('#endDate').prop('required', false);
                 }
 
-                if (this.value === 'AFTER_DATE') {
+                if (this.value === 'ISSUE_AFTER_DATE') {
                     $('#AFTER-DATE-SELECT').show();
                     $('#issueAfterDate').prop('required', true);
                     $('#issueAfterDate').prop('min', '1');

@@ -10,10 +10,10 @@
         <div th:each="coupon, stat : ${coupons}">
             <div class="card bg-base-80 shadow-xl">
                 <div class="card-body">
-                    <h2 class="card-title">
-                        <span><i class="fa-brands fa-instagram"></i></span>
+                    <h3 class="card-title">
+                        <span><i class="fa-regular fa-credit-card"></i></span>
                         <span th:text="${coupon.couponName}"></span>
-                    </h2>
+                    </h3>
                     <div th:if="${coupon.minimumPurchaseAmount != null}">
                         <div class="badge" th:text="${coupon.formattedMinimumPurchaseAmount}"></div>
                         이상 구매시
@@ -42,15 +42,13 @@
                             <span>남은개수 |</span>
                             <span class="text-red-400" th:text="${coupon.remaining}"></span>
                         </div>
-                        <div class="card-actions justify-end">
-                            <a class="btn btn-sm btn-outline">
-                                <i class="fa-solid fa-pen-to-square"></i>
+                        <form class="card-actions justify-end" th:action="@{|/trendpick/usr/couponCards/${coupon.couponId}/issue|}"
+                              method="POST">
+                            <button type="submit" class="btn btn-sm btn-outline">
+                                <i class="fa-solid fa-circle-down"></i>
                                 쿠폰받기
-                            </a>
-                            <form hidden th:action="@{|/trendpick/usr/couponCards/${coupon.couponId}/issue|}"
-                                  method="POST">
-                            </form>
-                        </div>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
