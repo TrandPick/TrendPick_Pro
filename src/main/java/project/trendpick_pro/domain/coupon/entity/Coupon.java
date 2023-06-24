@@ -83,8 +83,6 @@ public class Coupon extends BaseTimeEntity {
     }
 
     public boolean validateLimitIssueDate(){
-        return LocalDateTime.now().isBefore(this.getCreatedDate().plusDays(this.limitIssueDate));
+        return LocalDateTime.now().isAfter(this.getCreatedDate().plusDays(this.limitIssueDate));
     }
-
-
 }

@@ -28,6 +28,6 @@ public class CouponCardService {
             return RsData.of("F-2", "쿠폰 발급 가능 날짜가 지났습니다.");
 
         CouponCard savedCouponCard = couponCardRepository.save(CouponCard.of(coupon, member));
-        return RsData.of("S-1", "쿠폰이 발급되었습니다.", savedCouponCard);
+        return RsData.of("S-1", "%s 쿠폰이 발급되었습니다.".formatted(coupon.getName()), savedCouponCard);
     }
 }

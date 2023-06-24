@@ -38,7 +38,7 @@ public class CouponService {
     private static RsData<String> validateExpirationPeriod(StoreCouponSaveRequest storeCouponSaveRequest) {
         if (storeCouponSaveRequest.getExpirationType().equals(ExpirationType.ISSUE_AFTER_DATE.getValue())) {
             if (storeCouponSaveRequest.getIssueAfterDate() == null)
-                return RsData.of("F-4", "쿠폰발급 후 유효기간을 설정하셔야 합니다.");
+                return RsData.of("F-4", "발급된 이후의 유효기간을 설정하셔야 합니다.");
 
             return RsData.of("S-2", "유효기간 검증 성공");
         }

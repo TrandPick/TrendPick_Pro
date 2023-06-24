@@ -17,10 +17,11 @@ import project.trendpick_pro.global.rsData.RsData;
 public class CouponCardController {
     private final Rq rq;
     private final CouponCardService couponCardService;
-    @PostMapping("/{couponId}}/issue")
+    @PostMapping("/{couponId}/issue")
     public String issue(@PathVariable("couponId") Long couponId){
         RsData<CouponCard> result = couponCardService.issue(rq.getMember(), couponId);
-
-        return rq.historyBack(result);
+        if(result.isFail())
+            return rq.historyBack(result);
+        return rq.redirectWithMsg("/trendpick/coupons/list", result);
     }
 }
