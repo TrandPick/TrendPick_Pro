@@ -14,4 +14,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     @Query("UPDATE Product p SET p.price = :newPrice WHERE p.id = :productId")
     void updatePrice(@Param("productId") Long productId, @Param("newPrice") int newPrice);
     Page<Product> findAll(Pageable pageable);
+
+    @Query("SELECT p FROM Product p JOIN FETCH p.brand WHERE p.id = :productId")
+    Product findByIdWithBrand(@Param("productId") Long productId);
 }

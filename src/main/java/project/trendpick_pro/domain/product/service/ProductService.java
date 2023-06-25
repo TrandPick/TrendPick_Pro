@@ -279,4 +279,8 @@ public class ProductService {
     public Product findById(Long id) {
         return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
     }
+
+    public Product findByIdWithBrand(Long productId) {
+        return productRepository.findByIdWithBrand(productId);
+    }
 }
