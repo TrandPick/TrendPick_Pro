@@ -12,6 +12,8 @@ import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
+import project.trendpick_pro.domain.store.entity.Store;
+import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.dto.request.TagRequest;
 import project.trendpick_pro.global.rsData.RsData;
@@ -27,6 +29,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final RecommendService recommendService;
+    private final StoreService storeService;
 
     private final BrandService brandService;
 
@@ -57,8 +60,10 @@ public class MemberService {
                 .build();
         member.connectBrand(brand);
 
-        if(brand.length() != 0)
-            brandService.save(brand);
+        if(brand.length() != 0 && !brandService.isPresent(brand)){
+                brandService.save(brand);
+                storeService.save(new Store(brand));
+        }
 
         if (joinForm.tags() != null) {
             Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();
@@ -102,8 +107,10 @@ public class MemberService {
                     .build();
             member.connectBrand(brand);
 
-            if(brand.length() != 0)
+            if(brand.length() != 0 && !brandService.isPresent(brand)){
                 brandService.save(brand);
+                storeService.save(new Store(brand));
+            }
 
             if (joinForm.tags() != null) {
                 Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();

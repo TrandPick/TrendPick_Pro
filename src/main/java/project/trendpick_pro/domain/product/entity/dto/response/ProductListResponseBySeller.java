@@ -26,9 +26,14 @@ public class ProductListResponseBySeller {
     private int reviewCount;
     private int ask;
 
+    private int discountRate;
+
+    private int discountedPrice;
+
     @Builder
     @QueryProjection
-    public ProductListResponseBySeller(Long id, String name, String mainFile, int price, int stock, LocalDateTime createdDate, int saleCount, double rateAvg, int reviewCount, int ask) {
+    public ProductListResponseBySeller(Long id, String name, String mainFile, int price, int stock, LocalDateTime createdDate,
+                                       int saleCount, double rateAvg, int reviewCount, int ask, double discountRate, int discountedPrice) {
         this.id = id;
         this.name = name;
         this.mainFile = mainFile;
@@ -39,6 +44,8 @@ public class ProductListResponseBySeller {
         this.rateAvg = rateAvg;
         this.reviewCount = reviewCount;
         this.ask = ask;
+        this.discountRate = (int) discountRate;
+        this.discountedPrice = discountedPrice;
     }
 
     public String getFormattedPrice(){

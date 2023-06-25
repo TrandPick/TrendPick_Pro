@@ -10,13 +10,13 @@ import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.delivery.entity.DeliveryState;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.notification.entity.Notification;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "orders")
 public class Order extends BaseTimeEntity {
@@ -26,7 +26,7 @@ public class Order extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -34,6 +34,9 @@ public class Order extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<CartItem> cartItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Notification> notifications = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id")
@@ -114,5 +117,23 @@ public class Order extends BaseTimeEntity {
         for (OrderItem orderItem : this.orderItems) {
             orderItem.getProduct().addStock(orderItem.getQuantity());
         }
+    }
+
+    public String getOrderState(){
+        return switch (status.getValue()){
+            case "ORDERED"->"결제완료";
+            case "CANCELED"->"주문취소";
+            default -> "미결제";
+        };
+    }
+
+    public String getDeliveryState(){
+        return switch (delivery.getState().getValue()){
+            case "DELIVERY_ING"->"배송중";
+            case "COMPLETED"->"배송완료";
+            case "DELIVERY_CANCELED"->"환불신청";
+            case "ORDER_CANCELED"->"배송전취소";
+            default -> "준비중";
+        };
     }
 }

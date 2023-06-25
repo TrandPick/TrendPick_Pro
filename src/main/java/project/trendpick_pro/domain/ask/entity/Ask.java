@@ -40,7 +40,7 @@ public class Ask extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private AskStatus status;
 
-    @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Answer> answerList = new ArrayList<>();
 
@@ -61,5 +61,9 @@ public class Ask extends BaseTimeEntity {
     }
     public void changeStatus(){
         this.status = AskStatus.COMPLETED;
+    }
+
+    public void changeStatusYet() {
+        this.status = AskStatus.YET;
     }
 }

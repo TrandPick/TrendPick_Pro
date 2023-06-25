@@ -54,13 +54,18 @@
                 return;
             }
 
-            if (form.mainFile.files.length === 0) {
-                toastWarning('파일을 선택해주세요.');
+            var mainFileInput = document.getElementById('mainFile');
+            var subFilesInput = document.getElementById('subFiles');
+
+            if (mainFileInput.files.length === 0) {
+                toastWarning('메인 이미지 파일을 선택해주세요.');
+                mainFileInput.focus();
                 return;
             }
 
-            if (form.subFiles.files.length === 0) {
-                toastWarning('파일을 선택해주세요.');
+            if (subFilesInput.files.length === 0) {
+                toastWarning('서브 이미지 파일들을 선택해주세요.');
+                subFilesInput.focus();
                 return;
             }
 
