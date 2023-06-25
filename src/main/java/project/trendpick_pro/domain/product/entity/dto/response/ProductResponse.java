@@ -3,7 +3,7 @@ package project.trendpick_pro.domain.product.entity.dto.response;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.Product;
@@ -12,7 +12,7 @@ import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductResponse {
 

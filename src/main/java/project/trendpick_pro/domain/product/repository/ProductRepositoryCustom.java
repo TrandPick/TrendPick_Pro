@@ -15,4 +15,6 @@ public interface ProductRepositoryCustom {
     public List<ProductByRecommended> findRecommendProduct(String username);
 
     public Page<ProductListResponseBySeller> findAllBySeller(String brand, Pageable pageable);
+
+    public Page<ProductListResponse> findAllByKeyword(ProductSearchCond cond, Pageable pageable);
 }

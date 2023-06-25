@@ -5,8 +5,9 @@ import lombok.Getter;
 @Getter
 public class ProductSearchCond {
 
-    private final String mainCategory;
-    private final String subCategory;
+    private String mainCategory;
+    private String subCategory;
+    private String keyword;
     private Integer sortCode;
 
     public ProductSearchCond(String mainCategory, String subCategory, Integer sortCode) {
@@ -18,5 +19,9 @@ public class ProductSearchCond {
     public ProductSearchCond(String mainCategory, String subCategory) {
         this.mainCategory = mainCategory;
         this.subCategory = subCategory;
+    }
+
+    public ProductSearchCond(String keyword) {
+        this.keyword = keyword;
     }
 }
