@@ -83,9 +83,6 @@
                     </label><label class="mr-2">발급날로부터의 기간설정</label>
                 </div>
                 <div id="AFTER-DATE-SELECT" data-type-1="ISSUE_AFTER_DATE" class="hidden">
-                    <h3>
-                        <span class="label-text">쿠폰발급 후 사용 유효기간을 입력해주세요 !</span>
-                    </h3>
                     <label class="block mt-2 text-sm text-gray-600">유효기간:</label>
                     <label>
                         <input type="number" name="issueAfterDate" th:field="*{issueAfterDate}" required min="1" placeholder="발급 후 유효기간을 입력해주세요."
@@ -95,9 +92,6 @@
                 </div>
 
                 <div class="form-control hidden" id="PERIOD-SELECT">
-                    <h3>
-                        <span class="label-text">쿠폰카드의 시작날짜와 마감날짜를 정해주세요 !</span>
-                    </h3>
                     <div class="mb-2">
                         <label for="startDate" class="block mb-2">시작 날짜:</label>
                         <input type="datetime-local" id="startDate" name="startDate" required th:field="*{startDate}"
