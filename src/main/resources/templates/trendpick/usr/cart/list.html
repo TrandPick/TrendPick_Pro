@@ -43,7 +43,7 @@
 </head>
 <body>
 <main layout:fragment="main"
-      class="h-screen w-screen bg-white flex flex-col pb-4 container mx-auto my-8 p-6 bg-white rounded shadow"
+      class="min-h-screen w-screen bg-white flex flex-col pb-4 container mx-auto my-8 p-6 bg-white rounded shadow"
       style="max-width: 100%; flex-grow: 1;">
 
     <h2 class="text-3xl font-bold mb-8">장바구니</h2>
@@ -104,6 +104,8 @@
         </tr>
         </tbody>
     </table>
+    <br/><br/>
+
     <form th:action="@{/trendpick/orders/order/cart}" method="get" id="cartForm">
         <input type="hidden" id="selectedItemsInput" name="selectedItems">
         <div class="mt-8 flex justify-end items-center">
@@ -112,6 +114,7 @@
             <button type="submit" class="bg-black text-white rounded-lg px-8 py-2 ml-8" onclick="submitCartForm(this.form)">구매하기</button>
         </div>
     </form>
+    <br/><br/>
 
     <script>
         // 수량 변경 시 결제 금액 업데이트

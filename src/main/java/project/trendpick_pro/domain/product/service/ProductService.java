@@ -35,6 +35,7 @@ import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
 import project.trendpick_pro.global.rsData.RsData;
+//import project.trendpick_pro.global.search.service.SearchService;
 
 import java.io.IOException;
 import java.util.*;
@@ -56,6 +57,7 @@ public class ProductService {
     private final TagService tagService;
 
     private final Rq rq;
+//    private final SearchService searchService;
 
     private final AmazonS3 amazonS3;
 
@@ -89,8 +91,9 @@ public class ProductService {
         Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile);
         product.addTag(tags);
 
-        productRepository.save(product);
-        return RsData.of("S-1", "상품 등록이 완료되었습니다.", product.getId());
+        Product saveProduct = productRepository.save(product);
+//        searchService.createProduct(saveProduct);
+        return RsData.of("S-1", "상품 등록이 완료되었습니다.", saveProduct.getId());
     }
 
     @Transactional
@@ -118,6 +121,7 @@ public class ProductService {
         tagService.delete(product.getTags());
         product.modifyTag(tags);
         product.update(productSaveRequest, mainFile);
+//        searchService.modifyProduct(product);
         return RsData.of("S-1", "상품 수정 완료되었습니다.", product.getId());
     }
 
@@ -126,11 +130,12 @@ public class ProductService {
         rq.getAdmin();
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         fileTranslator.deleteFile(product.getFile());
+//        searchService.deleteProduct(product);
         productRepository.delete(product);
     }
 
     @Transactional
-    public ProductResponse show(Long productId) {
+    public ProductResponse getProduct(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
 
@@ -142,11 +147,10 @@ public class ProductService {
         return ProductResponse.of(product);
     }
 
-    public ProductListResponse getProduct(Long productId) {
+    public ProductListResponse getProducts(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         return ProductListResponse.of(product);
     }
-
 
     private void updateFavoriteTag(Product product) {
         Member member = rq.getMember();
@@ -154,7 +158,7 @@ public class ProductService {
             favoriteTagService.updateTag(member, product, TagType.SHOW);
     }
 
-    public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory) {
+    public Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory) {
 
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
         PageRequest pageable = PageRequest.of(offset, 18);
@@ -162,7 +166,24 @@ public class ProductService {
         Page<ProductListResponse> listResponses = productRepository.findAllByCategoryId(cond, pageable);
 
         List<ProductListResponse> list = listResponses.getContent().stream()
-                .map(product -> getProduct(product.getId()))
+                .map(product -> getProducts(product.getId()))
+                .peek(product -> {
+                    String updatedMainFile = product.getMainFile();
+                    product.setMainFile(updatedMainFile);
+                }).toList();
+
+        return new PageImpl<>(list, pageable, listResponses.getTotalElements());
+    }
+
+    public Page<ProductListResponse> findAllByKeyword(String keyword, int offset) {
+
+        ProductSearchCond cond = new ProductSearchCond(keyword);
+        PageRequest pageable = PageRequest.of(offset, 18);
+
+        Page<ProductListResponse> listResponses = productRepository.findAllByKeyword(cond, pageable);
+
+        List<ProductListResponse> list = listResponses.getContent().stream()
+                .map(product -> getProducts(product.getId()))
                 .peek(product -> {
                     String updatedMainFile = product.getMainFile();
                     product.setMainFile(updatedMainFile);

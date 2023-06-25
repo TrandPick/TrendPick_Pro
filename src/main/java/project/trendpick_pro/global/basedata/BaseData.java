@@ -1,5 +1,6 @@
 package project.trendpick_pro.global.basedata;
 
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -19,7 +20,6 @@ import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
 import project.trendpick_pro.domain.coupon.repository.CouponRepository;
-import project.trendpick_pro.domain.coupon.service.CouponService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
@@ -32,7 +32,6 @@ import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 import project.trendpick_pro.domain.review.repository.ReviewRepository;
 import project.trendpick_pro.domain.store.entity.Store;
 import project.trendpick_pro.domain.store.repository.StoreRepository;
-import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
@@ -79,7 +78,8 @@ public class BaseData {
             ProductRepository productRepository,
             ReviewRepository reviewRepository,
             CouponRepository couponRepository,
-            StoreRepository storeRepository
+            StoreRepository storeRepository,
+            EntityManager em
 
     ) {
         return new CommandLineRunner() {
@@ -91,6 +91,11 @@ public class BaseData {
                 memberService.saveAll(makeBrandMembers(brands));
                 mainCategoryService.saveAll(mainCategories);
 
+                em.flush();
+                em.clear();
+
+                SaveAllSubCategories(mainCategoryService, subCategoryService);
+
                 int memberCount = 10;
                 int productCount = 100;
                 int reviewCount = 100;
@@ -98,7 +103,6 @@ public class BaseData {
                 int couponCount = 50;
                 String brandName = "polo";
 
-                SaveAllSubCategories(mainCategoryService, subCategoryService);
                 saveMembers(memberCount, tagNameService, memberService, recommendService);
                 saveUniqueMembers(memberService, brandName);
 
@@ -108,6 +112,7 @@ public class BaseData {
                 saveReviews(reviewCount, productCount, filePath, memberService, productService ,reviewRepository);
                 saveCarts(cartCount, productCount, cartService, memberService);
                 saveStoreCoupon(couponCount, storeRepository, couponRepository, brandService);
+
                 log.info("BASE_DATA_SUCCESS");
             }
         };

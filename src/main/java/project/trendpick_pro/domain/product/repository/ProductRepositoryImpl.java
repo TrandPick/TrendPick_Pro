@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import project.trendpick_pro.domain.ask.entity.QAsk;
+import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.dto.response.*;
 
@@ -93,29 +94,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         return list;
     }
 
-    private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {
-        return mainCategory.name.eq(cond.getMainCategory());
-    }
-
-    private static BooleanExpression subCategoryEq(ProductSearchCond cond) {
-        if (cond.getSubCategory().equals("전체")) {
-            return null;
-        } else {
-            return subCategory.name.eq(cond.getSubCategory());
-        }
-    }
-
-    private static OrderSpecifier<?>
-    orderSelector(Integer sortCode) {
-        return switch (sortCode) {
-            case 2 -> product.id.asc();
-            case 3 -> product.rateAvg.desc(); //평점
-            case 4 -> product.rateAvg.asc();
-            case 5 -> product.reviewCount.desc(); //리뷰수
-            default -> product.id.desc();
-        };
-    }
-
     @Override
     public Page<ProductListResponseBySeller> findAllBySeller(String brand, Pageable pageable) {
         List<ProductListResponseBySeller> list = queryFactory
@@ -148,5 +126,70 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .where(product.brand.name.eq(brand));
 
         return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
+    }
+
+    @Override
+    public Page<ProductListResponse> findAllByKeyword(ProductSearchCond cond, Pageable pageable) {
+        List<ProductListResponse> result = queryFactory
+                .select(new QProductListResponse(
+                        product.id,
+                        product.name,
+                        brand.name,
+                        commonFile.fileName,
+                        product.price)
+                )
+                .from(product)
+                .leftJoin(product.mainCategory, mainCategory)
+                .leftJoin(product.subCategory, subCategory)
+                .leftJoin(product.brand, brand)
+                .leftJoin(product.file, commonFile)
+                .where(
+                        product.name.contains(cond.getKeyword())
+                    .or(brand.name.contains(cond.getKeyword()))
+                    .or(mainCategory.name.contains(cond.getKeyword()))
+                    .or(subCategory.name.contains(cond.getKeyword()))
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> count = queryFactory
+                .select(product.count())
+                .from(product)
+                .leftJoin(product.mainCategory, mainCategory)
+                .leftJoin(product.subCategory, subCategory)
+                .leftJoin(product.brand, brand)
+                .leftJoin(product.file, commonFile)
+                .where(
+                        product.name.contains(cond.getKeyword())
+                                .or(brand.name.contains(cond.getKeyword()))
+                                .or(mainCategory.name.contains(cond.getKeyword()))
+                                .or(subCategory.name.contains(cond.getKeyword()))
+                );
+
+        return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
+    }
+
+    private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {
+        return mainCategory.name.eq(cond.getMainCategory());
+    }
+
+    private static BooleanExpression subCategoryEq(ProductSearchCond cond) {
+        if (cond.getSubCategory().equals("전체")) {
+            return null;
+        } else {
+            return subCategory.name.eq(cond.getSubCategory());
+        }
+    }
+
+    private static OrderSpecifier<?>
+    orderSelector(Integer sortCode) {
+        return switch (sortCode) {
+            case 2 -> product.id.asc();
+            case 3 -> product.rateAvg.desc(); //평점
+            case 4 -> product.rateAvg.asc();
+            case 5 -> product.reviewCount.desc(); //리뷰수
+            default -> product.id.desc();
+        };
     }
 }

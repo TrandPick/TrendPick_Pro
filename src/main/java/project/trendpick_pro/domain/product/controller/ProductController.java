@@ -23,7 +23,6 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductDiscountResponse;
 import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
 import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -130,7 +129,7 @@ public class ProductController {
     @PreAuthorize("permitAll()")
     @GetMapping("/{productId}")
     public String showProduct(@PathVariable Long productId, Pageable pageable, ProductOptionForm productOptionForm, Model model) {
-        model.addAttribute("productResponse", productService.show(productId));
+        model.addAttribute("productResponse", productService.getProduct(productId));
         model.addAttribute("ProductOptionForm", productOptionForm);
         Page<ReviewProductResponse> productReviews = reviewService.getProductReviews(productId, pageable);
         Page<AskResponse> productAsk = askService.showAsksByProduct(productId, 0);
@@ -156,7 +155,7 @@ public class ProductController {
             if (member.isEmpty()) {
                 model.addAttribute("subCategoryName", "전체");
                 model.addAttribute("mainCategoryName", "전체");
-                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+                model.addAttribute("productResponses", productService.getProducts(offset, mainCategory, subCategory));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
                 model.addAttribute("subCategoryName", "전체");
@@ -171,7 +170,7 @@ public class ProductController {
         } else {
             model.addAttribute("subCategoryName", subCategory);
             model.addAttribute("mainCategoryName", mainCategory);
-            model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+            model.addAttribute("productResponses", productService.getProducts(offset, mainCategory, subCategory));
             model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
         }
         return "trendpick/products/list";
