@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 
 @Entity
 @Getter
@@ -29,19 +29,27 @@ public class OrderItem {
     @Column(name = "order_price", nullable = false)
     private int orderPrice;
 
+    @Column(name = "size", nullable = false)
+    private String size;
+
+    @Column(name = "color", nullable = false)
+    private String color;
+
     @Column(name = "count", nullable = false)
     private int quantity;
 
-    private OrderItem(Product product,  int quantity) {
+    private OrderItem(Product product,  int quantity, String size, String color) {
         this.product = product;
         if(product.getDiscountedPrice() > 0){
             this.orderPrice = product.getDiscountedPrice();
         }else{
-            this.orderPrice = product.getPrice();
+            this.orderPrice = product.getProductOption().getPrice();
         }
         this.quantity = quantity;
+        this.size = size;
+        this.color = color;
 
-        product.removeStock(quantity);
+        product.getProductOption().decreaseStock(quantity);
     }
 
     public void modifyQuantity(int quantity) {
@@ -49,15 +57,15 @@ public class OrderItem {
     }
 
     public static OrderItem of(Product product, OrderItemDto orderItemDto) {
-        return new OrderItem(product, orderItemDto.getQuantity());
+        return new OrderItem(product, orderItemDto.getQuantity(), orderItemDto.getSize(), orderItemDto.getColor());
     }
 
-    public static OrderItem of(Product product, int quantity) {
-        return new OrderItem(product, quantity);
+    public static OrderItem of(Product product, int quantity, String size, String color) {
+        return new OrderItem(product, quantity, size, color);
     }
 
     public static OrderItem of(Product product, CartItem cartItem) {
-        return new OrderItem(product, cartItem.getQuantity());
+        return new OrderItem(product, cartItem.getQuantity(), cartItem.getSize(), cartItem.getColor());
     }
 
     public void connectOrder(Order order) {
@@ -65,7 +73,7 @@ public class OrderItem {
     }
 
     public void cancel() {
-        this.product.addStock(quantity);
+        this.product.getProductOption().increaseStock(quantity);
     }
 
     public int getTotalPrice() {

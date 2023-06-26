@@ -115,7 +115,7 @@ public class Order extends BaseTimeEntity {
         this.status = OrderStatus.CANCELED;
         this.delivery.canceledDelivery();
         for (OrderItem orderItem : this.orderItems) {
-            orderItem.getProduct().addStock(orderItem.getQuantity());
+            orderItem.getProduct().getProductOption().increaseStock(orderItem.getQuantity());
         }
     }
 
