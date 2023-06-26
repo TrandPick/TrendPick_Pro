@@ -2,7 +2,7 @@ package project.trendpick_pro.domain.tags.tag.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 
 @Entity
 @Getter
