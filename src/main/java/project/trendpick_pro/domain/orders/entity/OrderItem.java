@@ -34,7 +34,11 @@ public class OrderItem {
 
     private OrderItem(Product product,  int quantity) {
         this.product = product;
-        this.orderPrice = product.getPrice();
+        if(product.getDiscountedPrice() > 0){
+            this.orderPrice = product.getDiscountedPrice();
+        }else{
+            this.orderPrice = product.getPrice();
+        }
         this.quantity = quantity;
 
         product.removeStock(quantity);

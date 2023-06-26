@@ -42,7 +42,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.name,
                         brand.name,
                         commonFile.fileName,
-                        product.price)
+                        product.price,
+                        product.discountRate,
+                        product.discountedPrice
+                        )
                 )
                 .from(product)
                 .leftJoin(product.mainCategory, mainCategory)
@@ -136,7 +139,10 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.name,
                         brand.name,
                         commonFile.fileName,
-                        product.price)
+                        product.price,
+                        product.discountRate,
+                        product.discountedPrice
+                        )
                 )
                 .from(product)
                 .leftJoin(product.mainCategory, mainCategory)

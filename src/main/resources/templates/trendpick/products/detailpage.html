@@ -42,8 +42,17 @@
             <div class="badge my-2"><span th:text="${productResponse.brand}"></span></div>
             <p class="mb-4" th:text="${productResponse.description}"></p>
             <div class="mb-8">
-                <div>가격: <span class="text-orange-600 font-bold text-lg"
-                               th:text="${#numbers.formatDecimal(productResponse.price, 0, 'COMMA', 0, 'POINT')} + ' 원'">Price</span>
+                <div>가격:
+                    <span
+                          th:text="${#numbers.formatDecimal(productResponse.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"
+                          th:class="${productResponse.discountRate > 0 ? 'text-black' : 'text-orange-600 font-bold text-lg'}"
+                          th:style="${productResponse.discountRate > 0 ? 'text-decoration: line-through;' : ''}">
+                        Price
+                    </span><br>
+                    <div class="font-bold text-xl" th:if="${productResponse.discountRate > 0 && productResponse.discountedPrice > 0}">
+                        <span class="text-orange-600" th:text="${productResponse.discountRate} + '%'"></span>
+                        <span th:text="${#numbers.formatDecimal(productResponse.discountedPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span>
+                    </div>
                 </div>
             </div>
             <div class="flex flex-col space-y-2" th:if="${@rq.checkLogin()} and !${@rq.checkAdmin()}">

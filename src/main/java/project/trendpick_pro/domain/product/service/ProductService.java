@@ -272,7 +272,9 @@ public class ProductService {
                 product.getName(),
                 product.getBrand().getName(),
                 product.getFile().getFileName(),
-                product.getPrice()
+                product.getPrice(),
+                product.getDiscountRate(),
+                product.getDiscountedPrice()
         );
     }
 

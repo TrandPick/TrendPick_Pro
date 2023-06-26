@@ -15,14 +15,20 @@ public class ProductListResponse {
     private String mainFile;
     private int price;
 
+    private int discountRate;
+
+    private int discountedPrice;
+
     @Builder
     @QueryProjection
-    public ProductListResponse(Long id, String name, String brand, String mainFile, int price) {
+    public ProductListResponse(Long id, String name, String brand, String mainFile, int price, double discountRate, int discountedPrice) {
         this.id = id;
         this.name = name;
         this.brand = brand;
         this.mainFile = mainFile;
         this.price = price;
+        this.discountRate = (int) discountRate;
+        this.discountedPrice = discountedPrice;
     }
 
     public static ProductListResponse of(Product product) {
@@ -32,6 +38,8 @@ public class ProductListResponse {
                 .brand(product.getBrand().getName())
                 .mainFile(product.getFile().getFileName())
                 .price(product.getPrice())
+                .discountedPrice(product.getDiscountedPrice())
+                .discountRate(product.getDiscountRate())
                 .build();
     }
 
