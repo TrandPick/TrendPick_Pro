@@ -103,7 +103,7 @@
         }
     </script>
 
-    <form id="productSaveRequest" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data"
+    <form id="productSaveRequest" th:object="${productRequest}" method="post" enctype="multipart/form-data"
           class="m-8 p-6 bg-white shadow-md rounded-md" onsubmit="ProductSaveRequest__submit(this); return false;">
         <h2 class="text-2xl font-semibold mb-6">Register New Product</h2>
 
@@ -155,13 +155,51 @@
         <!-- Main Image -->
         <div class="mb-4">
             <label for="mainFile" class="block text-gray-600 font-semibold mb-2">Main Image</label>
-            <input type="file" id="mainFile" name="mainFile" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <input type="file" id="mainFile" name="mainFile" class="shadow file-input file-input-bordered w-full max-w-xs">
         </div>
 
         <!-- Sub Images -->
         <div class="mb-4">
             <label for="subFiles" class="block text-gray-600 font-semibold mb-2">Sub Images (여러장 선택하세요!)</label>
-            <input type="file" id="subFiles" name="subFiles" multiple="multiple" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <input type="file" id="subFiles" name="subFiles" multiple="multiple" class="shadow file-input file-input-bordered w-full max-w-xs">
+        </div>
+
+        <div class="mb-4">
+            <label for="sizes" class="block text-gray-600 font-semibold mb-2">Sizes</label>
+            <div class="daisy-checkbox-group" id="sizes">
+                <label for="size1" class="daisy-checkbox">
+                    <input type="checkbox" id="size1" name="sizes" value="S" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">S</span>
+                </label>
+                <label for="size2" class="daisy-checkbox">
+                    <input type="checkbox" id="size2" name="sizes" value="M" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">M</span>
+                </label>
+                <label for="size3" class="daisy-checkbox">
+                    <input type="checkbox" id="size3" name="sizes" value="L" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">L</span>
+                </label>
+                <!-- 추가적인 사이즈 옵션을 여기에 추가할 수 있습니다 -->
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="colors" class="block text-gray-600 font-semibold mb-2">Colors</label>
+            <div class="daisy-checkbox-group"  id="colors">
+                <label for="color1" class="daisy-checkbox">
+                    <input type="checkbox" id="color1" name="colors" value="Red" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">Red</span>
+                </label>
+                <label for="color2" class="daisy-checkbox">
+                    <input type="checkbox" id="color2" name="colors" value="Blue" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">Blue</span>
+                </label>
+                <label for="color3" class="daisy-checkbox">
+                    <input type="checkbox" id="color3" name="colors" value="Green" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">Green</span>
+                </label>
+                <!-- 추가적인 색상 옵션을 여기에 추가할 수 있습니다 -->
+            </div>
         </div>
 
         <!-- Price -->
