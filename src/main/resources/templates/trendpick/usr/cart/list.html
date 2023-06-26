@@ -87,9 +87,9 @@
             </td>
 
             <td class="px-4 py-3 text-center">
-                <form class="card-actions justify-start" id="couponForm">
-                    <input type="hidden" name="productId" th:value="${productResponse.id}"/>
-                    <button type="submit" class="btn btn-sm btn-outline" onclick="submitCouponForm(event)">
+                <form class="card-actions justify-start" th:id="'couponForm-' + ${item.id}">
+                    <input type="hidden" name="productId" th:value="${item.product.id}"/>
+                    <button type="submit" class="btn btn-sm btn-outline" th:attr="onclick=|submitCouponForm(event, ${item.id})|">
                         <i class="fa-solid fa-circle-down"></i>
                         쿠폰받기
                     </button>
@@ -247,9 +247,9 @@
             // 총 주문 수량 업데이트
             document.getElementById('totalCount').innerText = totalCount;
         }
-        function submitCouponForm(event) {
+        function submitCouponForm(event, itemId) {
             event.preventDefault();
-            var form = document.getElementById("couponForm");
+            var form = document.getElementById("couponForm-" + itemId);
             var productId = form.querySelector("[name='productId']").value;
             var url = '/trendpick/coupons/box?productId=' + productId;
             window.open(url, 'couponWindow', 'width=800,height=600,scrollbars=yes');
