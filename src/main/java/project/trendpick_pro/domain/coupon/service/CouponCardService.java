@@ -21,10 +21,14 @@ public class CouponCardService {
         Coupon coupon = couponRepository.findById(couponId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 쿠폰입니다.")
         );
-        
-        if(coupon.validateLimitCount())
+
+        int count = couponCardRepository.countByCouponIdAndMemberId(couponId, member.getId());
+        if(count > 0)
+            return RsData.of("F-3", "이미 발급 받으신 쿠폰입니다.");
+
+        if(!coupon.validateLimitCount())
             return RsData.of("F-1", "수량이 모두 소진되었습니다.");
-        if(coupon.validateLimitIssueDate())
+        if(!coupon.validateLimitIssueDate())
             return RsData.of("F-2", "쿠폰 발급 가능 날짜가 지났습니다.");
 
         CouponCard savedCouponCard = couponCardRepository.save(CouponCard.of(coupon, member));
