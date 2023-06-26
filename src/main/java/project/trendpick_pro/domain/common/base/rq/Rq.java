@@ -152,7 +152,7 @@ public class Rq {
         }
     }
 
-    public Boolean CheckBrand() {
+    public Boolean checkBrand() {
         return getLogin().getRole().equals(RoleType.BRAND_ADMIN);
     }
 
