@@ -28,10 +28,14 @@ public class ProductResponse {
     private int stock;
     private List<Tag> tags = new ArrayList<>();
 
+    private int discountRate;
+
+    private int discountedPrice;
+
     @Builder
     @QueryProjection
     public ProductResponse(Long id, String name, String mainCategory, String subCategory, String brand, String description,
-                           String mainFile, List<String> subFiles, int price, int stock, List<Tag> tags) {
+                           String mainFile, List<String> subFiles, int price, int stock, List<Tag> tags, double discountRate, int discountedPrice) {
         this.id = id;
         this.name = name;
         this.mainCategory = mainCategory;
@@ -43,6 +47,8 @@ public class ProductResponse {
         this.price = price;
         this.stock = stock;
         this.tags = tags;
+        this.discountRate = (int) discountRate;
+        this.discountedPrice = discountedPrice;
     }
 
     public static ProductResponse of (Product product) {
@@ -58,6 +64,8 @@ public class ProductResponse {
                 .price(product.getPrice())
                 .stock(product.getStock())
                 .tags(new ArrayList<>(product.getTags()))
+                .discountedPrice(product.getDiscountedPrice())
+                .discountRate(product.getDiscountRate())
                 .build();
     }
 

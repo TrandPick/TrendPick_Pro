@@ -40,7 +40,15 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 <div class="badge"><span th:text="${product.brand}"></span></div>
-                                <div><span class="text-orange-600 font-bold" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span></div>
+                                <div><span
+                                        th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"
+                                        th:class="${product.discountRate > 0 ? 'text-black' : 'text-orange-600 font-bold'}"
+                                        th:style="${product.discountRate > 0 ? 'text-decoration: line-through;' : ''}"></span><br>
+                                    <div class="font-bold" th:if="${product.discountRate > 0 && product.discountedPrice > 0}">
+                                        <span class="text-orange-600" th:text="${product.discountRate} + '%'"></span>
+                                        <span th:text="${#numbers.formatDecimal(product.discountedPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-actions" sec:authorize="isAuthenticated()">
                                 <div th:if="${@rq.checkLogin()}">
