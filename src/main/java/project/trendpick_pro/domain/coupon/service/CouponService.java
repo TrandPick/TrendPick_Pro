@@ -70,11 +70,14 @@ public class CouponService {
         return responses;
     }
 
-    public  List<Coupon> findCouponsByProduct(Long productId) {
+    public  List<SimpleCouponResponse> findCouponsByProduct(Long productId) {
         Product product = productService.findByIdWithBrand(productId);
 
-        List<Coupon> coupons = couponRepository.findAllByBrand(product.getBrand().getName());
-        return filteredCoupons(coupons, product);
+        List<Coupon> coupons = filteredCoupons(couponRepository.findAllByBrand(product.getBrand().getName()), product);
+        List<SimpleCouponResponse> responses = new ArrayList<>();
+        for(Coupon coupon : coupons)
+            responses.add(SimpleCouponResponse.of(coupon));
+        return responses;
     }
 
     private List<Coupon> filteredCoupons(List<Coupon> coupons, Product product) {

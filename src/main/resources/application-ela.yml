@@ -1,12 +1,12 @@
-spring:
-  data:
-    elasticsearch:
-      client:
-        rest:
-          uris: ${elasticKey.uris}
-          cluster-nodes: ${elasticKey.uris}
-          username: ${elasticKey.username}
-          password: ${elasticKey.password}
-logging.level:
-    org:
-      elasticsearch: debug
+#spring:
+#  data:
+#    elasticsearch:
+#      client:
+#        rest:
+#          uris: ${elasticKey.uris}
+#          cluster-nodes: ${elasticKey.uris}
+#          username: ${elasticKey.username}
+#          password: ${elasticKey.password}
+#logging.level:
+#    org:
+#      elasticsearch: debug
