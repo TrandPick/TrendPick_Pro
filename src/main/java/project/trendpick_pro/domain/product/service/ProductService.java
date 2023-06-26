@@ -23,10 +23,13 @@ import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
-import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
-import project.trendpick_pro.domain.product.entity.dto.response.*;
+import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
+import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.product.dto.response.*;
+import project.trendpick_pro.domain.product.entity.productOption.ProductOption;
+import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
@@ -35,6 +38,7 @@ import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
 import project.trendpick_pro.global.rsData.RsData;
+//import project.trendpick_pro.global.search.service.SearchService;
 
 import java.io.IOException;
 import java.util.*;
@@ -56,6 +60,7 @@ public class ProductService {
     private final TagService tagService;
 
     private final Rq rq;
+//    private final SearchService searchService;
 
     private final AmazonS3 amazonS3;
 
@@ -66,9 +71,12 @@ public class ProductService {
     private String filePath;
 
     @Transactional
-    public RsData<Long> register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public RsData<Long> register(ProductRequest request, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        rq.getAdmin();
+        rq.checkAdmin();
+
+        ProductSaveRequest productSaveRequest = request.getRequest1();
+        ProductOptionSaveRequest optionSaveRequest = request.getRequest2();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
         List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
@@ -77,7 +85,7 @@ public class ProductService {
             mainFile.connectFile(subFile);
         }
 
-        Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+        Set<Tag> tags = new LinkedHashSet<>();
         for (String tagName : productSaveRequest.getTags()) {
             tags.add(new Tag(tagName));
         }
@@ -86,19 +94,24 @@ public class ProductService {
         SubCategory subCategory = subCategoryService.findByName(productSaveRequest.getSubCategory());
         Brand brand = brandService.findByName(productSaveRequest.getBrand());
 
-        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile);
+        ProductOption productOption = ProductOption.of(optionSaveRequest);
+        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile, productOption);
         product.addTag(tags);
 
-        productRepository.save(product);
-        return RsData.of("S-1", "상품 등록이 완료되었습니다.", product.getId());
+        Product saveProduct = productRepository.save(product);
+//        searchService.createProduct(saveProduct);
+        return RsData.of("S-1", "상품 등록이 완료되었습니다.", saveProduct.getId());
     }
 
     @Transactional
-    public RsData<Long> modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public RsData<Long> modify(Long productId, ProductRequest productRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        rq.getAdmin();
+        rq.checkAdmin();
 
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
+        ProductSaveRequest productSaveRequest = productRequest.getRequest1();
+        ProductOptionSaveRequest optionSaveRequest = productRequest.getRequest2();
+
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
 
         fileTranslator.deleteFile(product.getFile());
         product.disconnectFile();
@@ -110,14 +123,15 @@ public class ProductService {
             mainFile.connectFile(subFile);
         }
 
-        Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+        Set<Tag> tags = new LinkedHashSet<>();
         for (String tagName : productSaveRequest.getTags()) {
             tags.add(new Tag(tagName));
         }
 
         tagService.delete(product.getTags());
         product.modifyTag(tags);
-        product.update(productSaveRequest, mainFile);
+        product.update(productSaveRequest, optionSaveRequest, mainFile);
+//        searchService.modifyProduct(product);
         return RsData.of("S-1", "상품 수정 완료되었습니다.", product.getId());
     }
 
@@ -126,13 +140,14 @@ public class ProductService {
         rq.getAdmin();
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         fileTranslator.deleteFile(product.getFile());
+//        searchService.deleteProduct(product);
         productRepository.delete(product);
     }
 
     @Transactional
-    public ProductResponse show(Long productId) {
+    public ProductResponse getProduct(Long productId) {
 
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
 
         if(rq.checkLogin()){
             if(rq.checkMember()){
@@ -142,11 +157,10 @@ public class ProductService {
         return ProductResponse.of(product);
     }
 
-    public ProductListResponse getProduct(Long productId) {
+    public ProductListResponse getProducts(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         return ProductListResponse.of(product);
     }
-
 
     private void updateFavoriteTag(Product product) {
         Member member = rq.getMember();
@@ -154,7 +168,7 @@ public class ProductService {
             favoriteTagService.updateTag(member, product, TagType.SHOW);
     }
 
-    public Page<ProductListResponse> showAll(int offset, String mainCategory, String subCategory) {
+    public Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory) {
 
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
         PageRequest pageable = PageRequest.of(offset, 18);
@@ -162,7 +176,24 @@ public class ProductService {
         Page<ProductListResponse> listResponses = productRepository.findAllByCategoryId(cond, pageable);
 
         List<ProductListResponse> list = listResponses.getContent().stream()
-                .map(product -> getProduct(product.getId()))
+                .map(product -> getProducts(product.getId()))
+                .peek(product -> {
+                    String updatedMainFile = product.getMainFile();
+                    product.setMainFile(updatedMainFile);
+                }).toList();
+
+        return new PageImpl<>(list, pageable, listResponses.getTotalElements());
+    }
+
+    public Page<ProductListResponse> findAllByKeyword(String keyword, int offset) {
+
+        ProductSearchCond cond = new ProductSearchCond(keyword);
+        PageRequest pageable = PageRequest.of(offset, 18);
+
+        Page<ProductListResponse> listResponses = productRepository.findAllByKeyword(cond, pageable);
+
+        List<ProductListResponse> list = listResponses.getContent().stream()
+                .map(product -> getProducts(product.getId()))
                 .peek(product -> {
                     String updatedMainFile = product.getMainFile();
                     product.setMainFile(updatedMainFile);
@@ -251,7 +282,9 @@ public class ProductService {
                 product.getName(),
                 product.getBrand().getName(),
                 product.getFile().getFileName(),
-                product.getPrice()
+                product.getProductOption().getPrice(),
+                product.getDiscountRate(),
+                product.getDiscountedPrice()
         );
     }
 

@@ -49,6 +49,8 @@
                 <th class="text-center" scope="col">번호</th>
                 <th></th>
                 <th class="text-center" scope="col">상품명</th>
+                <th class="text-center" scope="col">사이즈</th>
+                <th class="text-center" scope="col">색상</th>
                 <th class="text-center" scope="col">주문수량</th>
                 <th class="text-center" scope="col">주문금액</th>
             </tr>
@@ -62,6 +64,12 @@
                 </td>
                 <td class="text-center">
                     <span class="text-center" id="Product" th:text="${orderItem.product.name}"></span>
+                </td>
+                <td class="text-center">
+                    <span class="text-center" th:text="${orderItem.size}"></span>
+                </td>
+                <td class="text-center">
+                    <span class="text-center" th:text="${orderItem.color}"></span>
                 </td>
                 <td class="text-center">
                     <span class="text-center" th:text="${orderItem.quantity}"></span>

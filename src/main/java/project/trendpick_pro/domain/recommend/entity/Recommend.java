@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 
 @Entity
 @Getter

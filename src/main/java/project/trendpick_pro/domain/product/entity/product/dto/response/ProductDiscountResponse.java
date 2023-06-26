@@ -1,16 +1,11 @@
-package project.trendpick_pro.domain.product.entity.dto.response;
+package project.trendpick_pro.domain.product.entity.product.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.trendpick_pro.domain.common.file.CommonFile;
-import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.tags.tag.entity.Tag;
-
-import java.util.ArrayList;
-import java.util.List;
+import project.trendpick_pro.domain.product.entity.product.Product;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,7 +29,7 @@ public class ProductDiscountResponse {
         return ProductDiscountResponse.builder()
                 .discountRate(product.getDiscountRate())
                 .discountedPrice(product.getDiscountedPrice())
-                .price(product.getPrice())
+                .price(product.getProductOption().getPrice())
                 .build();
     }
 }

@@ -39,6 +39,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
                         orderItem.order.modifiedDate,
+                        orderItem.size,
+                        orderItem.color,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )
@@ -74,6 +76,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
                         orderItem.order.modifiedDate,
+                        orderItem.size,
+                        orderItem.color,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )
@@ -97,6 +101,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
                         orderItem.order.modifiedDate,
+                        orderItem.size,
+                        orderItem.color,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )

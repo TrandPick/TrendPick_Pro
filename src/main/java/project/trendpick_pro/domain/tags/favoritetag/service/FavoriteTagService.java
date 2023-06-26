@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.favoritetag.repository.FavoriteTagRepository;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tags.tag.repository.TagRepository;

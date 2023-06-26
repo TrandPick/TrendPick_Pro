@@ -1,10 +1,10 @@
 tag:
-  오버핏청바지, 시티보이룩, 스포티캐주얼, 빈티지룩, 프레피스타일,
-  미니멀리스트, 로맨틱룩, 로커룩, 힙합룩, 데님스타일,
-  스트릿패션, 빅사이즈룩, 오가닉패션, 애슬레저룩, 비즈니스캐주얼,
-  테일러드룩, 코지니트, 밀리터리룩, 고딕패션, 펑크룩,
-  레트로스타일, 베이직룩, 컬러풀패션, 모노톤스타일, 럭셔리룩,
-  블랙스타일, 루즈핏패션, 크롭트스타일, 블레이저룩, 코디로이패션
+  오버핏, 시티보이, 스포티 캐주얼, 빈티지, 프레피,
+  미니멀, 로맨틱, 로커, 힙합, 데님, 크롭, 포켓, 워크웨어, 아메카지,
+  스트릿, 오가닉, 애슬레저, 비즈니스 캐주얼, 유니섹스, 꾸안꾸, 레더,
+  테일러드, 코지니트, 밀리터리, 고딕, 펑크, 꽃무늬, 체크, 포멀,
+  레트로, 베이직, 컬러풀, 모노톤, 럭셔리, 투톤, 레이어드, 캐주얼 오피스,
+  블랙, 루즈핏, 블레이저, 코디로이, 사파리, 스트라이프, 플리츠 스커트, 레이스
 
 main-category:
   추천, 상의, 아우터, 하의, 신발, 가방, 악세서리
@@ -26,3 +26,20 @@ brand:
   urbanstoff, Toppy, mahagrid, Tommy Hilfiger, MIDNIGHT BLUE, Buberry, A.P.C, ADIDAS,
   NewBalance, Jerusalen, WOOALONG, MLB, 1507, CALVIN KLEIN, RECLOW, CodeGraphy, Yale, MMLG,
   Louis Vuitton, Gucci, Chanel, Dior, Prada, Hermès, Versace, Armani, Burberry, Yves Saint Laurent
+
+colors:
+  Ivory, Beige, Ivory, Beige, Nude ,Camel, Blush, Peach, Coral, Salmon, Dusty Rose, Rose Gold, Baby Pink,
+  Bubblegum Pink, Hot Pink, Fuchsia, Raspberry, Cherry Red, Burgundy, Wine, Maroon, Plum, Lavender, Lilac, 
+  Periwinkle, Sky Blue, Baby Blue, Powder Blue, Mint Green, Sage Green, Olive Green, Forest Green, Emerald Green,
+  Teal, Turquoise, Aqua, Navy Blue, Royal Blue, Cobalt Blue, Denim Blue, Indigo, Slate Gray, Charcoal Gray, Silver, 
+  Platinum, Pearl White, Snow White, Off-White, Cream, Champagne, Gold, Bronze, Copper, Mustard Yellow, Lemon Yellow,
+  Sunshine Yellow, Canary Yellow, Orange, Rust, Burnt Orange, Terracotta, Caramel, Chocolate Brown, Coffee Brown, Tan,
+  Khaki, Army Green, Moss Green, Fern Green, Olive Brown, Ochre, Coral Pink, Watermelon Pink, Magenta, Orchid, Mauve, 
+  Violet, Grape Purple, Amethyst, Eggplant Purple, Dusty Blue, Steel Blue, Slate Blue, Smoky Gray, Gunmetal Gray, Pewter Gray, 
+  Rose Quartz, Serenity Blue, Butter Yellow, Pistachio Green, Jade Green, Lime Green, Apple Green, Chartreuse, Canary Yellow,
+  Paprika Red, Cardinal Red, True Red, Tomato Red, Coral Orange, Blush Pink, Dusty Pink
+
+sizes:
+  tops: 80, 85, 90, 95, 100, 105, 110
+  bottoms: 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35
+  shoes: 230, 235, 240, 245, 250, 255, 260, 265, 270, 275, 280

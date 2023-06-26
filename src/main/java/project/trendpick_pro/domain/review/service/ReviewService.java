@@ -13,7 +13,7 @@ import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;

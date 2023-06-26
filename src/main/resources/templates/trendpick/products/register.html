@@ -103,81 +103,134 @@
         }
     </script>
 
-    <form id="productSaveRequest" th:object="${productSaveRequest}" method="post" enctype="multipart/form-data"
-          class="m-4" onsubmit="ProductSaveRequest__submit(this); return false;">
+    <form id="productSaveRequest" th:object="${productRequest}" method="post" enctype="multipart/form-data"
+          class="m-8 p-6 bg-white shadow-md rounded-md" onsubmit="ProductSaveRequest__submit(this); return false;">
+        <h2 class="text-2xl font-semibold mb-6">Register New Product</h2>
+
+        <!-- Product Name -->
         <div class="mb-4">
-            <label for="name" class="block text-gray-700 font-bold mb-2">Name</label>
-            <input type="text" id="name" name="name" class="shadow input-accent appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <label for="name" class="block text-gray-600 font-semibold mb-2">Title</label>
+            <input type="text" id="name" name="name" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
 
+        <!-- Description -->
         <div class="mb-4">
-            <label for="description" class="block text-gray-700 font-bold mb-2">Description</label>
-            <textarea id="description" name="description" class="textarea-accent shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+            <label for="description" class="block text-gray-600 font-semibold mb-2">Description</label>
+            <textarea id="description" name="description" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
         </div>
 
+        <!-- Main Category -->
         <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2">Main Category</label>
-            <div class="grid grid-cols-3 space-x-1">
-                <div th:each="mainCategory, stat : ${mainCategories}" th:if="${mainCategory.name} != '추천'" class="space-x-1">
-                    <label class="flex items-center" th:class="${stat.count % 3 == 0 ? 'col-start-1' : ''}">
-                        <input required type="radio" id="mainCategory" name="mainCategory" th:value="${mainCategory.name}" class="radio radio-success">
-                        <span th:text="${mainCategory.name}"></span>
+            <label class="block text-gray-600 font-semibold mb-2">Main Category</label>
+            <div class="flex flex-wrap">
+                <div th:each="mainCategory, stat : ${mainCategories}" th:if="${mainCategory.name} != '추천'" class="mr-4 mb-2">
+                    <label class="flex items-center text-gray-700">
+                        <input required type="radio" id="mainCategory" name="mainCategory" th:value="${mainCategory.name}" class="form-radio">
+                        <span class="ml-2" th:text="${mainCategory.name}"></span>
                     </label>
                 </div>
             </div>
         </div>
 
-        <div class="mb-4 gap-4">
-            <label class="block text-gray-700 font-bold mb-2">Sub Category</label>
-            <div th:each="subCategories, stat : ${subCategoriesList}">
-                <label th:each="subCategory : ${subCategories.value}" th:data-type-1="${subCategories.key}" class="hidden">
-                    <input required type="radio" id="subCategory" name="subCategory" th:value="${subCategory.name}" class="radio radio-success">
-                    <span th:text="${subCategory.name}" class="text-gray-700"></span>
+        <!-- Sub Category -->
+        <div class="mb-4">
+            <label class="block text-gray-600 font-semibold mb-2">Sub Category</label>
+            <div class="flex flex-wrap" th:each="subCategories, stat : ${subCategoriesList}">
+                <label th:each="subCategory : ${subCategories.value}" th:data-type-1="${subCategories.key}" class="hidden mr-4 mb-2">
+                    <input required type="radio" id="subCategory" name="subCategory" th:value="${subCategory.name}" class="form-radio">
+                    <span class="ml-2 text-gray-700" th:text="${subCategory.name}"></span>
                 </label>
             </div>
         </div>
 
-        <label class="block text-gray-700 font-bold mb-2">Brand</label>
-        <div>
-            <label for="brand">
-                <input type="radio" id="brand" name="brand" th:value="${brands.name}" class="radio radio-success" checked="checked">
-                <span th:text="${brands.name}" class="text-gray-700"></span>
+        <!-- Brand -->
+        <div class="mb-4">
+            <label class="block text-gray-600 font-semibold mb-2">Brand</label>
+            <label class="flex items-center text-gray-700">
+                <input type="radio" id="brand" name="brand" th:value="${brands.name}" class="form-radio" checked="checked">
+                <span class="ml-2" th:text="${brands.name}"></span>
             </label>
         </div>
 
+        <!-- Main Image -->
         <div class="mb-4">
-            <label for="mainFile" class="block text-gray-700 font-bold mb-2">Main Image</label>
-            <input type="file" id="mainFile" name="mainFile" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+            <label for="mainFile" class="block text-gray-600 font-semibold mb-2">Main Image</label>
+            <input type="file" id="mainFile" name="mainFile" class="shadow file-input file-input-bordered w-full max-w-xs">
+        </div>
+
+        <!-- Sub Images -->
+        <div class="mb-4">
+            <label for="subFiles" class="block text-gray-600 font-semibold mb-2">Sub Images (여러장 선택하세요!)</label>
+            <input type="file" id="subFiles" name="subFiles" multiple="multiple" class="shadow file-input file-input-bordered w-full max-w-xs">
         </div>
 
         <div class="mb-4">
-            <label for="subFiles" class="block text-gray-700 font-bold mb-2">Sub Images</label>
-            <input type="file" id="subFiles" name="subFiles" multiple="multiple" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+            <label for="sizes" class="block text-gray-600 font-semibold mb-2">Sizes</label>
+            <div class="daisy-checkbox-group" id="sizes">
+                <label for="size1" class="daisy-checkbox">
+                    <input type="checkbox" id="size1" name="sizes" value="S" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">S</span>
+                </label>
+                <label for="size2" class="daisy-checkbox">
+                    <input type="checkbox" id="size2" name="sizes" value="M" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">M</span>
+                </label>
+                <label for="size3" class="daisy-checkbox">
+                    <input type="checkbox" id="size3" name="sizes" value="L" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">L</span>
+                </label>
+                <!-- 추가적인 사이즈 옵션을 여기에 추가할 수 있습니다 -->
+            </div>
         </div>
 
         <div class="mb-4">
-            <label for="price" class="block text-gray-700 font-bold mb-2">Price</label>
-            <input type="number" id="price" name="price" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+            <label for="colors" class="block text-gray-600 font-semibold mb-2">Colors</label>
+            <div class="daisy-checkbox-group"  id="colors">
+                <label for="color1" class="daisy-checkbox">
+                    <input type="checkbox" id="color1" name="colors" value="Red" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">Red</span>
+                </label>
+                <label for="color2" class="daisy-checkbox">
+                    <input type="checkbox" id="color2" name="colors" value="Blue" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">Blue</span>
+                </label>
+                <label for="color3" class="daisy-checkbox">
+                    <input type="checkbox" id="color3" name="colors" value="Green" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text">Green</span>
+                </label>
+                <!-- 추가적인 색상 옵션을 여기에 추가할 수 있습니다 -->
+            </div>
         </div>
 
+        <!-- Price -->
         <div class="mb-4">
-            <label for="stock" class="block text-gray-700 font-bold mb-2">Stock</label>
-            <input type="number" id="stock" name="stock" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline input-accent">
+            <label for="price" class="block text-gray-600 font-semibold mb-2">Price</label>
+            <input type="number" id="price" name="price" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
 
-        <div class="form-group">
-            <label class="block text-gray-700 font-bold mb-2">Tags</label>
-            <div class="grid grid-cols-5">
-                <div th:each="tag, iterStat : ${tags}" class="col-md-2" >
-                    <input type="checkbox" name="tags" th:value="${tag.name}" class="checkbox checkbox-success"/>
-                    <span th:text="${tag.name}" class="text-gray-700"></span>
-                    <th:block th:if="${iterStat.count % 5 == 0}"><br/></th:block>
+        <!-- Stock -->
+        <div class="mb-4">
+            <label for="stock" class="block text-gray-600 font-semibold mb-2">Stock</label>
+            <input type="number" id="stock" name="stock" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <!-- Tags -->
+        <div class="mb-4">
+            <label class="block text-gray-600 font-semibold mb-2">Tags</label>
+            <div class="flex flex-wrap">
+                <div th:each="tag, iterStat : ${tags}" class="mr-4 mb-2">
+                    <input type="checkbox" name="tags" th:value="${tag.name}" class="form-checkbox text-indigo-600">
+                    <span class="ml-2 text-gray-700" th:text="${tag.name}"></span>
                 </div>
             </div>
         </div>
 
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Register Product</button>
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+            <button class="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded">상품 등록</button>
+        </div>
     </form>
+
 </main>
 </body>
 </html>

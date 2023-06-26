@@ -20,7 +20,7 @@ import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailRespon
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.exceoption.OrderNotFoundException;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
@@ -30,7 +30,6 @@ import project.trendpick_pro.global.rsData.RsData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -64,7 +63,7 @@ public class OrderService {
 
         for (CartItem cartItem : cartItems) {
             Product product = productService.findById(cartItem.getProduct().getId());
-            if (product.getStock() < cartItem.getQuantity()) {
+            if (product.getProductOption().getStock() < cartItem.getQuantity()) {
                 RsData.of("F-2", product.getName()+"의 재고가 부족합니다.");
             }
             favoriteTagService.updateTag(member, product, TagType.ORDER);
@@ -76,10 +75,10 @@ public class OrderService {
     }
 
     @Transactional
-    public RsData<Order> productToOrder(Member member, Long id, int quantity) {
+    public RsData<Order> productToOrder(Member member, Long id, int quantity, String size, String color) {
         try {
             Product product = productService.findById(id);
-            OrderItem orderItem = OrderItem.of(product, quantity);
+            OrderItem orderItem = OrderItem.of(product, quantity, size, color);
             Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
 
             return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));

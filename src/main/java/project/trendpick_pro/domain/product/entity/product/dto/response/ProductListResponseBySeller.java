@@ -1,13 +1,10 @@
-package project.trendpick_pro.domain.product.entity.dto.response;
+package project.trendpick_pro.domain.product.entity.product.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
-import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 @Getter

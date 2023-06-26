@@ -21,11 +21,11 @@ import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
-import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductDiscountResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
-import project.trendpick_pro.domain.product.entity.form.ProductOptionForm;
+import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
+import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.product.dto.response.ProductListResponseBySeller;
+import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewProductResponse;
@@ -64,57 +64,32 @@ public class ProductController {
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("/register")
-    public String registerProduct(@ModelAttribute("productSaveRequest") ProductSaveRequest productSaveRequest, Model model) {
-        model.addAttribute("tags", tagNameService.findAll());
-
-        List<MainCategoryResponse> MainCategories = mainCategoryService.findAll();
-        model.addAttribute("mainCategories", MainCategories);
-
-        Map<String, List<SubCategoryResponse>> subCategoryList = new HashMap<>();
-        for (MainCategoryResponse mainCategoryResponse : MainCategories) {
-            subCategoryList.put(mainCategoryResponse.getName(), subCategoryService.findAll(mainCategoryResponse.getName()));
-        }
-
-        model.addAttribute("subCategoriesList", subCategoryList);
-        model.addAttribute("brands", brandService.findByName(rq.getAdmin().getBrand()));
+    public String registerProduct(@ModelAttribute("ProductRequest") ProductRequest productRequest, Model model) {
+        readyHtml(model);
         return "trendpick/products/register";
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @PostMapping("/register")
-    public String register(@ModelAttribute @Valid ProductSaveRequest productSaveRequest,
+    public String register(@ModelAttribute @Valid ProductRequest productRequest,
                            @RequestParam("mainFile") MultipartFile mainFile,
                            @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
-        log.info("registerProduct: {}", productSaveRequest.toString());
-        RsData<Long> id = productService.register(productSaveRequest, mainFile, subFiles);
+        RsData<Long> id = productService.register(productRequest, mainFile, subFiles);
         return rq.redirectWithMsg("/trendpick/products/" + id.getData(), id.getMsg());
     }
 
     @GetMapping("/edit/{productId}")
-    public String modifyBefore(@PathVariable Long productId, Model model) throws IOException {
-        model.addAttribute("tags", tagNameService.findAll());
-
-        List<MainCategoryResponse> MainCategories = mainCategoryService.findAll();
-        model.addAttribute("mainCategories", MainCategories);
-
-        Map<String, List<SubCategoryResponse>> subCategoryList = new HashMap<>();
-        for (MainCategoryResponse mainCategoryResponse : MainCategories) {
-            subCategoryList.put(mainCategoryResponse.getName(), subCategoryService.findAll(mainCategoryResponse.getName()));
-        }
-
-        model.addAttribute("subCategoriesList", subCategoryList);
-        model.addAttribute("brands", brandService.findAll());
-
-        Product product = productService.findById(productId);
-        model.addAttribute("originProduct", product);
+    public String modifyBefore(@PathVariable Long productId, Model model) {
+        readyHtml(model);
+        model.addAttribute("originProduct", productService.findById(productId));
         return "trendpick/products/modify";
     }
 
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @PostMapping("/edit/{productId}")
-    public String modifyProduct(@PathVariable Long productId, @Valid ProductSaveRequest productSaveRequest, @RequestParam("mainFile") MultipartFile mainFile,
+    public String modifyProduct(@PathVariable Long productId, @Valid ProductRequest productRequest, @RequestParam("mainFile") MultipartFile mainFile,
                                 @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
-        RsData<Long> id = productService.modify(productId, productSaveRequest, mainFile, subFiles);
+        RsData<Long> id = productService.modify(productId, productRequest, mainFile, subFiles);
         return rq.redirectWithMsg("/trendpick/products/" + id.getData(), id.getMsg());
     }
 
@@ -129,13 +104,13 @@ public class ProductController {
 
     @PreAuthorize("permitAll()")
     @GetMapping("/{productId}")
-    public String showProduct(@PathVariable Long productId, Pageable pageable, ProductOptionForm productOptionForm, Model model) {
-        model.addAttribute("productResponse", productService.show(productId));
-        model.addAttribute("ProductOptionForm", productOptionForm);
+    public String showProduct(@PathVariable Long productId, Pageable pageable, Model model) {
+        model.addAttribute("productResponse", productService.getProduct(productId));
         Page<ReviewProductResponse> productReviews = reviewService.getProductReviews(productId, pageable);
         Page<AskResponse> productAsk = askService.showAsksByProduct(productId, 0);
         model.addAttribute("productReview", productReviews);
         model.addAttribute("productAsk", productAsk);
+        model.addAttribute("productRequest", new ProductRequest());
         return "trendpick/products/detailpage";
     }
 
@@ -156,7 +131,7 @@ public class ProductController {
             if (member.isEmpty()) {
                 model.addAttribute("subCategoryName", "전체");
                 model.addAttribute("mainCategoryName", "전체");
-                model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+                model.addAttribute("productResponses", productService.getProducts(offset, mainCategory, subCategory));
                 model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
             } else {
                 model.addAttribute("subCategoryName", "전체");
@@ -171,7 +146,7 @@ public class ProductController {
         } else {
             model.addAttribute("subCategoryName", subCategory);
             model.addAttribute("mainCategoryName", mainCategory);
-            model.addAttribute("productResponses", productService.showAll(offset, mainCategory, subCategory));
+            model.addAttribute("productResponses", productService.getProducts(offset, mainCategory, subCategory));
             model.addAttribute("subCategories", subCategoryService.findAll(mainCategory));
         }
         return "trendpick/products/list";
@@ -193,5 +168,20 @@ public class ProductController {
 //        ProductDiscountResponse productDiscountResponse = ProductDiscountResponse.of(productService.findById(productId));
 //        model.addAttribute("discountProduct", productDiscountResponse);
         return "redirect:/trendpick/products/admin/list?page=0";
+    }
+
+    private void readyHtml(Model model) {
+        model.addAttribute("tags", tagNameService.findAll());
+
+        List<MainCategoryResponse> MainCategories = mainCategoryService.findAll();
+        model.addAttribute("mainCategories", MainCategories);
+
+        Map<String, List<SubCategoryResponse>> subCategoryList = new HashMap<>();
+        for (MainCategoryResponse mainCategoryResponse : MainCategories) {
+            subCategoryList.put(mainCategoryResponse.getName(), subCategoryService.findAll(mainCategoryResponse.getName()));
+        }
+
+        model.addAttribute("subCategoriesList", subCategoryList);
+        model.addAttribute("brands", brandService.findByName(rq.getAdmin().getBrand()));
     }
 }

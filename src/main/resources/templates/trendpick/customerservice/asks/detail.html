@@ -51,7 +51,7 @@
                         <p th:text="${#temporals.format(answer.createdDate, 'YY-MM-dd')}"></p>
                     </div>
                     <div th:if="${@rq.checkLogin()}">
-                        <div class="flex justify-end" th:if="${@rq.CheckBrand()}">
+                        <div class="flex justify-end" th:if="${@rq.checkBrand()}">
                             <form th:action="@{|/trendpick/customerservice/answers/delete/${answer.answerId}|}"
                                   method="post" style="display: inline;">
                                 <input type="hidden" name="_method" value="POST"/>

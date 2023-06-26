@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.orders.entity.Order;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 
 import java.time.LocalDate;
 
@@ -31,7 +31,15 @@ public class CartItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
-    private int quantity; // 해당 상품 수량
+
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
+
+    @Column(name = "size", nullable = false)
+    private String size;
+
+    @Column(name = "color", nullable = false)
+    private String color;
 
     @DateTimeFormat(pattern = "yyyy-mm-dd")
     private LocalDate createDate;
@@ -42,16 +50,20 @@ public class CartItem {
     }
 
     @Builder
-    public CartItem(Cart cart, Product product, int quantity) {
+    public CartItem(Cart cart, Product product, int quantity, String size, String color) {
         this.cart = cart;
         this.product = product;
         this.quantity = quantity;
+        this.size = size;
+        this.color = color;
     }
     public static CartItem of(Cart cart, Product product, CartItemRequest cartItemRequest){
         return CartItem.builder()
                 .cart(cart)
                 .product(product)
                 .quantity(cartItemRequest.getQuantity())
+                .size(cartItemRequest.getSize())
+                .color(cartItemRequest.getColor())
                 .build();
     }
     public void addCount(int quantity){

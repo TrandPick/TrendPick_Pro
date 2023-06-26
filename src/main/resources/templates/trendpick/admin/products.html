@@ -52,7 +52,17 @@
                    th:text="${product.name}">
                 </a>
             </td>
-            <td class="text-center" th:text="${product.formattedPrice}"></td>
+            <td class="text-center">
+                <span th:unless="${product.discountedPrice == null || product.discountedPrice <= 0}">
+                    <span th:text="${product.formattedPrice}" style="text-decoration: line-through;"></span><br>
+                    <span style="margin-left: 5px;">
+                    <span th:text="${#numbers.formatDecimal(product.discountedPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span>
+                    </span>
+                </span>
+                <span th:if="${product.discountedPrice == null || product.discountedPrice <= 0}">
+                    <span th:text="${product.formattedPrice}"></span>
+                </span>
+            </td>
             <td class="text-center" th:text="${product.stock+'개'}"></td>
             <td class="text-center" th:text="${product.saleCount+'개'}"></td>
             <td class="text-center">
@@ -91,8 +101,7 @@
             <td>
                 <form id="discountForm" th:action="@{/trendpick/products/admin/discount/{productId}(productId=${product.id})}" method="post">
                     <input type="text" name="discountRate" style="width: 30px;" class="border border-gray-300 text-center" th:value="${product.discountRate} > 0 ? ${product.discountRate} : 0">%</br>
-                    <button type="submit">적용</button><br>
-                    <span th:if="${product.discountedPrice != null && product.discountedPrice > 0}" th:text="${product.discountedPrice}">원</span>
+                    <button type="submit">적용</button>
                 </form>
             </td>
         </tr>

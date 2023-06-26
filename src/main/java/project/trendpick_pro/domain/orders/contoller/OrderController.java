@@ -44,9 +44,9 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/order/product")
-    public String productToOrder(@RequestParam("productId") Long id, @RequestParam("quantity") int quantity, Model model) {
+    public String productToOrder(@RequestParam("productId") Long id, @RequestParam("quantity") int quantity, @RequestParam("size") String size, @RequestParam("color") String color, Model model) {
         try {
-            RsData<Order> order = orderService.productToOrder(rq.getMember(), id, quantity);
+            RsData<Order> order = orderService.productToOrder(rq.getMember(), id, quantity, size, color);
             if(order.isFail()) {
                 return rq.historyBack(order);
             }
