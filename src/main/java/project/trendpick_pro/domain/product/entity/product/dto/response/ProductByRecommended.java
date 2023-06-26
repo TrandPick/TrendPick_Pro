@@ -1,4 +1,4 @@
-package project.trendpick_pro.domain.product.entity.dto.response;
+package project.trendpick_pro.domain.product.entity.product.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
