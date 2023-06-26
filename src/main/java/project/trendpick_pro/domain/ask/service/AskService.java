@@ -8,13 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.ask.entity.Ask;
 import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
-import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 import project.trendpick_pro.domain.ask.repository.AskRepository;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.global.rsData.RsData;
+
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -76,6 +77,6 @@ public class AskService {
 
 
     private boolean validateAccess(Member member, Ask ask) {
-        return ask.getAuthor().getId() == member.getId();
+        return Objects.equals(ask.getAuthor().getId(), member.getId());
     }
 }

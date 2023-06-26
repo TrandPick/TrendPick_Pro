@@ -62,7 +62,7 @@
         <tr th:each="item, i : ${cartItems}" class="border-b">
             <td class="px-4 py-3 text-center">
                 <input type="checkbox" name="selectedItems" class="form-checkbox text-blue-500 h-5 w-5"
-                       th:data-product-price="${item.product.price}"
+                       th:data-product-price="${item.product.productOption.price}"
                        th:data-product-id="${item.product.id}"
                        th:checked="${i.count == 1 ? 'checked' : ''}"
                        onclick="updateTotalPrice(this)">
@@ -78,11 +78,13 @@
                     <a th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
                        th:text="${item.getProduct().getName()}" class="font-semibold text-gray-900 hover:text-blue-500"></a>
                     <div class="text-sm text-gray-500 text-left" th:text="${item.getProduct().getBrand().getName()}"></div>
+                    <div class="text-sm text-gray-500 text-left" th:text="'size: ' + ${item.size} + ' / ' + 'color: ' + ${item.color}"></div>
+
                 </div>
             </td>
 
             <td id="itemPrice-${item.id}" class="px-4 py-3 text-center"
-                th:text="${#numbers.formatDecimal(item.product.price*item.quantity, 0, 'COMMA', 0, 'POINT')} + ' 원'">
+                th:text="${#numbers.formatDecimal(item.product.productOption.price*item.quantity, 0, 'COMMA', 0, 'POINT')} + ' 원'">
             </td>
 
             <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">

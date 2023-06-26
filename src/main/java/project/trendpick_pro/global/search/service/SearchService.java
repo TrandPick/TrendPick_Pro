@@ -4,8 +4,8 @@
 //import org.springframework.data.domain.Page;
 //import org.springframework.data.domain.PageRequest;
 //import org.springframework.stereotype.Service;
-//import project.trendpick_pro.domain.product.entity.Product;
-//import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
+//import project.trendpick_pro.domain.product.entity.product.Product;
+//import project.trendpick_pro.domain.product.entity.product.dto.response.ProductListResponse;
 //import project.trendpick_pro.global.search.entity.ProductSearch;
 //import project.trendpick_pro.global.search.exception.DocumentNotFoundException;
 //import project.trendpick_pro.global.search.repository.ProductSearchRepository;

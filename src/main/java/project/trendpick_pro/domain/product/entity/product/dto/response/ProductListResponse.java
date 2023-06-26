@@ -1,8 +1,8 @@
-package project.trendpick_pro.domain.product.entity.dto.response;
+package project.trendpick_pro.domain.product.entity.product.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 //import project.trendpick_pro.global.search.entity.ProductSearch;
 
 @Data
@@ -37,7 +37,7 @@ public class ProductListResponse {
                 .name(product.getName())
                 .brand(product.getBrand().getName())
                 .mainFile(product.getFile().getFileName())
-                .price(product.getPrice())
+                .price(product.getProductOption().getPrice())
                 .discountedPrice(product.getDiscountedPrice())
                 .discountRate(product.getDiscountRate())
                 .build();

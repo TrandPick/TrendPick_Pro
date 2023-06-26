@@ -8,7 +8,7 @@
 //import org.springframework.data.elasticsearch.annotations.Document;
 //import org.springframework.data.elasticsearch.annotations.Field;
 //import org.springframework.data.elasticsearch.annotations.FieldType;
-//import project.trendpick_pro.domain.product.entity.Product;
+//import project.trendpick_pro.domain.product.entity.product.Product;
 //
 //@Getter
 //@NoArgsConstructor(access = AccessLevel.PROTECTED)

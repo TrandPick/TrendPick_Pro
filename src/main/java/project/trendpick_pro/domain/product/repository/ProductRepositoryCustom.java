@@ -2,11 +2,10 @@ package project.trendpick_pro.domain.product.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductByRecommended;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponseBySeller;
+import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.product.dto.response.ProductByRecommended;
+import project.trendpick_pro.domain.product.entity.product.dto.response.ProductListResponse;
+import project.trendpick_pro.domain.product.entity.product.dto.response.ProductListResponseBySeller;
 
 import java.util.List;
 

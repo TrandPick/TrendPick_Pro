@@ -78,7 +78,7 @@
                             <span th:text="${@rq.getMember().username}+' 님'"></span>
                         </div>
                     </div>
-                    <div th:if="${@rq.CheckBrand()}" class="centered">
+                    <div th:if="${@rq.checkBrand()}" class="centered">
                         <div class="badge badge-black badge-outline text-black">
                             <span th:text="${@rq.getLogin().brand}+' 관리자'"></span>
                         </div>

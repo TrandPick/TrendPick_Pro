@@ -23,10 +23,13 @@ import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
-import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSaveRequest;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
-import project.trendpick_pro.domain.product.entity.dto.response.*;
+import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
+import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.product.dto.response.*;
+import project.trendpick_pro.domain.product.entity.productOption.ProductOption;
+import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
@@ -68,9 +71,12 @@ public class ProductService {
     private String filePath;
 
     @Transactional
-    public RsData<Long> register(ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public RsData<Long> register(ProductRequest request, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        rq.getAdmin();
+        rq.checkAdmin();
+
+        ProductSaveRequest productSaveRequest = request.getRequest1();
+        ProductOptionSaveRequest optionSaveRequest = request.getRequest2();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
         List<CommonFile> subFiles = fileTranslator.translateFileList(requestSubFiles);
@@ -79,7 +85,7 @@ public class ProductService {
             mainFile.connectFile(subFile);
         }
 
-        Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+        Set<Tag> tags = new LinkedHashSet<>();
         for (String tagName : productSaveRequest.getTags()) {
             tags.add(new Tag(tagName));
         }
@@ -88,7 +94,8 @@ public class ProductService {
         SubCategory subCategory = subCategoryService.findByName(productSaveRequest.getSubCategory());
         Brand brand = brandService.findByName(productSaveRequest.getBrand());
 
-        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile);
+        ProductOption productOption = ProductOption.of(optionSaveRequest);
+        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile, productOption);
         product.addTag(tags);
 
         Product saveProduct = productRepository.save(product);
@@ -97,11 +104,14 @@ public class ProductService {
     }
 
     @Transactional
-    public RsData<Long> modify(Long productId, ProductSaveRequest productSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public RsData<Long> modify(Long productId, ProductRequest productRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
-        rq.getAdmin();
+        rq.checkAdmin();
 
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
+        ProductSaveRequest productSaveRequest = productRequest.getRequest1();
+        ProductOptionSaveRequest optionSaveRequest = productRequest.getRequest2();
+
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
 
         fileTranslator.deleteFile(product.getFile());
         product.disconnectFile();
@@ -113,14 +123,14 @@ public class ProductService {
             mainFile.connectFile(subFile);
         }
 
-        Set<Tag> tags = new LinkedHashSet<>();  // 상품에 포함시킬 태크 선택하여 저장
+        Set<Tag> tags = new LinkedHashSet<>();
         for (String tagName : productSaveRequest.getTags()) {
             tags.add(new Tag(tagName));
         }
 
         tagService.delete(product.getTags());
         product.modifyTag(tags);
-        product.update(productSaveRequest, mainFile);
+        product.update(productSaveRequest, optionSaveRequest, mainFile);
 //        searchService.modifyProduct(product);
         return RsData.of("S-1", "상품 수정 완료되었습니다.", product.getId());
     }
@@ -137,7 +147,7 @@ public class ProductService {
     @Transactional
     public ProductResponse getProduct(Long productId) {
 
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));// 임시. 나중에 테스트
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
 
         if(rq.checkLogin()){
             if(rq.checkMember()){
@@ -272,7 +282,7 @@ public class ProductService {
                 product.getName(),
                 product.getBrand().getName(),
                 product.getFile().getFileName(),
-                product.getPrice(),
+                product.getProductOption().getPrice(),
                 product.getDiscountRate(),
                 product.getDiscountedPrice()
         );

@@ -14,7 +14,7 @@ import java.util.List;
 
 import static project.trendpick_pro.domain.ask.entity.QAsk.ask;
 import static project.trendpick_pro.domain.member.entity.QMember.*;
-import static project.trendpick_pro.domain.product.entity.QProduct.product;
+import static project.trendpick_pro.domain.product.entity.product.QProduct.product;
 
 public class AskRepositoryImpl implements AskRepositoryCustom {
 

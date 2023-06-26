@@ -3,7 +3,7 @@ package project.trendpick_pro.domain.tags.tag.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
 import java.util.List;
