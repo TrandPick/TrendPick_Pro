@@ -3,6 +3,7 @@ package project.trendpick_pro.domain.product.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,6 +63,17 @@ public class ProductController {
 
     private final Rq rq;
 
+    @Value("${colors}")
+    private List<String> colors;
+    @Value("${sizes.tops}")
+    private List<Integer> tops;
+
+    @Value("${sizes.bottoms}")
+    private List<Integer> bottoms;
+
+    @Value("${sizes.shoes}")
+    private List<Integer> shoes;
+
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("/register")
     public String registerProduct(@ModelAttribute("ProductRequest") ProductRequest productRequest, Model model) {
@@ -79,9 +91,10 @@ public class ProductController {
     }
 
     @GetMapping("/edit/{productId}")
-    public String modifyBefore(@PathVariable Long productId, Model model) {
+    public String modifyBefore(@PathVariable Long productId, @ModelAttribute("ProductRequest") ProductRequest productRequest, Model model) {
         readyHtml(model);
         model.addAttribute("originProduct", productService.findById(productId));
+
         return "trendpick/products/modify";
     }
 
@@ -183,5 +196,9 @@ public class ProductController {
 
         model.addAttribute("subCategoriesList", subCategoryList);
         model.addAttribute("brands", brandService.findByName(rq.getAdmin().getBrand()));
+        model.addAttribute("colors", colors);
+        model.addAttribute("tops", tops);
+        model.addAttribute("bottoms", bottoms);
+        model.addAttribute("shoes", shoes);
     }
 }
