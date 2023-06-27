@@ -8,6 +8,7 @@
 <main class="min-h-screen flex flex-col" layout:fragment="main">
     <br/><br/>
     <h1 class="text-center text-5xl font-bold mb-6">판매내역</h1>
+    <div><span th:text="${#dates.format(#dates.createNow(), 'MM')+'월 정산금: '+ #numbers.formatDecimal(totalPricePerMonth, 0, 'COMMA', 0, 'POINT')}+'원'"></span></div>
     <table class="table">
         <thead>
         <tr>
@@ -49,7 +50,7 @@
                 <span class="badge badge-ghost badge-m" th:text="${order.count+'개'}"></span>
             </td>
             <td class="text-center">
-                <span class="badge badge-ghost badge-m" th:text="${order.totalPrice}"></span>
+                <span class="badge badge-ghost badge-m" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span>
             </td>
             <td class="text-center">
                 <span class="badge badge-ghost badge-m" th:text="${#temporals.format(order.orderDate, 'MM/dd')}"></span>
