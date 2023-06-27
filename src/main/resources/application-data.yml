@@ -28,16 +28,14 @@ brand:
   Louis Vuitton, Gucci, Chanel, Dior, Prada, Hermès, Versace, Armani, Burberry, Yves Saint Laurent
 
 colors:
-  Ivory, Beige, Ivory, Beige, Nude ,Camel, Blush, Peach, Coral, Salmon, Dusty Rose, Rose Gold, Baby Pink,
-  Bubblegum Pink, Hot Pink, Fuchsia, Raspberry, Cherry Red, Burgundy, Wine, Maroon, Plum, Lavender, Lilac, 
-  Periwinkle, Sky Blue, Baby Blue, Powder Blue, Mint Green, Sage Green, Olive Green, Forest Green, Emerald Green,
-  Teal, Turquoise, Aqua, Navy Blue, Royal Blue, Cobalt Blue, Denim Blue, Indigo, Slate Gray, Charcoal Gray, Silver, 
-  Platinum, Pearl White, Snow White, Off-White, Cream, Champagne, Gold, Bronze, Copper, Mustard Yellow, Lemon Yellow,
-  Sunshine Yellow, Canary Yellow, Orange, Rust, Burnt Orange, Terracotta, Caramel, Chocolate Brown, Coffee Brown, Tan,
-  Khaki, Army Green, Moss Green, Fern Green, Olive Brown, Ochre, Coral Pink, Watermelon Pink, Magenta, Orchid, Mauve, 
-  Violet, Grape Purple, Amethyst, Eggplant Purple, Dusty Blue, Steel Blue, Slate Blue, Smoky Gray, Gunmetal Gray, Pewter Gray, 
-  Rose Quartz, Serenity Blue, Butter Yellow, Pistachio Green, Jade Green, Lime Green, Apple Green, Chartreuse, Canary Yellow,
-  Paprika Red, Cardinal Red, True Red, Tomato Red, Coral Orange, Blush Pink, Dusty Pink
+  Fuchsia, Aqua, Magenta, Orchid, Chartreuse, Black, White, Navy, PaleVioletRed, SeaShell, Teal, Turquoise,
+  Olive, Maroon, LightCyan, MintCream, Brown, Beige, Tan, Coral, Salmon, Orange, Gold, Yellow,
+  Lavender, Plum, Purple, LightSalmon, Cornsilk, Violet, Pink, Red, Silver, Gray, Khaki,
+  Thistle, LightSkyBlue, LightSteelBlue, PaleTurquoise, PaleGoldenRod, LavenderBlush, Cream, Ivory, Chocolate,
+  Indigo, LemonChiffon, PowderBlue, LightCoral, PaleGreen, Peachpuff, NavajoWhite, Honeydew, Moccasin, PapayaWhip, 
+  PeachPuff, Linen, OldLace, BlanchedAlmond, DarkGray, DarkGreen, DarkKhaki, DarkMagenta, DarkOliveGreen, 
+  DarkOrange, DarkOrchid, DarkRed
+
 
 sizes:
   tops: 80, 85, 90, 95, 100, 105, 110
