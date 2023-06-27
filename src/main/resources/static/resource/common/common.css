@@ -134,3 +134,8 @@ body {
     margin-top: 10px;
     color: #999;
 }
+
+.buttonCenter {
+    display: flex;
+    justify-content: center;
+}
