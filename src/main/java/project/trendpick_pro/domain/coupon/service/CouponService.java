@@ -77,6 +77,7 @@ public class CouponService {
         List<SimpleCouponResponse> responses = new ArrayList<>();
         for(Coupon coupon : coupons)
             responses.add(SimpleCouponResponse.of(coupon));
+
         return responses;
     }
 
