@@ -59,9 +59,10 @@ public class PaymentController {
 
     @GetMapping(value = "/{id}/cancel")
     public String paymentCancel(@PathVariable("id") Long id) {
+        Member member=rq.getMember();
         orderService.cancel(id);
         paymentService.cancelPayment(orderService.findById(id).getPaymentKey());
-        notificationService.updateStatus(id);
+        notificationService.make(member,id);
         return rq.redirectWithMsg("/trendpick/orders/usr/orders", "주문을 취소했습니다.");
     }
 }

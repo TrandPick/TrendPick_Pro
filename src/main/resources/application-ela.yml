@@ -7,6 +7,3 @@ spring:
           cluster-nodes: ${elasticKey.uris}
           username: ${elasticKey.username}
           password: ${elasticKey.password}
-logging.level:
-    org:
-      elasticsearch: debug

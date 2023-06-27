@@ -58,6 +58,7 @@ public class NotificationService {
             notificationRepository.save(newNotification);
         }
 
+
       //  notification.updateOrderState(order.getOrderState(), order.getDeliveryState());
         return RsData.of("S-1","주문상태 업데이트 되었습니다.",notification);
     }
