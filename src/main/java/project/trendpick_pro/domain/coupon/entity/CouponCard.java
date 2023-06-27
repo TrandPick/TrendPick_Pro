@@ -8,6 +8,7 @@ import org.springframework.lang.Nullable;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationPeriod;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.orders.entity.OrderItem;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -36,6 +37,10 @@ public class CouponCard extends BaseTimeEntity {
 
     @Column(name = "used_date")
     private LocalDateTime usedDate;
+
+    @Column(name = "order_item_id", nullable = true)
+    private Long orderItemId;
+
     @Embedded
     @Column(nullable = false)
     private ExpirationPeriod expirationPeriod;
@@ -61,4 +66,36 @@ public class CouponCard extends BaseTimeEntity {
     public void connectMember(Member member){
         this.member = member;
     }
+
+    public boolean validate(OrderItem orderItem) {
+        return validateExpirationPeriod() && validateStatus()
+                && validateMinimumPurchaseAmount(orderItem.getOrderPrice());
+    }
+    private boolean validateMinimumPurchaseAmount(int price){
+        return this.coupon.validateMinimumPurchaseAmount(price);
+    }
+
+    private boolean validateExpirationPeriod(){
+        return LocalDateTime.now().isAfter(getExpirationPeriod().getStartDate())
+                && LocalDateTime.now().isBefore(getExpirationPeriod().getEndDate());
+    }
+
+    private boolean validateStatus(){
+        return getStatus().getValue().equals(CouponStatus.AVAILABLE.getValue());
+    }
+
+    public void use(OrderItem orderItem) {
+        this.status = CouponStatus.USED;
+        this.usedDate = LocalDateTime.now();
+
+        orderItem.discount(orderItem.getOrderPrice() * getCoupon().getDiscountPercent() / 100);
+        orderItem.applyCouponCard(getId());
+    }
+
+    public void cancel(OrderItem orderItem){
+        this.status = CouponStatus.AVAILABLE;
+        this.usedDate = null;
+        orderItem.cancelCouponCard();
+    }
+
 }
