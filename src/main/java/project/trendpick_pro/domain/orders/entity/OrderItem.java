@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.cart.entity.CartItem;
+import project.trendpick_pro.domain.coupon.entity.CouponCard;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.product.entity.product.Product;
 
@@ -26,8 +27,17 @@ public class OrderItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_card_id")
+    private CouponCard couponCard;
     @Column(name = "order_price", nullable = false)
     private int orderPrice;
+
+    @Column(name = "total_price")
+    private int totalPrice;
+
+    @Column(name = "discount_price")
+    private int discountPrice;
 
     @Column(name = "size", nullable = false)
     private String size;
@@ -48,8 +58,9 @@ public class OrderItem {
         this.quantity = quantity;
         this.size = size;
         this.color = color;
-
-        product.getProductOption().decreaseStock(quantity);
+        this.totalPrice = this.orderPrice * this.quantity;
+        this.discountPrice = 0;
+//        product.getProductOption().decreaseStock(quantity);
     }
 
     public void modifyQuantity(int quantity) {
@@ -73,10 +84,21 @@ public class OrderItem {
     }
 
     public void cancel() {
-        this.product.getProductOption().increaseStock(quantity);
+        this.product.getProductOption().increaseStock(getQuantity());
+        this.couponCard.cancel(this);
+    }
+    public void applyCouponCard(CouponCard couponCard) {
+        this.couponCard = couponCard;
+    }
+    public void cancelCouponCard(){
+        this.couponCard = null;
+        this.cancelDiscount();
     }
 
-    public int getTotalPrice() {
-        return this.orderPrice * this.quantity;
+    public void discount(int price){
+        this.discountPrice += price;
+    }
+    private void cancelDiscount(){
+        this.discountPrice = 0;
     }
 }

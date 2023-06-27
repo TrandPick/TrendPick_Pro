@@ -88,8 +88,8 @@ public class CouponCard extends BaseTimeEntity {
         this.status = CouponStatus.USED;
         this.usedDate = LocalDateTime.now();
 
+        orderItem.applyCouponCard(this);
         orderItem.discount(orderItem.getOrderPrice() * getCoupon().getDiscountPercent() / 100);
-        orderItem.applyCouponCard(getId());
     }
 
     public void cancel(OrderItem orderItem){
