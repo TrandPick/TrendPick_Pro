@@ -27,6 +27,14 @@ public class OrderController {
     private final OrderService orderService;
     private final Rq rq;
 
+
+    @PreAuthorize("hasAuthority({'MEMBER'})")
+    @GetMapping("{orderId}/form")
+    public String showOrderForm(@PathVariable("orderId") Long orderId, Model model){
+        model.addAttribute("order", orderService.findById(orderId));
+        return "trendpick/orders/order-form";
+    }
+
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/order/cart")
     public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model) {
@@ -35,8 +43,7 @@ public class OrderController {
             if(order.isFail()) {
                 return rq.historyBack(order);
             }
-            model.addAttribute("order", order.getData());
-            return "trendpick/orders/order-form";
+            return "redirect:/trendpick/orders/%s/form".formatted(order.getData().getId());
         } catch (Exception e){
             return rq.historyBack("주문이 완료되지 않았습니다.");
         }
@@ -50,12 +57,13 @@ public class OrderController {
             if(order.isFail()) {
                 return rq.historyBack(order);
             }
-            model.addAttribute("order", order.getData());
-            return "trendpick/orders/order-form";
+            return "redirect:/trendpick/orders/%s/form".formatted(order.getData().getId());
         } catch (Exception e){
             return rq.historyBack("주문이 완료되지 않았습니다.");
         }
     }
+
+
 
     @PostMapping("/cancel/{orderId}")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {

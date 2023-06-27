@@ -44,11 +44,11 @@ public class PaymentController {
         Member member=rq.getMember();
 
         Order order = orderService.findById(id);
-        order.connectPaymentMethod("TossPayments " + response.getMethod());
-        order.connectPaymentKey(response.getPaymentKey());
-        order.modifyStatus(OrderStatus.ORDERED);
-
         if (response.getStatus().equals("DONE")) {
+            order.connectPaymentMethod("TossPayments " + response.getMethod());
+            order.connectPaymentKey(response.getPaymentKey());
+            order.modifyStatus(OrderStatus.ORDERED);
+            order.updateWithPayment();
             cartService.deleteCartItemsByOrder(order);
             notificationService.make(member, order.getId());
             return rq.redirectWithMsg("/trendpick/orders/%s".formatted(id), "주문이 완료되었습니다.");

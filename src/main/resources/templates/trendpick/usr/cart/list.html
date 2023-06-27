@@ -53,6 +53,7 @@
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 rounded-tl rounded-bl text-center"><input type="checkbox" id="selectAllCheckbox" checked></th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">상품정보</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">가격</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center"></th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">수량</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">담은날짜</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">삭제</th>
@@ -85,6 +86,16 @@
 
             <td id="itemPrice-${item.id}" class="px-4 py-3 text-center"
                 th:text="${#numbers.formatDecimal(item.product.productOption.price*item.quantity, 0, 'COMMA', 0, 'POINT')} + ' 원'">
+            </td>
+
+            <td class="px-4 py-3 text-center">
+                <form class="card-actions justify-start" th:id="'couponForm-' + ${item.id}">
+                    <input type="hidden" name="productId" th:value="${item.product.id}"/>
+                    <button type="submit" class="btn btn-sm btn-outline" th:attr="onclick=|submitCouponForm(event, ${item.id})|">
+                        <i class="fa-solid fa-circle-down"></i>
+                        쿠폰받기
+                    </button>
+                </form>
             </td>
 
             <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
@@ -237,6 +248,15 @@
             }
             // 총 주문 수량 업데이트
             document.getElementById('totalCount').innerText = totalCount;
+        }
+
+        //상품별 적용가능한 쿠폰목록
+        function submitCouponForm(event, itemId) {
+            event.preventDefault();
+            var form = document.getElementById("couponForm-" + itemId);
+            var productId = form.querySelector("[name='productId']").value;
+            var url = '/trendpick/coupons/box?productId=' + productId;
+            window.open(url, 'couponWindow', 'width=800,height=600,scrollbars=yes');
         }
     </script>
 </main>

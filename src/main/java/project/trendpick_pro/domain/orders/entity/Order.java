@@ -111,14 +111,6 @@ public class Order extends BaseTimeEntity {
         this.status = status;
     }
 
-    public void cancel() {
-        this.status = OrderStatus.CANCELED;
-        this.delivery.canceledDelivery();
-        for (OrderItem orderItem : this.orderItems) {
-            orderItem.getProduct().getProductOption().increaseStock(orderItem.getQuantity());
-        }
-    }
-
     public String getOrderState(){
         return switch (status.getValue()){
             case "ORDERED"->"결제완료";
@@ -135,5 +127,28 @@ public class Order extends BaseTimeEntity {
             case "ORDER_CANCELED"->"배송전취소";
             default -> "준비중";
         };
+    }
+
+    public int getTotalDiscountedPrice(){
+        int totalDisCountPrice = 0;
+        for (OrderItem orderItem : getOrderItems()) {
+            totalDisCountPrice += orderItem.getDiscountPrice();
+        }
+        return totalDisCountPrice;
+    }
+
+    public void cancel() {
+        this.status = OrderStatus.CANCELED;
+        this.delivery.canceledDelivery();
+        for (OrderItem orderItem : this.orderItems) {
+            orderItem.getProduct().getProductOption().increaseStock(orderItem.getQuantity());
+        }
+    }
+
+    //총금액 - 할인받은금액들
+    public void updateWithPayment(){
+        for (OrderItem orderItem : getOrderItems()) {
+            this.totalPrice -= orderItem.getDiscountPrice();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package project.trendpick_pro.domain.coupon.service;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Fetch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
@@ -8,6 +9,8 @@ import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveReq
 import project.trendpick_pro.domain.coupon.entity.dto.response.SimpleCouponResponse;
 import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationType;
 import project.trendpick_pro.domain.coupon.repository.CouponRepository;
+import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.global.rsData.RsData;
 
@@ -22,6 +25,7 @@ import java.util.List;
 public class CouponService {
     private final CouponRepository couponRepository;
     private final StoreService storeService;
+    private final ProductService productService;
 
     @Transactional
     public RsData<String> generate(String storeName, StoreCouponSaveRequest storeCouponSaveRequest) {
@@ -65,4 +69,27 @@ public class CouponService {
 
         return responses;
     }
+
+    public  List<SimpleCouponResponse> findCouponsByProduct(Long productId) {
+        Product product = productService.findByIdWithBrand(productId);
+
+        List<Coupon> coupons = filteredCoupons(couponRepository.findAllByBrand(product.getBrand().getName()), product);
+        List<SimpleCouponResponse> responses = new ArrayList<>();
+        for(Coupon coupon : coupons)
+            responses.add(SimpleCouponResponse.of(coupon));
+
+        return responses;
+    }
+
+    private List<Coupon> filteredCoupons(List<Coupon> coupons, Product product) {
+        List<Coupon> filteredCoupons = new ArrayList<>();
+
+        //추후에 쿠폰 사용 조건이 생기면 추가 //Validation을 만드는 것도 고려해봐야 할듯
+        for (Coupon coupon : coupons) {
+            if(coupon.validateMinimumPurchaseAmount(product.getProductOption().getPrice()) && coupon.validateLimitCount() && coupon.validateLimitIssueDate())
+                filteredCoupons.add(coupon);
+        }
+        return filteredCoupons;
+    }
+
 }
