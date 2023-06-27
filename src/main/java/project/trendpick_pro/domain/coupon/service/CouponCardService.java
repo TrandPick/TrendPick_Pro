@@ -79,11 +79,9 @@ public class CouponCardService {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(
                 () -> new IllegalArgumentException("해당 주문상품은 존재하지 않습니다.")
         );
-        if (orderItem.getCouponCardId() == null)
-            return RsData.of("F-1", "해당 주문상품에 적용된 쿠폰이 없습니다.");
-        CouponCard couponCard = couponCardRepository.findById(orderItem.getCouponCardId()).orElse(null);
+        CouponCard couponCard = orderItem.getCouponCard();
         if(couponCard == null)
-            return RsData.of("F-2", "삭제되거나 변경되어 조회할 수 없는 쿠폰입니다.");
+            return RsData.of("F-1", "해당 주문상품에 적용된 쿠폰이 없습니다.");
 
         couponCard.cancel(orderItem);
         return RsData.of("S-1", "쿠폰이 취소되었습니다.");
