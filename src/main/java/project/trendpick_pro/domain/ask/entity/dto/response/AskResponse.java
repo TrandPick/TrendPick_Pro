@@ -3,14 +3,9 @@ package project.trendpick_pro.domain.ask.entity.dto.response;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 import org.springframework.data.domain.Page;
-import project.trendpick_pro.domain.answer.entity.Answer;
-import project.trendpick_pro.domain.answer.entity.dto.response.AnswerResponse;
 import project.trendpick_pro.domain.ask.entity.Ask;
-import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.product.entity.Product;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

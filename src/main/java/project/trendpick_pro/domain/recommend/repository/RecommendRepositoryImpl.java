@@ -1,23 +1,20 @@
 package project.trendpick_pro.domain.recommend.repository;
 
-import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
-import project.trendpick_pro.domain.product.entity.dto.response.QProductListResponse;
+import project.trendpick_pro.domain.product.entity.product.dto.response.ProductListResponse;
+import project.trendpick_pro.domain.product.entity.product.dto.response.QProductListResponse;
 
 import java.util.List;
 
-import static project.trendpick_pro.domain.brand.entity.QBrand.*;
-import static project.trendpick_pro.domain.common.file.QCommonFile.*;
-import static project.trendpick_pro.domain.member.entity.QMember.*;
-import static project.trendpick_pro.domain.product.entity.QProduct.*;
-import static project.trendpick_pro.domain.recommend.entity.QRecommend.*;
+import static project.trendpick_pro.domain.member.entity.QMember.member;
+import static project.trendpick_pro.domain.product.entity.product.QProduct.product;
+import static project.trendpick_pro.domain.product.entity.productOption.QProductOption.productOption;
+import static project.trendpick_pro.domain.recommend.entity.QRecommend.recommend;
 
 public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
 
@@ -36,13 +33,14 @@ public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
                         product.name,
                         product.brand.name,
                         product.file.fileName,
-                        product.price,
+                        productOption.price,
                         product.discountRate,
                         product.discountedPrice
                 ))
                 .from(recommend)
                 .leftJoin(recommend.member, member)
                 .leftJoin(recommend.product, product)
+                .leftJoin(product.productOption, productOption)
                 .where(recommend.member.username.eq(username))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

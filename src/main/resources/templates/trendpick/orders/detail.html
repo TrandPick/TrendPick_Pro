@@ -19,7 +19,7 @@
                         <a th:href="|/trendpick/products/${orderItem.productId}|" th:text="${orderItem.productName}"></a>
                     </div>
                     <div class="text-sm text-gray-500" th:text="${orderItem.brandName}"></div>
-                    <div class="text-sm text-gray-500" th:text="'수량: ' + ${orderItem.count}"></div>
+                    <div class="text-sm text-gray-500" th:text="${orderItem.count} + '개 / ' + 'size: ' + ${orderItem.size} + ' / ' + 'color: ' + ${orderItem.color}"></div>
                     <div th:text="'금액: ' + ${#numbers.formatDecimal(orderItem.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></div>
                 </div>
             </div>

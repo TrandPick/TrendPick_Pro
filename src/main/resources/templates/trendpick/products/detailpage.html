@@ -41,6 +41,23 @@
             <h2 class="text-2xl font-bold" th:text="${productResponse.name}"></h2>
             <div class="badge my-2"><span th:text="${productResponse.brand}"></span></div>
             <p class="mb-4" th:text="${productResponse.description}"></p>
+
+            <!-- sizes -->
+            <div class="mb-4">
+                <label for="size" class="block text-gray-600 font-semibold mb-2">Size</label>
+                <select id="size" name="size" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option th:each="size : ${productResponse.sizes}" th:value="${size}" th:text="${size}"></option>
+                </select>
+            </div>
+
+            <!-- colors -->
+            <div class="mb-4">
+                <label for="color" class="block text-gray-600 font-semibold mb-2">Color</label>
+                <select id="color" name="color" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option th:each="color : ${productResponse.colors}" th:value="${color}" th:text="${color}"></option>
+                </select>
+            </div>
+
             <div class="mb-8">
                 <div>가격:
                     <span
@@ -72,15 +89,17 @@
                     </button>
                 </form>
                 <div class="form-container">
-                    <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" th:object="${ProductOptionForm}"
-                          method="post" onsubmit="return confirmCart()">
+                    <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" th:object="${productRequest}" method="post" onsubmit="return confirmCart()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
+                        <input type="hidden" name="size" id="addToCartSize" value="1">
+                        <input type="hidden" name="color" id="addToCartColor" value="1">
                         <input type="hidden" id="addToCartQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
-                    <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${ProductOptionForm}"
-                          method="get" onsubmit="return confirmOrder()">
+                    <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${productRequest}" method="get" onsubmit="return confirmOrder()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
+                        <input type="hidden" name="size" id="buySize" value="1">
+                        <input type="hidden" name="color" id="buyColor" value="1">
                         <input type="hidden" id="buyQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Buy Now</button>
                     </form>
@@ -196,7 +215,44 @@
         </div>
     </div>
     <br/><br/><br/><br/><br/>
+
     <script>
+
+        // 사이즈 선택 시 히든 인풋에 값 연동 및 초기화
+        const sizeSelect = document.getElementById('size');
+        const addToCartSizeInput = document.getElementById('addToCartSize');
+        const buySizeInput = document.getElementById('buySize');
+
+        sizeSelect.addEventListener('change', function() {
+            const selectedSize = this.value;
+            addToCartSizeInput.value = selectedSize;
+            buySizeInput.value = selectedSize;
+        });
+
+        // 색상 선택 시 히든 인풋에 값 연동 및 초기화
+        const colorSelect = document.getElementById('color');
+        const addToCartColorInput = document.getElementById('addToCartColor');
+        const buyColorInput = document.getElementById('buyColor');
+
+        colorSelect.addEventListener('change', function() {
+            const selectedColor = this.value;
+            addToCartColorInput.value = selectedColor;
+            buyColorInput.value = selectedColor;
+        });
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('DOMContentLoaded', function() {
+            // 사이즈 초기화
+            const initialSize = sizeSelect.value;
+            addToCartSizeInput.value = initialSize;
+            buySizeInput.value = initialSize;
+
+            // 색상 초기화
+            const initialColor = colorSelect.value;
+            addToCartColorInput.value = initialColor;
+            buyColorInput.value = initialColor;
+        });
+
         function openModal() {
             document.getElementById("myModal").classList.remove("hidden");
             document.getElementById("modalImage").src = event.target.src;
@@ -212,6 +268,7 @@
             value++;
             document.getElementById('quantity').value = value;
             document.getElementById('buyQuantity').value = value; // This line was added
+            document.getElementById('addToCartQuantity').value = value; // This line was added
         }
 
         function decreaseValue() {
@@ -222,6 +279,7 @@
             }
             document.getElementById('quantity').value = value;
             document.getElementById('buyQuantity').value = value; // This line was added
+            document.getElementById('addToCartQuantity').value = value; // This line was added
         }
 
         function syncQuantities() {

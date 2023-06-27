@@ -11,7 +11,6 @@ import project.trendpick_pro.domain.coupon.repository.CouponRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
-import project.trendpick_pro.domain.product.entity.Product;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.ArrayList;

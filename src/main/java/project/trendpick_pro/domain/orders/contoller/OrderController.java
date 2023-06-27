@@ -44,9 +44,9 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/order/product")
-    public String productToOrder(@RequestParam("productId") Long id, @RequestParam("quantity") int quantity, Model model) {
+    public String productToOrder(@RequestParam("productId") Long id, @RequestParam("quantity") int quantity, @RequestParam("size") String size, @RequestParam("color") String color, Model model) {
         try {
-            RsData<Order> order = orderService.productToOrder(rq.getMember(), id, quantity);
+            RsData<Order> order = orderService.productToOrder(rq.getMember(), id, quantity, size, color);
             if(order.isFail()) {
                 return rq.historyBack(order);
             }
@@ -80,6 +80,8 @@ public class OrderController {
             Model model) {
         Page<OrderResponse> orderList = orderService.findAllBySeller(rq.getAdmin(), offset);
         model.addAttribute("orderList", orderList);
+        int totalPricePerMonth = orderService.settlementOfSales(rq.getAdmin());
+        model.addAttribute("totalPricePerMonth", totalPricePerMonth);
         return "trendpick/admin/sales";
     }
 
@@ -106,4 +108,11 @@ public class OrderController {
         model.addAttribute("orderList", orderList);
         return "trendpick/usr/member/refunds";
     }
+
+//    @GetMapping("/admin/settlement")
+//    public String settlemnetPerMonth(Model model) {
+//        int totalPricePerMonth = orderService.settlementOfSales(rq.getMember());
+//        model.addAttribute("totalPricePerMonth", totalPricePerMonth);
+//        return "trendpick/admin/sales";
+//    }
 }

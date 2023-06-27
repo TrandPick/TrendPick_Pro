@@ -16,33 +16,29 @@
         let brandName = /*[[${originProduct.brand.name}]]*/ "brand";
 
         $(document).ready(function () {
-            $(`input[name="mainCategory"]`).change(function () {
+            $(`input[id="mainCategory"]`).change(function () {
                 // 기존에 나오던 녀석을 숨긴다.
                 $(`[data-type-1]:not(.hidden)`).addClass("hidden");
                 // 이번에 나와야 할 녀석을 노출시킨다.
                 $(`[data-type-1="${this.value}"]`).removeClass("hidden");
 
                 // 기존에 체크된 녀석을 체크해제 한다.
-                $(`input[name="subCategory"]:checked`).prop("checked", false);
+                $(`input[id="subCategory"]:checked`).prop("checked", false);
 
-                if (
-                    subCategoryName !== undefined &&
-                    $(`[data-type-1="${this.value}"] input[name="subCategory"][value="${subCategoryName}"]`)
-                        .length > 0
-                ) {
-                    $(
-                        `[data-type-1="${this.value}"] input[name="subCategory"][value="${subCategoryName}"]`
-                    ).prop("checked", true);
+                if (subCategoryName !== undefined && $(`[data-type-1="${this.value}"] input[id="subCategory"][value="${subCategoryName}"]`).length > 0) {
+                    $(`[data-type-1="${this.value}"] input[id="subCategory"][value="${subCategoryName}"]`).prop("checked", true);
                 } else {
-                    $(`[data-type-1="${this.value}"] input[name="subCategory"]:first`).prop(
-                        "checked",
-                        true
-                    );
+                    $(`[data-type-1="${this.value}"] input[id="subCategory"]:first`).prop("checked", true);
                 }
             });
 
             // 페이지 로드 후 해당 메인 카테고리 클릭
-            $(`input[name="mainCategory"][value="${mainCategoryName}"]`).click();
+            var selectedMainCategory = $(`input[id="mainCategory"][value="${mainCategoryName}"]`);
+            selectedMainCategory.click();
+
+            // 페이지 로드 시, 선택된 메인 카테고리와 관련된 서브 카테고리를 표시
+            var mainCategoryValue = selectedMainCategory.val();
+            $(`[data-type-1="${mainCategoryValue}"]`).removeClass("hidden");
         });
 
         $(document).ready(function () {
@@ -104,7 +100,7 @@
                 return;
             }
 
-            const brandInputs = form.querySelectorAll('input[name="brand"]');
+            const brandInputs = form.querySelectorAll('input[id="brand"]');
             let isBrandChecked = false;
             for (let i = 0; i < brandInputs.length; i++) {
                 if (brandInputs[i].checked) {
@@ -144,7 +140,7 @@
                 return;
             }
 
-            const tagInputs = form.querySelectorAll('input[name="tags"]');
+            const tagInputs = form.querySelectorAll('input[id="tags"]');
             let isTagsChecked = false;
             for (let i = 0; i < tagInputs.length; i++) {
                 if (tagInputs[i].checked) {
@@ -162,18 +158,18 @@
         }
     </script>
 
-    <form id="productSaveRequest" th:action="@{/trendpick/products/edit/{productId}(productId=${productId})}" th:object="${productSaveRequest}"
+    <form id="productSaveRequest" th:action="@{/trendpick/products/edit/{productId}(productId=${productId})}" th:object="${ProductRequest}"
           method="post" enctype="multipart/form-data" class="m-4" onsubmit="ProductSaveRequest__submit(this); return false;">
         <h2 class="text-2xl font-semibold mb-6">Modify My Product</h2>
 
         <div class="mb-4">
             <label for="name" class="block text-gray-600 font-semibold mb-2">Title</label>
-            <input type="text" id="name" name="name" th:value="${originProduct.name}" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <input type="text" id="name" name="request1.name" th:value="${originProduct.name}" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
 
         <div class="mb-4">
             <label for="description" class="block text-gray-600 font-semibold mb-2">Description</label>
-            <textarea id="description" name="description" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" th:text="${originProduct.description}"></textarea>
+            <textarea id="description" name="request1.description" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" th:text="${originProduct.description}"></textarea>
         </div>
 
         <!-- Main Category -->
@@ -182,7 +178,7 @@
             <div class="flex flex-wrap">
                 <div th:each="mainCategory, stat : ${mainCategories}" th:if="${mainCategory.name} != '추천'" class="mr-4 mb-2">
                     <label class="flex items-center text-gray-700" th:class="${stat.count % 3 == 0 ? 'col-start-1' : ''}">
-                        <input type="radio" th:id="mainCategory" name="mainCategory" th:value="${mainCategory.name}"
+                        <input type="radio" th:id="mainCategory" name="request1.mainCategory" th:value="${mainCategory.name}"
                                th:checked="${mainCategory.name == originProduct.mainCategory.name ? 'checked' : ''}"
                                class="form-radio">
                         <span class="ml-2" th:text="${mainCategory.name}"></span>
@@ -196,7 +192,7 @@
             <label class="block text-gray-600 font-semibold mb-2">Sub Category</label>
             <div class="flex flex-wrap" th:each="subCategories, stat : ${subCategoriesList}">
                 <label th:each="subCategory : ${subCategories.value}" th:data-type-1="${subCategories.key}" class="hidden mr-4 mb-2">
-                    <input type="radio" th:id="subCategory" name="subCategory" th:value="${subCategory.name}"
+                    <input type="radio" th:id="subCategory" name="request1.subCategory" th:value="${subCategory.name}"
                            th:checked="${subCategory.name == originProduct.subCategory.name ? 'checked' : ''}"
                            class="form-radio">
                     <span th:text="${subCategory.name}" class="ml-2 text-gray-700"></span>
@@ -208,7 +204,7 @@
         <div class="mb-4">
             <label class="block text-gray-600 font-semibold mb-2">Brand</label>
             <label class="flex items-center text-gray-700">
-                <input type="radio" id="brand" name="brand" th:value="${originProduct.brand.name}" class="form-radio" checked="checked">
+                <input type="radio" id="brand" name="request1.brand" th:value="${originProduct.brand.name}" class="form-radio" checked="checked">
                 <span class="ml-2" th:text="${originProduct.brand.name}"></span>
             </label>
         </div>
@@ -219,7 +215,7 @@
 
         <div class="mb-4">
             <label for="mainFile" class="block text-gray-600 font-semibold mb-2">Main Image</label>
-            <input type="file" id="mainFile" name="mainFile" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="previewImage(event)">
+            <input type="file" id="mainFile" name="mainFile" class="shadow file-input file-input-bordered w-full max-w-xs" onchange="previewImage(event)">
         </div>
 
         <div id="subImagesPreview" class="mb-4 flex flex-wrap">
@@ -230,38 +226,109 @@
 
         <div class="mb-4">
             <label for="subFiles" class="block text-gray-600 font-semibold mb-2">Sub Images</label>
-            <input type="file" id="subFiles" name="subFiles" multiple="multiple" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="previewSubImages(event)">
+            <input type="file" id="subFiles" name="subFiles" multiple="multiple" class="shadow file-input file-input-bordered w-full max-w-xs" onchange="previewSubImages(event)">
+        </div>
+
+        <br/><hr><br/>
+        <label class="block text-gray-700 font-bold mb-2">기존 Sizes</label>
+        <div class="flex flex-wrap">
+            <label th:each="size, iterStat : ${originProduct.getProductOption().sizes}" class="badge-large mr-4 mb-2">
+                <span th:text="${size}" class="text-gray-600" style="cursor: pointer;"></span>
+            </label>
+        </div>
+
+        <div class="mb-4">
+            <label for="sizes" class="block text-gray-600 font-semibold mb-2">Sizes</label>
+            <div class="daisy-checkbox-group" id="sizes">
+                <div>
+                    <span class="text-gray-600 font-semibold mb-2">상의: </span>
+                    <label th:each="size, iterStat : ${tops}" th:for="'top' + iterStat.index" class="daisy-checkbox">
+                        <input type="checkbox" th:id="'top' + iterStat.index" name="request2.sizes" th:value="${size}" class="daisy-checkbox-input">
+                        <span class="daisy-checkbox-text" th:text="${size}"></span>
+                    </label>
+                </div>
+                <div>
+                    <span class="text-gray-600 font-semibold mb-2">하의: </span>
+                    <label th:each="size, iterStat : ${bottoms}" th:for="'top' + iterStat.index" class="daisy-checkbox">
+                        <input type="checkbox" th:id="'bottoms' + iterStat.index" name="request2.sizes" th:value="${size}" class="daisy-checkbox-input">
+                        <span class="daisy-checkbox-text" th:text="${size}"></span>
+                    </label>
+                </div>
+                <div>
+                    <span class="text-gray-600 font-semibold mb-2">신발: </span>
+                    <label th:each="size, iterStat : ${shoes}" th:for="'top' + iterStat.index" class="daisy-checkbox">
+                        <input type="checkbox" th:id="'bottoms' + iterStat.index" name="request2.sizes" th:value="${size}" class="daisy-checkbox-input">
+                        <span class="daisy-checkbox-text" th:text="${size}"></span>
+                    </label>
+                </div>
+                <div>
+                    <span class="text-gray-600 font-semibold mb-2">외: </span>
+                    <input type="checkbox" name="sizes" th:value="FREE" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text" th:text="FREE"></span>
+                </div>
+            </div>
+        </div>
+
+        <br/><hr><br/>
+        <label class="block text-gray-700 font-bold mb-2">기존 Colors</label>
+        <div class="flex flex-wrap">
+            <label th:each="color : ${originProduct.getProductOption().getColors()}" th:for="${'color' + #strings.replace(color, ' ', '')}" class="badge-large mr-2 mb-2">
+                <input type="checkbox" th:id="${'color' + #strings.replace(color, ' ', '')}" name="request2.colors" checked th:value="${color}" class="daisy-checkbox-input" style="display: none;">
+                <div class="flex items-center">
+                    <span class="text-gray-600 mr-2" th:text="' ' + ${color}" style="cursor: pointer;"></span>
+                    <div th:style="${'background-color: ' + color}" class="w-4 h-4 rounded-full border"></div>
+                </div>
+            </label>
+        </div>
+
+        <div class="mb-4">
+            <label for="colors" class="block text-gray-600 font-semibold mb-2">Colors</label>
+            <div class="daisy-checkbox-group grid grid-cols-8 gap-4" id="colors">
+                <!-- 색상 옵션을 동적으로 생성 -->
+                <label th:each="color : ${colors}" th:for="${'color' + #strings.replace(color, ' ', '')}" class="daisy-checkbox flex items-center">
+                    <input type="checkbox" th:id="${'color' + #strings.replace(color, ' ', '')}" name="request2.colors" th:value="${color}" class="daisy-checkbox-input">
+                    <span class="daisy-checkbox-text mr-2" th:text="' ' + ${color}"></span>
+                    <div th:style="${'background-color: ' + color}" class="w-4 h-4 rounded-full border"></div>
+                </label>
+                <!-- 추가적인 색상 옵션을 여기에 추가할 수 있습니다 -->
+            </div>
+        </div>
+        <br/><hr><br/>
+
+        <br/>
+        <div class="mb-4">
+            <label for="stock" class="block text-gray-600 font-semibold mb-2">Stock</label>
+            <input type="number" id="stock" name="request2.stock" th:value="${originProduct.getProductOption().stock}" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <span class="text-gray-600 font-semibold mb-2"><label th:text="개"></label></span>
         </div>
 
         <div class="mb-4">
             <label for="price" class="block text-gray-600 font-semibold mb-2">Price</label>
-            <input type="number" id="price" name="price" th:value="${originProduct.price}" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <input type="number" id="price" name="request2.price" th:value="${originProduct.getProductOption().price}" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <span class="text-gray-600 font-semibold mb-2"><label th:text="원"></label></span>
         </div>
 
-        <div class="mb-4">
-            <label for="stock" class="block text-gray-600 font-semibold mb-2">Stock</label>
-            <input type="number" id="stock" name="stock" th:value="${originProduct.stock}" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
-
+        <br/><hr><br/>
         <label class="block text-gray-700 font-bold mb-2">기존 Tags</label>
         <div class="flex flex-wrap">
-            <div th:each="tag, iterStat : ${originProduct.tags}" class="mr-4 mb-2">
-                <input type="checkbox" th:value="${tag.name}" checked class="form-checkbox text-indigo-600"/>
-                <span th:text="${tag.name}" class="ml-2 text-gray-700"></span>
-                <th:block th:if="${iterStat.count % 5 == 0}"></th:block>
-            </div>
-        </div><br/><hr><br/>
+            <label th:each="tag, iterStat : ${originProduct.tags}" class="badge-large mr-2 mb-2">
+                <input type="checkbox" th:value="${tag.name}" checked class="form-checkbox text-indigo-600" style="display: none;">
+                <span th:text="'#' + ${tag.name}" class="text-gray-400" style="cursor: pointer;"></span>
+                <th:block th:if="${iterStat.count % 5 == 0}"><br /></th:block>
+            </label>
+        </div>
 
         <label class="block text-gray-700 font-bold mb-2">추가할 Tag를 선택해주세요</label>
         <div class="form-group">
             <div class="flex flex-wrap">
                 <div th:each="tag, iterStat : ${tags}" th:if="${!#lists.contains(originProduct.tags, tag)}" class="mr-4 mb-2">
-                    <input type="checkbox" name="tags" th:value="${tag.name}" class="form-checkbox text-indigo-600"/>
+                    <input type="checkbox" id="tags" name="request1.tags" th:value="${tag.name}" class="form-checkbox text-indigo-600"/>
                     <span th:text="${tag.name}" class="ml-2 text-gray-700"></span>
                     <th:block th:if="${iterStat.count % 5 == 0}"><br/></th:block>
                 </div>
             </div>
         </div>
+        <br/><hr><br/>
 
         <div class="flex justify-end">
             <button class="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded">상품 수정</button>

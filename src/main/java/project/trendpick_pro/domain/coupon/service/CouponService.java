@@ -9,7 +9,7 @@ import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveReq
 import project.trendpick_pro.domain.coupon.entity.dto.response.SimpleCouponResponse;
 import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationType;
 import project.trendpick_pro.domain.coupon.repository.CouponRepository;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.global.rsData.RsData;
@@ -86,7 +86,7 @@ public class CouponService {
 
         //추후에 쿠폰 사용 조건이 생기면 추가 //Validation을 만드는 것도 고려해봐야 할듯
         for (Coupon coupon : coupons) {
-            if(coupon.validateMinimumPurchaseAmount(product.getPrice()) && coupon.validateLimitCount() && coupon.validateLimitIssueDate())
+            if(coupon.validateMinimumPurchaseAmount(product.getProductOption().getPrice()) && coupon.validateLimitCount() && coupon.validateLimitIssueDate())
                 filteredCoupons.add(coupon);
         }
         return filteredCoupons;

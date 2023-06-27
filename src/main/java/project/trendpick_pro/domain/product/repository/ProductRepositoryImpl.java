@@ -9,20 +9,18 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.ask.entity.QAsk;
-import project.trendpick_pro.domain.product.entity.Product;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
-import project.trendpick_pro.domain.product.entity.dto.response.*;
+import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.product.dto.response.*;
+import project.trendpick_pro.domain.product.entity.productOption.QProductOption;
 
 import java.util.List;
 
-import static project.trendpick_pro.domain.ask.entity.QAsk.*;
-import static project.trendpick_pro.domain.brand.entity.QBrand.*;
 import static project.trendpick_pro.domain.brand.entity.QBrand.brand;
 import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
 import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
-import static project.trendpick_pro.domain.product.entity.QProduct.*;
+import static project.trendpick_pro.domain.product.entity.product.QProduct.*;
+import static project.trendpick_pro.domain.product.entity.productOption.QProductOption.*;
 import static project.trendpick_pro.domain.tags.favoritetag.entity.QFavoriteTag.favoriteTag;
 import static project.trendpick_pro.domain.tags.tag.entity.QTag.tag;
 
@@ -42,7 +40,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.name,
                         brand.name,
                         commonFile.fileName,
-                        product.price,
+                        productOption.price,
                         product.discountRate,
                         product.discountedPrice
                         )
@@ -51,6 +49,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(product.mainCategory, mainCategory)
                 .leftJoin(product.subCategory, subCategory)
                 .leftJoin(product.brand, brand)
+                .leftJoin(product.productOption, productOption)
                 .leftJoin(product.file, commonFile)
                 .where(
                         mainCategoryEq(cond)
@@ -67,6 +66,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(product.mainCategory, mainCategory)
                 .leftJoin(product.subCategory, subCategory)
                 .leftJoin(product.brand, brand)
+                .leftJoin(product.productOption, productOption)
                 .leftJoin(product.file, commonFile)
                 .where(
                         mainCategoryEq(cond),
@@ -104,8 +104,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.id,
                         product.name,
                         commonFile.fileName,
-                        product.price,
-                        product.stock,
+                        productOption.price,
+                        productOption.stock,
                         product.createdDate,
                         product.saleCount,
                         product.rateAvg,
@@ -116,6 +116,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 ))
                 .from(product)
                 .leftJoin(product.file, commonFile)
+                .leftJoin(product.productOption, productOption)
                 .where(product.brand.name.eq(brand))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -139,7 +140,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.name,
                         brand.name,
                         commonFile.fileName,
-                        product.price,
+                        productOption.price,
                         product.discountRate,
                         product.discountedPrice
                         )
@@ -148,6 +149,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(product.mainCategory, mainCategory)
                 .leftJoin(product.subCategory, subCategory)
                 .leftJoin(product.brand, brand)
+                .leftJoin(product.productOption, productOption)
                 .leftJoin(product.file, commonFile)
                 .where(
                         product.name.contains(cond.getKeyword())

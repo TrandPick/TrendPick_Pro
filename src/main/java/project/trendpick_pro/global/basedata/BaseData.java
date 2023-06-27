@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.brand.service.BrandService;
-import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
-import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
@@ -23,7 +21,9 @@ import project.trendpick_pro.domain.coupon.repository.CouponRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.entity.productOption.ProductOption;
+import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
@@ -62,6 +62,14 @@ public class BaseData {
     private List<String> accessories;
     @Value("${brand}")
     private List<String> brands;
+    @Value("${sizes.tops}")
+    private List<String> sizeTops;
+    @Value("${sizes.bottoms}")
+    private List<String> sizeBottoms;
+    @Value("${sizes.shoes}")
+    private List<String> sizeShoes;
+    @Value("${colors}")
+    private List<String> colors;
     @Value("${file.path}")
     private String filePath;
 
@@ -72,7 +80,6 @@ public class BaseData {
             MainCategoryService mainCategoryService,
             SubCategoryService subCategoryService,
             BrandService brandService,
-            CartService cartService,
             RecommendService recommendService,
             ProductService productService,
             ProductRepository productRepository,
@@ -99,18 +106,16 @@ public class BaseData {
                 int memberCount = 10;
                 int productCount = 100;
                 int reviewCount = 100;
-                int cartCount = 10;
                 int couponCount = 50;
                 String brandName = "polo";
 
                 saveMembers(memberCount, tagNameService, memberService, recommendService);
                 saveUniqueMembers(memberService, brandName);
 
-                saveProducts(productCount, filePath, mainCategoryService, brandService, tagNameService, productRepository, brandName);
+                saveProducts(productCount, filePath, mainCategoryService, brandService, tagNameService, productRepository, brandName, sizeTops, sizeBottoms, sizeShoes, colors);
                 updateRecommends(memberService, recommendService);
 
                 saveReviews(reviewCount, productCount, filePath, memberService, productService ,reviewRepository);
-                saveCarts(cartCount, productCount, cartService, memberService);
                 saveStoreCoupon(couponCount, storeRepository, couponRepository, brandService);
 
                 log.info("BASE_DATA_SUCCESS");
@@ -210,19 +215,8 @@ public class BaseData {
 
     }
 
-    private static void saveCarts(int count, int productCount, CartService cartService, MemberService memberService) {
-        Member member = memberService.findByEmail("trendpick@naver.com").get();
-        for(int i = 1; i <= count; i++){
-            long result = (long) (Math.random() * (productCount/2)) + 1L;
-            if (result <= 1L) {
-                cartService.addItemToCart(member, new CartItemRequest(1L, (int) (Math.random() * 5)+ 1));
-            } else {
-                cartService.addItemToCart(member, new CartItemRequest(result, (int) (Math.random() * 5)+ 1));
-            }
-        }
-    }
-
-    private static void saveProducts(int count, String filePath, MainCategoryService mainCategoryService, BrandService brandService, TagNameService tagNameService, ProductRepository productRepository, String brandName) {
+    private static void saveProducts(int count, String filePath, MainCategoryService mainCategoryService, BrandService brandService, TagNameService tagNameService, ProductRepository productRepository, String brandName,
+                                     List<String> sizeTops, List<String> sizeBottoms, List<String> sizeShoes, List<String> colors) {
         long result;
         List<Product> products = new ArrayList<>();
         for (int n = 1; n <= count; n++) {
@@ -240,19 +234,58 @@ public class BaseData {
 
             if (!Objects.equals(mainCategory.getName(), "추천")) {
 
-                List<SubCategory> subCategories = mainCategory.getSubCategories();
-
                 result = (int) (Math.random() * 6);
+                List<SubCategory> subCategories = mainCategory.getSubCategories();
                 SubCategory subCategory = subCategories.get((int) result);
 
-                int result1 = (int) (Math.random() * 200)+ 100;
-                int result2 = (int) (Math.random() * (250000 - 20000 + 1)) + 10000;
+                int stockRandom = (int) (Math.random() * 200)+ 100;
+                int priceRandom = (int) (Math.random() * (250000 - 20000 + 1)) + 10000;
+
+                List<String> inputColors = new ArrayList<>(colors); // colors 리스트 복사
+
+                Collections.shuffle(inputColors); // 색상 리스트 섞기
+
+                int numColors = (int) (Math.random() * 3) + 3; // 필요한 개수 설정
+                if (numColors > inputColors.size()) {
+                    numColors = inputColors.size(); // 필요한 개수가 실제 색상 리스트 크기보다 크다면 최대값으로 설정
+                }
+
+                List<String> selectedColors = inputColors.subList(0, numColors);
+
+                List<String> inputSizes = new ArrayList<>();
+                switch (mainCategory.getName()) {
+                    case "상의", "아우터" -> {
+                        int startIndex = (int) (Math.random() * 2);
+                        int endIndex = startIndex + (int) (Math.random() * 4);
+                        for (int i = startIndex; i < endIndex + 3; i++) {
+                            inputSizes.add(sizeTops.get(i));
+                        }
+                    }
+                    case "하의" -> {
+                        int startIndex = (int) (Math.random() * 2);
+                        int endIndex = startIndex + (int) (Math.random() * 8);
+                        for (int i = startIndex; i < endIndex + 3; i++) {
+                            inputSizes.add(sizeBottoms.get(i));
+                        }
+                    }
+                    case "신발" -> {
+                        int startIndex = (int) (Math.random() * 2);
+                        int endIndex = startIndex + (int) (Math.random() * 8);
+                        for (int i = startIndex; i < endIndex + 3; i++) {
+                            inputSizes.add(sizeShoes.get(i));
+                        }
+                    }
+                    default -> inputSizes.add("FREE");
+                }
+
+                ProductOptionSaveRequest request = ProductOptionSaveRequest.of(inputSizes, selectedColors, stockRandom, priceRandom);
+                ProductOption productOption = ProductOption.of(request);
+
                 Product product = Product
                         .builder()
                         .name(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
                         .description(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
-                        .stock(result1)
-                        .price(result2)
+                        .productOption(productOption)
                         .mainCategory(mainCategory)
                         .subCategory(subCategory)
                         .brand(brand)

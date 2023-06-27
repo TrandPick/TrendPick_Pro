@@ -1,4 +1,4 @@
-package project.trendpick_pro.domain.product.entity.dto.request;
+package project.trendpick_pro.domain.product.entity.product.dto.request;
 
 import lombok.Getter;
 

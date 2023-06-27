@@ -1,6 +1,7 @@
 package project.trendpick_pro.domain.orders.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -12,6 +13,8 @@ import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.QOrderResponse;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.Month;
 
 import static project.trendpick_pro.domain.member.entity.QMember.member;
 import static project.trendpick_pro.domain.orders.entity.QOrder.order;
@@ -39,6 +42,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
                         orderItem.order.modifiedDate,
+                        orderItem.size,
+                        orderItem.color,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )
@@ -74,6 +79,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
                         orderItem.order.modifiedDate,
+                        orderItem.size,
+                        orderItem.color,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )
@@ -97,6 +104,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         orderItem.orderPrice,
                         orderItem.order.createdDate,
                         orderItem.order.modifiedDate,
+                        orderItem.size,
+                        orderItem.color,
                         orderItem.order.status.stringValue(),
                         orderItem.order.delivery.state.stringValue())
                 )
@@ -117,6 +126,46 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }
+
+    @Override
+    public List<OrderResponse> findAllByMonth(OrderSearchCond orderSearchCond) {
+        // 현재 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+
+        // 현재 월을 가져옴
+        int currentMonth = currentDate.getMonthValue();
+
+        List<OrderResponse> result = queryFactory
+                .select(new QOrderResponse(
+                        orderItem.order.id,
+                        orderItem.product.id,
+                        orderItem.product.file.fileName,
+                        orderItem.product.brand.name,
+                        orderItem.product.name,
+                        orderItem.quantity,
+                        orderItem.orderPrice,
+                        orderItem.order.createdDate,
+                        orderItem.order.modifiedDate,
+                        orderItem.size,
+                        orderItem.color,
+                        orderItem.order.status.stringValue(),
+                        orderItem.order.delivery.state.stringValue())
+                )
+                .from(orderItem)
+                .join(orderItem.order, order)
+                .join(order.member, member)
+                .on(orderItem.product.brand.name.eq(orderSearchCond.getBrand()))
+                .where(Expressions.dateTemplate(
+                        Integer.class,
+                        "MONTH({0})",
+                        orderItem.order.createdDate
+                ).eq(currentMonth))
+                .orderBy(orderItem.order.createdDate.desc())
+                .fetch();
+
+        return result;
+    }
+
 
     //동적 처리, 환불 내역을 볼 때만 값을 지정
     private static BooleanExpression statusEq(OrderSearchCond orderSearchCond) {

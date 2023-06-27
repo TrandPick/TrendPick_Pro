@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import project.trendpick_pro.domain.product.entity.dto.response.ProductListResponse;
+import project.trendpick_pro.domain.product.entity.product.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.service.ProductService;
 //import project.trendpick_pro.global.search.service.SearchService;
 
