@@ -22,16 +22,14 @@ public class OrderDetailResponse {
     private String paymentMethod;
     private LocalDateTime orderDate;
 
-    public static OrderDetailResponse of(Order order, List<OrderResponse> orderItems){
+    public static OrderDetailResponse of(Order order, List<OrderResponse> orderItems) {
         OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
         orderDetailResponse.orderId = order.getId();
         orderDetailResponse.orderStatus = order.getStatus().getValue();
         orderDetailResponse.orderItems = orderItems;
         orderDetailResponse.orderDate = order.getCreatedDate();
         orderDetailResponse.paymentMethod = order.getPaymentMethod();
-        for (OrderResponse orderItem : orderItems) {
-            orderDetailResponse.totalPrice += orderItem.getTotalPrice();
-        }
+        orderDetailResponse.totalPrice = order.getTotalPrice();
         return orderDetailResponse;
     }
 }
