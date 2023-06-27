@@ -24,12 +24,13 @@ public class OrderResponse {
     private String size;
     private String color;
     private int productPrice;
+    private int discountPrice;
     private String orderStatus;
     private String deliveryStatus;
 
     @Builder
     @QueryProjection
-    public OrderResponse(Long orderId, Long productId, String productFilePath, String brandName, String productName, int count,int productPrice, LocalDateTime orderDate, LocalDateTime canceledDate,
+    public OrderResponse(Long orderId, Long productId, String productFilePath, String brandName, String productName, int count,int productPrice, int discountPrice, LocalDateTime orderDate, LocalDateTime canceledDate,
                          String size, String color, String orderStatus, String deliveryStatus) {
         this.orderId = orderId;
         this.productId = productId;
@@ -38,6 +39,7 @@ public class OrderResponse {
         this.productName = productName;
         this.count = count;
         this.productPrice = productPrice;
+        this.discountPrice = discountPrice;
         this.orderDate = orderDate;
         this.canceledDate = canceledDate;
         this.size = size;
@@ -47,6 +49,6 @@ public class OrderResponse {
     }
 
     public int getTotalPrice(){
-        return productPrice * count;
+        return productPrice * count - discountPrice;
     }
 }
