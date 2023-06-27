@@ -166,6 +166,20 @@ public class OrderService {
         return new PageImpl<>(modifiableList, allBySeller.getPageable(), modifiableList.size());
     }
 
+    public int settlementOfSales(Member member) {
+        int totalPrice = 0;
+
+        List<OrderResponse> ordersPerMonth = orderRepository.findAllByMonth(new OrderSearchCond(member.getBrand()));
+
+        for(OrderResponse op : ordersPerMonth){
+            if(op.getOrderStatus().equals("ORDERED")){
+                totalPrice += op.getTotalPrice();
+            }
+        }
+
+        return totalPrice;
+    }
+
     public Order findById(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
     }

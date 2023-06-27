@@ -11,6 +11,7 @@
             border-radius: 0.5rem;
             padding: 1.5rem;
             margin-bottom: 2rem;
+            margin-top: 1rem;
             box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
         }
 
@@ -69,12 +70,12 @@
     </style>
 </head>
 <body>
-<main layout:fragment="main" class="flex-grow flex items-center justify-center">
+<main layout:fragment="main" class="flex-grow flex items-start justify-center">
     <div class="max-w-2xl w-full px-4">
         <div class="text-center mt-10" th:if="${#lists.isEmpty(orderNotifications) && #lists.isEmpty(deliveryNotifications)}">
             <i class="fa-regular fa-face-laugh"></i> 최근에 받은 알림이 없습니다.
         </div>
-        <div class="mt-4 flex flex-col gap-2">
+        <div class="flex flex-col gap-4">
             <div class="notification" th:each="notification : ${orderNotifications}">
                 <div class="notification-info">
                     <div class="text-gray-500">
@@ -128,7 +129,7 @@
                               th:text="${#strings.substring(notification.getOrder().getOrderItems().get(0).getProduct().getName(), 0, 10)} + '...'"></span>
                         <span th:unless="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getName()) > 10}"
                               th:text="${notification.getOrder().getOrderItems().get(0).getProduct().getName()}"></span>
-                        <span th:if="${notification.getOrder().getOrderItems().size() > 1}">..외
+                        <span th:if="${notification.getOrder().getOrderItems().size() > 1}">외
                             <span th:text="${notification.getOrder().getOrderItems().size() - 1}"></span>개</span>
                     </div>
                     <div>

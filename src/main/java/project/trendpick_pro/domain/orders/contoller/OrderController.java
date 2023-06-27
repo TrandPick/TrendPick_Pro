@@ -80,6 +80,8 @@ public class OrderController {
             Model model) {
         Page<OrderResponse> orderList = orderService.findAllBySeller(rq.getAdmin(), offset);
         model.addAttribute("orderList", orderList);
+        int totalPricePerMonth = orderService.settlementOfSales(rq.getAdmin());
+        model.addAttribute("totalPricePerMonth", totalPricePerMonth);
         return "trendpick/admin/sales";
     }
 
@@ -106,4 +108,11 @@ public class OrderController {
         model.addAttribute("orderList", orderList);
         return "trendpick/usr/member/refunds";
     }
+
+//    @GetMapping("/admin/settlement")
+//    public String settlemnetPerMonth(Model model) {
+//        int totalPricePerMonth = orderService.settlementOfSales(rq.getMember());
+//        model.addAttribute("totalPricePerMonth", totalPricePerMonth);
+//        return "trendpick/admin/sales";
+//    }
 }
