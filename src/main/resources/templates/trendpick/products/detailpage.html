@@ -81,6 +81,13 @@
                         <button onclick="increaseValue()" class="px-3 py-2 bg-gray-200 text-gray-800">+</button>
                     </div>
                 </div>
+                <form class="card-actions justify-start" id="couponForm">
+                    <input type="hidden" name="productId" th:value="${productResponse.id}"/>
+                    <button type="submit" class="btn btn-sm btn-outline" onclick="submitCouponForm(event)">
+                        <i class="fa-solid fa-circle-down"></i>
+                        쿠폰받기
+                    </button>
+                </form>
                 <div class="form-container">
                     <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" th:object="${productRequest}" method="post" onsubmit="return confirmCart()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
@@ -325,6 +332,15 @@
                 }, 0);
                 return false;
             }
+        }
+
+        //쿠폰창 띄우기
+        function submitCouponForm(event) {
+            event.preventDefault();
+            var form = document.getElementById("couponForm");
+            var productId = form.querySelector("[name='productId']").value;
+            var url = '/trendpick/coupons/box?productId=' + productId;
+            window.open(url, 'couponWindow', 'width=800,height=600,scrollbars=yes');
         }
     </script>
 </main>

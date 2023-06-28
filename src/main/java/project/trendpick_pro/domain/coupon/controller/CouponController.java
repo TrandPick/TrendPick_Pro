@@ -36,8 +36,14 @@ public class CouponController {
     }
 
     @GetMapping("/list")
-    public String allCoupons(Model model){
+    public String showAllCoupons(Model model){
         model.addAttribute("coupons", couponService.findAllCoupons());
         return "trendpick/coupons/list";
+    }
+
+    @GetMapping("/box")
+    public String showCouponsByProduct(@RequestParam("productId") Long productId, Model model){
+        model.addAttribute("coupons", couponService.findCouponsByProduct(productId));
+        return "trendpick/products/coupons";
     }
 }
