@@ -81,12 +81,10 @@ public class BaseData {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    @Value("cloud.aws.credentials.accessKey")
+    @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
-    @Value("cloud.aws.credentials.secretKey")
+    @Value("${cloud.aws.credentials.secretKey}")
     private String secretKey;
-    @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
-    private String filePath;
 
     @Bean
     CommandLineRunner initData(
@@ -126,6 +124,10 @@ public class BaseData {
 
                 saveMembers(memberCount, tagNameService, memberService, recommendService);
                 saveUniqueMembers(memberService, brandName);
+
+                log.info("accessKey : {}", accessKey);
+                log.info("secretKey : {}", secretKey);
+                log.info("bucket : {}", bucket);
 
                 saveProducts(productCount, accessKeyMap, mainCategoryService, brandService, tagNameService, productRepository, brandName, sizeTops, sizeBottoms, sizeShoes, colors);
                 updateRecommends(memberService, recommendService);
