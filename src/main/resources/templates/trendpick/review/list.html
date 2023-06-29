@@ -9,11 +9,11 @@
         <a id="user-reviews-btn" class="text-decoration-line: underline" th:href="@{/trendpick/review/user}">내 리뷰만 보기</a>
         <a id="all-reviews-btn" class="text-decoration-line: underline" th:href="@{/trendpick/review/list}">모든 리뷰 보기</a>
     </div>
-    <div class="justify-center grid grid-cols-5 gap-4">
-        <div th:each="reviewResponse : ${reviewResponses.content}" class="grid-item card bordered">
+    <div class="grid grid-flow-row-dense grid-cols-3 gap-4 m-4">
+        <div th:each="reviewResponse : ${reviewResponses.content}" class="card bordered cursor-pointer flex justify-center items-center">
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <a th:href="@{/trendpick/review/{reviewId}(reviewId=${reviewResponse.id})}">
-                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${reviewResponse.mainFile}|" class="mx-auto w-full"  style="height: 250px;"/>
+                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${reviewResponse.mainFile}|" class="mx-auto w-full rounded"  style="width: 85%; height: 85%;"/>
                     <p class="text-center">상품명: <span th:text="${reviewResponse.productName}"></span></p>
                     <p class="text-center">제목: <span th:text="${reviewResponse.title}"></span></p>
                     <p class="mb-4 text-center">
@@ -34,14 +34,34 @@
             </div>
         </div>
     </div>
+    <br/><br/><br/>
 
-    <div class="fixed bottom-2 left-0 w-full flex justify-center" th:if="${reviewResponses.totalPages > 1}">
-        <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number})}">Previous</a>
-        <span th:each="i : ${#numbers.sequence(0, reviewResponses.totalPages-1)}" class="ml-4">
-            <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i+1}" th:class="${reviewResponses.number == i ? 'current-page' : '' }"></a>
-        </span>
-        <a th:if="${reviewResponses.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number+1})}" class="ml-4">Next</a>
+    <div class="flex justify-center my-4"
+         th:if="${reviewResponses != null and not #lists.isEmpty(reviewResponses.content)}">
+        <div class="btn-group">
+            <div th:if="${reviewResponses.hasPrevious()}">
+                <a th:if="${reviewResponses.hasPrevious()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number-1})}" class="btn">Previous</a>
+            </div>
+            <div th:if="${reviewResponses.number/5 * 5 + 1 + 4} < ${reviewResponses.totalPages}">
+                <div class="flex">
+                    <div th:each="i : ${#numbers.sequence(reviewResponses.number/5 * 5 + 1, reviewResponses.number/5 * 5 + 1 + 4)}">
+                        <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i}" th:class="${reviewResponses.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                    </div>
+                </div>
+            </div>
+            <div th:unless="${reviewResponses.number/5 + 1 + 4} < ${reviewResponses.totalPages}">
+                <div class="flex">
+                    <div th:each="i : ${#numbers.sequence(reviewResponses.number/5 * 5 + 1, reviewResponses.totalPages)}">
+                        <a th:href="@{/trendpick/review/list(page=${i})}" th:text="${i}" th:class="${reviewResponses.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${reviewResponses.hasNext()}">
+                <a th:if="${reviewResponses.hasNext()}" th:href="@{/trendpick/review/list(page=${reviewResponses.number+1})}" class="btn">Next</a>
+            </div>
+        </div>
     </div>
+
     <script>
         window.addEventListener('DOMContentLoaded', function () {
             const userReviewsPageUrl = '/trendpick/review/user';

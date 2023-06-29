@@ -13,6 +13,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
     <link rel="stylesheet" href="https://jhs512.github.io/toastr/toastr.css">
 
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"/>
@@ -34,22 +36,28 @@
 <body class="mx-auto" style="width:80%; min-height:100vh; display: flex; flex-direction: column;">
 <div class="bg-base-100 flex-wrap border-b-2 border-gray-300">
     <div class="nav3">
-
         <br/>
-        <!-- Title Image Section -->
-        <div class="px-2 lg:flex-none w-16 h-16">
-            <a  href="/trendpick/products/list?main-category=전체">
-                <div class="flex items-center w-16 h-16">
-                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/trendpick_logo.png|" alt="TrendPick"/>
-                    <h1 class="text-4xl font-bold ml-4">TrendPick</h1>
+        <div class="flex px-2 space-x-4">
+            <div class="flex-shrink-0 w-60 h-16 flex items-center">
+                <a href="/trendpick/products/list?main-category=전체" class="flex items-center">
+                    <img src="/images/trendpick_logo.png" alt="TrendPick" class="w-16 h-16" />
+                    <h1 class="text-4xl font-bold ml-4 inline-block">TrendPick</h1>
+                </a>
+            </div>
+            <div class="py-4 text-center" style="flex: 1;">
+                <div class="w-full sm:w-2/3 lg:w-1/2 xl:w-1/3 mx-auto">
+                    <form action="/search/keyword" method="get" class="flex items-center shadow-lg rounded-lg overflow-hidden">
+                        <input type="text" name="keyword" placeholder="검색어를 입력하세요." class="h-10 px-4 focus:outline-none w-full" />
+                        <button type="submit" class="flex items-center justify-center bg-black h-10 px-4 text-white hover:bg-gray-800 transition duration-200 fa-solid fa-magnifying-glass"></button>
+                    </form>
                 </div>
-            </a>
+            </div>
+            <div class="flex-shrink-0 w-60 h-16"></div>
         </div>
-        <br/>
 
         <div class="flex justify-between">
             <ul class="menu menu-horizontal px-1">
-                <li th:if="${@rq.CheckLoginHtml()} and !${@rq.CheckAdminHtml()}"><a
+                <li th:if="${@rq.checkLogin()} and !${@rq.checkAdmin()}"><a
                         href="/trendpick/products/list?main-category=recommend">추천</a></li>
                 <li><a href="/trendpick/products/list?main-category=전체">전체</a></li>
                 <li><a href="/trendpick/products/list?main-category=상의">상의</a></li>
@@ -64,18 +72,18 @@
                 <li><a href="/trendpick/member/register" sec:authorize="isAnonymous()">회원가입</a></li>
                 <li><a href="/trendpick/member/login" sec:authorize="isAnonymous()">로그인</a></li>
                 <li class="ml-2 mt-1" th:if="${@rq.checkLogin()}">
-                    <div th:if="${@rq.CheckMemberHtml()}" class="centered">
-                        <div class="badge badge-accent badge-outline text-black">
-                            <span th:text="${@rq.GetMember().username}+' 님'"></span>
+                    <div th:if="${@rq.checkMember()}" class="centered">
+                        <div class="badge badge-black badge-outline text-black">
+                            <span th:text="${@rq.getMember().username}+' 님'"></span>
                         </div>
                     </div>
-                    <div th:if="${@rq.CheckBrandAdminHtml()}" class="centered">
-                        <div class="badge badge-accent badge-outline text-black">
-                            <span th:text="${@rq.GetMember().brand}+' 관리자'"></span>
+                    <div th:if="${@rq.checkBrand()}" class="centered">
+                        <div class="badge badge-black badge-outline text-black">
+                            <span th:text="${@rq.getLogin().brand}+' 관리자'"></span>
                         </div>
                     </div>
-                    <div th:if="${@rq.GetMember().role.value == 'ADMIN'}" class="centered">
-                        <div class="badge badge-accent">
+                    <div th:if="${@rq.getLogin().role.value == 'ADMIN'}" class="centered">
+                        <div class="badge badge-black">
                             <span>관리자 계정</span>
                         </div>
                     </div>
@@ -86,8 +94,8 @@
                         <input class="link link-hover" type="submit" value="로그아웃">
                     </form>
                 </li>
-                <div th:if="${@rq.CheckLoginHtml()}">
-                    <button class="btn btn-ghost btn-circle" th:if="!${@rq.CheckAdminHtml()}">
+                <div th:if="${@rq.checkLogin()}">
+                    <button class="btn btn-ghost btn-circle" th:if="!${@rq.checkAdmin()}">
                         <div class="indicator">
                             <a href="/trendpick/usr/cart/list">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -98,9 +106,18 @@
                             </a>
                         </div>
                     </button>
+                    <button class="btn btn-ghost btn-circle" th:if="!${@rq.checkAdmin()}">
+                        <div class="indicator">
+                        <a href="/trendpick/usr/notification/list">
+                            <svg xmlns="http://www.w3.org/2000/svg"  class="h-5 w-5" height="1em" viewBox="0 0 448 512">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M224 0c-17.7 0-32 14.3-32 32V49.9C119.5 61.4 64 124.2 64 200v33.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V200c0-75.8-55.5-138.6-128-150.1V32c0-17.7-14.3-32-32-32zm0 96h8c57.4 0 104 46.6 104 104v33.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V200c0-57.4 46.6-104 104-104h8zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z"/></svg>
+                        </a>
+                       </div>
+                    </button>
                 </div>
-                <div th:if="${@rq.CheckLoginHtml()}">
-                    <div class="dropdown" th:if="${@rq.CheckMemberHtml()}">
+                <div th:if="${@rq.checkLogin()}">
+                    <div class="dropdown" th:if="${@rq.checkMember()}">
                         <label tabindex="0" class="flex btn btn-ghost btn-circle">
                             <div class="flex justify-center items-center">
                                 <i class="fa-solid fa-bars"></i>
@@ -125,12 +142,12 @@
                             </li>
                             <li>
                                   <span>
-                                    <a th:href="@{/trendpick/member/info/address}"><span>배송지 관리</span></a>
+                                    <a th:href="@{/trendpick/coupons/list}"><span>받을 수 있는 쿠폰목록(임시)</span></a>
                                   </span>
                             </li>
                         </ul>
                     </div>
-                    <div class="dropdown" th:unless="${@rq.CheckMemberHtml()}">
+                    <div class="dropdown" th:unless="${@rq.checkMember()}">
                         <label tabindex="0" class="btn btn-ghost btn-circle">
                             <i class="fa-solid fa-bars"></i>
                         </label>
@@ -144,6 +161,16 @@
                             <li>
                                   <span>
                                     <a th:href="@{|/trendpick/orders/admin/list?page=0|}"><span>판매내역</span></a>
+                                  </span>
+                            </li>
+                            <li>
+                                  <span>
+                                    <a th:href="@{|/trendpick/coupons/store/list?page=0|}"><span>쿠폰관리(임시)</span></a>
+                                  </span>
+                            </li>
+                            <li>
+                                  <span>
+                                    <a th:href="@{|/trendpick/coupons/${@rq.getBrandName()}/generate|}"><span>쿠폰발급</span></a>
                                   </span>
                             </li>
                         </ul>

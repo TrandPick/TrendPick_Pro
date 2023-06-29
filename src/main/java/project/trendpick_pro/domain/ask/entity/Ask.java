@@ -7,10 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.answer.entity.Answer;
 import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
-import project.trendpick_pro.domain.ask.entity.dto.request.AskRequest;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.product.entity.Product;
+import project.trendpick_pro.domain.product.entity.product.Product;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class Ask extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private AskStatus status;
 
-    @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Answer> answerList = new ArrayList<>();
 
@@ -61,5 +60,9 @@ public class Ask extends BaseTimeEntity {
     }
     public void changeStatus(){
         this.status = AskStatus.COMPLETED;
+    }
+
+    public void changeStatusYet() {
+        this.status = AskStatus.YET;
     }
 }

@@ -43,7 +43,7 @@
 </head>
 <body>
 <main layout:fragment="main"
-      class="h-screen w-screen bg-white flex flex-col pb-4 container mx-auto my-8 p-6 bg-white rounded shadow"
+      class="min-h-screen w-screen bg-white flex flex-col pb-4 container mx-auto my-8 p-6 bg-white rounded shadow"
       style="max-width: 100%; flex-grow: 1;">
 
     <h2 class="text-3xl font-bold mb-8">장바구니</h2>
@@ -53,6 +53,7 @@
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 rounded-tl rounded-bl text-center"><input type="checkbox" id="selectAllCheckbox" checked></th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">상품정보</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">가격</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center"></th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">수량</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">담은날짜</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">삭제</th>
@@ -62,7 +63,7 @@
         <tr th:each="item, i : ${cartItems}" class="border-b">
             <td class="px-4 py-3 text-center">
                 <input type="checkbox" name="selectedItems" class="form-checkbox text-blue-500 h-5 w-5"
-                       th:data-product-price="${item.product.price}"
+                       th:data-product-price="${item.product.productOption.price}"
                        th:data-product-id="${item.product.id}"
                        th:checked="${i.count == 1 ? 'checked' : ''}"
                        onclick="updateTotalPrice(this)">
@@ -70,17 +71,31 @@
 
             <td class="px-4 py-3 flex items-center space-x-3 text-center">
                 <div>
-                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
+                    <a th:href="|/trendpick/products/${item.product.id}|">
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
+                    </a>
                 </div>
                 <div>
                     <a th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
                        th:text="${item.getProduct().getName()}" class="font-semibold text-gray-900 hover:text-blue-500"></a>
                     <div class="text-sm text-gray-500 text-left" th:text="${item.getProduct().getBrand().getName()}"></div>
+                    <div class="text-sm text-gray-500 text-left" th:text="'size: ' + ${item.size} + ' / ' + 'color: ' + ${item.color}"></div>
+
                 </div>
             </td>
 
             <td id="itemPrice-${item.id}" class="px-4 py-3 text-center"
-                th:text="${#numbers.formatDecimal(item.product.price*item.quantity, 0, 'COMMA', 0, 'POINT')} + ' 원'">
+                th:text="${#numbers.formatDecimal(item.product.productOption.price*item.quantity, 0, 'COMMA', 0, 'POINT')} + ' 원'">
+            </td>
+
+            <td class="px-4 py-3 text-center">
+                <form class="card-actions justify-start" th:id="'couponForm-' + ${item.id}">
+                    <input type="hidden" name="productId" th:value="${item.product.id}"/>
+                    <button type="submit" class="btn btn-sm btn-outline" th:attr="onclick=|submitCouponForm(event, ${item.id})|">
+                        <i class="fa-solid fa-circle-down"></i>
+                        쿠폰받기
+                    </button>
+                </form>
             </td>
 
             <form th:action="@{/trendpick/usr/cart/update}" method="post" class="quantity_update_form">
@@ -102,6 +117,8 @@
         </tr>
         </tbody>
     </table>
+    <br/><br/>
+
     <form th:action="@{/trendpick/orders/order/cart}" method="get" id="cartForm">
         <input type="hidden" id="selectedItemsInput" name="selectedItems">
         <div class="mt-8 flex justify-end items-center">
@@ -110,6 +127,7 @@
             <button type="submit" class="bg-black text-white rounded-lg px-8 py-2 ml-8" onclick="submitCartForm(this.form)">구매하기</button>
         </div>
     </form>
+    <br/><br/>
 
     <script>
         // 수량 변경 시 결제 금액 업데이트
@@ -166,8 +184,10 @@
                 if (checkboxes[i].checked) {
                     var quantityInput = checkboxes[i].parentNode.parentNode.querySelector('.quantity_input');
                     var quantity = parseInt(quantityInput.value);
-                    var price = parseInt(checkboxes[i].getAttribute('data-product-price'));
+                    var priceAttr = checkboxes[i].getAttribute('data-product-price');
+                    var price = priceAttr ? parseInt(priceAttr) : 0;
                     totalPrice += price * quantity;
+
                 }
             }
             var totalPriceElement = document.getElementById('totalPrice');
@@ -186,6 +206,11 @@
             }
             calculateTotalPrice();
         });
+
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].addEventListener('click', calculateTotalPrice);
+        }
 
         // 개별 상품 체크박스 클릭 시 결제 금액 업데이트
         function updateTotalPrice(element) {
@@ -223,6 +248,15 @@
             }
             // 총 주문 수량 업데이트
             document.getElementById('totalCount').innerText = totalCount;
+        }
+
+        //상품별 적용가능한 쿠폰목록
+        function submitCouponForm(event, itemId) {
+            event.preventDefault();
+            var form = document.getElementById("couponForm-" + itemId);
+            var productId = form.querySelector("[name='productId']").value;
+            var url = '/trendpick/coupons/box?productId=' + productId;
+            window.open(url, 'couponWindow', 'width=800,height=600,scrollbars=yes');
         }
     </script>
 </main>

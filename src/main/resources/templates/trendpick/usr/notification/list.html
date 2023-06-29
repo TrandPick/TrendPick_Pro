@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>알림</title>
+    <style>
+        .notification {
+            border-left: 4px solid #1c1c1c;
+            background-color: #ffffff;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            margin-top: 1rem;
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .notification-info i {
+            color: #a0aec0;
+            margin-right: 0.5rem;
+        }
+
+        .notification-info .date {
+            color: #718096;
+        }
+
+        .notification-content {
+            line-height: 1.5;
+        }
+
+        .notification-content .product-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-content .product-name.shortened {
+            display: inline-block;
+            max-width: 10rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .notification-content .more-items {
+            color: #718096;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .notification-content .status {
+            font-weight: 600;
+            font-size: 1.125rem;
+            color: #2d3748;
+            margin-top: 1rem;
+        }
+
+        .no-notification {
+            color: #a0aec0;
+            font-size: 1.125rem;
+            margin-top: 4rem;
+        }
+
+    </style>
+</head>
+<body>
+<main layout:fragment="main" class="flex-grow flex items-start justify-center">
+    <div class="max-w-2xl w-full px-4">
+        <div class="text-center mt-10" th:if="${#lists.isEmpty(orderNotifications) && #lists.isEmpty(deliveryNotifications)}">
+            <i class="fa-regular fa-face-laugh"></i> 최근에 받은 알림이 없습니다.
+        </div>
+        <div class="flex flex-col gap-4">
+            <div class="notification" th:each="notification : ${orderNotifications}">
+                <div class="notification-info">
+                    <div class="text-gray-500">
+                        <i class="fa-regular fa-clock"></i>알림
+                    </div>
+                    <div>
+                        <a th:href="@{/trendpick/usr/notification/delete/{notificationId}(notificationId=${notification.getId()})}"
+                           class="text-red-500 hover:text-gray-500">X</a>
+                    </div>
+                </div>
+                <div class="notification-content">
+                    <div class="status">
+                        <span th:text="${notification.getOrderState()}"></span>
+                    </div>
+                    <div>
+                        날짜: <span th:text="${#temporals.format(notification.getCreateDate(), 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                    <div>
+                        상품명:
+                        <span th:if="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getName()) > 10}"
+                              th:text="${#strings.substring(notification.getOrder().getOrderItems().get(0).getProduct().getName(), 0, 10)} + '...'"></span>
+                        <span th:unless="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getName()) > 10}"
+                              th:text="${notification.getOrder().getOrderItems().get(0).getProduct().getName()}"></span>
+                        <span th:if="${notification.getOrder().getOrderItems().size() > 1}">외
+                            <span th:text="${notification.getOrder().getOrderItems().size() - 1}"></span>개</span>
+                    </div>
+                    <div>
+                        결제금액: <span th:text="${#numbers.formatDecimal(notification.getOrder().getTotalPrice(), 0, 'COMMA', 0, 'POINT')} + '원'"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="notification" th:each="notification : ${deliveryNotifications}">
+                <div class="notification-info">
+                    <div class="text-gray-500">
+                        <i class="fa-regular fa-clock"></i>알림
+                    </div>
+                    <div class="text-gray-400">
+                        <span th:text="${#temporals.format(notification.getCreateDate(), 'yyyy-MM-dd')}"></span>
+                    </div>
+                </div>
+                <div class="notification-content">
+                    <div class="status">
+                        <span th:text="${notification.getDeliveryState()}"></span>
+                    </div>
+                    <div>
+                        날짜: <span th:text="${#temporals.format(notification.getCreateDate(), 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                    <div>
+                        상품명:
+                        <span th:if="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getName()) > 10}"
+                              th:text="${#strings.substring(notification.getOrder().getOrderItems().get(0).getProduct().getName(), 0, 10)} + '...'"></span>
+                        <span th:unless="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getName()) > 10}"
+                              th:text="${notification.getOrder().getOrderItems().get(0).getProduct().getName()}"></span>
+                        <span th:if="${notification.getOrder().getOrderItems().size() > 1}">외
+                            <span th:text="${notification.getOrder().getOrderItems().size() - 1}"></span>개</span>
+                    </div>
+                    <div>
+                        결제금액: <span th:text="${#numbers.formatDecimal(notification.getOrder().getTotalPrice(), 0, 'COMMA', 0, 'POINT')} + '원'"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

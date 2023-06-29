@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://jhs512.github.io/toastr/toastr.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.6/dist/full.css" rel="stylesheet" type="text/css"/>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="/resource/common/common.js"></script>
+
+    <link rel="stylesheet" href="/resource/common/common.css">
+
+    <script>
+        // 타임리프 문법(파라미터, ? 뒤에 입력된 매개변수들)
+        const params = JSON.parse('[( ${@rq.paramsJsonStr} )]');
+    </script>
+
+    <title>쿠폰적용</title>
+</head>
+<body>
+<div class="grid grid-flow-row-dense grid-cols-1 gap-4 m-2">
+    <h1 class="mb-4">
+        <i class="fa-solid fa-list-ol"></i>
+        쿠폰목록
+    </h1>
+    <div th:each="couponCard: ${couponCards}">
+        <div class="card bg-base-80 shadow-xl">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <span th:text="${couponCard.discountPercent} + '% 쿠폰'"></span>
+                </h3>
+                <div>
+                    <span th:text="${couponCard.couponName}"></span>
+                </div>
+                <div class="text-gray-500 text-sm mt-2">
+                    <div>
+                        <span class="text-red-400" th:text="${#temporals.format(couponCard.startDate, 'YY.MM.dd')}"></span> ~
+                        <span class="text-red-400" th:text="${#temporals.format(couponCard.endDate, 'YY.MM.dd')}"></span>
+                    </div>
+                    <div>
+                        <span>쿠폰 적용시</span>
+                        <span class="text-red-400" th:text="${couponCard.formattedDiscountPrice}"></span>
+                        <span>할인</span>
+                    </div>
+                    <form class="card-actions justify-end"
+                          th:action="@{/trendpick/usr/couponCards/apply}"
+                          method="POST">
+                        <input type="hidden" name="couponCard" th:value="${couponCard.couponCardId}"/>
+                        <input type="hidden" name="orderItem" th:value="${orderItemId}"/>
+                        <button type="submit" class="btn btn-sm btn-outline">
+                            <i class="fa-solid fa-circle-down"></i>
+                            쿠폰적용
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    if (params.msg) {
+        toastNotice(params.msg[0]);
+    }
+
+    if (params.errorMsg) {
+        toastWarning(params.errorMsg[0]);
+    }
+
+    // history.back 에 의해서 돌아온 경우에 실행됨
+    // 평소에도 실행됨
+    $(window).bind("pageshow", function (event) {
+        const localStorageKeyAboutHistoryBackErrorMsg = "historyBackErrorMsg___" + location.href;
+
+        if (localStorage.getItem(localStorageKeyAboutHistoryBackErrorMsg)) {
+            toastWarning(localStorage.getItem(localStorageKeyAboutHistoryBackErrorMsg));
+            localStorage.removeItem(localStorageKeyAboutHistoryBackErrorMsg);
+        } else {
+            const localStorageKeyAboutHistoryBackErrorMsg = "historyBackErrorMsg___null";
+
+            if (localStorage.getItem(localStorageKeyAboutHistoryBackErrorMsg)) {
+                toastWarning(localStorage.getItem(localStorageKeyAboutHistoryBackErrorMsg));
+                localStorage.removeItem(localStorageKeyAboutHistoryBackErrorMsg);
+            }
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jdenticon@3.2.0/dist/jdenticon.min.js" async
+        integrity="sha384-yBhgDqxM50qJV5JPdayci8wCfooqvhFYbIKhv0hTtLvfeeyJMJCscRfFNKIxt43M"
+        crossorigin="anonymous">
+</script>
+</body>
+</html>

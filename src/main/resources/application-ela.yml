@@ -1,0 +1,24 @@
+<<<<<<< HEAD
+#spring:
+#  data:
+#    elasticsearch:
+#      client:
+#        rest:
+#          uris: ${elasticKey.uris}
+#          cluster-nodes: ${elasticKey.uris}
+#          username: ${elasticKey.username}
+#          password: ${elasticKey.password}
+#logging.level:
+#    org:
+#      elasticsearch: debug
+#=======
+#spring:
+#  data:
+#    elasticsearch:
+#      client:
+#        rest:
+#          uris: ${elasticKey.uris}
+#          cluster-nodes: ${elasticKey.uris}
+#          username: ${elasticKey.username}
+#          password: ${elasticKey.password}
+#>>>>>>> 0efd4fab9e29fd0dc15b3e35217a9546d15541e0

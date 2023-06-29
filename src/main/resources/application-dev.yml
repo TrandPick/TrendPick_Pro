@@ -18,7 +18,8 @@ spring:
   data:
     redis:
       host: 172.17.0.1
+
 logging.level:
   org:
-    hibernate.SQL: debug
+    hibernate.SQL: error
 

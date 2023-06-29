@@ -9,16 +9,18 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.product.entity.dto.request.ProductSearchCond;
-import project.trendpick_pro.domain.product.entity.dto.response.*;
+import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSearchCond;
+import project.trendpick_pro.domain.product.entity.product.dto.response.*;
+import project.trendpick_pro.domain.product.entity.productOption.QProductOption;
 
 import java.util.List;
 
 import static project.trendpick_pro.domain.brand.entity.QBrand.brand;
-import static project.trendpick_pro.domain.category.entity.QMainCategory.mainCategory;
-import static project.trendpick_pro.domain.category.entity.QSubCategory.subCategory;
+import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
+import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
-import static project.trendpick_pro.domain.product.entity.QProduct.product;
+import static project.trendpick_pro.domain.product.entity.product.QProduct.*;
+import static project.trendpick_pro.domain.product.entity.productOption.QProductOption.*;
 import static project.trendpick_pro.domain.tags.favoritetag.entity.QFavoriteTag.favoriteTag;
 import static project.trendpick_pro.domain.tags.tag.entity.QTag.tag;
 
@@ -38,16 +40,20 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.name,
                         brand.name,
                         commonFile.fileName,
-                        product.price
-                ))
+                        productOption.price,
+                        product.discountRate,
+                        product.discountedPrice
+                        )
+                )
                 .from(product)
-                .innerJoin(product.mainCategory, mainCategory)
-                .innerJoin(product.subCategory, subCategory)
-                .innerJoin(product.brand, brand)
-                .innerJoin(product.file, commonFile)
+                .leftJoin(product.mainCategory, mainCategory)
+                .leftJoin(product.subCategory, subCategory)
+                .leftJoin(product.brand, brand)
+                .leftJoin(product.productOption, productOption)
+                .leftJoin(product.file, commonFile)
                 .where(
-                        mainCategoryEq(cond),
-                        subCategoryEq(cond)
+                        mainCategoryEq(cond)
+                                .and(subCategoryEq(cond))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -57,10 +63,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         JPAQuery<Long> count = queryFactory
                 .select(product.count())
                 .from(product)
-                .innerJoin(product.mainCategory, mainCategory)
-                .innerJoin(product.subCategory, subCategory)
-                .innerJoin(product.brand, brand)
-                .innerJoin(product.file, commonFile)
+                .leftJoin(product.mainCategory, mainCategory)
+                .leftJoin(product.subCategory, subCategory)
+                .leftJoin(product.brand, brand)
+                .leftJoin(product.productOption, productOption)
+                .leftJoin(product.file, commonFile)
                 .where(
                         mainCategoryEq(cond),
                         subCategoryEq(cond)
@@ -97,28 +104,78 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.id,
                         product.name,
                         commonFile.fileName,
-                        product.price,
-                        product.stock,
+                        productOption.price,
+                        productOption.stock,
                         product.createdDate,
+                        product.saleCount,
                         product.rateAvg,
                         product.reviewCount,
-                        product.askCount
+                        product.askCount,
+                        product.discountRate,
+                        product.discountedPrice
                 ))
                 .from(product)
-                .innerJoin(product.file, commonFile)
+                .leftJoin(product.file, commonFile)
+                .leftJoin(product.productOption, productOption)
                 .where(product.brand.name.eq(brand))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(product.createdDate.desc())
+                .orderBy(product.createdDate.desc()) //정렬추가
                 .fetch();
 
         JPAQuery<Long> count = queryFactory
                 .select(product.count())
                 .from(product)
-                .innerJoin(product.file, commonFile)
+                .leftJoin(product.file, commonFile)
                 .where(product.brand.name.eq(brand));
 
         return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
+    }
+
+    @Override
+    public Page<ProductListResponse> findAllByKeyword(ProductSearchCond cond, Pageable pageable) {
+        List<ProductListResponse> result = queryFactory
+                .select(new QProductListResponse(
+                        product.id,
+                        product.name,
+                        brand.name,
+                        commonFile.fileName,
+                        productOption.price,
+                        product.discountRate,
+                        product.discountedPrice
+                        )
+                )
+                .from(product)
+                .leftJoin(product.mainCategory, mainCategory)
+                .leftJoin(product.subCategory, subCategory)
+                .leftJoin(product.brand, brand)
+                .leftJoin(product.productOption, productOption)
+                .leftJoin(product.file, commonFile)
+                .where(
+                        product.name.contains(cond.getKeyword())
+                    .or(brand.name.contains(cond.getKeyword()))
+                    .or(mainCategory.name.contains(cond.getKeyword()))
+                    .or(subCategory.name.contains(cond.getKeyword()))
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> count = queryFactory
+                .select(product.count())
+                .from(product)
+                .leftJoin(product.mainCategory, mainCategory)
+                .leftJoin(product.subCategory, subCategory)
+                .leftJoin(product.brand, brand)
+                .leftJoin(product.file, commonFile)
+                .where(
+                        product.name.contains(cond.getKeyword())
+                                .or(brand.name.contains(cond.getKeyword()))
+                                .or(mainCategory.name.contains(cond.getKeyword()))
+                                .or(subCategory.name.contains(cond.getKeyword()))
+                );
+
+        return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
     }
 
     private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {

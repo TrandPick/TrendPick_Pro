@@ -33,16 +33,20 @@ public class Answer extends BaseTimeEntity {
 
     private String content;
 
-    public static Answer write(Ask ask, AnswerForm answerForm) {
+    public static Answer write(AnswerForm answerForm) {
         Answer answer = Answer
                 .builder()
-                .ask(ask)
                 .content(answerForm.getContent())
                 .build()
                 ;
 
-        ask.getAnswerList().add(answer); //양방향
         return answer;
+    }
+
+    public void connectAsk(Ask ask){
+        ask.getAnswerList().add(this);
+        ask.changeStatus();
+        this.ask = ask;
     }
 
     public void update(AnswerForm answerForm) {

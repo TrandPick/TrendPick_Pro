@@ -5,9 +5,10 @@ import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.brand.entity.dto.BrandResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BrandRepository extends JpaRepository<Brand, Long> {
-    Brand findByName(String name);
+    Optional<Brand> findByName(String name);
 
     List<BrandResponse> findAllBy();
 

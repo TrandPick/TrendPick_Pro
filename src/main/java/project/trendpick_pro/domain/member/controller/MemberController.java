@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +18,6 @@ import project.trendpick_pro.domain.member.entity.form.AddressForm;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
-import project.trendpick_pro.domain.tags.tag.service.TagService;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 import project.trendpick_pro.global.rsData.RsData;
 
@@ -68,8 +66,8 @@ public class MemberController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/info")
     public String showMe(Model model) {
-        Optional<Member> member = rq.CheckLogin();
-        model.addAttribute("MemberInfo", MemberInfoDto.of(member.get()));
+        Member member = rq.getLogin();
+        model.addAttribute("MemberInfo", MemberInfoDto.of(member));
         return "trendpick/usr/member/info";
     }
 
@@ -84,7 +82,7 @@ public class MemberController {
     @PostMapping("/info/address")
     public String manageAddress(@ModelAttribute @Valid AddressForm addressForm, Model model) {
 
-        RsData<Member> member = memberService.manageAddress(rq.CheckLogin().get(), addressForm.address());
+        RsData<Member> member = memberService.manageAddress(rq.getLogin(), addressForm.address());
         model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
 
         return rq.redirectWithMsg("/trendpick/member/info", member);
@@ -93,6 +91,7 @@ public class MemberController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/edit/address")
     public String editAddress(AddressForm addressForm, Model model) {
+        model.addAttribute("originalAdrress", rq.getMember().getAddress());
         model.addAttribute("addressForm", addressForm);
         return "trendpick/usr/member/address";
     }
@@ -101,7 +100,7 @@ public class MemberController {
     @PostMapping("/edit/address")
     public String updateAddress(@ModelAttribute @Valid AddressForm addressForm, Model model) {
 
-        RsData<Member> member = memberService.manageAddress(rq.CheckLogin().get(), addressForm.address());
+        RsData<Member> member = memberService.manageAddress(rq.getLogin(), addressForm.address());
         model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
 
         return rq.redirectWithMsg("/trendpick/member/info", member);
@@ -117,7 +116,7 @@ public class MemberController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/info/account")
     public String manageAccount(@ModelAttribute @Valid AccountForm accountForm, Model model) {
-        RsData<Member> member = memberService.manageAccount(rq.CheckLogin().get(), accountForm.bankName(), accountForm.bankAccount());
+        RsData<Member> member = memberService.manageAccount(rq.getLogin(), accountForm.bankName(), accountForm.bankAccount());
         model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
 
         return rq.redirectWithMsg("/trendpick/member/info", member);
@@ -133,7 +132,7 @@ public class MemberController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/edit/account")
     public String updateAccount(@ModelAttribute @Valid AccountForm accountForm, Model model) {
-        RsData<Member> member = memberService.manageAccount(rq.CheckLogin().get(), accountForm.bankName(), accountForm.bankAccount());
+        RsData<Member> member = memberService.manageAccount(rq.getLogin(), accountForm.bankName(), accountForm.bankAccount());
         model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
 
         return rq.redirectWithMsg("/trendpick/member/info", member);

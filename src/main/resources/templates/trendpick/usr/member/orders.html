@@ -33,7 +33,9 @@
                 <div class="flex items-center space-x-3">
                     <div class="avatar">
                         <div class="mask mask-squircle w-12 h-12">
-                            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${order.productFilePath}|" width="100" height="100"/>
+                            <a th:href="|/trendpick/products/${order.productId}|">
+                                <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${order.productFilePath}|" width="100" height="100"/>
+                            </a>
                         </div>
                     </div>
 

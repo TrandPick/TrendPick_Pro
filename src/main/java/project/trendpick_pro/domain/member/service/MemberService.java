@@ -12,6 +12,8 @@ import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
+import project.trendpick_pro.domain.store.entity.Store;
+import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.dto.request.TagRequest;
 import project.trendpick_pro.global.rsData.RsData;
@@ -27,20 +29,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final RecommendService recommendService;
+    private final StoreService storeService;
 
     private final BrandService brandService;
-
-    public Optional<Member> findByUsername(String username) {
-        return memberRepository.findByUsername(username);
-    }
-
-    public Optional<Member> findByEmail(String username){
-        return memberRepository.findByEmail(username);
-    }
-
-    public Member findByMember(Long id){
-        return memberRepository.findById(id).get();
-    }
 
     @Transactional
     public RsData<Member> register(JoinForm joinForm) {
@@ -69,8 +60,10 @@ public class MemberService {
                 .build();
         member.connectBrand(brand);
 
-        if(brand.length() != 0)
-            brandService.save(brand);
+        if(brand.length() != 0 && !brandService.isPresent(brand)){
+                brandService.save(brand);
+                storeService.save(new Store(brand));
+        }
 
         if (joinForm.tags() != null) {
             Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();
@@ -88,7 +81,7 @@ public class MemberService {
     }
 
     @Transactional
-    public List<Member> registerAll(List<JoinForm> List) {
+    public List<Member> saveAll(List<JoinForm> List) {
         List<Member> list = new ArrayList<>();
         for (JoinForm joinForm : List) {
             if (memberRepository.findByEmail(joinForm.email()).isPresent()) {
@@ -114,8 +107,10 @@ public class MemberService {
                     .build();
             member.connectBrand(brand);
 
-            if(brand.length() != 0)
+            if(brand.length() != 0 && !brandService.isPresent(brand)){
                 brandService.save(brand);
+                storeService.save(new Store(brand));
+            }
 
             if (joinForm.tags() != null) {
                 Set<FavoriteTag> favoriteTags = new LinkedHashSet<>();
@@ -154,5 +149,17 @@ public class MemberService {
     public RsData<Member> manageAccount(Member member, String bank_name, String account){
         member.connectBank(bank_name, account);
         return RsData.of("S-1", "계좌 수정이 완료되었습니다.", member);
+    }
+
+    public Member findById(Long id) {
+        return memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
+    }
+
+    public Optional<Member> findByUsername(String username) {
+        return memberRepository.findByUsername(username);
+    }
+
+    public Optional<Member> findByEmail(String username){
+        return memberRepository.findByEmail(username);
     }
 }

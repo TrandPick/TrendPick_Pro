@@ -1,14 +1,13 @@
 tag:
-  오버핏청바지, 시티보이룩, 스포티캐주얼, 빈티지룩, 프레피스타일,
-  미니멀리스트, 로맨틱룩, 로커룩, 힙합룩, 데님스타일,
-  스트릿패션, 빅사이즈룩, 오가닉패션, 애슬레저룩, 비즈니스캐주얼,
-  테일러드룩, 코지니트, 밀리터리룩, 고딕패션, 펑크룩,
-  레트로스타일, 베이직룩, 컬러풀패션, 모노톤스타일, 럭셔리룩,
-  블랙스타일, 루즈핏패션, 크롭트스타일, 블레이저룩, 코디로이패션
+  오버핏, 시티보이, 스포티 캐주얼, 빈티지, 프레피,
+  미니멀, 로맨틱, 로커, 힙합, 데님, 크롭, 포켓, 워크웨어, 아메카지,
+  스트릿, 오가닉, 애슬레저, 비즈니스 캐주얼, 유니섹스, 꾸안꾸, 레더,
+  테일러드, 코지니트, 밀리터리, 고딕, 펑크, 꽃무늬, 체크, 포멀,
+  레트로, 베이직, 컬러풀, 모노톤, 럭셔리, 투톤, 레이어드, 캐주얼 오피스,
+  블랙, 루즈핏, 블레이저, 코디로이, 사파리, 스트라이프, 플리츠 스커트, 레이스
 
 main-category:
   추천, 상의, 아우터, 하의, 신발, 가방, 악세서리
-
 top:
   반소매티셔츠, 긴소매티셔츠, 셔츠/블라우스, 니트/스웨터, 후드티셔츠, 맨투맨/스웨트셔츠
 outer:
@@ -21,3 +20,24 @@ bag:
   백팩, 웨이스트백, 메신저백, 캐리어, 숄더백, 토트백
 accessory:
   벨트, 장갑, 스카프, 키링, 넥타이, 머플러
+
+brand:
+  Rockfish Weatherwear, OOFOS, Covernat, partimento, polo, ODDONEOUT, insilence,
+  urbanstoff, Toppy, mahagrid, Tommy Hilfiger, MIDNIGHT BLUE, Buberry, A.P.C, ADIDAS,
+  NewBalance, Jerusalen, WOOALONG, MLB, 1507, CALVIN KLEIN, RECLOW, CodeGraphy, Yale, MMLG,
+  Louis Vuitton, Gucci, Chanel, Dior, Prada, Hermès, Versace, Armani, Burberry, Yves Saint Laurent
+
+colors:
+  Fuchsia, Aqua, Magenta, Orchid, Chartreuse, Black, White, Navy, PaleVioletRed, SeaShell, Teal, Turquoise,
+  Olive, Maroon, LightCyan, MintCream, Brown, Beige, Tan, Coral, Salmon, Orange, Gold, Yellow,
+  Lavender, Plum, Purple, LightSalmon, Cornsilk, Violet, Pink, Red, Silver, Gray, Khaki,
+  Thistle, LightSkyBlue, LightSteelBlue, PaleTurquoise, PaleGoldenRod, LavenderBlush, Cream, Ivory, Chocolate,
+  Indigo, LemonChiffon, PowderBlue, LightCoral, PaleGreen, Peachpuff, NavajoWhite, Honeydew, Moccasin, PapayaWhip, 
+  PeachPuff, Linen, OldLace, BlanchedAlmond, DarkGray, DarkGreen, DarkKhaki, DarkMagenta, DarkOliveGreen, 
+  DarkOrange, DarkOrchid, DarkRed
+
+
+sizes:
+  tops: 80, 85, 90, 95, 100, 105, 110
+  bottoms: 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35
+  shoes: 230, 235, 240, 245, 250, 255, 260, 265, 270, 275, 280

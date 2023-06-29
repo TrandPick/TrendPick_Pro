@@ -3,9 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>TrendPick | 주문</title>
+    <style>
+        /* 쿠폰 목록 팝업 창의 닫기 버튼 고정 */
+        /*.coupon-popup {*/
+        /*    position: fixed;*/
+        /*    top: 50%;*/
+        /*    left: 50%;*/
+        /*    transform: translate(-50%, -50%);*/
+        /*    background-color: white;*/
+        /*    width: 80%;*/
+        /*    height: 80%;*/
+        /*    padding: 20px;*/
+        /*    overflow-y: auto;*/
+        /*    display: none; !* 초기에는 숨겨진 상태로 설정 *!*/
+        /*    z-index: 9999; !* 다른 요소들보다 위에 표시하기 위한 z-index 설정 *!*/
+        /*}*/
+        /* toastr 커스텀 스타일 */
+        .toastr-custom {
+            background-color: white !important;
+            color: black !important;
+            width: 500px !important; /* 팝업창 너비 설정 */
+            max-height: 500px !important; /* 팝업창 최대 높이 설정 */
+            overflow-y: auto !important; /* 내용이 넘칠 경우 스크롤 생성 */
+        }
+        .toast-middle-center {
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%);
+        }
+        .coupon-popup-wrapper {
+            position: relative;
+        }
+    </style>
 </head>
 <body>
-<main layout:fragment="main" class="bg-white">
+<main layout:fragment="main" class="bg-white" id="main-content">
     <br/><br/>
 
     <h1 class="text-center text-5xl font-bold mb-6">주문서</h1>
@@ -47,17 +79,31 @@
             <thead>
             <tr>
                 <th class="text-center" scope="col">번호</th>
+                <th></th>
                 <th class="text-center" scope="col">상품명</th>
+                <th class="text-center" scope="col">사이즈</th>
+                <th class="text-center" scope="col">색상</th>
                 <th class="text-center" scope="col">주문수량</th>
                 <th class="text-center" scope="col">주문금액</th>
+                <th class="text-center" scope="col">쿠폰적용</th>
+                <th class="text-center" scope="col">할인금액</th>
             </tr>
             </thead>
             <tbody>
             <span class="hidden" id="orderId" th:text="${order.id}" th:value="${order.id}"></span>
             <tr th:each="orderItem, itemStat : ${order.orderItems}" class="bg-blue-50">
                 <td class="text-center" th:text="${itemStat.count}">1</td>
+                <td class="image-main" style="width: 100px; height: 100px;">
+                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${orderItem.product.getFile().getFileName()}|"  alt="Product Image"/>
+                </td>
                 <td class="text-center">
                     <span class="text-center" id="Product" th:text="${orderItem.product.name}"></span>
+                </td>
+                <td class="text-center">
+                    <span class="text-center" th:text="${orderItem.size}"></span>
+                </td>
+                <td class="text-center">
+                    <span class="text-center" th:text="${orderItem.color}"></span>
                 </td>
                 <td class="text-center">
                     <span class="text-center" th:text="${orderItem.quantity}"></span>
@@ -65,23 +111,62 @@
                 <td class="text-center font-bold">
                     <span th:text="${#numbers.formatDecimal(orderItem.getTotalPrice, 0, 'COMMA', 0, 'POINT')}" th:value="${order.getTotalPrice}"></span> 원
                 </td>
+                <td class="text-center font-bold">
+                    <form th:if="${orderItem.discountPrice} == 0" class="card-actions justify-center" id="couponForm">
+                        <input type="hidden" name="orderItemId" th:value="${orderItem.id}"/>
+                        <button type="button" class="btn btn-sm btn-outline" th:attr="onclick='showCouponList(\'' + ${orderItem.id} + '\')'">
+                            쿠폰선택
+                        </button>
+                    </form>
+                    <form th:unless="${orderItem.discountPrice} == 0" class="card-actions justify-center" id="couponCancel"
+                          th:action="@{|/trendpick/usr/couponCards/cancel|}" method="post">
+                        <input type="hidden" name="orderItem" th:value="${orderItem.id}"/>
+                        <button type="subtmit" class="btn btn-sm btn-outline">
+                            쿠폰취소
+                        </button>
+                    </form>
+                </td>
+                <td class="text-center font-bold text-blue-600">
+                    <span>(-)</span>
+                    <span th:text="${#numbers.formatDecimal(orderItem.discountPrice, 0, 'COMMA', 0, 'POINT')}"></span>원
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h1>결제 정보</h1>
+    <div class="border p-4 mb-4">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">총 상품 금액</th>
+                <td>
+                    <span id="original_total_price" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span>원
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">쿠폰 할인 금액</th>
+                <td class="text-blue-600">
+                    <span>(-)</span>
+                    <span id="coupon_discount_amount" th:text="${#numbers.formatDecimal(order.totalDiscountedPrice, 0, 'COMMA', 0, 'POINT')}"></span>원
+                </td>
             </tr>
             </tbody>
         </table>
         <div class="text-black p-2 rounded-lg font-bold text-center" style="background-color:#f8f9fa">
-            전체 총 가격: <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}" th:value="${order.totalPrice}"></span> 원
-            <span class="hidden" id="totalPrice" th:text="${order.totalPrice}" th:value="${order.totalPrice}"></span>
+            총 결제 금액: <span th:text="${#numbers.formatDecimal((order.totalPrice - order.totalDiscountedPrice), 0, 'COMMA', 0, 'POINT')}" th:value="${order.totalPrice}"></span> 원
+            <span class="hidden" id="totalPrice" th:text="${order.totalPrice} - ${order.totalDiscountedPrice}" th:value="${order.totalPrice} - ${order.totalDiscountedPrice}"></span>
         </div>
     </div>
-
     <div id="payment-method"></div>
     <div id="agreement"></div>
-
     <div class="flex justify-center">
-        <button id="payment-button" class="btn btn-accent btn-lg"
-                th:text="${#numbers.formatDecimal(order.getTotalPrice(), 0, 'COMMA', 0, 'POINT')} + ' 원 결제하기'">
+        <button id="payment-button" class="btn btn-wide btn-lg"
+                th:text="${#numbers.formatDecimal(order.getTotalPrice() - order.totalDiscountedPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 결제하기'">
         </button>
     </div>
+    <br/><br/><br/><br/><br/>
 
     <script src="https://js.tosspayments.com/v1/payment-widget"></script>
     <link id="clientKey" th:data-contextPath="${@environment.getProperty('toss.clientKey')}"/>
@@ -111,8 +196,94 @@
                 customerName: username
             })
         })
+
+        var couponPopup = null;
+        function showCouponList(orderItemId) {
+            document.getElementById('main-content').style.pointerEvents = 'none';
+            toastr.options = {
+                timeOut: -1, // 메시지를 영구히 표시
+                extendedTimeOut: -1, // 메시지를 영구히 표시
+                toastClass: 'toastr-custom', // 커스텀 클래스 추가
+                positionClass: 'toast-middle-center', // 팝업 위치 설정
+                tapToDismiss: false, // 탭하여 닫기 비활성화
+                closeButton: true // 닫기 버튼 활성화
+            };
+            // AJAX 요청을 통해 쿠폰 목록 데이터를 가져옴
+            $.ajax({
+                url: '/trendpick/usr/couponCards/apply', // 쿠폰 목록을 제공하는 API 엔드포인트의 URL
+                method: 'GET',
+                data: {
+                    orderItem: orderItemId // orderItemId 변수 값을 넘겨줌
+                },
+                success: function(response) {
+                    couponListHTML = '<div class="coupon-popup">\n' +
+                        '<h1 class="mb-4">\n' +
+                        '<i class="fa-solid fa-list-ol"></i>\n' +
+                        '쿠폰목록\n' +
+                        '</h1>' +
+                        '<div class="grid grid-flow-row-dense grid-cols-1 gap-4 m-2">\n';
+                    // 쿠폰 목록 데이터를 HTML로 변환하여 팝업 창에 삽입
+                    response.forEach(function(coupon) {
+                        couponListHTML += `
+          <div class="card bg-base-80 shadow-xl">
+            <div class="card-body">
+              <h3 class="card-title">${coupon.discountPercent}% 쿠폰</h3>
+              <div>${coupon.couponName}</div>
+              <div class="text-gray-500 text-sm mt-2">
+                <div>${coupon.startDate} ~ ${coupon.endDate}</div>
+                <div>쿠폰 적용 시 <span class="text-red-400">${coupon.formattedDiscountPrice}</span> 할인</div>
+              </div>
+              <div class="text-gray-500 text-sm mt-2">
+                <button class="btn btn-sm btn-outline" onclick="applyCoupon('${coupon.couponCardId}', '${orderItemId}')">
+                  <i class="fa-solid fa-circle-down"></i>
+                  쿠폰 적용
+                </button>
+               </div>
+            </div>
+          </div>
+        `;
+                    });
+                    couponListHTML += '</div>\n' +
+                        '<button class="btn btn-sm btn-outline close-button" onclick="closeCouponList()">닫기<button>\n' +
+                        '</div>'
+                    // 팝업 창을 생성하여 쿠폰 목록을 표시
+                    var couponPopup = toastr.info(couponListHTML, '', {
+                        closeButton: false,
+                        // positionClass: 'toast-top-full-width',
+                        timeOut: 0,
+                        extendedTimeOut: 0,
+                        tapToDismiss: false
+                    });
+                },
+                error: function() {
+                    toastr.error('쿠폰 목록을 가져오는데 실패했습니다.');
+                }
+            });
+        }
+        function closeCouponList() {
+            toastr.remove();
+            document.getElementById('main-content').style.pointerEvents = 'auto';
+        }
+        function applyCoupon(couponCardId, orderItemId) {
+            $.ajax({
+                url: '/trendpick/usr/couponCards/apply',
+                method: 'POST',
+                data: {
+                    couponCard: couponCardId,
+                    orderItem: orderItemId
+                },
+                success: function(response) {
+                    toastr.success('쿠폰이 적용되었습니다.');
+                    location.reload();
+                    // 원하는 동작 수행 (예: 페이지 새로고침, 필요한 데이터 업데이트 등)
+                    // ...
+                },
+                error: function() {
+                    toastr.error('쿠폰 적용에 실패했습니다.');
+                }
+            });
+        }
     </script>
-    <br/><br/><br/><br/><br/><br/><br/>
 </main>
 </body>
 </html>
