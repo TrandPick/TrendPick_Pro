@@ -87,7 +87,6 @@ public class BaseData {
             CouponRepository couponRepository,
             StoreRepository storeRepository,
             EntityManager em
-
     ) {
         return new CommandLineRunner() {
             @Override
@@ -104,7 +103,7 @@ public class BaseData {
                 SaveAllSubCategories(mainCategoryService, subCategoryService);
 
                 int memberCount = 10;
-                int productCount = 100;
+                int productCount = 300;
                 int reviewCount = 100;
                 int couponCount = 50;
                 String brandName = "polo";

@@ -5,9 +5,10 @@
     <title>쿠폰발급</title>
 </head>
 <body>
-<main layout:fragment="main" class="coupon-generate-form flex flex-column">
+<main layout:fragment="main" class="coupon-generate-form flex flex-column justify-center" style="margin-top: 20px;">
+    <br/><br/><br/>
     <div class="w-full max-w-md px-8 py-6 bg-white rounded-lg shadow-2xl">
-        <h2 th:text="${storeName}+ ' 쿠폰등록'"></h2>
+        <h2 th:text="${storeName} + ' 쿠폰등록'" class="block text-gray-600 font-semibold mb-2" style="font-size: 24px;"></h2>
         <form th:action="@{/trendpick/coupons/{storeName}/generate(storeName=${storeName})}" method="post"
               th:object="${couponForm}">
             <div class="form-control mt-3">
@@ -106,6 +107,7 @@
                     </div>
                 </div>
             </div>
+            <br/>
             <div class="form-control mt-2">
                 <button id="btn-join-1 w-min"
                         class="btn w-full py-2 bg-black text-white rounded hover:bg-black-700 transition duration-200 ease-in-out">
@@ -170,6 +172,7 @@
             });
         });
     </script>
+    <br/><br/><br/><br/><br/>
 </main>
 </body>
 </html>

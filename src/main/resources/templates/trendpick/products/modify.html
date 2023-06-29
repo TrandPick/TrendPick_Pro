@@ -159,7 +159,7 @@
     </script>
 
     <form id="productSaveRequest" th:action="@{/trendpick/products/edit/{productId}(productId=${productId})}" th:object="${ProductRequest}"
-          method="post" enctype="multipart/form-data" class="m-4" onsubmit="ProductSaveRequest__submit(this); return false;">
+          method="post" enctype="multipart/form-data" class="m-8 p-6 bg-white shadow-md rounded-md" onsubmit="ProductSaveRequest__submit(this); return false;">
         <h2 class="text-2xl font-semibold mb-6">Modify My Product</h2>
 
         <div class="mb-4">
@@ -210,7 +210,7 @@
         </div>
 
         <div class="mb-4">
-            <img id="imagePreview" th:src="|/images/${originProduct.file.fileName}|" alt="Main Image" class="mb-2" style="width:200px; height:200px;">
+            <img id="imagePreview" th:src="|https://kr.object.ncloudstorage.com/trendpick/${originProduct.file.fileName}|" alt="Main Image" class="mb-2" style="width:200px; height:200px;">
         </div>
 
         <div class="mb-4">
@@ -220,7 +220,7 @@
 
         <div id="subImagesPreview" class="mb-4 flex flex-wrap">
             <div th:each="imageUrl : ${originProduct.file.child}" class="mr-2 mb-2">
-                <img th:src="|/images/${imageUrl.fileName}|" alt="Sub Image" class="w-24 h-24">
+                <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${imageUrl.fileName}|" alt="Sub Image" class="w-24 h-24">
             </div>
         </div>
 
@@ -293,7 +293,7 @@
                 <!-- 추가적인 색상 옵션을 여기에 추가할 수 있습니다 -->
             </div>
         </div>
-        <br/><hr><br/>
+        <br/><hr>
 
         <br/>
         <div class="mb-4">
@@ -328,7 +328,7 @@
                 </div>
             </div>
         </div>
-        <br/><hr><br/>
+        <br/><br/>
 
         <div class="flex justify-end">
             <button class="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded">상품 수정</button>

@@ -50,7 +50,7 @@
                 <h2 class="mt-5 text-2xl text-gray-800">더 많은 후기 사진</h2>
                 <div class="mt-4 grid grid-cols-1 gap-0 w-full">
                     <div th:each="subFile : ${reviewResponse.subFiles}">
-                        <img th:src="${'/images/' + subFile}" class="mx-auto w-1/4 rounded-lg object-cover h-auto" onclick="openModal()"/>
+                        <img th:src="${'https://kr.object.ncloudstorage.com/trendpick/' + subFile}" class="mx-auto w-1/4 rounded-lg object-cover h-auto" onclick="openModal()"/>
                     </div>
                 </div>
             </div>

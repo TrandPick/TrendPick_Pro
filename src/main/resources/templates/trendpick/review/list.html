@@ -13,7 +13,7 @@
         <div th:each="reviewResponse : ${reviewResponses.content}" class="card bordered cursor-pointer flex justify-center items-center">
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <a th:href="@{/trendpick/review/{reviewId}(reviewId=${reviewResponse.id})}">
-                    <img th:src="|/images/${reviewResponse.mainFile}|" class="mx-auto w-full rounded"  style="width: 85%; height: 85%;"/>
+                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${reviewResponse.mainFile}|" class="mx-auto w-full rounded"  style="width: 85%; height: 85%;"/>
                     <p class="text-center">상품명: <span th:text="${reviewResponse.productName}"></span></p>
                     <p class="text-center">제목: <span th:text="${reviewResponse.title}"></span></p>
                     <p class="mb-4 text-center">

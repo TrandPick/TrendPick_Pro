@@ -33,7 +33,7 @@
             <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
                 <div class="card bordered shadow-xl" th:href="@{/trendpick/products/{id}(id=${product.id})}">
                     <figure style="height: 264.53px; display: flex; align-items: center; justify-content: center;">
-                        <img th:src="|/images/${product.mainFile}|" alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;"/>
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${product.mainFile}|" alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;"/>
                     </figure>
                     <div class="card-body">
                         <h2 class="text-lg font-bold" th:text="${product.name}" style="white-space: normal; overflow-wrap: break-word; line-height: 1.2em; min-height: 2.4em;"></h2>

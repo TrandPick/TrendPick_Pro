@@ -7,11 +7,11 @@
 <main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col pb-4" style="max-width: 100%; flex-grow: 1;">
     <div class="flex flex-col md:flex-row gap-4 bg-white border rounded-md p-4" style="height:800px">
         <figure class="flex-1 flex flex-col items-center">
-            <img th:src="|/images/${productResponse.mainFile}|" class="image-main object-cover cursor-pointer"
+            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${productResponse.mainFile}|" class="image-main object-cover cursor-pointer"
                  alt="Product Image" onclick="openModal()"/>
             <div class="mt-4 flex flex-row overflow-x-auto space-x-2">
                 <div th:each="image : ${productResponse.subFiles}">
-                    <img th:src="|/images/${image}|" class="rounded w-24 mr-2 my-2 cursor-pointer" alt="Sub Image" onclick="openModal()">
+                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${image}|" class="rounded w-24 mr-2 my-2 cursor-pointer" alt="Sub Image" onclick="openModal()">
                 </div>
 
                 <div id="myModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
