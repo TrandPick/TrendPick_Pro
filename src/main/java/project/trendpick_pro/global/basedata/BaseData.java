@@ -81,9 +81,9 @@ public class BaseData {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    @Value("aws.credentials.accessKey")
+    @Value("cloud.aws.credentials.accessKey")
     private String accessKey;
-    @Value("aws.credentials.secretKey")
+    @Value("cloud.aws.credentials.secretKey")
     private String secretKey;
     @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
     private String filePath;
