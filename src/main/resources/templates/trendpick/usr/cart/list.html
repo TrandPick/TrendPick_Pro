@@ -72,7 +72,7 @@
             <td class="px-4 py-3 flex items-center space-x-3 text-center">
                 <div>
                     <a th:href="|/trendpick/products/${item.product.id}|">
-                        <img th:src="|/images/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
                     </a>
                 </div>
                 <div>
