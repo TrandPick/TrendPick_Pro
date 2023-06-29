@@ -190,8 +190,8 @@
             paymentWidget.requestPayment({
                 orderId: "ORD_" + self.crypto.randomUUID(),
                 orderName: product + " 외..",
-                successUrl: "http://localhost:8080/payment/" + id + "/success",
-                failUrl: "http://localhost:8080/payment/" + id + "/fail",
+                successUrl: "https://trendpick.k8s-1.suho.info/payment/" + id + "/success",
+                failUrl: "https://trendpick.k8s-1.suho.info/payment/" + id + "/fail",
                 customerEmail: email,
                 customerName: username
             })
