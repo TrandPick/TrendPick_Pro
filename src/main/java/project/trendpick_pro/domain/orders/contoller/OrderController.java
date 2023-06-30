@@ -40,10 +40,12 @@ public class OrderController {
     public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model) {
         try {
             RsData<Order> order = orderService.cartToOrder(rq.getMember(), selectedItems);
+
             if(order.isFail()) {
                 return rq.historyBack(order);
             }
-            return "redirect:/trendpick/orders/%s/form".formatted(order.getData().getId());
+            model.addAttribute("order", order.getData());
+            return "trendpick/orders/standByOrder";
         } catch (Exception e){
             return rq.historyBack("주문이 완료되지 않았습니다.");
         }
@@ -51,13 +53,15 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/order/product")
-    public String productToOrder(@RequestParam("productId") Long id, @RequestParam("quantity") int quantity, @RequestParam("size") String size, @RequestParam("color") String color, Model model) {
+    public String productToOrder(@RequestParam("productId") Long id, @RequestParam("quantity") int quantity,
+                                 @RequestParam("size") String size, @RequestParam("color") String color, Model model) {
         try {
             RsData<Order> order = orderService.productToOrder(rq.getMember(), id, quantity, size, color);
             if(order.isFail()) {
                 return rq.historyBack(order);
             }
-            return "redirect:/trendpick/orders/%s/form".formatted(order.getData().getId());
+            model.addAttribute("order", order.getData());
+            return "trendpick/orders/standByOrder";
         } catch (Exception e){
             return rq.historyBack("주문이 완료되지 않았습니다.");
         }
