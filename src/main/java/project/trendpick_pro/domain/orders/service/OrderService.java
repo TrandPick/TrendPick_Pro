@@ -77,13 +77,12 @@ public class OrderService {
         }
 
         Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
+        Order saveOrder = orderRepository.save(order);
 
-        orderRepository.save(order);
+        log.info("cartToOrder: {}", saveOrder);
+        kafkaTemplate.send("orders", String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
 
-        log.info("cartToOrder: {}", order);
-        kafkaTemplate.send("orders", String.valueOf(order.getId()), String.valueOf(order.getId()));
-
-        return RsData.of("S-1", "주문을 시작합니다.", order);
+        return RsData.of("S-1", "주문을 시작합니다.", saveOrder);
     }
 
     @Transactional
@@ -91,14 +90,14 @@ public class OrderService {
         try {
             Product product = productService.findById(id);
             OrderItem orderItem = OrderItem.of(product, quantity, size, color);
+
             Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
+            Order saveOrder = orderRepository.save(order);
 
-            orderRepository.save(order);
+            log.info("productToOrder: {}", saveOrder);
+            kafkaTemplate.send("orders", String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
 
-            log.info("productToOrder: {}", order);
-            kafkaTemplate.send("orders", String.valueOf(order.getId()), String.valueOf(order.getId()));
-
-            return RsData.of("S-1", "주문을 시작합니다.", order);
+            return RsData.of("S-1", "주문을 시작합니다.", saveOrder);
         } catch (ProductNotFoundException e) {
             return RsData.of("F-1", "존재하지 않는 상품입니다.");
         }
