@@ -1,7 +1,5 @@
 package project.trendpick_pro.domain.orders.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -106,12 +104,12 @@ public class OrderService {
         try {
             for (OrderItem orderItem : order.getOrderItems()) {
                 orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
-                messagingTemplate.convertAndSend("trendpick/orders/standByOrder", "Success");
             }
             order.modifyStatus(OrderStatus.ORDERED);
+            messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", "Success");
         } catch (ProductStockOutException e) {
             order.cancelTemp();
-            messagingTemplate.convertAndSend("trendpick/orders/standByOrder", "Fail");
+            messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", "Fail");
         }
     }
 
