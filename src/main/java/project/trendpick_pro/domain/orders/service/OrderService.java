@@ -2,7 +2,6 @@ package project.trendpick_pro.domain.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -48,11 +47,8 @@ public class OrderService {
     private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
 
-    @Autowired
-    private KafkaTemplate<String, Order> kafkaTemplate;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private final KafkaTemplate<String, Order> kafkaTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) {
