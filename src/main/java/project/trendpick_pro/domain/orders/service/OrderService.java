@@ -56,7 +56,6 @@ public class OrderService {
         if(member.getAddress().trim().length() == 0) {
             return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
         }
-
         if(selectedItems.isEmpty()){
             return RsData.of("F-1","상품을 선택한 후 주문해주세요.");
         }
@@ -67,7 +66,6 @@ public class OrderService {
         }
 
         List<OrderItem> orderItemList = new ArrayList<>();
-
         for (CartItem cartItem : cartItems) {
             Product product = productService.findById(cartItem.getProduct().getId());
             if (product.getProductOption().getStock() < cartItem.getQuantity()) {
@@ -78,7 +76,7 @@ public class OrderService {
         }
 
         Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
-
+        log.info("cartToOrder: {}", order);
         kafkaTemplate.send("orders", String.valueOf(order.getId()), order);
 
         return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
@@ -91,6 +89,7 @@ public class OrderService {
             OrderItem orderItem = OrderItem.of(product, quantity, size, color);
             Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
 
+            log.info("productToOrder: {}", order);
             kafkaTemplate.send("orders", String.valueOf(order.getId()), order);
 
             return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
