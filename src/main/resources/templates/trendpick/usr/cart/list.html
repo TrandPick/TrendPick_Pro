@@ -259,6 +259,23 @@
             window.open(url, 'couponWindow', 'width=800,height=600,scrollbars=yes');
         }
     </script>
+
+    <script>
+        const socket = new SockJS('/websocket');
+        const stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/trendpick/orders/standByOrder', function (message) {
+                if (message.body === 'Success') {
+                    const orderId = document.getElementById('orderId').value;
+                    window.location.href = "/trendpick/orders/" + orderId + "/form";
+                } else if (message.body === 'Fail') {
+                    history.back();
+                }
+            });
+        });
+    </script>
+
 </main>
 </body>
 </html>

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
+import project.trendpick_pro.domain.orders.entity.dto.request.ProductOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
@@ -36,7 +37,7 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("/order/cart")
+    @PostMapping("/order/cart")
     public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model) {
         try {
             RsData<Order> order = orderService.cartToOrder(rq.getMember(), selectedItems);
@@ -52,23 +53,21 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("/order/product")
-    public String productToOrder(@RequestParam("productId") Long id, @RequestParam("quantity") int quantity,
-                                 @RequestParam("size") String size, @RequestParam("color") String color, Model model) {
+    @PostMapping("/order/product")
+    @ResponseBody
+    public RsData<Order> productToOrder(@RequestBody ProductOrderRequest request) {
         try {
-            RsData<Order> order = orderService.productToOrder(rq.getMember(), id, quantity, size, color);
+            RsData<Order> order = orderService.productToOrder(rq.getMember(),
+                    request.getProductId(), request.getQuantity(), request.getSize(), request.getColor());
             if(order.isFail()) {
-                return rq.historyBack(order);
+                throw new Exception(order.getMsg());
             }
-            model.addAttribute("order", order.getData());
-            return "trendpick/orders/standByOrder";
+            return order;
         } catch (Exception e){
             log.error(e.getMessage());
-            return rq.historyBack("주문이 완료되지 않았습니다.");
+            return RsData.of("F-1", "주문이 완료되지 않았습니다.");
         }
     }
-
-
 
     @PostMapping("/cancel/{orderId}")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
