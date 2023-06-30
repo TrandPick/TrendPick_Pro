@@ -1,5 +1,7 @@
 package project.trendpick_pro.domain.orders.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,7 @@ import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
+import project.trendpick_pro.domain.orders.entity.dto.request.OrderStateResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.exceoption.OrderNotFoundException;
@@ -51,6 +54,7 @@ public class OrderService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) {
@@ -105,28 +109,36 @@ public class OrderService {
     }
 
     @KafkaListener(topicPattern = "orders", groupId = "group_id")
-    public void orderToOrder(@Payload String Id) {
+    public void orderToOrder(@Payload String Id) throws JsonProcessingException {
         Order order = orderRepository.findById(Long.valueOf(Id)).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
         try {
             for (OrderItem orderItem : order.getOrderItems()) {
                 orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
             }
             order.modifyStatus(OrderStatus.ORDERED);
-            delaySend("Success");
+            delaySend("Success", order.getId());
         } catch (ProductStockOutException e) {
             order.cancelTemp();
-            delaySend("Fail");
+            delaySend("Fail", order.getId());
         }
     }
 
     @Async
-    public void delaySend(String message) {
+    public void delaySend(String message, Long orderId) throws JsonProcessingException {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", message);
+
+        OrderStateResponse response = OrderStateResponse.builder()
+                .orderId(orderId)
+                .message(message)
+                .build();
+
+        String json = objectMapper.writeValueAsString(response);
+
+        messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", json);
     }
 
     @Transactional

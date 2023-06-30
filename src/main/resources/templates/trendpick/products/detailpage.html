@@ -335,6 +335,9 @@
     </script>
 
     <script>
+
+        var orderId = null;
+
         function buyNow(form) {
             if (!confirmOrder()) {
                 return;
@@ -365,10 +368,10 @@
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/trendpick/orders/standByOrder', function (message) {
-                if (message.body === 'Success') {
-                    const orderId = document.getElementById('orderId').value;
-                    window.location.href = "/trendpick/orders/" + orderId + "/form";
-                } else if (message.body === 'Fail') {
+                const data = JSON.parse(message);
+                if (data.message === 'Success') {
+                    window.location.href = "/trendpick/orders/" + data.orderId + "/form";
+                } else if (data.message === 'Fail') {
                     history.back();
                 }
             });
