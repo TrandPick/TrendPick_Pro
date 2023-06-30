@@ -40,13 +40,13 @@ public class OrderController {
     public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model) {
         try {
             RsData<Order> order = orderService.cartToOrder(rq.getMember(), selectedItems);
-
             if(order.isFail()) {
                 return rq.historyBack(order);
             }
             model.addAttribute("order", order.getData());
             return "trendpick/orders/standByOrder";
         } catch (Exception e){
+            log.error(e.getMessage());
             return rq.historyBack("주문이 완료되지 않았습니다.");
         }
     }
@@ -63,6 +63,7 @@ public class OrderController {
             model.addAttribute("order", order.getData());
             return "trendpick/orders/standByOrder";
         } catch (Exception e){
+            log.error(e.getMessage());
             return rq.historyBack("주문이 완료되지 않았습니다.");
         }
     }
