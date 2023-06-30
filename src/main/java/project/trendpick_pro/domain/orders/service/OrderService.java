@@ -9,7 +9,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.CartItem;
@@ -119,8 +119,13 @@ public class OrderService {
         }
     }
 
-    @Scheduled(fixedDelay = 1000, initialDelay = 1000) // 1초 지연
+    @Async
     public void delaySend(String message) {
+        try {
+            Thread.sleep(1000); // 1초 지연
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", message);
     }
 
