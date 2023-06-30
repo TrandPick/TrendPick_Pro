@@ -9,6 +9,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.CartItem;
@@ -111,11 +112,16 @@ public class OrderService {
                 orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
             }
             order.modifyStatus(OrderStatus.ORDERED);
-            messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", "Success");
+            delaySend("Success");
         } catch (ProductStockOutException e) {
             order.cancelTemp();
-            messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", "Fail");
+            delaySend("Fail");
         }
+    }
+
+    @Scheduled(fixedDelay = 1000, initialDelay = 1000) // 1초 지연
+    public void delaySend(String message) {
+        messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", message);
     }
 
     @Transactional
