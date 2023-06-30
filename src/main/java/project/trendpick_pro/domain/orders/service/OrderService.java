@@ -47,8 +47,8 @@ public class OrderService {
     private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
 
-    private KafkaTemplate<String, Order> kafkaTemplate;
-    private SimpMessagingTemplate messagingTemplate;
+    private final KafkaTemplate<String, Order> kafkaTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) {
