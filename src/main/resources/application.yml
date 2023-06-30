@@ -18,4 +18,4 @@ spring:
       max-file-size: 3MB
       max-request-size: 20MB
   kafka:
-    bootstrap-servers: 101.101.218.60:9094
+    bootstrap-servers: my-cluster-kafka-external-bootstrap
