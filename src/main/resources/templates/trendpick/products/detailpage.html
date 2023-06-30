@@ -151,7 +151,7 @@
                 </div>
                 <div class="flex justify-center py-2">
                     <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
-                        <img th:src="|/images/${review.mainFile}|" class="object-cover w-24 h-24 rounded-full" alt="Review image"/>
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${review.mainFile}|" class="object-cover w-24 h-24 rounded-full" alt="Review image"/>
                     </a>
                 </div>
                 <div class="text-center py-2">
