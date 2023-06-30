@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,8 +100,8 @@ public class OrderService {
     }
 
     @KafkaListener(topicPattern = "orders", groupId = "group_id")
-    public void orderToOrder(Long Id) {
-        Order order = orderRepository.findById(Id).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
+    public void orderToOrder(@Payload String Id) {
+        Order order = orderRepository.findById(Long.valueOf(Id)).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
         try {
             for (OrderItem orderItem : order.getOrderItems()) {
                 orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
