@@ -26,11 +26,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
-      - name: build 가져오기
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifact
-          path: build
       - name: gradlew 실행 권한 부여
         run: chmod +x gradlew
       - name: gradle 테스트
