@@ -49,11 +49,11 @@ public class OrderService {
     private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Long> kafkaTemplate;
     private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
-    public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) throws JsonProcessingException {
+    public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) {
 
         if(member.getAddress().trim().length() == 0) {
             return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
@@ -79,24 +79,20 @@ public class OrderService {
 
         Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
         log.info("cartToOrder: {}", order);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String orderJson = objectMapper.writeValueAsString(order);
-        kafkaTemplate.send("orders", String.valueOf(order.getId()), orderJson);
+        kafkaTemplate.send("orders", String.valueOf(order.getId()), order.getId());
 
         return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
     }
 
     @Transactional
-    public RsData<Order> productToOrder(Member member, Long id, int quantity, String size, String color) throws JsonProcessingException {
+    public RsData<Order> productToOrder(Member member, Long id, int quantity, String size, String color) {
         try {
             Product product = productService.findById(id);
             OrderItem orderItem = OrderItem.of(product, quantity, size, color);
             Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
 
             log.info("productToOrder: {}", order);
-            ObjectMapper objectMapper = new ObjectMapper();
-            String orderJson = objectMapper.writeValueAsString(order);
-            kafkaTemplate.send("orders", String.valueOf(order.getId()), orderJson);
+            kafkaTemplate.send("orders", String.valueOf(order.getId()), order.getId());
 
             return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
         } catch (ProductNotFoundException e) {
@@ -105,9 +101,8 @@ public class OrderService {
     }
 
     @KafkaListener(topicPattern = "orders", groupId = "group_id")
-    public void orderToOrder(String orderJson) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Order order = objectMapper.readValue(orderJson, Order.class);
+    public void orderToOrder(Long Id) {
+        Order order = orderRepository.findById(Id).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
         try {
             for (OrderItem orderItem : order.getOrderItems()) {
                 orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
