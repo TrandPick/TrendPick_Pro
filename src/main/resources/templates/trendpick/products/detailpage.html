@@ -96,7 +96,7 @@
                         <input type="hidden" id="addToCartQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
-                    <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${productRequest}" method="get" onsubmit="return confirmOrder()">
+                    <form onsubmit="buyNow(this); return false;" id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${productRequest}" method="post" onsubmit="return confirmOrder()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="size" id="buySize" value="1">
                         <input type="hidden" name="color" id="buyColor" value="1">
@@ -321,17 +321,7 @@
         }
 
         function confirmOrder() {
-            var confirmAction = confirm("해당 상품을 주문하시겠습니까 ?");
-            if (confirmAction) {
-                // 폼 전송
-                return true;
-            } else {
-                // 폼 전송 후 페이지 이동 취소
-                setTimeout(function () {
-                    window.stop();
-                }, 0);
-                return false;
-            }
+            return confirm("해당 상품을 주문하시겠습니까 ?");
         }
 
         //쿠폰창 띄우기
@@ -343,6 +333,51 @@
             window.open(url, 'couponWindow', 'width=800,height=600,scrollbars=yes');
         }
     </script>
+
+    <script>
+
+        var orderId = null;
+
+        function buyNow(form) {
+            if (!confirmOrder()) {
+                return;
+            }
+            const productId = form.productId.value;
+            const size = form.size.value;
+            const color = form.color.value;
+            const quantity = form.quantity.value;
+
+            const data = {
+                productId: productId,
+                size: size,
+                color: color,
+                quantity: quantity
+            };
+
+            fetch("/trendpick/orders/order/product", {
+                method: 'post',
+                body: JSON.stringify(data)
+            }).then(res => res.json())
+                .then(res => {
+                    console.log(res);
+                }).catch((error) => console.log("error:", error));
+        }
+
+        const socket = new SockJS('/websocket');
+        const stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/trendpick/orders/standByOrder', function (message) {
+                const data = JSON.parse(message);
+                if (data.message === 'Success') {
+                    window.location.href = "/trendpick/orders/" + data.orderId + "/form";
+                } else if (data.message === 'Fail') {
+                    history.back();
+                }
+            });
+        });
+    </script>
+
 </main>
 </body>
 </html>
