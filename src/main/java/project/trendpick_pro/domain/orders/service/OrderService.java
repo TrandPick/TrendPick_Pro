@@ -48,7 +48,7 @@ public class OrderService {
     private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
 
-    private final KafkaTemplate<String, Long> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
@@ -78,7 +78,7 @@ public class OrderService {
 
         Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
         log.info("cartToOrder: {}", order);
-        kafkaTemplate.send("orders", String.valueOf(order.getId()), order.getId());
+        kafkaTemplate.send("orders", String.valueOf(order.getId()), String.valueOf(order.getId()));
 
         return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
     }
@@ -91,7 +91,7 @@ public class OrderService {
             Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
 
             log.info("productToOrder: {}", order);
-            kafkaTemplate.send("orders", String.valueOf(order.getId()), order.getId());
+            kafkaTemplate.send("orders", String.valueOf(order.getId()), String.valueOf(order.getId()));
 
             return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
         } catch (ProductNotFoundException e) {
