@@ -122,7 +122,7 @@ public class OrderService {
     @Async
     public void delaySend(String message) {
         try {
-            Thread.sleep(1000); // 1초 지연
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
