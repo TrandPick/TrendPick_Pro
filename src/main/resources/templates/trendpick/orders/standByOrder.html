@@ -35,7 +35,7 @@
         var stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/orders/wait', function (message) {
+            stompClient.subscribe('/topic/trendpick/orders/standByOrder', function (message) {
                 if (message.body === 'Success') {
                     var orderId = document.getElementById('orderId').value;
                     window.location.href = "/trendpick/orders/" + orderId + "/form";
@@ -47,5 +47,4 @@
     </script>
 
 </body>
-
 </html>
