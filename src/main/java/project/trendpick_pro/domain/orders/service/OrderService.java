@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.CartItem;
@@ -22,6 +25,7 @@ import project.trendpick_pro.domain.orders.exceoption.OrderNotFoundException;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
+import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
@@ -42,6 +46,9 @@ public class OrderService {
     private final CartService cartService;
     private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
+
+    private KafkaTemplate<String, Order> kafkaTemplate;
+    private SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) {
@@ -71,6 +78,9 @@ public class OrderService {
         }
 
         Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
+
+        kafkaTemplate.send("orders", String.valueOf(order.getId()), order);
+
         return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
     }
 
@@ -81,9 +91,25 @@ public class OrderService {
             OrderItem orderItem = OrderItem.of(product, quantity, size, color);
             Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
 
+            kafkaTemplate.send("orders", String.valueOf(order.getId()), order);
+
             return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
         } catch (ProductNotFoundException e) {
             return RsData.of("F-1", "존재하지 않는 상품입니다.");
+        }
+    }
+
+    @KafkaListener(topicPattern = "orders", groupId = "group_id")
+    public void orderToOrder(Order order) {
+        try {
+            for (OrderItem orderItem : order.getOrderItems()) {
+                orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
+                messagingTemplate.convertAndSend("trendpick/orders/standByOrder", "Success");
+            }
+            order.modifyStatus(OrderStatus.ORDERED);
+        } catch (ProductStockOutException e) {
+            order.cancelTemp();
+            messagingTemplate.convertAndSend("trendpick/orders/standByOrder", "Fail");
         }
     }
 
@@ -95,11 +121,9 @@ public class OrderService {
         } else if (order.getDelivery().getState() == DeliveryState.COMPLETED) {
             return RsData.of("F-2", "이미 배송완료된 상품은 취소가 불가능합니다.");
         }
-
         if (order.getDelivery().getState() == DeliveryState.DELIVERY_ING) {
             return RsData.of("F-3", "이미 배송을 시작하여 취소가 불가능합니다.");
         }
-
         order.cancel();
         return RsData.of("S-1", "환불 요청이 정상적으로 진행되었습니다. 환불까지는 최소 2일에서 최대 14일까지 소요될 수 있습니다.");
     }
