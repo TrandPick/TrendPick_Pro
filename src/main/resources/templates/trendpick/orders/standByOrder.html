@@ -35,13 +35,10 @@
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/trendpick/orders/standByOrder', function (message) {
-                console.log('message: ' + message);
                 if (message.body === 'Success') {
                     const orderId = document.getElementById('orderId').value;
-                    console.log('subscribe: ' + orderId);
                     window.location.href = "/trendpick/orders/" + orderId + "/form";
                 } else if (message.body === 'Fail') {
-                    console.log('fail');
                     history.back();
                 }
             });
