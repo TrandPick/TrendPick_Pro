@@ -35,6 +35,7 @@
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/trendpick/orders/standByOrder', function (message) {
+                console.log('message: ' + message.body);
                 if (message.body === 'Success') {
                     const orderId = document.getElementById('orderId').value;
                     console.log('subscribe: ' + orderId);
