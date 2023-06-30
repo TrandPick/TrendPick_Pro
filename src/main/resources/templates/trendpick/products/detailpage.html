@@ -372,6 +372,8 @@
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/trendpick/orders/standByOrder', function (message) {
                 const data = JSON.parse(message.body);
+                console.log(data);
+                console.log(message);
                 if (data.message === 'Success') {
                     window.location.href = "/trendpick/orders/" + data.orderId + "/form";
                 } else if (data.message === 'Fail') {
