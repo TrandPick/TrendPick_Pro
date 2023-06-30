@@ -77,10 +77,13 @@ public class OrderService {
         }
 
         Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
+
+        orderRepository.save(order);
+
         log.info("cartToOrder: {}", order);
         kafkaTemplate.send("orders", String.valueOf(order.getId()), String.valueOf(order.getId()));
 
-        return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
+        return RsData.of("S-1", "주문을 시작합니다.", order);
     }
 
     @Transactional
@@ -90,10 +93,12 @@ public class OrderService {
             OrderItem orderItem = OrderItem.of(product, quantity, size, color);
             Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
 
+            orderRepository.save(order);
+
             log.info("productToOrder: {}", order);
             kafkaTemplate.send("orders", String.valueOf(order.getId()), String.valueOf(order.getId()));
 
-            return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
+            return RsData.of("S-1", "주문을 시작합니다.", order);
         } catch (ProductNotFoundException e) {
             return RsData.of("F-1", "존재하지 않는 상품입니다.");
         }
