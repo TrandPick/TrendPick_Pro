@@ -105,9 +105,6 @@ public class OrderService {
 
     @KafkaListener(topicPattern = "orders", groupId = "group_id")
     public void orderToOrder(@Payload String Id) {
-
-        log.info("=================consumer: {} ========================", Id);
-
         Order order = orderRepository.findById(Long.valueOf(Id)).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
         try {
             for (OrderItem orderItem : order.getOrderItems()) {
