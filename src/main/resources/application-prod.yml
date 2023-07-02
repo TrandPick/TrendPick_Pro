@@ -23,4 +23,4 @@ spring:
       ddl-auto: create
   data:
     redis:
-      host: redis-1-service
+      host: ${redis.host}
