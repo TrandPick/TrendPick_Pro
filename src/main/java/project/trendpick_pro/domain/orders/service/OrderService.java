@@ -126,7 +126,7 @@ public class OrderService {
     @Async
     public void delaySend(String message, Long orderId) throws JsonProcessingException {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
