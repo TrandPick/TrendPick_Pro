@@ -75,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://trendpick.k8s-1.suho.info")); // set access from specific domain
+        configuration.setAllowedOrigins(List.of("*")); // set access from specific domain
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
         // setAllowCredentials(true) is important, else, the session will be shared between services.
         configuration.setAllowCredentials(true);
