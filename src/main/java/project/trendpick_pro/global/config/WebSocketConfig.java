@@ -18,7 +18,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableStompBrokerRelay("/topic")
                 .setRelayHost(redisHost)
-                .setRelayPort(6379);
+                .setRelayPort(61613);
         config.setApplicationDestinationPrefixes("/app");
     }
 
