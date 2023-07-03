@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: dev
     include: secret, db, data, ela
   mvc:
     pathmatch:
@@ -18,7 +18,7 @@ spring:
       max-file-size: 3MB
       max-request-size: 20MB
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: 101.101.218.60:30000
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer

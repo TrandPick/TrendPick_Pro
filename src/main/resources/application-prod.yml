@@ -15,12 +15,12 @@ spring:
     timeout-per-shutdown-phase: 1m
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-gv7so.pub-cdb.ntruss.com:3306/trendpick
-    username: trendpick
-    password: trendpick@111
+    url: jdbc:mysql://db-gv7so.cdb.ntruss.com:3306/trendpick
+    username: ${CloudDB.username}
+    password: ${CloudDB.password}
   jpa:
     hibernate:
       ddl-auto: create
   data:
     redis:
-      host: ${redis.hostDev}
+      host: ${redis.host}
