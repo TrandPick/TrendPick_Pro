@@ -43,7 +43,7 @@ public class CancelOrderJobConfig{
     public Job cancelOrderJob(Step cancelOrderStep, JobRepository jobRepository) throws Exception {
         return new JobBuilder("cancelOrderJob", jobRepository)
                 .start(cancelOrderStep)
-                .incrementer(new RunIdIncrementer()) //계속해서 id 업데이트 (내용이같아도)
+//                .incrementer(new RunIdIncrementer()) //계속해서 id 업데이트 (내용이같아도)
                 .build();
     }
 
@@ -67,12 +67,13 @@ public class CancelOrderJobConfig{
     public RepositoryItemReader<Order> orderReader(
             @Value("#{jobParameters['date']}") LocalDateTime date
     ) {
+
         return new RepositoryItemReaderBuilder<Order>()
                 .name("orderReader")
                 .repository(orderRepository)
-                .methodName("findAllByStatus")
+                .methodName("findAllByStatusAndCreatedDateIsBefore")
                 .pageSize(100)
-                .arguments(Arrays.asList(OrderStatus.TEMP))
+                .arguments(Arrays.asList(OrderStatus.TEMP, date))
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
     }

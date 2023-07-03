@@ -10,6 +10,6 @@ import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import java.time.LocalDateTime;
 
 public interface OrderRepository extends JpaRepository<Order, Long>, OrderRepositoryCustom {
-    Page<Order> findAllByStatus(OrderStatus status, Pageable pageable);
+    Page<Order> findAllByStatusAndCreatedDateIsBefore(OrderStatus status, LocalDateTime date, Pageable pageable);
 
 }
