@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.LocaleResolver;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -49,9 +50,13 @@ public class Rq {
         this.resp = resp;
         this.session = session;
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
+        Optional<Member> member = memberService.findByEmail(username);
+        if(member.isPresent())
+            memberService.updateRecentlyAccessDate(member.get());
+
         // 현재 로그인한 회원의 인증정보를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication.getPrincipal() instanceof User) {
             this.user = (User) authentication.getPrincipal();
         } else {
