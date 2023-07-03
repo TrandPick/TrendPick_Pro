@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class OrderStateResponse {
     private String message;
     private Long orderId;
+    private String email;
 }
