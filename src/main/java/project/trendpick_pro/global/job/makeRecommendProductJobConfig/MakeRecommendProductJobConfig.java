@@ -32,6 +32,7 @@ import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.entity.Recommend;
+import project.trendpick_pro.domain.recommend.repository.JdbcRecommendRepository;
 import project.trendpick_pro.domain.recommend.repository.RecommendRepository;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 
@@ -43,8 +44,9 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 public class MakeRecommendProductJobConfig {
-    private final RecommendRepository recommendRepository;
+//    private final RecommendRepository recommendRepository;
     private final MemberRepository memberRepository;
+    private final JdbcRecommendRepository recommendRepository;
 
     @Bean
     public Job makeRecommendProductJob(JobRepository jobRepository, Step makeRecommendProductStep1) {
@@ -69,7 +71,7 @@ public class MakeRecommendProductJobConfig {
                     @Override
                     public void write(Chunk<? extends List<Recommend>> chunk) throws Exception {
                         for (List<Recommend> recommends : chunk.getItems()) {
-                            recommendRepository.saveAll(recommends);
+                            recommendRepository.batchInsert(recommends);
                         }
                     }
                 })
