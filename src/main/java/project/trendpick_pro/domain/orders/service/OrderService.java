@@ -85,7 +85,6 @@ public class OrderService {
         Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
         Order saveOrder = orderRepository.save(order);
 
-        log.info("cartToOrder: {}", saveOrder);
         kafkaTemplate.send("orders", String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
 
         return RsData.of("S-1", "주문을 시작합니다.", saveOrder);
@@ -100,7 +99,6 @@ public class OrderService {
             Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
             Order saveOrder = orderRepository.save(order);
 
-            log.info("productToOrder: {}", saveOrder);
             kafkaTemplate.send("orders", String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
 
             return RsData.of("S-1", "주문을 시작합니다.", saveOrder);
@@ -113,23 +111,25 @@ public class OrderService {
     @KafkaListener(topicPattern = "orders", groupId = "group_id")
     public void orderToOrder(@Payload String Id) throws JsonProcessingException {
         Order order = orderRepository.findById(Long.valueOf(Id)).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
+        Member member = order.getMember();
         try {
             for (OrderItem orderItem : order.getOrderItems()) {
                 orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
             }
             order.modifyStatus(OrderStatus.ORDERED);
-            delaySend("Success", order.getId());
+            delaySend("Success", order.getId(), member.getEmail());
         } catch (ProductStockOutException e) {
             order.cancelTemp();
-            delaySend("Fail", order.getId());
+            delaySend("Fail", order.getId(), member.getEmail());
         }
     }
 
-    public void delaySend(String message, Long orderId) throws JsonProcessingException {
+    public void delaySend(String message, Long orderId, String email) throws JsonProcessingException {
 
         OrderStateResponse response = OrderStateResponse.builder()
                 .orderId(orderId)
                 .message(message)
+                .email(email)
                 .build();
 
         String json = objectMapper.writeValueAsString(response);
@@ -138,7 +138,8 @@ public class OrderService {
 
     @KafkaListener(topicPattern = "standByOrder", groupId = "#{T(java.util.UUID).randomUUID().toString()}")
     public void message(@Payload String json) throws JsonProcessingException {
-        messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", json);
+        OrderStateResponse response = objectMapper.readValue(json, OrderStateResponse.class);
+        messagingTemplate.convertAndSendToUser(response.getEmail(), "/topic/standByOrder", json);
     }
 
     @Transactional
