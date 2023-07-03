@@ -18,11 +18,11 @@ public class JobConfig {
     private final JobLauncher jobLauncher;
     private final Job makeRebateDataJob;
 
-    //@Scheduled(cron = "0 0 4 * * *") // 실제 코드
-     @Scheduled(cron = "30 * * * * *") // 개발용 코드
+    @Scheduled(cron = "0 0 4 * * *") // 실제 코드
+    // @Scheduled(cron = "30 * * * * *") // 개발용
     public void performMakeRebateDataJob() throws Exception {
-      //  String yearMonth = getPerformMakeRebateDataJobParam1Value(); // 실제 코드
-         String yearMonth = "2023-07"; // 개발용 코드
+        String yearMonth = getPerformMakeRebateDataJobParam1Value(); // 실제 코드
+      //   String yearMonth = "2023-07"; // 개발용
 
         JobParameters param = new JobParametersBuilder()
                 .addString("yearMonth", yearMonth)
