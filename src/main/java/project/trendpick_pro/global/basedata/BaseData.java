@@ -117,17 +117,13 @@ public class BaseData {
                 accessKeyMap.put("bucket", bucket);
 
                 int memberCount = 10;
-                int productCount = 300;
+                int productCount = 100;
                 int reviewCount = 100;
                 int couponCount = 50;
                 String brandName = "polo";
 
                 saveMembers(memberCount, tagNameService, memberService, recommendService);
                 saveUniqueMembers(memberService, brandName);
-
-                log.info("accessKey : {}", accessKey);
-                log.info("secretKey : {}", secretKey);
-                log.info("bucket : {}", bucket);
 
                 saveProducts(productCount, accessKeyMap, mainCategoryService, brandService, tagNameService, productRepository, brandName, sizeTops, sizeBottoms, sizeShoes, colors);
                 updateRecommends(memberService, recommendService);
