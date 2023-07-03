@@ -11,7 +11,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.CartItem;
@@ -22,6 +21,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
+import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderStateResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
@@ -58,16 +58,16 @@ public class OrderService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) {
+    public RsData<Order> cartToOrder(Member member, CartToOrderRequest request) {
 
         if(member.getAddress().trim().length() == 0) {
             return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
         }
-        if(selectedItems.isEmpty()){
+        if(request.getSelectedItems().isEmpty()){
             return RsData.of("F-1","상품을 선택한 후 주문해주세요.");
         }
 
-        List<CartItem> cartItems = cartService.findCartItems(member, selectedItems);
+        List<CartItem> cartItems = cartService.findCartItems(member, request);
         if (!Objects.equals(cartItems.get(0).getCart().getMember().getId(), member.getId())) {
             return RsData.of("F-1", "현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
         }
@@ -110,6 +110,12 @@ public class OrderService {
     @Transactional
     @KafkaListener(topicPattern = "orders", groupId = "group_id")
     public void orderToOrder(@Payload String Id) throws JsonProcessingException {
+        // delay 2sec
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Order order = orderRepository.findById(Long.valueOf(Id)).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
         Member member = order.getMember();
         try {
@@ -117,14 +123,14 @@ public class OrderService {
                 orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
             }
             order.modifyStatus(OrderStatus.ORDERED);
-            delaySend("Success", order.getId(), member.getEmail());
+            sendMessage("Success", order.getId(), member.getEmail());
         } catch (ProductStockOutException e) {
             order.cancelTemp();
-            delaySend("Fail", order.getId(), member.getEmail());
+            sendMessage("Fail", order.getId(), member.getEmail());
         }
     }
 
-    public void delaySend(String message, Long orderId, String email) throws JsonProcessingException {
+    public void sendMessage(String message, Long orderId, String email) throws JsonProcessingException {
 
         OrderStateResponse response = OrderStateResponse.builder()
                 .orderId(orderId)

@@ -11,13 +11,11 @@ import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.dto.request.ProductOrderRequest;
+import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.global.rsData.RsData;
-
-import java.util.List;
-
 
 @Slf4j
 @Controller
@@ -37,17 +35,17 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/cart")
-    public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model) {
+    @ResponseBody
+    public RsData<Void> cartToOrder(@RequestBody CartToOrderRequest request) {
         try {
-            RsData<Order> order = orderService.cartToOrder(rq.getMember(), selectedItems);
+            RsData<Order> order = orderService.cartToOrder(rq.getMember(), request);
             if(order.isFail()) {
-                return rq.historyBack(order);
+                throw new Exception(order.getMsg());
             }
-            model.addAttribute("order", order.getData());
-            return "trendpick/orders/standByOrder";
+            return RsData.of(order.getResultCode(), order.getMsg());
         } catch (Exception e){
             log.error(e.getMessage());
-            return rq.historyBack("주문이 완료되지 않았습니다.");
+            return RsData.of("F-1", "주문이 완료되지 않았습니다.");
         }
     }
 
