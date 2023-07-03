@@ -19,6 +19,7 @@ import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.exceoption.OrderNotFoundException;
+import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
@@ -30,18 +31,21 @@ import project.trendpick_pro.global.rsData.RsData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
+    private final OrderItemRepository orderItemRepository;
 
     private final OrderRepository orderRepository;
 
     private final CartService cartService;
     private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
+
 
     @Transactional
     public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) {
@@ -187,4 +191,8 @@ public class OrderService {
     public Page<OrderResponse> findCanceledOrders(Member member, int offset) {
         return orderRepository.findAllByMember(new OrderSearchCond(member.getId(), OrderStatus.CANCELED), PageRequest.of(offset, 10));
     }
+    public List<OrderItem> findAllByPayDateBetweenOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate) {
+        return orderItemRepository.findAllByPayDateBetween(fromDate, toDate);
+    }
+
 }

@@ -2,6 +2,13 @@ spring:
   profiles:
     active: dev
     include: secret, db, data, ela
+  batch:
+    job:
+      name: ${job.name:NONE}
+      enabled: false
+    jdbc:
+      initialize-schema: always
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -10,6 +17,10 @@ spring:
         enabled: true
   jpa:
     defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
   sql:
     init:
       mode: always
