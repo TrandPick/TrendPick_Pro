@@ -84,6 +84,9 @@ dependencies {
 
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework:spring-messaging'
+    implementation 'io.projectreactor.netty:reactor-netty-core:1.0.7'
+    implementation 'io.projectreactor.netty:reactor-netty-http:1.0.7'
 }
 
 tasks.named('test') {
