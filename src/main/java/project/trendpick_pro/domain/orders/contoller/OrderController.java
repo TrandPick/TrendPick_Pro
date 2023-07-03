@@ -54,14 +54,14 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/product")
     @ResponseBody
-    public RsData<Order> productToOrder(@RequestBody ProductOrderRequest request) {
+    public RsData<Void> productToOrder(@RequestBody ProductOrderRequest request) {
         try {
             RsData<Order> order = orderService.productToOrder(rq.getMember(),
                     request.getProductId(), request.getQuantity(), request.getSize(), request.getColor());
             if(order.isFail()) {
                 throw new Exception(order.getMsg());
             }
-            return order;
+            return RsData.of(order.getResultCode(), order.getMsg());
         } catch (Exception e){
             log.error(e.getMessage());
             return RsData.of("F-1", "주문이 완료되지 않았습니다.");
