@@ -39,6 +39,7 @@ import project.trendpick_pro.global.rsData.RsData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -108,6 +109,7 @@ public class OrderService {
         }
     }
 
+    @Transactional
     @KafkaListener(topicPattern = "orders", groupId = "group_id")
     public void orderToOrder(@Payload String Id) throws JsonProcessingException {
         Order order = orderRepository.findById(Long.valueOf(Id)).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
@@ -123,13 +125,7 @@ public class OrderService {
         }
     }
 
-    @Async
     public void delaySend(String message, Long orderId) throws JsonProcessingException {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
 
         OrderStateResponse response = OrderStateResponse.builder()
                 .orderId(orderId)
@@ -137,7 +133,11 @@ public class OrderService {
                 .build();
 
         String json = objectMapper.writeValueAsString(response);
+        kafkaTemplate.send("standByOrder", UUID.randomUUID().toString(), json);
+    }
 
+    @KafkaListener(topicPattern = "standByOrder", groupId = "#{T(java.util.UUID).randomUUID().toString()}")
+    public void message(@Payload String json) throws JsonProcessingException {
         messagingTemplate.convertAndSend("/topic/trendpick/orders/standByOrder", json);
     }
 
