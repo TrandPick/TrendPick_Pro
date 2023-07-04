@@ -14,8 +14,8 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 1m
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-gv7so.cdb.ntruss.com:3306/trendpick
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://mariadb-1-service:3306/trendpick__prod
     username: ${CloudDB.username}
     password: ${CloudDB.password}
   jpa:

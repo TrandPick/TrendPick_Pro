@@ -29,8 +29,9 @@
             <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
                 <div th:if="${mainCategoryName} == '추천'"
                      class="flex-none bg-light-blue text-gray-800 text-center rounded-full w-8 h-8 flex items-center justify-center"
-                     style="position: absolute; z-index: 1; font-size: 20px; background-color: lightgrey">
-                    <span th:text="${stat.index+1}"></span>
+                     style="position: absolute; z-index: 1; font-size: 20px; background-color: lightgrey; margin-left: 10px; margin-top: 10px;">
+
+                    <span th:text="${stat.index+1}" style="font-weight: bold;"></span>
                 </div>
                 <div class="card bordered shadow-xl" th:href="@{/trendpick/products/{id}(id=${product.id})}">
                     <figure style="height: 264.53px; display: flex; align-items: center; justify-content: center;">
