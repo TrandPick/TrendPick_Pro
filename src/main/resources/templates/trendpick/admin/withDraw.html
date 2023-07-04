@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html layout:decorate="~{trendpick/usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>출금 신청</title>
+</head>
+
+<body>
+<main layout:fragment="main">
+    <section class="section section-login flex-grow flex flex-col items-center justify-center">
+
+        <div class="max-w-md w-full px-2 pt-4">
+            <h1 class="font-bold text-lg">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+
+                출금 신청
+            </h1>
+
+            <script>
+                let WithdrawApply__submitDone = false;
+
+                function WithdrawApply__submit(form) {
+                    if (WithdrawApply__submitDone) {
+                        return;
+                    }
+
+                    form.bankName.value = form.bankName.value.trim();
+
+                    if (form.bankName.value.length == 0) {
+                        toastWarning("은행명을 입력해주세요.");
+                        form.bankName.focus();
+
+                        return;
+                    }
+
+                    form.bankAccountNo.value = form.bankAccountNo.value.trim();
+
+                    if (form.bankAccountNo.value.length == 0) {
+                        toastWarning("출금 계좌번호를 입력해주세요.");
+                        form.bankAccountNo.focus();
+
+                        return;
+                    }
+
+                    form.price.value = form.price.value.trim();
+
+                    if (form.price.value.length == 0) {
+                        toastWarning("출금 금액을 입력해주세요.");
+                        form.price.focus();
+
+                        return;
+                    }
+
+                    form.submit();
+                    WithdrawApply__submitDone = true;
+                }
+            </script>
+
+
+            <form th:action method="POST" class="flex flex-col gap-3"
+                  onsubmit="WithdrawApply__submit(this); return false;">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">은행명</span>
+                    </label>
+                    <input autofocus type="text" name="bankName" placeholder="은행명" class="input input-bordered"
+                           maxlength="50">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">출금 계좌번호</span>
+                    </label>
+                    <input type="number" name="bankAccountNo"
+                           placeholder="출금 계좌번호" class="input input-bordered" maxlength="50">
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">출금 가능금액</span>
+                    </label>
+                    <div class="badge badge-primary"
+                         th:text="${#numbers.formatDecimal(actorRestCash, 0, 'COMMA', 0, 'POINT')} + ' 원 '"></div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">출금 금액(￦)</span>
+                    </label>
+                    <input type="number" name="price"
+                           min="0" th:max="${actorRestCash}"
+                           placeholder="출금 계좌번호" class="input input-bordered" maxlength="50">
+                </div>
+
+                <div class="grid grid-cols-2 mt-2 gap-2">
+                    <button type="button" onclick="history.back();" class="btn btn-outline">취소</button>
+                    <input class="btn btn-outline" type="submit" value="출금 신청">
+                </div>
+            </form>
+        </div>
+
+    </section>
+
+</main>
+</body>
+</html>
