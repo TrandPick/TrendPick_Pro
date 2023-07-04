@@ -2,6 +2,7 @@ package project.trendpick_pro.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.orders.entity.Order;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "index_member",
         indexes = {@Index(name = "index_member_email",  columnList="email", unique = true)})
@@ -54,14 +56,15 @@ public class Member extends BaseTimeEntity {
     private String bankAccount;
     private String address;
     private LocalDateTime recentlyAccessDate;
-
+    private long restCash;
     @Builder
-    public Member(String email, String password, String username, String phoneNumber, RoleType role) {
+    public Member(String email, String password, String username, String phoneNumber, RoleType role,long restCash) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.role = role;
+        this.restCash=restCash;
     }
     public void connectBrand(String brand){
         this.brand = brand;
@@ -93,4 +96,5 @@ public class Member extends BaseTimeEntity {
     public void updateRecentlyAccessDate() {
         this.recentlyAccessDate = LocalDateTime.now();
     }
+
 }

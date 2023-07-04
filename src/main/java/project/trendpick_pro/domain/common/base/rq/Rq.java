@@ -153,6 +153,14 @@ public class Rq {
         }
         throw new MemberNotMatchException("허용된 권한이 아닙니다.");
     }
+
+    public Member getBrandMember() {
+        Member member = getLogin();
+        if (member.getRole().equals(RoleType.BRAND_ADMIN)) {
+            return member;
+        }
+        throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+    }
     public Boolean checkAdmin() {
         return !checkMember();
     }

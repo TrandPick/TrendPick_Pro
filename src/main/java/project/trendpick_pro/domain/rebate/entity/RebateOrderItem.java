@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.cart.entity.CartItem;
+import project.trendpick_pro.domain.cash.entity.CashLog;
 import project.trendpick_pro.domain.coupon.entity.CouponCard;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
@@ -66,6 +67,10 @@ public class RebateOrderItem {
     private int quantity;
 
     private LocalDateTime payDate; // 결제날짜
+    @ManyToOne(fetch = LAZY)
+    @ToString.Exclude
+    @JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CashLog rebateCashLog; // 정산에 관련된 환급지급내역
     private LocalDateTime rebateDate;
     // 상품
     private String productSubject;
@@ -124,8 +129,9 @@ public class RebateOrderItem {
         return true;
     }
 
-    public void setRebateDone() {
+    public void setRebateDone(Long cashLogId) {
         rebateDate = LocalDateTime.now();
+        this.rebateCashLog = new CashLog(cashLogId);
     }
 
     public boolean isRebateDone() {
