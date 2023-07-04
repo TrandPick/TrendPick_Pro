@@ -1,6 +1,5 @@
 package project.trendpick_pro.global.job.makeRecommendProductJobConfig;
 
-import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -44,9 +43,9 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 public class MakeRecommendProductJobConfig {
-//    private final RecommendRepository recommendRepository;
     private final MemberRepository memberRepository;
-    private final JdbcRecommendRepository recommendRepository;
+    private final JdbcRecommendRepository jdbcRecommendRepository;
+    private final RecommendRepository recommendRepository;
 
     @Bean
     public Job makeRecommendProductJob(JobRepository jobRepository, Step makeRecommendProductStep1) {
@@ -71,7 +70,7 @@ public class MakeRecommendProductJobConfig {
                     @Override
                     public void write(Chunk<? extends List<Recommend>> chunk) throws Exception {
                         for (List<Recommend> recommends : chunk.getItems()) {
-                            recommendRepository.batchInsert(recommends);
+                            jdbcRecommendRepository.batchInsert(recommends);
                         }
                     }
                 })
@@ -103,6 +102,8 @@ public class MakeRecommendProductJobConfig {
         return new ItemProcessor<Member, List<Recommend>>() {
             @Override
             public List<Recommend> process(Member member) throws Exception {
+                recommendRepository.deleteAllByMemberId(member.getId());
+
                 List<ProductByRecommended> tags = productRepository.findRecommendProduct(member.getUsername());
                 Set<FavoriteTag> memberTags = member.getTags();
 
