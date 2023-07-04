@@ -3,10 +3,8 @@ package project.trendpick_pro.domain.rebate.service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import project.trendpick_pro.domain.brand.entity.Brand;
-import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.cash.entity.CashLog;
 import project.trendpick_pro.domain.member.service.MemberService;
-import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.rebate.entity.RebateOrderItem;
@@ -99,7 +97,17 @@ public class RebateService {
             return RsData.of("F-1", "정산을 할 수 없는 상태입니다.");
         }
 
-        rebateOrderItem.setRebateDone();
+        int calculateRebatePrice = rebateOrderItem.calculateRebatePrice();
+       
+        CashLog cashLog = memberService.addCash(
+                rebateOrderItem.getSellerName(),
+                calculateRebatePrice,
+                rebateOrderItem.getSeller(),
+                CashLog.EvenType.브랜드정산__예치금
+        ).getData().getCashLog();
+
+         
+        rebateOrderItem.setRebateDone(cashLog.getId());
         return RsData.of(
                 "S-1",
                 "주문품목번호 %d번에 대해서 정산을 완료하였습니다.".formatted(rebateOrderItem.getOrderItem().getId())
