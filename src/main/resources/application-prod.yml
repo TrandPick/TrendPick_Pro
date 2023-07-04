@@ -16,8 +16,8 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://mariadb-1-service:3306/trendpick__prod
-    username: ${CloudDB.username}
-    password: ${CloudDB.password}
+    username: ${mariaDB.username}
+    password: ${mariaDB.password}
   jpa:
     hibernate:
       ddl-auto: create
