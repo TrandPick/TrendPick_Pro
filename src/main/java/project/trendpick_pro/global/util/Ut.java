@@ -56,6 +56,9 @@ public class Ut {
             return sb.append(suffix).toString();
         }
     }
+    public static String nf(long number) {
+        return String.format("%,d", (int) number);
+    }
 
     public static class reflection {
         public static boolean setFieldValue(Object o, String fieldName, Object value) {
@@ -135,7 +138,23 @@ public class Ut {
             return Base64.getEncoder().encodeToString(hashBytes);
         }
     }
+    public static <K, V> Map<K, V> mapOf(Object... args) {
+        Map<K, V> map = new LinkedHashMap<>();
 
+        int size = args.length / 2;
+
+        for (int i = 0; i < size; i++) {
+            int keyIndex = i * 2;
+            int valueIndex = keyIndex + 1;
+
+            K key = (K) args[keyIndex];
+            V value = (V) args[valueIndex];
+
+            map.put(key, value);
+        }
+
+        return map;
+    }
     public static class url {
         public static String encode(String str) {
             return URLEncoder.encode(str, StandardCharsets.UTF_8);

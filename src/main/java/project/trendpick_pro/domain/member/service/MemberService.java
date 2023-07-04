@@ -1,11 +1,17 @@
 package project.trendpick_pro.domain.member.service;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.brand.service.BrandService;
+import project.trendpick_pro.domain.cash.entity.CashLog;
+import project.trendpick_pro.domain.cash.service.CashService;
+import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
@@ -31,8 +37,9 @@ public class MemberService {
     private final RecommendService recommendService;
     private final StoreService storeService;
 
+    private final CashService cashService;
     private final BrandService brandService;
-
+    private final Rq rq;
     @Transactional
     public RsData<Member> register(JoinForm joinForm) {
 
@@ -166,5 +173,36 @@ public class MemberService {
     @Transactional
     public void updateRecentlyAccessDate(Member member){
         member.updateRecentlyAccessDate();
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class AddCashRsDataBody {
+        CashLog cashLog;
+        long newRestCash;
+    }
+
+    @Transactional
+    public RsData<AddCashRsDataBody> addCash(String brand, long price, Brand relEntity, CashLog.EvenType eventType) {
+        Member member=rq.getBrandMember();
+        if(!member.getBrand().equals(brand)){
+            return RsData.of("F-1","해당 브랜드와 관리자가 일치하지 않습니다.");
+        }
+
+        CashLog cashLog = cashService.addCash(member, price, relEntity.getName(),relEntity.getId(), eventType);
+
+        long newRestCash = getRestCash(member) + cashLog.getPrice();
+        member.setRestCash(newRestCash);
+        memberRepository.save(member);
+
+        return RsData.of(
+                "S-1",
+                "성공",
+                new AddCashRsDataBody(cashLog, newRestCash)
+        );
+    }
+    public long getRestCash(Member member) {
+        System.out.println( memberRepository.findById(member.getId()).get().getRestCash());
+        return memberRepository.findById(member.getId()).get().getRestCash();
     }
 }
