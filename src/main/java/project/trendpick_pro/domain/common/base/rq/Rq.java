@@ -50,6 +50,11 @@ public class Rq {
         this.resp = resp;
         this.session = session;
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
+        Optional<Member> member = memberService.findByEmail(username);
+        if(member.isPresent())
+            memberService.updateRecentlyAccessDate(member.get());
+
         // 현재 로그인한 회원의 인증정보를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

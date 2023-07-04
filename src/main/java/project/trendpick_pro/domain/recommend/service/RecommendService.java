@@ -31,24 +31,6 @@ public class RecommendService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    @Scheduled(cron = "0 0 4 * * *")
-    public void select(){
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
-        Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-
-        recommendRepository.deleteAllByMemberId(member.getId());
-
-        List<Product> products = productService.getRecommendProduct(member);
-
-        for (Product product : products) {
-            Recommend recommend = Recommend.of(product);
-            recommend.connectMember(member);
-            recommendRepository.save(recommend);
-        }
-    }
-
-    @Transactional
     public void select(String username){
 
         Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));

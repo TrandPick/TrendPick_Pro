@@ -162,4 +162,9 @@ public class MemberService {
     public Optional<Member> findByEmail(String username){
         return memberRepository.findByEmail(username);
     }
+
+    @Transactional
+    public void updateRecentlyAccessDate(Member member){
+        member.updateRecentlyAccessDate();
+    }
 }
