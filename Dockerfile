@@ -7,8 +7,8 @@ ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar", \
-"-javaagent:/usr/local/pinpoint-bootstrap-2.5.2.jar", \
+"-javaagent:/usr/local/pinpoint-agent-2.5.2/pinpoint-bootstrap-2.5.2.jar", \
 "-Dpinpoint.applicationName=TrendPick", \
-"-Dpinpoint.config=/usr/local/pinpoint-root.config", \
+"-Dpinpoint.config=/usr/local/pinpoint-agent-2.5.2/pinpoint-root.config", \
 "-Dspring.profiles.active=prod", \
 "/app.jar"]
