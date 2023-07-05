@@ -3,6 +3,8 @@ ADD https://github.com/pinpoint-apm/pinpoint/releases/download/v2.5.2/pinpoint-a
 RUN tar -zxvf /usr/local/pinpoint-agent-2.5.2.tar.gz -C /usr/local
 RUN sed -i 's/profiler.transport.grpc.collector.ip=127.0.0.1/profiler.transport.grpc.collector.ip=10.41.183.156/g' \
 /usr/local/pinpoint-agent-2.5.2/pinpoint-root.config
+RUN sed -i 's/profiler.collector.ip=127.0.0.1/profiler.collector.ip=10.41.183.156/g' \
+/usr/local/pinpoint-agent-2.5.2/pinpoint-root.config
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 EXPOSE 8080
