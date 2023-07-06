@@ -13,9 +13,11 @@ spring:
         use_sql_comments: true
   data:
     redis:
-      host: ${redis.hostDev}
+      host: ${redis.host}
+  kafka:
+      bootstrap-servers: localhost:9092
 
 logging.level:
   org:
-    hibernate.SQL: error
+    hibernate.SQL: debug
 

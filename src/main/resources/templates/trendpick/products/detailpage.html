@@ -373,11 +373,8 @@
         const socket = new SockJS('/websocket');
         const stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
             stompClient.subscribe('/user/topic/standByOrder', function (message) {
                 const data = JSON.parse(message.body);
-                console.log(data);
-                console.log(message);
                 if (data.message === 'Success') {
                     window.location.href = "/trendpick/orders/" + data.orderId + "/form";
                 } else if (data.message === 'Fail') {
@@ -386,7 +383,6 @@
             });
         });
     </script>
-
 
 </main>
 </body>
