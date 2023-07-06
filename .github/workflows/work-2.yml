@@ -100,6 +100,10 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
-      - run: |
-          kubectl set image deployment.apps/trendpick-1 trendpick-1=ghcr.io/trandpick/trendpick-1:${{ needs.tag.outputs.tag_name }}
-          
+      - name: Update Kubernetes deployment image
+        run: |
+          TAG_NAME=${{ needs.tag.outputs.tag_name }}
+          sed "s/VERSION/${TAG_NAME}/g" /kube/trendpick-1/trendpick-1.yaml > /kube/trendpick-1/new-trendpick-1.yaml
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f /kube/trendpick-1/new-trendpick-1.yaml
