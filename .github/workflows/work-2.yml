@@ -102,10 +102,12 @@ jobs:
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
       - name: Update Kubernetes deployment image
         run: |
-          cp /kube/trendpick-1/trendpick-1.yaml /kube/trendpick-1/new-trendpick-1.yaml
+          cd /kube/trendpick
+          cp trendpick-1.yaml new-trendpick-1.yaml
           TAG_NAME=${{ needs.tag.outputs.tag_name }}
-          sed -i "s/VERSION/${TAG_NAME}/g" /kube/trendpick-1/new-trendpick-1.yaml
+          sed -i "s/VERSION/${TAG_NAME}/g" new-trendpick-1.yaml
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f /kube/trendpick-1/new-trendpick-1.yaml --record
+          cd /kube/trendpick
+          kubectl apply -f new-trendpick-1.yaml --record
           
