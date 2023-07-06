@@ -39,24 +39,27 @@ jobs:
           path: build
           retention-days: 1
   tag:
-    name: 태그 생성
-    needs: build
-    runs-on: ubuntu-latest
-    outputs:
-      tag_name: ${{ steps.tag_version.outputs.new_tag }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: mathieudutour/github-tag-action@v6.1
-        id: tag_version
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          release_name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}
+      name: 태그 생성
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+
+        - uses: mathieudutour/github-tag-action@v6.1
+          id: tag_version
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Set tag name as environment variable
+          run: echo "NEW_TAG=${{ steps.tag_version.outputs.new_tag }}" >> $GITHUB_ENV
+
+        - uses: actions/create-release@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: ${{ env.NEW_TAG }}
+            release_name: Release ${{ env.NEW_TAG }}
+            body: ${{ steps.tag_version.outputs.changelog }}
   docker:
     name: 도커 이미지 빌드와 푸시
     runs-on: ubuntu-latest
@@ -100,14 +103,5 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
-      - name: Update Kubernetes deployment image
-        run: |
-          cd /kube/trendpick
-          cp trendpick-1.yaml new-trendpick-1.yaml
-          TAG_NAME=${{ needs.tag.outputs.tag_name }}
-          sed -i "s/VERSION/${TAG_NAME}/g" new-trendpick-1.yaml
-      - name: Deploy to Kubernetes
-        run: |
-          cd /kube/trendpick
-          kubectl apply -f new-trendpick-1.yaml --record
-          
+      - run: |
+          kubectl set image deployment.apps/trendpick-1 trendpick-1=ghcr.io/trandpick/trendpick-1:${{ needs.tag.outputs.tag_name }}
