@@ -87,6 +87,11 @@ dependencies {
     implementation 'org.springframework:spring-messaging'
     implementation 'io.projectreactor.netty:reactor-netty-core:1.0.7'
     implementation 'io.projectreactor.netty:reactor-netty-http:1.0.7'
+    
+    // Batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+
 }
 
 tasks.named('test') {
