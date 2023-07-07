@@ -42,3 +42,6 @@ src/main/resources/application-db.yml
 
 ### generated ###
 src/main/generated
+
+### PinPoint Agent ###
+/pinpoint-agent-2.5.2

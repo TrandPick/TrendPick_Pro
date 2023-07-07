@@ -47,7 +47,6 @@ public class PaymentController {
         if (response.getStatus().equals("DONE")) {
             order.connectPaymentMethod("TossPayments " + response.getMethod());
             order.connectPaymentKey(response.getPaymentKey());
-            order.modifyStatus(OrderStatus.ORDERED);
             order.updateWithPayment();
             cartService.deleteCartItemsByOrder(order);
             notificationService.make(member, order.getId());

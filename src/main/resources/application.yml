@@ -28,3 +28,10 @@ spring:
     multipart:
       max-file-size: 3MB
       max-request-size: 20MB
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer

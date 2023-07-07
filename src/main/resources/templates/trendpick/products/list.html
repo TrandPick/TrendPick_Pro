@@ -26,14 +26,16 @@
             </figure>
         </div>
         <div th:each="product, stat : ${productResponses}" class="grid gap-4" style="grid-template-columns: auto 1fr;">
-            <div th:if="${mainCategoryName} == '추천'"
-                 class="flex-none bg-gray-200 text-gray-800 text-center rounded-full w-8 h-8 flex items-center justify-center">
-                <span th:text="${stat.index+1}"></span>
-            </div>
             <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
+                <div th:if="${mainCategoryName} == '추천'"
+                     class="flex-none bg-light-blue text-gray-800 text-center rounded-full w-8 h-8 flex items-center justify-center"
+                     style="position: absolute; z-index: 1; font-size: 20px; background-color: lightgrey; margin-left: 10px; margin-top: 10px;">
+
+                    <span th:text="${stat.index+1}" style="font-weight: bold;"></span>
+                </div>
                 <div class="card bordered shadow-xl" th:href="@{/trendpick/products/{id}(id=${product.id})}">
                     <figure style="height: 264.53px; display: flex; align-items: center; justify-content: center;">
-                        <img th:src="|/images/${product.mainFile}|" alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;"/>
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${product.mainFile}|" alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;"/>
                     </figure>
                     <div class="card-body">
                         <h2 class="text-lg font-bold" th:text="${product.name}" style="white-space: normal; overflow-wrap: break-word; line-height: 1.2em; min-height: 2.4em;"></h2>

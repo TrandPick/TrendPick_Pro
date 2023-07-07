@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>order waiting...</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+
+<body class="bg-gray-50">
+
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+
+        <div class="max-w-md w-full space-y-8 shadow-lg p-8 bg-white rounded-xl">
+
+            <div class="text-center">
+                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+                    주문을 처리 중입니다.
+                </h2>
+                <p class="mt-2 text-gray-600">잠시만 기다려 주세요...</p>
+            </div>
+            <input type="hidden" id="orderId" value="${order.id}" />
+
+        </div>
+
+    </div>
+
+    <script>
+        const socket = new SockJS('/websocket');
+        const stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/trendpick/orders/standByOrder', function (message) {
+                if (message.body === 'Success') {
+                    const orderId = document.getElementById('orderId').value;
+                    window.location.href = "/trendpick/orders/" + orderId + "/form";
+                } else if (message.body === 'Fail') {
+                    history.back();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

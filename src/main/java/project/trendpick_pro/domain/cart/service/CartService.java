@@ -11,6 +11,7 @@ import project.trendpick_pro.domain.cart.repository.CartItemRepository;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
+import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
@@ -101,11 +102,11 @@ public class CartService {
         return cartRepository.findByMemberId(memberId);
     }
 
-    public List<CartItem> findCartItems(Member member, List<Long> cartItemIdList) {
+    public List<CartItem> findCartItems(Member member, CartToOrderRequest request) {
         Cart cart = getCartByUser(member.getId()); //현재 로그인되어 있는 cart 정보
         List<CartItem> cartItemList = new ArrayList<>();
 
-        for (Long id : cartItemIdList) {
+        for (Long id : request.getSelectedItems()) {
             for (CartItem item : cartItemRepository.findByProductId(id)) {
                 if (Objects.equals(item.getCart().getId(), cart.getId())) {
                     cartItemList.add(item);
