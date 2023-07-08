@@ -11,13 +11,11 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
   data:
     redis:
-      host: 172.17.0.1
+      host: ${redis.devHost}
+  kafka:
+      bootstrap-servers: localhost:9092
 
 logging.level:
   org:

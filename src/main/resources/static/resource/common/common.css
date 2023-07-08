@@ -139,3 +139,38 @@ body {
     display: flex;
     justify-content: center;
 }
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.pagination-btn {
+    display: inline-block;
+    margin: 0 8px;
+    padding: 15px 20px;
+    background-color: #f8f8f8;
+    color: #333;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 18px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-btn:hover {
+    background-color: #ddd;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.pagination-btn-active {
+    background-color: #333;
+    color: #fff;
+}
+
+.next-prev-icon {
+    margin: 0 8px;
+    font-size: 20px;
+}

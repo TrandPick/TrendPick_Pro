@@ -36,4 +36,11 @@ public class CommonController {
 
         return "redirect:" + redirectUrl;
     }
+
+    @GetMapping("/test")
+    public String test() {
+        return "trendpick/orders/standByOrder";
+    }
+
+
 }

@@ -9,6 +9,8 @@ import project.trendpick_pro.domain.coupon.entity.CouponCard;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.product.entity.product.Product;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Table(name = "order_item")
@@ -23,6 +25,8 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    private LocalDateTime payDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
@@ -30,6 +34,7 @@ public class OrderItem {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_card_id")
     private CouponCard couponCard;
+
     @Column(name = "order_price", nullable = false)
     private int orderPrice;
 
@@ -60,7 +65,8 @@ public class OrderItem {
         this.color = color;
         this.totalPrice = this.orderPrice * this.quantity;
         this.discountPrice = 0;
-//        product.getProductOption().decreaseStock(quantity);
+        product.getProductOption().decreaseStock(quantity);
+        this.payDate=LocalDateTime.now();
     }
 
     public void modifyQuantity(int quantity) {

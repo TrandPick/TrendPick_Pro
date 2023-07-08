@@ -1,10 +1,16 @@
 package project.trendpick_pro.domain.orders.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.CartItem;
@@ -15,13 +21,17 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
+import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
+import project.trendpick_pro.domain.orders.entity.dto.request.OrderStateResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.exceoption.OrderNotFoundException;
+import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
+import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
@@ -31,11 +41,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import java.util.UUID;
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
+    private final OrderItemRepository orderItemRepository;
 
     private final OrderRepository orderRepository;
 
@@ -43,24 +57,26 @@ public class OrderService {
     private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
 
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final ObjectMapper objectMapper;
+
     @Transactional
-    public RsData<Order> cartToOrder(Member member, List<Long> selectedItems) {
+    public RsData<Order> cartToOrder(Member member, CartToOrderRequest request) {
 
         if(member.getAddress().trim().length() == 0) {
             return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
         }
-
-        if(selectedItems.isEmpty()){
+        if(request.getSelectedItems().isEmpty()){
             return RsData.of("F-1","상품을 선택한 후 주문해주세요.");
         }
 
-        List<CartItem> cartItems = cartService.findCartItems(member, selectedItems);
+        List<CartItem> cartItems = cartService.findCartItems(member, request);
         if (!Objects.equals(cartItems.get(0).getCart().getMember().getId(), member.getId())) {
             return RsData.of("F-1", "현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
         }
 
         List<OrderItem> orderItemList = new ArrayList<>();
-
         for (CartItem cartItem : cartItems) {
             Product product = productService.findById(cartItem.getProduct().getId());
             if (product.getProductOption().getStock() < cartItem.getQuantity()) {
@@ -71,7 +87,11 @@ public class OrderService {
         }
 
         Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
-        return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
+        Order saveOrder = orderRepository.save(order);
+
+        kafkaTemplate.send("orders", String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
+
+        return RsData.of("S-1", "주문을 시작합니다.", saveOrder);
     }
 
     @Transactional
@@ -79,12 +99,57 @@ public class OrderService {
         try {
             Product product = productService.findById(id);
             OrderItem orderItem = OrderItem.of(product, quantity, size, color);
-            Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
 
-            return RsData.of("S-1", "주문을 시작합니다.", orderRepository.save(order));
+            Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
+            Order saveOrder = orderRepository.save(order);
+
+            kafkaTemplate.send("orders", String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
+
+            return RsData.of("S-1", "주문을 시작합니다.", saveOrder);
         } catch (ProductNotFoundException e) {
             return RsData.of("F-1", "존재하지 않는 상품입니다.");
         }
+    }
+
+    @Transactional
+    @KafkaListener(topicPattern = "orders", groupId = "group_id")
+    public void orderToOrder(@Payload String Id) throws JsonProcessingException {
+        // delay 2sec
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Order order = orderRepository.findById(Long.valueOf(Id)).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
+        Member member = order.getMember();
+        try {
+            for (OrderItem orderItem : order.getOrderItems()) {
+                orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
+            }
+            order.modifyStatus(OrderStatus.ORDERED);
+            sendMessage("Success", order.getId(), member.getEmail());
+        } catch (ProductStockOutException e) {
+            order.cancelTemp();
+            sendMessage("Fail", order.getId(), member.getEmail());
+        }
+    }
+
+    public void sendMessage(String message, Long orderId, String email) throws JsonProcessingException {
+
+        OrderStateResponse response = OrderStateResponse.builder()
+                .orderId(orderId)
+                .message(message)
+                .email(email)
+                .build();
+
+        String json = objectMapper.writeValueAsString(response);
+        kafkaTemplate.send("standByOrder", UUID.randomUUID().toString(), json);
+    }
+
+    @KafkaListener(topicPattern = "standByOrder", groupId = "#{T(java.util.UUID).randomUUID().toString()}")
+    public void message(@Payload String json) throws JsonProcessingException {
+        OrderStateResponse response = objectMapper.readValue(json, OrderStateResponse.class);
+        messagingTemplate.convertAndSendToUser(response.getEmail(), "/topic/standByOrder", json);
     }
 
     @Transactional
@@ -95,11 +160,9 @@ public class OrderService {
         } else if (order.getDelivery().getState() == DeliveryState.COMPLETED) {
             return RsData.of("F-2", "이미 배송완료된 상품은 취소가 불가능합니다.");
         }
-
         if (order.getDelivery().getState() == DeliveryState.DELIVERY_ING) {
             return RsData.of("F-3", "이미 배송을 시작하여 취소가 불가능합니다.");
         }
-
         order.cancel();
         return RsData.of("S-1", "환불 요청이 정상적으로 진행되었습니다. 환불까지는 최소 2일에서 최대 14일까지 소요될 수 있습니다.");
     }
@@ -187,4 +250,8 @@ public class OrderService {
     public Page<OrderResponse> findCanceledOrders(Member member, int offset) {
         return orderRepository.findAllByMember(new OrderSearchCond(member.getId(), OrderStatus.CANCELED), PageRequest.of(offset, 10));
     }
+    public List<OrderItem> findAllByPayDateBetweenOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate) {
+        return orderItemRepository.findAllByPayDateBetween(fromDate, toDate);
+    }
+
 }

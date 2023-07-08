@@ -10,13 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
+import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
+import project.trendpick_pro.domain.orders.entity.dto.request.ProductOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.global.rsData.RsData;
-
-import java.util.List;
-
 
 @Slf4j
 @Controller
@@ -27,7 +26,6 @@ public class OrderController {
     private final OrderService orderService;
     private final Rq rq;
 
-
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("{orderId}/form")
     public String showOrderForm(@PathVariable("orderId") Long orderId, Model model){
@@ -36,34 +34,37 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("/order/cart")
-    public String cartToOrder(@RequestParam("selectedItems") List<Long> selectedItems, Model model) {
+    @PostMapping("/order/cart")
+    @ResponseBody
+    public RsData<Void> cartToOrder(@RequestBody CartToOrderRequest request) {
         try {
-            RsData<Order> order = orderService.cartToOrder(rq.getMember(), selectedItems);
+            RsData<Order> order = orderService.cartToOrder(rq.getMember(), request);
             if(order.isFail()) {
-                return rq.historyBack(order);
+                throw new Exception(order.getMsg());
             }
-            return "redirect:/trendpick/orders/%s/form".formatted(order.getData().getId());
+            return RsData.of(order.getResultCode(), order.getMsg());
         } catch (Exception e){
-            return rq.historyBack("주문이 완료되지 않았습니다.");
+            log.error(e.getMessage());
+            return RsData.of("F-1", "주문이 완료되지 않았습니다.");
         }
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("/order/product")
-    public String productToOrder(@RequestParam("productId") Long id, @RequestParam("quantity") int quantity, @RequestParam("size") String size, @RequestParam("color") String color, Model model) {
+    @PostMapping("/order/product")
+    @ResponseBody
+    public RsData<Void> productToOrder(@RequestBody ProductOrderRequest request) {
         try {
-            RsData<Order> order = orderService.productToOrder(rq.getMember(), id, quantity, size, color);
+            RsData<Order> order = orderService.productToOrder(rq.getMember(),
+                    request.getProductId(), request.getQuantity(), request.getSize(), request.getColor());
             if(order.isFail()) {
-                return rq.historyBack(order);
+                throw new Exception(order.getMsg());
             }
-            return "redirect:/trendpick/orders/%s/form".formatted(order.getData().getId());
+            return RsData.of(order.getResultCode(), order.getMsg());
         } catch (Exception e){
-            return rq.historyBack("주문이 완료되지 않았습니다.");
+            log.error(e.getMessage());
+            return RsData.of("F-1", "주문이 완료되지 않았습니다.");
         }
     }
-
-
 
     @PostMapping("/cancel/{orderId}")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {

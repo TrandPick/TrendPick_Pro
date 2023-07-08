@@ -113,7 +113,7 @@ public class ProductService {
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
 
-        fileTranslator.deleteFile(product.getFile());
+        product.getFile().deleteFile(amazonS3, bucket);
         product.disconnectFile();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
@@ -139,7 +139,7 @@ public class ProductService {
     public void delete(Long productId) {
         rq.getAdmin();
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
-        fileTranslator.deleteFile(product.getFile());
+        product.getFile().deleteFile(amazonS3, bucket);
 //        searchService.deleteProduct(product);
         productRepository.delete(product);
     }

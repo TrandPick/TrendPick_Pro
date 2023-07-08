@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.LocaleResolver;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -49,6 +50,11 @@ public class Rq {
         this.resp = resp;
         this.session = session;
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName(); // 둘다 테스트 해보기
+        Optional<Member> member = memberService.findByEmail(username);
+        if(member.isPresent())
+            memberService.updateRecentlyAccessDate(member.get());
+
         // 현재 로그인한 회원의 인증정보를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -82,6 +88,21 @@ public class Rq {
         // 기존 URL에 혹시 msg 파라미터가 있다면 그것을 지우고 새로 넣는다.
         return Ut.url.modifyQueryParam(url, "msg", msgWithTtl(msg));
     }
+
+    private String getCurrentUrl() {
+        String url = req.getRequestURI();
+        String queryStr = req.getQueryString();
+
+        if (StringUtils.hasText(queryStr)) {
+            url += "?" + queryStr;
+        }
+
+        return url;
+    }
+    public String modifyQueryParam(String paramName, String paramValue) {
+        return Ut.url.modifyQueryParam(getCurrentUrl(), paramName, paramValue);
+    }
+
     private String msgWithTtl(String msg) {
         return Ut.url.encode(msg) + ";ttl=" + new Date().getTime();
     }
@@ -128,6 +149,14 @@ public class Rq {
     public Member getMember() {
         Member member = getLogin();
         if (member.getRole().equals(RoleType.MEMBER)) {
+            return member;
+        }
+        throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+    }
+
+    public Member getBrandMember() {
+        Member member = getLogin();
+        if (member.getRole().equals(RoleType.BRAND_ADMIN)) {
             return member;
         }
         throw new MemberNotMatchException("허용된 권한이 아닙니다.");

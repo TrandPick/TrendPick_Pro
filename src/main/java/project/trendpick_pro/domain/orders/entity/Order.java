@@ -145,6 +145,14 @@ public class Order extends BaseTimeEntity {
         }
     }
 
+    public void cancelTemp() {
+        this.status = OrderStatus.TEMP;
+        this.delivery.canceledDelivery();
+        for (OrderItem orderItem : this.orderItems) {
+            orderItem.getProduct().getProductOption().increaseStock(orderItem.getQuantity());
+        }
+    }
+
     //총금액 - 할인받은금액들
     public void updateWithPayment(){
         for (OrderItem orderItem : getOrderItems()) {

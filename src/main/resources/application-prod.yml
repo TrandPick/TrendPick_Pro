@@ -14,13 +14,19 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 1m
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-gv7so.cdb.ntruss.com:3306/trendpick
-    username: trendpick
-    password: trendpick@111
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:${custom.dataSource.kind}://${custom.dataSource.host}:${custom.dataSource.port}/${custom.dataSource.db}
+    username: ${custom.dataSource.username}
+    password: ${custom.dataSource.password}
   jpa:
     hibernate:
       ddl-auto: create
   data:
     redis:
-      host: redis-1-service
+      host: ${redis.host}
+  kafka:
+    bootstrap-servers: ${custom.kafka.host}:${custom.kafka.port}
+
+logging.level:
+  org:
+    hibernate.SQL: error

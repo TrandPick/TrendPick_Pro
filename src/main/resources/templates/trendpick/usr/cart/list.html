@@ -72,7 +72,7 @@
             <td class="px-4 py-3 flex items-center space-x-3 text-center">
                 <div>
                     <a th:href="|/trendpick/products/${item.product.id}|">
-                        <img th:src="|/images/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
                     </a>
                 </div>
                 <div>
@@ -119,12 +119,12 @@
     </table>
     <br/><br/>
 
-    <form th:action="@{/trendpick/orders/order/cart}" method="get" id="cartForm">
+    <form onsubmit="buyNow(); return false;" th:action="@{/trendpick/orders/order/cart}" method="post" id="cartForm">
         <input type="hidden" id="selectedItemsInput" name="selectedItems">
         <div class="mt-8 flex justify-end items-center">
             <span class="text-2xl font-semibold mr-4">총 주문 금액: </span>
             <span id="totalPrice" class="text-3xl font-bold text-black">0 원</span>
-            <button type="submit" class="bg-black text-white rounded-lg px-8 py-2 ml-8" onclick="submitCartForm(this.form)">구매하기</button>
+            <button type="submit" class="bg-black text-white rounded-lg px-8 py-2 ml-8">구매하기</button>
         </div>
     </form>
     <br/><br/>
@@ -220,20 +220,6 @@
         // 초기 결제 금액 계산
         calculateTotalPrice();
 
-        function submitCartForm(form) {
-            var selectedItems = document.getElementsByName('selectedItems');
-            var selectedIds = [];
-            for (var i = 0; i < selectedItems.length; i++) {
-                if (selectedItems[i].checked) {
-                    var productId =parseInt(selectedItems[i].getAttribute('data-product-id'));
-                    selectedIds.push(productId);
-                }
-            }
-            document.getElementById('selectedItemsInput').value =  selectedIds.join(",");
-            document.getElementById('cartForm').submit();
-            form.submit();
-        }
-
         // 총 주문 수량 업데이트
         function updateTotalCount() {
             var checkboxes = document.getElementsByName('selectedItems');
@@ -259,6 +245,60 @@
             window.open(url, 'couponWindow', 'width=800,height=600,scrollbars=yes');
         }
     </script>
+
+    <script>
+        var orderId = null;
+
+        function buyNow() {
+            var selectedItems = document.getElementsByName('selectedItems');
+            var selectedIds = [];
+            for (var i = 0; i < selectedItems.length; i++) {
+                if (selectedItems[i].checked) {
+                    var productId =parseInt(selectedItems[i].getAttribute('data-product-id'));
+                    selectedIds.push(productId);
+                }
+            }
+
+            const data = {
+                selectedItems: selectedIds
+            };
+
+            fetch("/trendpick/orders/order/cart", {
+                method: 'post',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data)
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(res => {
+                    console.log(res);
+                })
+                .catch((error) => console.log("error:", error));
+        }
+
+        const socket = new SockJS('/websocket');
+        const stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/user/topic/standByOrder', function (message) {
+                const data = JSON.parse(message.body);
+                console.log(data);
+                console.log(message);
+                if (data.message === 'Success') {
+                    window.location.href = "/trendpick/orders/" + data.orderId + "/form";
+                } else if (data.message === 'Fail') {
+                    history.back();
+                }
+            });
+        });
+    </script>
+
 </main>
 </body>
 </html>

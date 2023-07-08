@@ -81,7 +81,7 @@ public class ReviewService {
     public RsData<ReviewResponse> modify(Long reviewId, ReviewSaveRequest reviewSaveRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
         Review review = reviewRepository.findById(reviewId).orElseThrow();
 
-        fileTranslator.deleteFile(review.getFile());
+        review.getFile().deleteFile(amazonS3, bucket);
         review.disconnectFile();
 
         CommonFile mainFile = fileTranslator.translateFile(requestMainFile);
@@ -100,7 +100,7 @@ public class ReviewService {
     public void delete(Long reviewId) {
         rq.getAdmin();
         Review review = reviewRepository.findById(reviewId).orElseThrow();
-        fileTranslator.deleteFile(review.getFile());
+        review.getFile().deleteFile(amazonS3, bucket);
         reviewRepository.delete(review);
     }
 

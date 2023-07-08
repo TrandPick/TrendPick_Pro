@@ -2,6 +2,13 @@ spring:
   profiles:
     active: dev
     include: secret, db, data, ela
+  batch:
+    job:
+      name: ${job.name:NONE}
+      enabled: false
+    jdbc:
+      initialize-schema: always
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -10,6 +17,10 @@ spring:
         enabled: true
   jpa:
     defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
   sql:
     init:
       mode: always
@@ -17,3 +28,10 @@ spring:
     multipart:
       max-file-size: 3MB
       max-request-size: 20MB
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer

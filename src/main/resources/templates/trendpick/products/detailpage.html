@@ -7,11 +7,11 @@
 <main layout:fragment="main" class="h-screen w-screen bg-white flex flex-col pb-4" style="max-width: 100%; flex-grow: 1;">
     <div class="flex flex-col md:flex-row gap-4 bg-white border rounded-md p-4" style="height:800px">
         <figure class="flex-1 flex flex-col items-center">
-            <img th:src="|/images/${productResponse.mainFile}|" class="image-main object-cover cursor-pointer"
+            <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${productResponse.mainFile}|" class="image-main object-cover cursor-pointer"
                  alt="Product Image" onclick="openModal()"/>
             <div class="mt-4 flex flex-row overflow-x-auto space-x-2">
                 <div th:each="image : ${productResponse.subFiles}">
-                    <img th:src="|/images/${image}|" class="rounded w-24 mr-2 my-2 cursor-pointer" alt="Sub Image" onclick="openModal()">
+                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${image}|" class="rounded w-24 mr-2 my-2 cursor-pointer" alt="Sub Image" onclick="openModal()">
                 </div>
 
                 <div id="myModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
@@ -96,7 +96,7 @@
                         <input type="hidden" id="addToCartQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
-                    <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${productRequest}" method="get" onsubmit="return confirmOrder()">
+                    <form onsubmit="buyNow(this); return false;" id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${productRequest}" method="post">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="size" id="buySize" value="1">
                         <input type="hidden" name="color" id="buyColor" value="1">
@@ -151,7 +151,7 @@
                 </div>
                 <div class="flex justify-center py-2">
                     <a th:href="@{/trendpick/review/{reviewId}(reviewId=${review.id})}">
-                        <img th:src="|/images/${review.mainFile}|" class="object-cover w-24 h-24 rounded-full" alt="Review image"/>
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${review.mainFile}|" class="object-cover w-24 h-24 rounded-full" alt="Review image"/>
                     </a>
                 </div>
                 <div class="text-center py-2">
@@ -321,17 +321,7 @@
         }
 
         function confirmOrder() {
-            var confirmAction = confirm("해당 상품을 주문하시겠습니까 ?");
-            if (confirmAction) {
-                // 폼 전송
-                return true;
-            } else {
-                // 폼 전송 후 페이지 이동 취소
-                setTimeout(function () {
-                    window.stop();
-                }, 0);
-                return false;
-            }
+            return confirm("해당 상품을 주문하시겠습니까 ?");
         }
 
         //쿠폰창 띄우기
@@ -343,6 +333,57 @@
             window.open(url, 'couponWindow', 'width=800,height=600,scrollbars=yes');
         }
     </script>
+
+    <script>
+        var orderId = null;
+
+        function buyNow(form) {
+            if (!confirmOrder()) {
+                return;
+            }
+            const productId = form.productId.value;
+            const size = form.size.value;
+            const color = form.color.value;
+            const quantity = form.quantity.value;
+
+            const data = {
+                productId: productId,
+                size: size,
+                color: color,
+                quantity: quantity
+            };
+
+            fetch("/trendpick/orders/order/product", {
+                method: 'post',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data)
+            }).then(res => {
+                if (!res.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return res.json();
+            })
+                .then(res => {
+                    console.log(res);
+                }).catch((error) => console.log("error:", error));
+        }
+
+        const socket = new SockJS('/websocket');
+        const stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            stompClient.subscribe('/user/topic/standByOrder', function (message) {
+                const data = JSON.parse(message.body);
+                if (data.message === 'Success') {
+                    window.location.href = "/trendpick/orders/" + data.orderId + "/form";
+                } else if (data.message === 'Fail') {
+                    history.back();
+                }
+            });
+        });
+    </script>
+
 </main>
 </body>
 </html>

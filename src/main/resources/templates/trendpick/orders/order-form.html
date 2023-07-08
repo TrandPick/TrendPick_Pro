@@ -38,6 +38,8 @@
 </head>
 <body>
 <main layout:fragment="main" class="bg-white" id="main-content">
+    <br/><br/>
+
     <h1 class="text-center text-5xl font-bold mb-6">주문서</h1>
     <h1>회원 정보</h1>
     <div class="border p-4 mb-4">
@@ -92,7 +94,7 @@
             <tr th:each="orderItem, itemStat : ${order.orderItems}" class="bg-blue-50">
                 <td class="text-center" th:text="${itemStat.count}">1</td>
                 <td class="image-main" style="width: 100px; height: 100px;">
-                    <img th:src="|/images/${orderItem.product.getFile().getFileName()}|"  alt="Product Image"/>
+                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${orderItem.product.getFile().getFileName()}|"  alt="Product Image"/>
                 </td>
                 <td class="text-center">
                     <span class="text-center" id="Product" th:text="${orderItem.product.name}"></span>
@@ -164,10 +166,13 @@
                 th:text="${#numbers.formatDecimal(order.getTotalPrice() - order.totalDiscountedPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 결제하기'">
         </button>
     </div>
+    <br/><br/><br/><br/><br/>
 
     <script src="https://js.tosspayments.com/v1/payment-widget"></script>
     <link id="clientKey" th:data-contextPath="${@environment.getProperty('toss.clientKey')}"/>
     <script>
+        const url = "http://localhost:8080"
+
         const clientKey = document.querySelector("#clientKey").getAttribute("data-contextPath");
         const customerKey = PaymentWidget.ANONYMOUS
         const button = document.getElementById("payment-button")
@@ -187,8 +192,8 @@
             paymentWidget.requestPayment({
                 orderId: "ORD_" + self.crypto.randomUUID(),
                 orderName: product + " 외..",
-                successUrl: "http://localhost:8080/payment/" + id + "/success",
-                failUrl: "http://localhost:8080/payment/" + id + "/fail",
+                successUrl: url + "/payment/" + id + "/success",
+                failUrl: url + "/payment/" + id + "/fail",
                 customerEmail: email,
                 customerName: username
             })

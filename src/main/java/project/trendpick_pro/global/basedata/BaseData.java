@@ -1,6 +1,14 @@
 package project.trendpick_pro.global.basedata;
 
-import jakarta.persistence.EntityManager;
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -36,8 +44,8 @@ import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
-import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Configuration
@@ -70,8 +78,13 @@ public class BaseData {
     private List<String> sizeShoes;
     @Value("${colors}")
     private List<String> colors;
-    @Value("${file.path}")
-    private String filePath;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+    @Value("${cloud.aws.credentials.accessKey}")
+    private String accessKey;
+    @Value("${cloud.aws.credentials.secretKey}")
+    private String secretKey;
 
     @Bean
     CommandLineRunner initData(
@@ -85,9 +98,7 @@ public class BaseData {
             ProductRepository productRepository,
             ReviewRepository reviewRepository,
             CouponRepository couponRepository,
-            StoreRepository storeRepository,
-            EntityManager em
-
+            StoreRepository storeRepository
     ) {
         return new CommandLineRunner() {
             @Override
@@ -98,10 +109,12 @@ public class BaseData {
                 memberService.saveAll(makeBrandMembers(brands));
                 mainCategoryService.saveAll(mainCategories);
 
-                em.flush();
-                em.clear();
-
                 SaveAllSubCategories(mainCategoryService, subCategoryService);
+
+                Map<String, String> accessKeyMap = new HashMap<>();
+                accessKeyMap.put("accessKey", accessKey);
+                accessKeyMap.put("secretKey", secretKey);
+                accessKeyMap.put("bucket", bucket);
 
                 int memberCount = 10;
                 int productCount = 100;
@@ -112,10 +125,10 @@ public class BaseData {
                 saveMembers(memberCount, tagNameService, memberService, recommendService);
                 saveUniqueMembers(memberService, brandName);
 
-                saveProducts(productCount, filePath, mainCategoryService, brandService, tagNameService, productRepository, brandName, sizeTops, sizeBottoms, sizeShoes, colors);
+                saveProducts(productCount, accessKeyMap, mainCategoryService, brandService, tagNameService, productRepository, brandName, sizeTops, sizeBottoms, sizeShoes, colors);
                 updateRecommends(memberService, recommendService);
 
-                saveReviews(reviewCount, productCount, filePath, memberService, productService ,reviewRepository);
+                saveReviews(reviewCount, productCount, accessKeyMap, memberService, productService ,reviewRepository);
                 saveStoreCoupon(couponCount, storeRepository, couponRepository, brandService);
 
                 log.info("BASE_DATA_SUCCESS");
@@ -215,12 +228,12 @@ public class BaseData {
 
     }
 
-    private static void saveProducts(int count, String filePath, MainCategoryService mainCategoryService, BrandService brandService, TagNameService tagNameService, ProductRepository productRepository, String brandName,
+    private static void saveProducts(int count, Map<String, String> keys, MainCategoryService mainCategoryService, BrandService brandService, TagNameService tagNameService, ProductRepository productRepository, String brandName,
                                      List<String> sizeTops, List<String> sizeBottoms, List<String> sizeShoes, List<String> colors) {
         long result;
         List<Product> products = new ArrayList<>();
         for (int n = 1; n <= count; n++) {
-            CommonFile commonFile = makeFiles(filePath);
+            CommonFile commonFile = makeFiles(keys);
             result = (long) (Math.random() * 7);
             MainCategory mainCategory = mainCategoryService.findByBaseId(result + 1L);
 
@@ -304,10 +317,10 @@ public class BaseData {
         productRepository.saveAll(products);
     }
 
-    private void saveReviews(int count, int productCount, String filePath, MemberService memberService, ProductService productService, ReviewRepository reviewRepository) {
+    private void saveReviews(int count, int productCount, Map<String, String> keys, MemberService memberService, ProductService productService, ReviewRepository reviewRepository) {
         List<Review> reviews = new ArrayList<>();
         for(int i=1; i<=count; i++){
-            CommonFile commonFile = makeFiles(filePath);
+            CommonFile commonFile = makeFiles(keys);
             Product product = productService.findById((long) (Math.random() * (productCount/2))+1L);
             ReviewSaveRequest rr = ReviewSaveRequest.builder()
                     .title("리뷰입니다.")
@@ -353,12 +366,15 @@ public class BaseData {
         subCategoryService.saveAll(accessories, mainCategoryService.findByName("악세서리"));
     }
 
-    private static CommonFile makeFiles(String filePath) {
-        String[] filenames = new File(filePath).list();
+    public static CommonFile makeFiles(Map<String, String> keys) {
+        AmazonS3 s3Client = createNcpS3Client(keys.get("accessKey"), keys.get("secretKey"));
+
+        List<String> filenames = listS3ObjectKeys(s3Client, keys.get("bucket"));
+
         CommonFile mainFile = CommonFile.builder()
                 .fileName(selectRandomFilePath(filenames))
                 .build();
-        for (int i = 0; i < (int) (Math.random() * 6)+2; i++) {
+        for (int i = 0; i < (int) (Math.random() * 6) + 2; i++) {
             mainFile.connectFile(CommonFile.builder()
                     .fileName(selectRandomFilePath(filenames))
                     .build());
@@ -366,10 +382,31 @@ public class BaseData {
         return mainFile;
     }
 
-    private static String selectRandomFilePath(String[] filePaths) {
-        String path = filePaths[(int) (Math.random() * filePaths.length)];
+    private static AmazonS3 createNcpS3Client(String accessKey, String secretKey) {
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKey, secretKey);
+
+        ClientConfiguration clientConfig = new ClientConfiguration();
+
+        return AmazonS3ClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                .withClientConfiguration(clientConfig)
+                .withEndpointConfiguration(new AmazonS3ClientBuilder.EndpointConfiguration("https://kr.object.ncloudstorage.com", Regions.AP_NORTHEAST_2.getName()))
+                .build();
+    }
+
+    private static List<String> listS3ObjectKeys(AmazonS3 s3Client, String bucketName) {
+        ObjectListing objectListing = s3Client.listObjects(bucketName);
+
+        return objectListing.getObjectSummaries().stream()
+                .map(S3ObjectSummary::getKey)
+                .collect(Collectors.toList());
+    }
+
+    private static String selectRandomFilePath(List<String> filePaths) {
+        Random random = new Random();
+        String path = filePaths.get(random.nextInt(filePaths.size()));
         while (path.equals("trendpick_logo.png")) {
-            path = filePaths[(int) (Math.random() * filePaths.length)];
+            path = filePaths.get(random.nextInt(filePaths.size()));
         }
         return path;
     }

@@ -2,6 +2,7 @@ package project.trendpick_pro.global.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,12 +11,13 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Map;
+import java.util.*;
 
+@Component
 public class Ut {
     public static class json {
 
@@ -53,6 +55,9 @@ public class Ut {
 
             return sb.append(suffix).toString();
         }
+    }
+    public static String nf(long number) {
+        return String.format("%,d", (int) number);
     }
 
     public static class reflection {
@@ -133,7 +138,23 @@ public class Ut {
             return Base64.getEncoder().encodeToString(hashBytes);
         }
     }
+    public static <K, V> Map<K, V> mapOf(Object... args) {
+        Map<K, V> map = new LinkedHashMap<>();
 
+        int size = args.length / 2;
+
+        for (int i = 0; i < size; i++) {
+            int keyIndex = i * 2;
+            int valueIndex = keyIndex + 1;
+
+            K key = (K) args[keyIndex];
+            V value = (V) args[valueIndex];
+
+            map.put(key, value);
+        }
+
+        return map;
+    }
     public static class url {
         public static String encode(String str) {
             return URLEncoder.encode(str, StandardCharsets.UTF_8);
@@ -174,5 +195,77 @@ public class Ut {
 
             return url.substring(0, startPoint) + urlAfter;
         }
+        public static String getQueryParamValue(String url, String paramName, String defaultValue) {
+            String[] urlBits = url.split("\\?", 2);
+
+            if (urlBits.length == 1) {
+                return defaultValue;
+            }
+
+            urlBits = urlBits[1].split("&");
+
+            String param = Arrays.stream(urlBits)
+                    .filter(s -> s.startsWith(paramName + "="))
+                    .findAny()
+                    .orElse(paramName + "=" + defaultValue);
+
+            String value = param.split("=", 2)[1].trim();
+
+            return value.length() > 0 ? value : defaultValue;
+        }
     }
+    public static class date {
+        public static LocalDateTime bitsToLocalDateTime(List<Integer> bits) {
+            return LocalDateTime.of(bits.get(0), bits.get(1), bits.get(2), bits.get(3), bits.get(4), bits.get(5), bits.get(6));
+        }
+
+        public static int getEndDayOf(int year, int month) {
+            String yearMonth = year + "-" + "%02d".formatted(month);
+
+            return getEndDayOf(yearMonth);
+        }
+
+        public static int getEndDayOf(String yearMonth) {
+            LocalDate convertedDate = LocalDate.parse(yearMonth + "-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            convertedDate = convertedDate.withDayOfMonth(
+                    convertedDate.getMonth().length(convertedDate.isLeapYear()));
+
+            return convertedDate.getDayOfMonth();
+        }
+
+        public static LocalDateTime parse(String pattern, String dateText) {
+            return LocalDateTime.parse(dateText, DateTimeFormatter.ofPattern(pattern));
+        }
+
+        public static LocalDateTime parse(String dateText) {
+            return parse("yyyy-MM-dd HH:mm:ss.SSSSSS", dateText);
+        }
+
+        public static String getCurrentYearMonth() {
+            return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        }
+
+        public static <K, V> Map<K, V> mapOf(Object... args) {
+            Map<K, V> map = new LinkedHashMap<>();
+
+            int size = args.length / 2;
+
+            for (int i = 0; i < size; i++) {
+                int keyIndex = i * 2;
+                int valueIndex = keyIndex + 1;
+
+                K key = (K) args[keyIndex];
+                V value = (V) args[valueIndex];
+
+                map.put(key, value);
+            }
+
+            return map;
+        }
+
+        public static String nf(long number) {
+            return String.format("%,d", (int) number);
+        }
+    }
+
 }
