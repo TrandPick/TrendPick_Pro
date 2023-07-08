@@ -11,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
+import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
 import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.service.ProductService;
 
 import java.io.IOException;
@@ -55,13 +57,16 @@ public class JmeterController {
 //        return orderService.showOrderItems(member, result.getData()).getData();
 //    }
 
-//    @PostMapping("/edit")
-//    public void modifyProduct(@RequestParam("productId") Long productId,
-//                              @RequestParam("mainFile") MultipartFile mainFile,
-//                              @RequestParam("subFile") List<MultipartFile> subFiles) throws IOException {
-//        log.info("productId : {}", productId);
-//        ProductSaveRequest productSaveRequest = new ProductSaveRequest("제목", "내용", "상의", "반소매티셔츠", "나이키", 50, 1000, List.of("오버핏청바지", "시티보이룩"));
-//        Long id =  productService.modify(productId, productSaveRequest, mainFile, subFiles).getData();
-//        log.info("id : {}", id);
-//    }
+    @PostMapping("/edit")
+    public void modifyProduct(@RequestParam("productId") Long productId,
+                              @RequestParam("mainFile") MultipartFile mainFile,
+                              @RequestParam("subFile") List<MultipartFile> subFiles) throws IOException {
+        log.info("productId : {}", productId);
+
+        ProductSaveRequest productSaveRequest = new ProductSaveRequest("제목", "내용", "상의", "반소매티셔츠", "나이키", List.of("오버핏청바지", "시티보이룩"));
+        ProductOptionSaveRequest productOptionSaveRequest = new ProductOptionSaveRequest(List.of("S", "M", "L"), List.of("Fuchsia", "LightSalmon", "Silver"), 100, 100000);
+        ProductRequest productRequest = new ProductRequest(productSaveRequest, productOptionSaveRequest);
+        Long id =  productService.modify(productId, productRequest, mainFile, subFiles).getData();
+        log.info("id : {}", id);
+    }
 }
