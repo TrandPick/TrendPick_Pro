@@ -34,7 +34,7 @@
         <div class="flex-1 px-4">
             <div class="mb-4 flex flex-wrap overflow-auto space-x-2">
                 <div th:each="tag : ${productResponse.tags}" class="badge-large mr-2 mb-2">
-                    <span th:text="'#'+${tag.name}" class="text-gray-400"></span>
+                    <span th:text="'#'+${tag}" class="text-gray-400"></span>
                 </div>
             </div>
             <hr class="my-4">
@@ -76,7 +76,7 @@
                 <div class="mb-4">
                     <div class="flex items-center">
                         <button onclick="decreaseValue()" class="px-3 py-2 bg-gray-200 text-gray-800">-</button>
-                        <input type="number" id="quantity" name="quantity" min="1" th:max="${productResponse.stock}" value="1"
+                        <input type="number" id="quantity" name="quantity" min="1" value="1"
                                class="w-16 text-center mx-2 py-2 text-gray-800 border-none">
                         <button onclick="increaseValue()" class="px-3 py-2 bg-gray-200 text-gray-800">+</button>
                     </div>
@@ -372,7 +372,7 @@
 
         const socket = new SockJS('/websocket');
         const stompClient = Stomp.over(socket);
-        stompClient.connect({}, function (frame) {
+        stompClient.connect({}, function () {
             stompClient.subscribe('/user/topic/standByOrder', function (message) {
                 const data = JSON.parse(message.body);
                 if (data.message === 'Success') {

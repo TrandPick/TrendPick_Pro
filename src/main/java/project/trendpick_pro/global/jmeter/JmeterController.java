@@ -72,7 +72,7 @@ public class JmeterController {
 
         ProductOptionSaveRequest productOptionSaveRequest = new ProductOptionSaveRequest(
                 product.getProductOption().getSizes(), product.getProductOption().getColors(),
-                product.getProductOption().getStock(), product.getProductOption().getPrice());
+                product.getProductOption().getStock(), product.getProductOption().getPrice(), product.getProductOption().getStatus().getText());
 
         ProductRequest productRequest = new ProductRequest(productSaveRequest, productOptionSaveRequest);
         productService.modify(productId, productRequest, mainFile, subFiles);
