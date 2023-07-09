@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.withdraw.entity.WithdrawApply;
 import project.trendpick_pro.domain.withdraw.entity.dto.WithDrawApplyForm;
@@ -27,6 +28,9 @@ public class WithdrawController {
 
     @GetMapping("/withDraw")
     public String showApply(Model model) {
+        if(!rq.getRollMember().getRole().getValue().equals("BRAND_ADMIN")){
+            return rq.historyBack("브랜드 관리자만 접근할 수 있습니다.");
+        }
         long actorRestCash = memberService.getRestCash(rq.getBrandMember());
         model.addAttribute("actorRestCash", actorRestCash);
 
