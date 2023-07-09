@@ -2,6 +2,8 @@ package project.trendpick_pro.domain.recommend.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +24,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RecommendService {
 
@@ -31,6 +32,7 @@ public class RecommendService {
     private final MemberRepository memberRepository;
 
     @Transactional
+    @CacheEvict(value = "recommendedProducts", allEntries = true)
     public void select(String username){
 
         Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
@@ -46,6 +48,8 @@ public class RecommendService {
         }
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(value = "recommendedProducts", key = "#member.username + '_' + #offset")
     public Page<ProductListResponse> getFindAll(Member member, int offset){
         PageRequest pageable = PageRequest.of(offset, 18);
         Page<ProductListResponse> listResponses = recommendRepository.findAllByMemberName(member.getUsername(), pageable);
