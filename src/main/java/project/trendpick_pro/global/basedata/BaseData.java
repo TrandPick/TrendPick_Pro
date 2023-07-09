@@ -117,7 +117,7 @@ public class BaseData {
                 accessKeyMap.put("bucket", bucket);
 
                 int memberCount = 10;
-                int productCount = 100;
+                int productCount = 10000;
                 int reviewCount = 100;
                 int couponCount = 50;
                 String brandName = "polo";
