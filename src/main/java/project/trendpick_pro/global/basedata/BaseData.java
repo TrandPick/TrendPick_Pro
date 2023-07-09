@@ -30,6 +30,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.entity.productOption.ProductOption;
 import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
@@ -116,10 +117,10 @@ public class BaseData {
                 accessKeyMap.put("secretKey", secretKey);
                 accessKeyMap.put("bucket", bucket);
 
-                int memberCount = 10;
-                int productCount = 10000;
-                int reviewCount = 100;
-                int couponCount = 50;
+                int memberCount = 100;
+                int productCount = 5000;
+                int reviewCount = 0;
+                int couponCount = 0;
                 String brandName = "polo";
 
                 saveMembers(memberCount, tagNameService, memberService, recommendService);
@@ -291,7 +292,7 @@ public class BaseData {
                     default -> inputSizes.add("FREE");
                 }
 
-                ProductOptionSaveRequest request = ProductOptionSaveRequest.of(inputSizes, selectedColors, stockRandom, priceRandom);
+                ProductOptionSaveRequest request = ProductOptionSaveRequest.of(inputSizes, selectedColors, stockRandom, priceRandom, ProductStatus.SALE.getText());
                 ProductOption productOption = ProductOption.of(request);
 
                 Product product = Product

@@ -19,7 +19,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "index_member",
+@Table(name = "member",
         indexes = {@Index(name = "index_member_email",  columnList="email", unique = true)})
 public class Member extends BaseTimeEntity {
 
