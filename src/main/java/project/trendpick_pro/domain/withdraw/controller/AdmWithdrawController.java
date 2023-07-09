@@ -23,18 +23,21 @@ public class AdmWithdrawController {
     private final WithdrawService withdrawService;
     private final Rq rq;
 
-    @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
+    @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("/withDrawList")
     public String showApplyList(Model model) {
-        Member member=rq.getBrandMember();
-        System.out.println(member.getId()+"!!");
-        List<WithdrawApply> withdrawApplies = withdrawService.findByWithdrawApplyId(member.getId());
-
+        Member member=rq.getRollMember();
+        List<WithdrawApply> withdrawApplies;
+        if(member.getRole().getValue().equals("ADMIN")) {
+            withdrawApplies = withdrawService.findAll();
+        }else{
+            withdrawApplies=withdrawService.findByWithdrawApplyId(member.getId());
+        }
         model.addAttribute("withdrawApplies", withdrawApplies);
         return "trendpick/admin/withDrawList";
     }
 
-    @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
+    @PreAuthorize("hasAuthority({'ADMIN'})")
     @PostMapping("/{withdrawApplyId}")
     public String applyDone(@PathVariable Long withdrawApplyId) {
         RsData withdrawRsData = withdrawService.withdraw(withdrawApplyId);
@@ -42,7 +45,7 @@ public class AdmWithdrawController {
         return rq.redirectWithMsg("/trendpick/admin/withDrawList", withdrawRsData);
     }
 
-    @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
+    @PreAuthorize("hasAuthority({'ADMIN'})")
     @PostMapping("/{withdrawApplyId}/cancel")
     public String cancel(@PathVariable Long withdrawApplyId) {
         RsData withdrawRsData = withdrawService.cancelApply(withdrawApplyId);

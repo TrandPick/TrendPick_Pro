@@ -13,4 +13,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByUsername(String username);
     Optional<Member> findByEmail(String email);
     Page<Member> findAllByRoleAndRecentlyAccessDateBetween(RoleType role, LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable);
+
+    Member findByBrand(String brand);
 }
