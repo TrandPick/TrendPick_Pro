@@ -24,20 +24,24 @@ public class ProductOptionSaveRequest {
     @Min(value = 1, message = "가격을 입력해주세요.(1원 이상부터 입력할 수 있습니다.)")
     private int price;
 
+    private String status;
+
     @Builder
-    public ProductOptionSaveRequest(List<String> sizes, List<String> colors, int stock, int price) {
+    public ProductOptionSaveRequest(List<String> sizes, List<String> colors, int stock, int price, String status) {
         this.sizes = sizes;
         this.colors = colors;
         this.stock = stock;
         this.price = price;
+        this.status = status;
     }
 
-    public static ProductOptionSaveRequest of (List<String> sizes, List<String> colors, int stock, int price) {
+    public static ProductOptionSaveRequest of (List<String> sizes, List<String> colors, int stock, int price, String status) {
         return ProductOptionSaveRequest.builder()
                 .sizes(sizes)
                 .colors(colors)
                 .stock(stock)
                 .price(price)
+                .status(status)
                 .build();
     }
 }

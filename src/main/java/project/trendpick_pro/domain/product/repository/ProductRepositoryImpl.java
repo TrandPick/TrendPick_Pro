@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.product.dto.response.*;
 import project.trendpick_pro.domain.product.entity.productOption.QProductOption;
@@ -52,8 +53,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .leftJoin(product.productOption, productOption)
                 .leftJoin(product.file, commonFile)
                 .where(
-                        mainCategoryEq(cond)
-                                .and(subCategoryEq(cond))
+                        mainCategoryEq(cond),
+                        subCategoryEq(cond)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

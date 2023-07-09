@@ -9,12 +9,13 @@ import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductResponse {
+public class ProductResponse implements Serializable {
 
     private Long id;
     private String name;
@@ -27,17 +28,14 @@ public class ProductResponse {
     private List<String> sizes;
     private List<String> colors;
     private int price;
-    private int stock;
-    private List<Tag> tags = new ArrayList<>();
-
+    private List<String> tags = new ArrayList<>();
     private int discountRate;
-
     private int discountedPrice;
 
     @Builder
     @QueryProjection
     public ProductResponse(Long id, String name, String mainCategory, String subCategory, String brand, String description,
-                           String mainFile, List<String> subFiles, List<String> sizes, List<String> colors, int price, int stock, List<Tag> tags, double discountRate, int discountedPrice) {
+                           String mainFile, List<String> subFiles, List<String> sizes, List<String> colors, int price, List<String> tags, double discountRate, int discountedPrice) {
         this.id = id;
         this.name = name;
         this.mainCategory = mainCategory;
@@ -49,30 +47,45 @@ public class ProductResponse {
         this.sizes = sizes;
         this.colors = colors;
         this.price = price;
-        this.stock = stock;
         this.tags = tags;
         this.discountRate = (int) discountRate;
         this.discountedPrice = discountedPrice;
     }
 
     public static ProductResponse of (Product product) {
-        return ProductResponse.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .mainCategory(product.getMainCategory().getName())
-                .subCategory(product.getSubCategory().getName())
-                .brand(product.getBrand().getName())
-                .description(product.getDescription())
-                .mainFile(product.getFile().getFileName())
-                .subFiles(subFiles(product.getFile().getChild()))
-                .sizes(product.getProductOption().getSizes())
-                .colors(product.getProductOption().getColors())
-                .price(product.getProductOption().getPrice())
-                .stock(product.getProductOption().getStock())
-                .tags(new ArrayList<>(product.getTags()))
-                .discountedPrice(product.getDiscountedPrice())
-                .discountRate(product.getDiscountRate())
-                .build();
+        if (product.getDiscountedPrice() == 0 && product.getDiscountRate() == 0) {
+            return ProductResponse.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .mainCategory(product.getMainCategory().getName())
+                    .subCategory(product.getSubCategory().getName())
+                    .brand(product.getBrand().getName())
+                    .description(product.getDescription())
+                    .mainFile(product.getFile().getFileName())
+                    .subFiles(subFiles(product.getFile().getChild()))
+                    .sizes(product.getProductOption().getSizes())
+                    .colors(product.getProductOption().getColors())
+                    .price(product.getProductOption().getPrice())
+                    .tags(product.getTags().stream().map(Tag::getName).toList())
+                    .build();
+        } else {
+            return ProductResponse.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .mainCategory(product.getMainCategory().getName())
+                    .subCategory(product.getSubCategory().getName())
+                    .brand(product.getBrand().getName())
+                    .description(product.getDescription())
+                    .mainFile(product.getFile().getFileName())
+                    .subFiles(subFiles(product.getFile().getChild()))
+                    .sizes(product.getProductOption().getSizes())
+                    .colors(product.getProductOption().getColors())
+                    .price(product.getProductOption().getPrice())
+                    .tags(product.getTags().stream().map(Tag::getName).toList())
+                    .discountedPrice(product.getDiscountedPrice())
+                    .discountRate(product.getDiscountRate())
+                    .build();
+        }
     }
 
     private static List<String> subFiles(List<CommonFile> subFiles) {
