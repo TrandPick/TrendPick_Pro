@@ -1,10 +1,11 @@
 package project.trendpick_pro.domain.product.service;
 
-
 import com.amazonaws.services.s3.AmazonS3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
 import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.product.dto.response.*;
@@ -42,10 +44,11 @@ import project.trendpick_pro.global.rsData.RsData;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProductService {
 
@@ -71,7 +74,7 @@ public class ProductService {
     private String filePath;
 
     @Transactional
-    public RsData<Long> register(ProductRequest request, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
+    public RsData<Long> register(ProductRequest request, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException, ExecutionException, InterruptedException {
 
         rq.checkAdmin();
 
@@ -90,11 +93,18 @@ public class ProductService {
             tags.add(new Tag(tagName));
         }
 
-        MainCategory mainCategory = mainCategoryService.findByName(productSaveRequest.getMainCategory());
-        SubCategory subCategory = subCategoryService.findByName(productSaveRequest.getSubCategory());
-        Brand brand = brandService.findByName(productSaveRequest.getBrand());
+        CompletableFuture<MainCategory> mainCategoryFuture = CompletableFuture.supplyAsync(() -> mainCategoryService.findByName(productSaveRequest.getMainCategory()));
+        CompletableFuture<SubCategory> subCategoryFuture = CompletableFuture.supplyAsync(() -> subCategoryService.findByName(productSaveRequest.getSubCategory()));
+        CompletableFuture<Brand> brandFuture = CompletableFuture.supplyAsync(() -> brandService.findByName(productSaveRequest.getBrand()));
+
+        CompletableFuture.allOf(mainCategoryFuture, subCategoryFuture, brandFuture).join();
+
+        MainCategory mainCategory = mainCategoryFuture.get();
+        SubCategory subCategory = subCategoryFuture.get();
+        Brand brand = brandFuture.get();
 
         ProductOption productOption = ProductOption.of(optionSaveRequest);
+        productOption.connectStatus(ProductStatus.SALE);
         Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile, productOption);
         product.addTag(tags);
 
@@ -144,7 +154,7 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    @Transactional
+    @Cacheable(value = "product", key = "#productId")
     public ProductResponse getProduct(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
@@ -154,10 +164,12 @@ public class ProductService {
                 updateFavoriteTag(product);
             }
         }
+
         return ProductResponse.of(product);
     }
 
-    public ProductListResponse getProducts(Long productId) {
+    @Transactional(readOnly = true)
+    private ProductListResponse getProducts(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         return ProductListResponse.of(product);
     }
@@ -168,6 +180,13 @@ public class ProductService {
             favoriteTagService.updateTag(member, product, TagType.SHOW);
     }
 
+    @Transactional
+    @CacheEvict(value = "product", key = "#productId")
+    public void deleteCache(ProductOption productOption) {
+        productOption.connectStatus(ProductStatus.SOLD_OUT);
+    }
+
+    @Transactional(readOnly = true)
     public Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory) {
 
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
@@ -185,6 +204,7 @@ public class ProductService {
         return new PageImpl<>(list, pageable, listResponses.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductListResponse> findAllByKeyword(String keyword, int offset) {
 
         ProductSearchCond cond = new ProductSearchCond(keyword);
@@ -202,12 +222,14 @@ public class ProductService {
         return new PageImpl<>(list, pageable, listResponses.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductListResponse> getAllProducts(Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), 18);
         Page<Product> products = productRepository.findAll(pageable);
         return products.map(this::convertToProductListResponse);
     }
 
+    @Transactional(readOnly = true)
     public List<Product> getRecommendProduct(Member member) {
 
         List<ProductByRecommended> tags = productRepository.findRecommendProduct(member.getUsername());
@@ -288,10 +310,12 @@ public class ProductService {
         );
     }
 
+    @Transactional(readOnly = true)
     public Product findById(Long id) {
         return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
     }
 
+    @Transactional(readOnly = true)
     public Product findByIdWithBrand(Long productId) {
         return productRepository.findByIdWithBrand(productId);
     }
