@@ -1,5 +1,6 @@
 package project.trendpick_pro.domain.product.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import project.trendpick_pro.domain.category.entity.dto.response.SubCategoryResp
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.common.view.service.ViewService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
@@ -61,6 +63,8 @@ public class ProductController {
 
     private final ReviewService reviewService;
     private final AskService askService;
+
+    private final ViewService viewService;
 
     private final Rq rq;
 
@@ -133,7 +137,10 @@ public class ProductController {
     public String showAllProduct(@RequestParam(value = "page", defaultValue = "0") int offset,
                                  @RequestParam(value = "main-category", defaultValue = "all") String mainCategory,
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
-                                 Pageable pageable, Model model) {
+                                 Pageable pageable, Model model, HttpSession session) throws InterruptedException {
+        viewService.requestIncrementViewCount(session);
+        Thread.sleep(200);
+        model.addAttribute("totalView", viewService.getCount());
         if (mainCategory.equals("recommend")) {
             mainCategory = "추천";
         } else if (mainCategory.equals("all")) {

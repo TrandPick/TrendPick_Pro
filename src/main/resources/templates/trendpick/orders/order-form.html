@@ -199,7 +199,6 @@
             })
         })
 
-        var couponPopup = null;
         function showCouponList(orderItemId) {
             document.getElementById('main-content').style.pointerEvents = 'none';
             toastr.options = {
@@ -210,12 +209,11 @@
                 tapToDismiss: false, // 탭하여 닫기 비활성화
                 closeButton: true // 닫기 버튼 활성화
             };
-            // AJAX 요청을 통해 쿠폰 목록 데이터를 가져옴
             $.ajax({
-                url: '/trendpick/usr/couponCards/apply', // 쿠폰 목록을 제공하는 API 엔드포인트의 URL
+                url: '/trendpick/usr/couponCards/apply',
                 method: 'GET',
                 data: {
-                    orderItem: orderItemId // orderItemId 변수 값을 넘겨줌
+                    orderItem: orderItemId
                 },
                 success: function(response) {
                     couponListHTML = '<div class="coupon-popup">\n' +
@@ -224,7 +222,6 @@
                         '쿠폰목록\n' +
                         '</h1>' +
                         '<div class="grid grid-flow-row-dense grid-cols-1 gap-4 m-2">\n';
-                    // 쿠폰 목록 데이터를 HTML로 변환하여 팝업 창에 삽입
                     response.forEach(function(coupon) {
                         couponListHTML += `
           <div class="card bg-base-80 shadow-xl">
@@ -248,10 +245,8 @@
                     couponListHTML += '</div>\n' +
                         '<button class="btn btn-sm btn-outline close-button" onclick="closeCouponList()">닫기<button>\n' +
                         '</div>'
-                    // 팝업 창을 생성하여 쿠폰 목록을 표시
                     var couponPopup = toastr.info(couponListHTML, '', {
                         closeButton: false,
-                        // positionClass: 'toast-top-full-width',
                         timeOut: 0,
                         extendedTimeOut: 0,
                         tapToDismiss: false
@@ -274,11 +269,9 @@
                     couponCard: couponCardId,
                     orderItem: orderItemId
                 },
-                success: function(response) {
+                success: function() {
                     toastr.success('쿠폰이 적용되었습니다.');
                     location.reload();
-                    // 원하는 동작 수행 (예: 페이지 새로고침, 필요한 데이터 업데이트 등)
-                    // ...
                 },
                 error: function() {
                     toastr.error('쿠폰 적용에 실패했습니다.');
