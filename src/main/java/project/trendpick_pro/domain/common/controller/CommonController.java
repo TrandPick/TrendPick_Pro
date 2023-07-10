@@ -1,33 +1,23 @@
 package project.trendpick_pro.domain.common.controller;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
-import project.trendpick_pro.domain.common.base.filetranslator.FileTranslator;
-
-import java.net.MalformedURLException;
+import project.trendpick_pro.domain.common.view.service.ViewService;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class CommonController {
 
-    private final FileTranslator fileTranslator;
-
-    @ResponseBody
-    @GetMapping("/images/{filename}")
-    public Resource downloadImage(@PathVariable String filename) throws MalformedURLException {
-        return new UrlResource("file:" + fileTranslator.getFilePath(filename));
-    }
+    private final ViewService viewService;
 
     @GetMapping("/")
-    public String index() {
+    public String index(HttpSession session) {
+        viewService.requestIncrementViewCount(session);
         String mainCategory = "전체";
         String redirectUrl = UriComponentsBuilder
                 .fromPath("/trendpick/products/list")
@@ -36,11 +26,4 @@ public class CommonController {
 
         return "redirect:" + redirectUrl;
     }
-
-    @GetMapping("/test")
-    public String test() {
-        return "trendpick/orders/standByOrder";
-    }
-
-
 }
