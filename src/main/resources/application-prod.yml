@@ -20,7 +20,7 @@ spring:
     password: ${custom.dataSource.password}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   data:
     redis:
       host: ${redis.host}
