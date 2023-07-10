@@ -26,18 +26,19 @@ public class WithdrawController {
     private final MemberService memberService;
     private final Rq rq;
 
+
+    @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
     @GetMapping("/withDraw")
     public String showApply(Model model) {
-        if(!rq.getRollMember().getRole().getValue().equals("BRAND_ADMIN")){
+        Member member = rq.getRollMember();
+        if(!member.getRole().getValue().equals("BRAND_ADMIN")){
             return rq.historyBack("브랜드 관리자만 접근할 수 있습니다.");
         }
-        long actorRestCash = memberService.getRestCash(rq.getBrandMember());
-        model.addAttribute("actorRestCash", actorRestCash);
-
+        model.addAttribute("actorRestCash", memberService.getRestCash(member));
         return "trendpick/admin/withDraw";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
     @PostMapping("/withDraw")
     public String apply(@Valid WithDrawApplyForm withDrawApplyForm) {
         RsData<WithdrawApply> rsData = withdrawService.apply(
