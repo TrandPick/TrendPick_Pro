@@ -67,7 +67,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifact
-          path: .
+          path: build
       - name: Docker Buildx 설치
         uses: docker/setup-buildx-action@v2
       - name: ghcr.io 로그인
