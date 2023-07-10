@@ -1,4 +1,4 @@
-package project.trendpick_pro.domain.tags.tag.entity.type;
+package project.trendpick_pro.domain.tags.type;
 
 public enum TagType { //타입에 따라 다른 태그점수 향상치
     ORDER("ORDER"),

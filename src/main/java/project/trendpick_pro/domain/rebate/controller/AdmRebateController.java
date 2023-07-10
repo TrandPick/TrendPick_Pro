@@ -33,7 +33,8 @@ public class AdmRebateController {
         @GetMapping("/makeData")
         @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
         public String showMakeData() {
-                if(!rq.getRollMember().getRole().getValue().equals("BRAND_ADMIN")){
+                Member member=rq.getRollMember();
+                if(member.getRole().getValue().equals("BRAND_ADMIN")){
                         return rq.historyBack("브랜드 관리자만 접근할 수 있습니다.");
                 }
                 return "trendpick/admin/makeData";
@@ -53,7 +54,8 @@ public class AdmRebateController {
         @GetMapping("/rebateOrderItemList")
         @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
         public String showRebateOrderItemList(String yearMonth, Model model) {
-                if(!rq.getRollMember().getRole().getValue().equals("BRAND_ADMIN")){
+                Member member=rq.getRollMember();
+                if(member.getRole().getValue().equals("BRAND_ADMIN")){
                         return rq.historyBack("브랜드 관리자만 접근할 수 있습니다.");
                 }
 
@@ -73,7 +75,9 @@ public class AdmRebateController {
         @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
         public String rebateOne(@PathVariable long orderItemId, HttpServletRequest req) {
                 RsData rebateRsData = rebateService.rebate(orderItemId);
-
+                if(rebateRsData.isFail()){
+                        return rq.historyBack("정산할 수 없는 상태입니다.");
+                }
                 String referer = req.getHeader("Referer");
                 String yearMonth = Ut.url.getQueryParamValue(referer, "yearMonth", "");
 
