@@ -9,16 +9,12 @@ import project.trendpick_pro.domain.notification.entity.Notification;
 
 import java.time.LocalDateTime;
 
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationResponse {
     private Long id;
-
     private String orderState;
-
     private String deliveryState;
-
     private LocalDateTime createDate;
 
     @Builder
@@ -35,8 +31,7 @@ public class NotificationResponse {
                 .id(notification.getId())
                 .orderState(notification.getOrder().getOrderState())
                 .deliveryState(notification.getOrder().getDeliveryState())
-                .createDate(notification.getCreateDate())
+                .createDate(notification.getCreatedDate())
                 .build();
     }
-
 }

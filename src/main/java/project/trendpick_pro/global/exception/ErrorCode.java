@@ -20,7 +20,9 @@ public enum ErrorCode {
     ASK_NOT_FOUND(404, "ASK-001", "문의가 존재하지 않는 경우"),
     ASK_NOT_MATCH(403, "ASK-002", "문의 권한이 다를 경우"),
 
-    COUPON_NOT_FOUND(404, "COUPON-001", "쿠폰이 존재하지 않는 경우"),;
+    COUPON_NOT_FOUND(404, "COUPON-001", "쿠폰이 존재하지 않는 경우"),
+
+    NOTIFICATION_NOT_FOUND(404, "NOTIFICATION-001", "알림이 존재하지 않는 경우");
 
     private final int status;
     private final String code;
