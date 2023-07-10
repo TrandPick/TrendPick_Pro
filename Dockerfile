@@ -5,6 +5,9 @@ WORKDIR /workspace/app
 # Copy your source code
 COPY . .
 
+# Grant execution permission to Gradle wrapper
+RUN chmod +x ./gradlew
+
 # Build the application
 RUN ./gradlew clean build
 
