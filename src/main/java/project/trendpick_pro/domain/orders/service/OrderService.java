@@ -115,7 +115,7 @@ public class OrderService {
     @KafkaListener(topicPattern = "orders", groupId = "group_id")
     public void orderToOrder(@Payload String Id) throws JsonProcessingException {
         try {
-            Thread.sleep(750);
+            Thread.sleep(800);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
