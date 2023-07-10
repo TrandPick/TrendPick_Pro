@@ -37,8 +37,8 @@ import project.trendpick_pro.domain.product.repository.ProductRepository;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
-import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
 import project.trendpick_pro.domain.tags.tag.service.TagService;
+import project.trendpick_pro.domain.tags.type.TagType;
 import project.trendpick_pro.global.rsData.RsData;
 //import project.trendpick_pro.global.search.service.SearchService;
 
@@ -170,7 +170,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    private ProductListResponse getProducts(Long productId) {
+    public ProductListResponse getProducts(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         return ProductListResponse.of(product);
     }

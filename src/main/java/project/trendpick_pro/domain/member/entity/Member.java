@@ -2,12 +2,11 @@ package project.trendpick_pro.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
-import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.type.TagType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
