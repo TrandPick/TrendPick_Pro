@@ -25,7 +25,6 @@ import project.trendpick_pro.global.rsData.RsData;
 import java.util.List;
 import java.time.LocalDateTime;
 
-
 public interface OrderService {
     RsData<Order> cartToOrder(Member member, CartToOrderRequest request);
 
