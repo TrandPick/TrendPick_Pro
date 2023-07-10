@@ -1,23 +1,18 @@
 package project.trendpick_pro.domain.notification.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
-import org.springframework.format.annotation.DateTimeFormat;
+import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 
 @Entity
 @Getter
-@NoArgsConstructor
-@SuperBuilder
-@ToString(callSuper = true)
-public class Notification {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Notification extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id")
@@ -32,21 +27,17 @@ public class Notification {
     private Member member;
 
     private String orderState;
-
     private String deliveryState;
-    @DateTimeFormat(pattern = "yyyy-mm-dd hh:mm:ss")
-    private LocalDateTime createDate;
 
-    @PrePersist
-    public void createDate() {
-        this.createDate = LocalDateTime.now();
+    @Builder
+    public Notification(Order order, Member member, String orderState, String deliveryState) {
+        this.order = order;
+        this.member = member;
+        this.orderState = orderState;
+        this.deliveryState = deliveryState;
     }
 
-    public boolean isRead(){
-        return createDate!=null;
-    }
-
-    public static Notification of(Member member,Order order){
+    public static Notification of(Member member, Order order){
         return Notification.builder()
                 .member(member)
                 .order(order)
@@ -59,5 +50,4 @@ public class Notification {
         this.orderState=orderState;
         this.deliveryState=deliveryState;
      }
-
 }

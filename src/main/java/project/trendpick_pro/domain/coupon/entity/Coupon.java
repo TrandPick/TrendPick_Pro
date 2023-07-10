@@ -24,12 +24,15 @@ public class Coupon extends BaseTimeEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
+
     @Embedded
     @Column(nullable = false)
-    private ExpirationPeriod expirationPeriod; //쿠폰 유효기한
+    private ExpirationPeriod expirationPeriod;
+
     @Column(name = "limit_count")
     private int limitCount;
     @Column(name = "issue_count")
@@ -92,5 +95,9 @@ public class Coupon extends BaseTimeEntity {
 
     public void increaseIssueCount(){
         this.issueCount = getIssueCount() + 1;
+    }
+
+    public void decreaseIssueCount(){
+        this.issueCount -= - 1;
     }
 }

@@ -21,8 +21,8 @@ public class AskResponse {
     private String status;
     private LocalDateTime createdDate;
 
-    @QueryProjection
     @Builder
+    @QueryProjection
     public AskResponse(Long askId, Long productId, String productName, String memberName, Long memberId, String title,String content, String status, LocalDateTime createdDate) {
         this.askId = askId;
         this.productId = productId;

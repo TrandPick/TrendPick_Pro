@@ -1,13 +1,16 @@
 package project.trendpick_pro.domain.member.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import project.trendpick_pro.domain.brand.entity.Brand;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
+import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
-import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.type.TagType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +20,6 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member",
         indexes = {@Index(name = "index_member_email",  columnList="email", unique = true)})
@@ -46,6 +48,7 @@ public class Member extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "member")
     private Cart cart;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FavoriteTag> tags = new LinkedHashSet<>();
 
@@ -57,15 +60,38 @@ public class Member extends BaseTimeEntity {
     private String address;
     private LocalDateTime recentlyAccessDate;
     private long restCash;
+
     @Builder
-    public Member(String email, String password, String username, String phoneNumber, RoleType role,long restCash) {
+    public Member(String email, String password, String username, String phoneNumber, RoleType role,String brand) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.role = role;
-        this.restCash=restCash;
+        this.brand = brand;
     }
+
+    public static Member of(JoinForm joinForm, String password, RoleType role, String brand) {
+        return Member.builder()
+                .email(joinForm.email())
+                .password(password)
+                .username(joinForm.username())
+                .phoneNumber(joinForm.phoneNumber())
+                .role(role)
+                .brand(brand)
+                .build();
+    }
+
+    public static Member of(JoinForm joinForm, String password, RoleType role) {
+        return Member.builder()
+                .email(joinForm.email())
+                .password(password)
+                .username(joinForm.username())
+                .phoneNumber(joinForm.phoneNumber())
+                .role(role)
+                .build();
+    }
+
     public void connectBrand(String brand){
         this.brand = brand;
     }
@@ -79,6 +105,10 @@ public class Member extends BaseTimeEntity {
         this.bankAccount = bankAccount;
     }
 
+    public void connectCash(long cash){
+        this.restCash = cash;
+    }
+
     public void changeTags(Set<FavoriteTag> tags) {
         this.tags = tags;
         for(FavoriteTag tag : tags){
@@ -87,7 +117,6 @@ public class Member extends BaseTimeEntity {
         }
     }
 
-    //양방향 메서드
     public void addTag(FavoriteTag tag){
         getTags().add(tag);
         tag.connectMember(this);
@@ -96,5 +125,4 @@ public class Member extends BaseTimeEntity {
     public void updateRecentlyAccessDate() {
         this.recentlyAccessDate = LocalDateTime.now();
     }
-
 }

@@ -14,4 +14,13 @@ public enum RoleType{
     RoleType(String value) {
         this.value = value;
     }
+
+    public static RoleType getRoleType(String value){
+        return switch (value) {
+            case "ADMIN" -> ADMIN;
+            case "BRAND_ADMIN" -> BRAND_ADMIN;
+            case "MEMBER" -> MEMBER;
+            default -> null;
+        };
+    }
 }

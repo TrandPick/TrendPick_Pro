@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationPeriod;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -50,6 +49,7 @@ public class CouponCard extends BaseTimeEntity {
         this.member = member;
         this.expirationPeriod = coupon.getExpirationPeriod().CopyExpirationPeriod(); //시작날짜 마감날짜만 가져옴
         this.couponCode = UUID.randomUUID();
+        coupon.decreaseIssueCount();
 
         if(LocalDateTime.now().isBefore(this.expirationPeriod.getStartDate()))
             this.status = CouponStatus.NOT_YET_ACTIVE;
@@ -96,6 +96,6 @@ public class CouponCard extends BaseTimeEntity {
         this.status = CouponStatus.AVAILABLE;
         this.usedDate = null;
         orderItem.cancelCouponCard();
+        coupon.increaseIssueCount();
     }
-
 }

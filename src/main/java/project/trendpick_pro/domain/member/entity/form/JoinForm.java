@@ -1,7 +1,6 @@
 package project.trendpick_pro.domain.member.entity.form;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 
 import java.util.List;

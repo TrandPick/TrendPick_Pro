@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.file.CommonFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,55 +18,47 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileTranslator {
 
+    private static final String FILE_EXTENSION_SEPARATOR = ".";
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
-    private String filePath;
-
-    public String getFilePath(String filename) {
-        return filePath + filename;
+    public CommonFile translateFile(MultipartFile multipartFile) throws RuntimeException {
+        String translatedFileName = uploadFileToS3(multipartFile);
+        return CommonFile.builder().fileName(translatedFileName).build();
     }
 
-    //단일 멀티파일 들어왔을때 저장하고 반환
-    public CommonFile translateFile(MultipartFile multipartFile) throws IOException {
-
-        String translatedFileName = translateFileName(multipartFile.getOriginalFilename());
-        ObjectMetadata oj = new ObjectMetadata();
-        oj.setContentLength(multipartFile.getInputStream().available());
-
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, translatedFileName, multipartFile.getInputStream(), new ObjectMetadata());
-        // 객체의 권한을 공개로 설정
-        putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
-        // 파일 업로드
-        amazonS3.putObject(putObjectRequest);
-
-        return CommonFile.builder()
-                .fileName(translatedFileName)
-                .build();
+    public List<CommonFile> translateFileList(List<MultipartFile> multipartFiles) {
+        return multipartFiles.stream()
+                .filter(multipartFile -> !multipartFile.isEmpty())
+                .map(this::translateFile)
+                .toList();
     }
 
-    //파일 여러개를 한 번에 묶어서 변환할때
-    public List<CommonFile> translateFileList(List<MultipartFile> MultipartFiles) throws IOException {
-        List<CommonFile> fileList = new ArrayList<>();
-        for(MultipartFile multipartFile : MultipartFiles){
-            if(!multipartFile.isEmpty()){
-                fileList.add(translateFile(multipartFile));
-            }
+    private String uploadFileToS3(MultipartFile multipartFile) {
+        try {
+            String originalFilename = multipartFile.getOriginalFilename();
+            String translatedFileName = translateFileName(originalFilename);
+
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, translatedFileName, multipartFile.getInputStream(), new ObjectMetadata())
+                    .withCannedAcl(CannedAccessControlList.PublicRead);
+            amazonS3.putObject(putObjectRequest);
+
+            return translatedFileName;
+        } catch (IOException e) {
+            throw new RuntimeException("File translation failed", e);
         }
-        return fileList;
     }
 
     private String translateFileName(String originalFilename) {
         String ext = extractExt(originalFilename);
         String uuid = UUID.randomUUID().toString();
-        return uuid + "." + ext;
+        return uuid + FILE_EXTENSION_SEPARATOR + ext;
     }
 
     private String extractExt(String originalFilename) {
-        int pos = originalFilename.lastIndexOf(".");
+        int pos = originalFilename.lastIndexOf(FILE_EXTENSION_SEPARATOR);
         return originalFilename.substring(pos + 1);
     }
 }

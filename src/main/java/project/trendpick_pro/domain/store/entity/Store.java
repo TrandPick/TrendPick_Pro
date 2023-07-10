@@ -2,7 +2,6 @@ package project.trendpick_pro.domain.store.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
@@ -16,8 +15,6 @@ public class Store extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "brand")
     @Column(unique = true)
     private String brand; //임시
 

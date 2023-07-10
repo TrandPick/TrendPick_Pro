@@ -52,6 +52,4 @@ public class ExpirationPeriod {
             return new ExpirationPeriod(ExpirationType.PERIOD, null, this.getStartDate(), this.getEndDate());
         return new ExpirationPeriod(ExpirationType.ISSUE_AFTER_DATE, null, LocalDateTime.now(), LocalDateTime.now().plusDays(this.getIssueAfterDate()));
     }
-
-
 }
