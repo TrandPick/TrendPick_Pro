@@ -114,9 +114,8 @@ public class OrderService {
     @Transactional
     @KafkaListener(topicPattern = "orders", groupId = "group_id")
     public void orderToOrder(@Payload String Id) throws JsonProcessingException {
-        // delay 2sec
         try {
-            Thread.sleep(500);
+            Thread.sleep(750);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -125,6 +124,9 @@ public class OrderService {
         try {
             for (OrderItem orderItem : order.getOrderItems()) {
                 orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
+                if (orderItem.getProduct().getProductOption().getStock() == 0) {
+                    productService.deleteCache(orderItem.getProduct().getProductOption());
+                }
             }
             order.modifyStatus(OrderStatus.ORDERED);
             sendMessage("Success", order.getId(), member.getEmail());

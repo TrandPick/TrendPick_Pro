@@ -3,20 +3,20 @@ package project.trendpick_pro.domain.product.entity.product.dto.response;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 import project.trendpick_pro.domain.product.entity.product.Product;
+
+import java.io.Serializable;
 //import project.trendpick_pro.global.search.entity.ProductSearch;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductListResponse {
+public class ProductListResponse implements Serializable {
 
     private Long id;
     private String name;
     private String brand;
     private String mainFile;
     private int price;
-
     private int discountRate;
-
     private int discountedPrice;
 
     @Builder
@@ -32,15 +32,25 @@ public class ProductListResponse {
     }
 
     public static ProductListResponse of(Product product) {
-        return ProductListResponse.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .brand(product.getBrand().getName())
-                .mainFile(product.getFile().getFileName())
-                .price(product.getProductOption().getPrice())
-                .discountedPrice(product.getDiscountedPrice())
-                .discountRate(product.getDiscountRate())
-                .build();
+        if (product.getDiscountedPrice() == 0 && product.getDiscountRate() == 0) {
+            return ProductListResponse.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .brand(product.getBrand().getName())
+                    .mainFile(product.getFile().getFileName())
+                    .price(product.getProductOption().getPrice())
+                    .build();
+        } else {
+            return ProductListResponse.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .brand(product.getBrand().getName())
+                    .mainFile(product.getFile().getFileName())
+                    .price(product.getProductOption().getPrice())
+                    .discountedPrice(product.getDiscountedPrice())
+                    .discountRate(product.getDiscountRate())
+                    .build();
+        }
     }
 
 //        public static ProductListResponse of(ProductSearch product) {

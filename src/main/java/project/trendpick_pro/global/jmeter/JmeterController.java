@@ -12,9 +12,11 @@ import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
 import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
+import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.service.ProductService;
+import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
 import java.io.IOException;
 import java.util.List;
@@ -61,12 +63,18 @@ public class JmeterController {
     public void modifyProduct(@RequestParam("productId") Long productId,
                               @RequestParam("mainFile") MultipartFile mainFile,
                               @RequestParam("subFile") List<MultipartFile> subFiles) throws IOException {
-        log.info("productId : {}", productId);
+        Product product = productService.findById(productId);
 
-        ProductSaveRequest productSaveRequest = new ProductSaveRequest("제목", "내용", "상의", "반소매티셔츠", "나이키", List.of("오버핏청바지", "시티보이룩"));
-        ProductOptionSaveRequest productOptionSaveRequest = new ProductOptionSaveRequest(List.of("S", "M", "L"), List.of("Fuchsia", "LightSalmon", "Silver"), 100, 100000);
+        ProductSaveRequest productSaveRequest = new ProductSaveRequest(
+                product.getName(), product.getDescription(),
+                product.getMainCategory().getName(), product.getSubCategory().getName(), product.getBrand().getName(),
+                product.getTags().stream().map(Tag::getName).toList());
+
+        ProductOptionSaveRequest productOptionSaveRequest = new ProductOptionSaveRequest(
+                product.getProductOption().getSizes(), product.getProductOption().getColors(),
+                product.getProductOption().getStock(), product.getProductOption().getPrice(), product.getProductOption().getStatus().getText());
+
         ProductRequest productRequest = new ProductRequest(productSaveRequest, productOptionSaveRequest);
-        Long id =  productService.modify(productId, productRequest, mainFile, subFiles).getData();
-        log.info("id : {}", id);
+        productService.modify(productId, productRequest, mainFile, subFiles);
     }
 }

@@ -15,7 +15,7 @@ spring:
     redis:
       host: ${redis.devHost}
   kafka:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: localhost:${custom.kafka.devPort}
 
 logging.level:
   org:
