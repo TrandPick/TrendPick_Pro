@@ -24,6 +24,7 @@ spring:
   data:
     redis:
       host: ${redis.host}
+      port: ${redis.port}
   kafka:
     bootstrap-servers: ${custom.kafka.host}:${custom.kafka.port}
 
