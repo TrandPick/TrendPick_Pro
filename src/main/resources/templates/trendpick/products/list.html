@@ -17,7 +17,7 @@
            class="mx-1 my-1 px-2 py-1 bg-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-400">
         </a>
     </div>
-    <div class="grid grid-flow-row-dense grid-cols-6 gap-4 m-4">
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 m-4">
         <div th:if="(${mainCategoryName} != '추천' or ${mainCategoryName} != 'search') and ${@rq.checkLogin()} and ${@rq.checkAdmin()}"
              class="card bordered cursor-pointer flex justify-center items-center"
              th:onclick="'window.location=\'/trendpick/products/register\';'">
@@ -25,17 +25,16 @@
                 <span class="text-lg font-bold">새 상품 생성</span>
             </figure>
         </div>
-        <div th:each="product, stat : ${productResponses}" class="grid gap-4" style="grid-template-columns: auto 1fr;">
+        <div th:each="product, stat : ${productResponses}">
             <a th:href="@{/trendpick/products/{id}(id=${product.id})}">
                 <div th:if="${mainCategoryName} == '추천'"
                      class="flex-none bg-light-blue text-gray-800 text-center rounded-full w-8 h-8 flex items-center justify-center"
                      style="position: absolute; z-index: 1; font-size: 20px; background-color: lightgrey; margin-left: 10px; margin-top: 10px;">
-
                     <span th:text="${stat.index+1}" style="font-weight: bold;"></span>
                 </div>
-                <div class="card bordered shadow-xl" th:href="@{/trendpick/products/{id}(id=${product.id})}">
-                    <figure style="height: 264.53px; display: flex; align-items: center; justify-content: center;">
-                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${product.mainFile}|" alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;"/>
+                <div class="card bordered shadow-xl overflow-auto w-full" th:href="@{/trendpick/products/{id}(id=${product.id})}">
+                    <figure class="w-full h-48 md:h-64 lg:h-80 flex items-center justify-center">
+                        <img class="w-full h-full object-cover" th:src="|https://kr.object.ncloudstorage.com/trendpick/${product.mainFile}|" alt="Product Image"/>
                     </figure>
                     <div class="card-body">
                         <h2 class="text-lg font-bold" th:text="${product.name}" style="white-space: normal; overflow-wrap: break-word; line-height: 1.2em; min-height: 2.4em;"></h2>
@@ -52,14 +51,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-actions" sec:authorize="isAuthenticated()">
+                            <div class="card-actions mb-2" sec:authorize="isAuthenticated()"> <!-- Here we use mb-2 to move the buttons up -->
                                 <div th:if="${@rq.checkAdmin()}" class="items-center">
                                     <div th:if="${@rq.getBrandName()} == ${product.brand}" class="flex">
                                         <div>
                                             <a th:href="@{/trendpick/products/edit/{productId}(productId=${product.id})}" class="btn btn-outline btn-accent btn-sm mr-2 text-black">Edit</a>
                                         </div>
-                                    </div>
-                                    <div th:if="${@rq.getBrandName()} == ${product.brand}" class="flex">
                                         <div>
                                             <a href="javascript:;" onclick="if (confirm('정말로 삭제하시겠습니까?')) $(this).next().submit();" class="btn btn-outline btn-accent btn-sm text-black">Delete</a>
                                         </div>
