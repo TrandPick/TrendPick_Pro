@@ -23,6 +23,7 @@ import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
+import project.trendpick_pro.domain.common.view.service.ViewService;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
 import project.trendpick_pro.domain.coupon.repository.CouponRepository;
@@ -96,6 +97,7 @@ public class BaseData {
             BrandService brandService,
             RecommendService recommendService,
             ProductService productService,
+            ViewService viewService,
             ProductRepository productRepository,
             ReviewRepository reviewRepository,
             CouponRepository couponRepository,
@@ -117,10 +119,10 @@ public class BaseData {
                 accessKeyMap.put("secretKey", secretKey);
                 accessKeyMap.put("bucket", bucket);
 
-                int memberCount = 10;
-                int productCount = 100;
-                int reviewCount = 0;
-                int couponCount = 0;
+                int memberCount = 100;
+                int productCount = 1000;
+                int reviewCount = 100;
+                int couponCount = 100;
                 String brandName = "polo";
 
                 saveMembers(memberCount, tagNameService, memberService, recommendService);
@@ -131,6 +133,10 @@ public class BaseData {
 
                 saveReviews(reviewCount, productCount, accessKeyMap, memberService, productService ,reviewRepository);
                 saveStoreCoupon(couponCount, storeRepository, couponRepository, brandService);
+
+                if (viewService.findSize() == 0) {
+                    viewService.registerView();
+                }
 
                 log.info("BASE_DATA_SUCCESS");
             }
