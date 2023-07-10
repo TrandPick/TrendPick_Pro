@@ -10,7 +10,8 @@ RUN sed -i 's/profiler.transport.grpc.collector.ip=127.0.0.1/profiler.transport.
 RUN sed -i 's/profiler.collector.ip=127.0.0.1/profiler.collector.ip=10.41.183.156/g' /usr/local/pinpoint-agent-2.5.2/pinpoint-root.config
 
 # Copy the built JAR from the build stage
-COPY build/libs/*.jar app.jar
+ARG JAR_FILE=build/libs/*.jar
+COPY ${JAR_FILE} app.jar
 
 # Expose the required port
 EXPOSE 8080
