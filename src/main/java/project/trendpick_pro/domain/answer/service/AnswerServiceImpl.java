@@ -13,6 +13,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Service
@@ -25,7 +26,7 @@ public class AnswerServiceImpl implements AnswerService{
     @Transactional
     public RsData<Long> register(Member member, Long askId, AnswerForm answerForm) {
         Ask ask = askRepository.findById(askId).orElseThrow(
-                () -> new IllegalArgumentException("해당 문의는 없는 문의입니다.")
+                () -> new NoSuchElementException("해당 문의는 없는 문의입니다.")
         );
         if (!member.getBrand().equals(ask.getProduct().getBrand().getName()))
             return RsData.of("F-1", "타 브랜드 상품에 대한 문의글에는 답변 권한이 없습니다.");
@@ -39,7 +40,7 @@ public class AnswerServiceImpl implements AnswerService{
     @Transactional
     public RsData<Long> delete(Member member, Long answerId) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(
-                () -> new IllegalArgumentException("해당 답변은 없는 답변입니다.")
+                () -> new NoSuchElementException("해당 답변은 없는 답변입니다.")
         );
 
         if(!answer.getAsk().getProduct().getBrand().equals(member.getBrand()))
@@ -55,7 +56,7 @@ public class AnswerServiceImpl implements AnswerService{
 
     public RsData<Long> modify(Member member, Long answerId, AnswerForm answerForm) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(
-                () -> new IllegalArgumentException("해당 답변은 없는 답변입니다.")
+                () -> new NoSuchElementException("해당 답변은 없는 답변입니다.")
         );
 
         if(!Objects.equals(answer.getAsk().getAuthor().getBrand(), member.getBrand()))
