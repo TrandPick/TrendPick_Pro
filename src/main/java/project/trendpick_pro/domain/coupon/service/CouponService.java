@@ -1,7 +1,6 @@
 package project.trendpick_pro.domain.coupon.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Fetch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
