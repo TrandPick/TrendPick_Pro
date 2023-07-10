@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.trendpick_pro.domain.coupon.entity.Coupon;
 import project.trendpick_pro.domain.coupon.entity.CouponCard;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 
@@ -30,13 +29,11 @@ public class CouponCardByApplyResponse {
                 couponCard.getCoupon().getName(),
                 couponCard.getExpirationPeriod().getStartDate(),
                 couponCard.getExpirationPeriod().getEndDate(),
-                orderItem.getOrderPrice() * couponCard.getCoupon().getDiscountPercent() / 100)
-                ;
+                orderItem.getOrderPrice() * couponCard.getCoupon().getDiscountPercent() / 100);
     }
 
     public String getFormattedDiscountPrice() {
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
         return numberFormat.format(getDiscountPrice())+"원";
     }
-
 }
