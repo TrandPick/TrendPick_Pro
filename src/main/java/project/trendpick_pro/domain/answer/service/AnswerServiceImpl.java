@@ -42,7 +42,7 @@ public class AnswerServiceImpl implements AnswerService{
                 () -> new NoSuchElementException("해당 답변은 없는 답변입니다.")
         );
 
-        if(!answer.getAsk().getProduct().getBrand().equals(member.getBrand()))
+        if(!answer.getAsk().getProduct().getBrand().getName().equals(member.getBrand()))
             return RsData.of("F-1", "접근 권한이 없습니다.");
 
         Ask ask = answer.getAsk();
