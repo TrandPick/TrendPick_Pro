@@ -22,9 +22,10 @@ import java.util.Objects;
 public class AskController {
     private final AskService askService;
     private final AnswerService answerService;
+
     private final Rq rq;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('MEMBER')")
     @GetMapping("/register")
     public String registerForm(@RequestParam("product") Long productId, AskForm askForm, Model model) {
         askForm.setProductId(productId);
@@ -32,18 +33,19 @@ public class AskController {
         return "trendpick/customerservice/asks/register";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('MEMBER')")
     @PostMapping("/register")
     public String registerAsk(@Valid AskForm askForm) {
         RsData<Long> result = askService.register(rq.getMember(), askForm);
-        if(result.isFail())
-            return rq.redirectWithMsg("/trendpick/products/%s".formatted(askForm.getProductId()), result);
-
+        if(result.isFail()) {
+            return rq.historyBack(result);
+        }
         return rq.redirectWithMsg("/trendpick/products/%s".formatted(askForm.getProductId()), result);
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{askId}")
-    public String showAsk(@PathVariable Long askId, AnswerForm answerForm, Model model) {
+    public String showAsk(@PathVariable Long askId, Model model) {
         model.addAttribute("ask", askService.show(askId));
         model.addAttribute("answers", answerService.showAll(askId));
         model.addAttribute("answerForm", new AnswerForm());
@@ -54,31 +56,30 @@ public class AskController {
     @PostMapping("/delete/{askId}")
     public String deleteAsk(@PathVariable Long askId) {
         RsData<Long> result = askService.delete(rq.getMember(), askId);
-        if(result.isFail())
+        if(result.isFail()) {
             return rq.historyBack(result);
-
+        }
         return rq.redirectWithMsg("/trendpick/products/%s".formatted(result.getData()), result);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('MEMBER')")
     @GetMapping("/edit/{askId}")
     public String modifyForm(@PathVariable Long askId, Model model) {
         AskResponse ask = askService.show(askId);
-        if(!Objects.equals(ask.getMemberId(), rq.getMember().getId()))
+        if(!Objects.equals(ask.getMemberId(), rq.getMember().getId())) {
             return rq.historyBack("자신이 올린 문의글에 대해서만 수정 권한이 있습니다.");
-
+        }
         model.addAttribute("askForm", new AskForm(ask.getAskId(), ask.getTitle(), ask.getContent()));
-
         return "trendpick/customerservice/asks/register";
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('MEMBER')")
     @PostMapping("/edit/{askId}")
     public String modifyAsk(@PathVariable Long askId, @Valid AskForm askForm) {
         RsData<AskResponse> result = askService.modify(rq.getMember(), askId, askForm);
-        if (result.isFail())
+        if (result.isFail()) {
             return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), result);
-
+        }
         return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), "문의글 수정이 완료되었습니다.");
     }
 

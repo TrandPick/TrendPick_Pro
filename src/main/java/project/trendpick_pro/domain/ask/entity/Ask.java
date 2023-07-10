@@ -10,6 +10,7 @@ import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.product.Product;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,10 @@ public class Ask extends BaseTimeEntity {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -50,8 +54,7 @@ public class Ask extends BaseTimeEntity {
                 .title(askForm.getTitle())
                 .content(askForm.getContent())
                 .status(AskStatus.YET)
-                .build()
-                ;
+                .build();
     }
 
     public void update(AskForm askForm) {
