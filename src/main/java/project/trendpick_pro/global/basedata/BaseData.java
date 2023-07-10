@@ -8,7 +8,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -47,11 +46,10 @@ import project.trendpick_pro.global.basedata.tagname.entity.TagName;
 import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Configuration
-@Profile({"dev", "test"})
+@Profile({"dev", "test", "prod"})
 public class BaseData {
 
     @Value("${tag}")
@@ -120,7 +118,7 @@ public class BaseData {
                 accessKeyMap.put("bucket", bucket);
 
                 int memberCount = 100;
-                int productCount = 1000;
+                int productCount = 2000;
                 int reviewCount = 100;
                 int couponCount = 100;
                 String brandName = "polo";
@@ -161,7 +159,7 @@ public class BaseData {
                     .build();
             members.add(member);
         }
-        List<Member> memberList = memberService.saveAll(members);
+        List<Member> memberList = memberService.saveAll(members).getData();
         for (Member member : memberList) {
             member.connectAddress("서울특별시 어디구 어디로 123");
             recommendService.select(member.getEmail());
@@ -406,7 +404,7 @@ public class BaseData {
 
         return objectListing.getObjectSummaries().stream()
                 .map(S3ObjectSummary::getKey)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static String selectRandomFilePath(List<String> filePaths) {
