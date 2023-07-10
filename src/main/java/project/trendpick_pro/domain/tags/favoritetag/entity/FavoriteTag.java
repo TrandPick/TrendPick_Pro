@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.type.TagType;
 
 @Entity
 @Getter
@@ -47,6 +47,7 @@ public class FavoriteTag {
         switch (type) {
             case ORDER -> score -= 10;
             case CART -> score -= 5;
+            case REGISTER -> score -= 30;
             default -> score -= 1;
         }
     }

@@ -19,14 +19,12 @@ public class CommonFile {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fileName; //실제 저장 경로, 업로드할때 이 경로로 이미지 불러옴.
+    private String fileName;
 
-    //메인파일
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ID")
     private CommonFile parent;
 
-    //서브파일 (만약 메인/서브 유형이 아니라면 그냥 여러개 생성해야한다. 전부 메인으로)
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private List<CommonFile> child = new ArrayList<>();
 
@@ -35,7 +33,6 @@ public class CommonFile {
         this.fileName = fileName;
     }
 
-    //양방향 맵핑
     public void connectFile(CommonFile childFile){
         this.getChild().add(childFile);
         childFile.setParent(this);

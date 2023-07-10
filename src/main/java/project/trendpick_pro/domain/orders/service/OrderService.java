@@ -34,7 +34,7 @@ import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
-import project.trendpick_pro.domain.tags.tag.entity.type.TagType;
+import project.trendpick_pro.domain.tags.type.TagType;
 import project.trendpick_pro.global.rsData.RsData;
 
 import java.util.ArrayList;
