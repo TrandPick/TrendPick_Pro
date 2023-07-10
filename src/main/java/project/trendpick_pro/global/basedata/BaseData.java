@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Configuration
-@Profile({"dev", "test", "prod"})
+@Profile({"dev", "test"})
 public class BaseData {
 
     @Value("${tag}")
