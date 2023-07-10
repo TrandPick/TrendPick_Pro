@@ -171,6 +171,8 @@
     <script src="https://js.tosspayments.com/v1/payment-widget"></script>
     <link id="clientKey" th:data-contextPath="${@environment.getProperty('toss.clientKey')}"/>
     <script>
+        const url = "http://localhost:8080"
+
         const clientKey = document.querySelector("#clientKey").getAttribute("data-contextPath");
         const customerKey = PaymentWidget.ANONYMOUS
         const button = document.getElementById("payment-button")
@@ -190,8 +192,8 @@
             paymentWidget.requestPayment({
                 orderId: "ORD_" + self.crypto.randomUUID(),
                 orderName: product + " 외..",
-                successUrl: "https://trendpick.k8s-1.suho.info/payment/" + id + "/success",
-                failUrl: "https://trendpick.k8s-1.suho.info/payment/" + id + "/fail",
+                successUrl: url + "/payment/" + id + "/success",
+                failUrl: url + "/payment/" + id + "/fail",
                 customerEmail: email,
                 customerName: username
             })

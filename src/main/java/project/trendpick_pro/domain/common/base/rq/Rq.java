@@ -146,6 +146,9 @@ public class Rq {
     public Boolean checkMember() {
         return getLogin().getRole().equals(RoleType.MEMBER);
     }
+    public Boolean admin() {
+        return getLogin().getRole().equals(RoleType.ADMIN);
+    }
     public Member getMember() {
         Member member = getLogin();
         if (member.getRole().equals(RoleType.MEMBER)) {
@@ -154,6 +157,17 @@ public class Rq {
         throw new MemberNotMatchException("허용된 권한이 아닙니다.");
     }
 
+    public Member getRollMember(){
+        Member member=getLogin();
+        if(member.getRole().equals(RoleType.MEMBER)){
+            return member;
+        }else if(member.getRole().equals(RoleType.BRAND_ADMIN)){
+            return member;
+        }else if(member.getRole().equals(RoleType.ADMIN)){
+            return member;
+        }
+        throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+    }
     public Member getBrandMember() {
         Member member = getLogin();
         if (member.getRole().equals(RoleType.BRAND_ADMIN)) {
@@ -161,6 +175,7 @@ public class Rq {
         }
         throw new MemberNotMatchException("허용된 권한이 아닙니다.");
     }
+
     public Boolean checkAdmin() {
         return !checkMember();
     }

@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Controller
@@ -85,7 +86,7 @@ public class ProductController {
     @PostMapping("/register")
     public String register(@ModelAttribute @Valid ProductRequest productRequest,
                            @RequestParam("mainFile") MultipartFile mainFile,
-                           @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException {
+                           @RequestParam("subFiles") List<MultipartFile> subFiles) throws IOException, ExecutionException, InterruptedException {
         RsData<Long> id = productService.register(productRequest, mainFile, subFiles);
         return rq.redirectWithMsg("/trendpick/products/" + id.getData(), id.getMsg());
     }

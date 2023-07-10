@@ -47,14 +47,14 @@
                             <span th:text="${item.msg}"></span>
                         </td>
                         <td>
-                            <a th:if="${item.applyDoneAvailable}" href="javascript:;" onclick="$(this).next().submit();"
+                            <a th:if="${@rq.admin() and item.applyDoneAvailable}" href="javascript:;" onclick="$(this).next().submit();"
                                class="btn btn-primary btn-xs">출금</a>
                             <form method="POST" th:action="@{|/trendpick/admin/${item.id}|}" hidden></form>
                             <button th:if="${item.applyDone}" disabled class="btn btn-primary btn-xs" type="button">
                                 출금완료
                             </button>
 
-                            <a th:if="${item.cancelAvailable}" href="javascript:;"
+                            <a th:if="${@rq.admin() and item.cancelAvailable}" href="javascript:;"
                                onclick="confirm('정말로 취소하시겠습니까?') && $(this).next().submit();"
                                class="btn btn-warning btn-outline btn-xs">취소</a>
                             <form method="POST" th:action="@{|/trendpick/admin/${item.id}/cancel|}" hidden></form>

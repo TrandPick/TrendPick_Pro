@@ -161,7 +161,9 @@ public class MemberService {
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
     }
-
+    public Member findByBrandMember(String name){
+        return memberRepository.findByBrand(name);
+    }
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
     }
@@ -184,7 +186,7 @@ public class MemberService {
 
     @Transactional
     public RsData<AddCashRsDataBody> addCash(String brand, long price, Brand relEntity, CashLog.EvenType eventType) {
-        Member member=rq.getBrandMember();
+        Member member=findByBrandMember(brand);
         if(!member.getBrand().equals(brand)){
             return RsData.of("F-1","해당 브랜드와 관리자가 일치하지 않습니다.");
         }

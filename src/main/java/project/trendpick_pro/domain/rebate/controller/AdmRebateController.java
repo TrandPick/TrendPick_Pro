@@ -29,9 +29,13 @@ import java.util.List;
 public class AdmRebateController {
         private final RebateService rebateService;
         private final Rq rq;
+
         @GetMapping("/makeData")
         @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
         public String showMakeData() {
+                if(!rq.getRollMember().getRole().getValue().equals("BRAND_ADMIN")){
+                        return rq.historyBack("브랜드 관리자만 접근할 수 있습니다.");
+                }
                 return "trendpick/admin/makeData";
         }
 
@@ -49,6 +53,10 @@ public class AdmRebateController {
         @GetMapping("/rebateOrderItemList")
         @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
         public String showRebateOrderItemList(String yearMonth, Model model) {
+                if(!rq.getRollMember().getRole().getValue().equals("BRAND_ADMIN")){
+                        return rq.historyBack("브랜드 관리자만 접근할 수 있습니다.");
+                }
+
                 if (!StringUtils.hasText(yearMonth)) {
                         yearMonth = Ut.date.getCurrentYearMonth();
                 }
@@ -75,7 +83,6 @@ public class AdmRebateController {
         @PostMapping("/rebate")
         @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
         public String rebate(String ids, HttpServletRequest req) {
-
                 String[] idsArr = ids.split(",");
 
                 Arrays.stream(idsArr)

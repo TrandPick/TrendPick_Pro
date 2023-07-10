@@ -5,25 +5,27 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProductOption {
+public class ProductOption implements Serializable {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "product_option_sizes", joinColumns = @JoinColumn(name = "product_option_id"))
     @Column(name = "size")
     private List<String> sizes;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "product_option_colors", joinColumns = @JoinColumn(name = "product_option_id"))
     @Column(name = "color")
     private List<String> colors;
@@ -34,8 +36,15 @@ public class ProductOption {
     @Column(name = "price", nullable = false)
     private int price;
 
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
+
+    public void connectStatus(ProductStatus status){
+        this.status = status;
+    }
+
     @Builder
-    public ProductOption(List<String> size, List<String> color, int stock, int price) {
+    private ProductOption(List<String> size, List<String> color, int stock, int price) {
         this.sizes = size;
         this.colors = color;
         this.stock = stock;
