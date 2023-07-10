@@ -158,15 +158,7 @@ public class Rq {
     }
 
     public Member getRollMember(){
-        Member member=getLogin();
-        if(member.getRole().equals(RoleType.MEMBER)){
-            return member;
-        }else if(member.getRole().equals(RoleType.BRAND_ADMIN)){
-            return member;
-        }else if(member.getRole().equals(RoleType.ADMIN)){
-            return member;
-        }
-        throw new MemberNotMatchException("허용된 권한이 아닙니다.");
+        return getLogin();
     }
     public Member getBrandMember() {
         Member member = getLogin();
