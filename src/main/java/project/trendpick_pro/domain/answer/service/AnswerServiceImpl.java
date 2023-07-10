@@ -17,7 +17,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AnswerServiceImpl implements AnswerService{
     private final AnswerRepository answerRepository;
@@ -54,6 +53,7 @@ public class AnswerServiceImpl implements AnswerService{
         return RsData.of("S-1", "답변이 삭제되었습니다.", answer.getAsk().getId());
     }
 
+    @Transactional
     public RsData<Long> modify(Member member, Long answerId, AnswerForm answerForm) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(
                 () -> new NoSuchElementException("해당 답변은 없는 답변입니다.")
@@ -66,6 +66,7 @@ public class AnswerServiceImpl implements AnswerService{
         return RsData.of("S-1", "답변이 수정되었습니다.", answer.getAsk().getId());
     }
 
+    @Transactional
     public List<AnswerResponse> showAll(Long askId) {
         List<Answer> answers = answerRepository.findAllByAskId(askRepository.findById(askId).get());
         return AnswerResponse.of(answers);

@@ -45,7 +45,6 @@ public class RecommendServiceImpl implements RecommendService{
         }
     }
 
-    @Transactional(readOnly = true)
     @Cacheable(value = "recommendedProducts", key = "#member.username + '_' + #offset")
     public Page<ProductListResponse> getFindAll(Member member, int offset){
         PageRequest pageable = PageRequest.of(offset, 18);

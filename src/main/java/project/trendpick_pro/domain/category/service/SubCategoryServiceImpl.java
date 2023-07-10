@@ -13,7 +13,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class SubCategoryServiceImpl implements SubCategoryService{
 
     private final SubCategoryRepository subCategoryRepository;
@@ -37,6 +36,7 @@ public class SubCategoryServiceImpl implements SubCategoryService{
         SubCategory subCategory = subCategoryRepository.findById(id).orElseThrow();
         subCategoryRepository.delete(subCategory);
     }
+
     public List<SubCategoryResponse> findAll(String mainCategoryName) {
         if (mainCategoryName.equals("전체")){
             List<SubCategory> categories = subCategoryRepository.findAllBy();
