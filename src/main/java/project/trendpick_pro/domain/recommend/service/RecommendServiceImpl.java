@@ -29,7 +29,6 @@ public class RecommendServiceImpl implements RecommendService{
     private final MemberRepository memberRepository;
 
     @Transactional
-    @CacheEvict(value = "recommendedProducts", allEntries = true)
     public void select(String username){
 
         Member member = memberRepository.findByEmail(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
@@ -45,17 +44,8 @@ public class RecommendServiceImpl implements RecommendService{
         }
     }
 
-    @Cacheable(value = "recommendedProducts", key = "#member.username + '_' + #offset")
     public Page<ProductListResponse> getFindAll(Member member, int offset){
         PageRequest pageable = PageRequest.of(offset, 18);
-        Page<ProductListResponse> listResponses = recommendRepository.findAllByMemberName(member.getUsername(), pageable);
-
-        List<ProductListResponse> list = listResponses.getContent().stream()
-                .peek(product -> {
-                    String updatedMainFile = product.getMainFile();
-                    product.setMainFile(updatedMainFile);
-                }).toList();
-
-        return new PageImpl<>(list, pageable, listResponses.getTotalElements());
+        return recommendRepository.findAllByMemberName(member.getUsername(), pageable);
     }
 }

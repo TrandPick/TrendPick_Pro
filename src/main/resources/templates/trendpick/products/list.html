@@ -3,6 +3,12 @@
       xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title th:text="'TrendPick | ' + ${mainCategoryName}"></title>
+    <style>
+        .carousel-item img {
+            height: 300px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
 <main layout:fragment="main" class="bg-white">
@@ -17,6 +23,29 @@
            class="mx-1 my-1 px-2 py-1 bg-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-400">
         </a>
     </div>
+    <div th:if="${mainCategoryName}== '전체'" class="carousel w-full">
+        <div id="slide1" class="carousel-item relative w-full">
+            <img src="https://kr.object.ncloudstorage.com/trendpick/home/TREND1.png" class="w-full" />
+            <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                <a href="#slide3" class="btn btn-circle">❮</a>
+                <a href="#slide2" class="btn btn-circle">❯</a>
+            </div>
+        </div>
+        <div id="slide2" class="carousel-item relative w-full">
+            <img src="https://kr.object.ncloudstorage.com/trendpick/home/TREND2.png" class="w-full" />
+            <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                <a href="#slide1" class="btn btn-circle">❮</a>
+                <a href="#slide3" class="btn btn-circle">❯</a>
+            </div>
+        </div>
+        <div id="slide3" class="carousel-item relative w-full">
+            <img src="https://kr.object.ncloudstorage.com/trendpick/home/TREND3.png" class="w-full" />
+            <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                <a href="#slide2" class="btn btn-circle">❮</a>
+                <a href="#slide1" class="btn btn-circle">❯</a>
+            </div>
+        </div>
+    </div>
     <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 m-4">
         <div th:if="(${mainCategoryName} != '추천' or ${mainCategoryName} != 'search') and ${@rq.checkLogin()} and ${@rq.checkAdmin()}"
              class="card bordered cursor-pointer flex justify-center items-center"
@@ -30,7 +59,7 @@
                 <div th:if="${mainCategoryName} == '추천'"
                      class="flex-none bg-light-blue text-gray-800 text-center rounded-full w-8 h-8 flex items-center justify-center"
                      style="position: absolute; z-index: 1; font-size: 20px; background-color: lightgrey; margin-left: 10px; margin-top: 10px;">
-                    <span th:text="${stat.index+1}" style="font-weight: bold;"></span>
+                    <span th:text="${(stat.index+1)+productResponses.number*18}" style="font-weight: bold;"></span>
                 </div>
                 <div class="card bordered shadow-xl overflow-auto w-full" th:href="@{/trendpick/products/{id}(id=${product.id})}">
                     <figure class="w-full h-48 md:h-64 lg:h-80 flex items-center justify-center">
@@ -73,7 +102,6 @@
         </div>
     </div>
     <br/><br/><br/>
-
 
     <div class="flex justify-center my-4"
          th:if="${productResponses != null and not #lists.isEmpty(productResponses.content)}">

@@ -63,6 +63,7 @@ public class MemberController {
     @GetMapping("/info")
     public String showMe(Model model) {
         model.addAttribute("MemberInfo", MemberInfoDto.of(rq.getLogin()));
+        model.addAttribute("myTags", rq.getMember().getTags());
         return "trendpick/usr/member/info";
     }
 

@@ -76,6 +76,7 @@ public class ProductServiceImpl implements ProductService{
     private String filePath;
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public RsData<Long> register(ProductRequest request, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException, ExecutionException, InterruptedException {
 
         rq.checkAdmin();
@@ -116,6 +117,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public RsData<Long> modify(Long productId, ProductRequest productRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
         rq.checkAdmin();
@@ -148,6 +150,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)  
     public void delete(Long productId) {
         rq.getAdmin();
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
@@ -190,6 +193,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "#offset + #mainCategory + #subCategory")
     public Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory) {
 
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);

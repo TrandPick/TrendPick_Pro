@@ -27,11 +27,11 @@ public class CouponController {
     }
 
     @PostMapping("/{storeName}/generate")
-    public String generate(@PathVariable("storeName") String storeName, @Valid StoreCouponSaveRequest storeCouponSaveRequest) throws UnsupportedEncodingException {
+    public String generate(@PathVariable("storeName") String storeName, @Valid StoreCouponSaveRequest storeCouponSaveRequest) {
         RsData<String> result = couponService.generate(storeName, storeCouponSaveRequest);
         if (result.isFail())
             return rq.historyBack(result);
-        return rq.redirectWithMsg("/trendpick/coupons/store/%s/list".formatted(storeName), "쿠폰이 성공적으로 발급되었습니다.");
+        return rq.redirectWithMsg("/trendpick/products/list?main-category=all", "쿠폰이 성공적으로 발급되었습니다.");
     }
 
     @GetMapping("/list")

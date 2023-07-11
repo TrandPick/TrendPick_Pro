@@ -16,7 +16,7 @@ public class Store extends BaseTimeEntity {
     private Long id;
 
     @Column(unique = true)
-    private String brand; //임시
+    private String brand;
 
     public Store(String brand){
         this.brand = brand;
