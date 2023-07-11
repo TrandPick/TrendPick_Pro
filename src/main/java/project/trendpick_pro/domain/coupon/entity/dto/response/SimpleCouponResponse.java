@@ -8,7 +8,6 @@ import project.trendpick_pro.domain.coupon.entity.Coupon;
 
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Locale;
 
 @Getter
@@ -43,13 +42,12 @@ public class SimpleCouponResponse {
         );
     }
 
-
     public String getFormattedMinimumPurchaseAmount(){
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
         return numberFormat.format(getMinimumPurchaseAmount())+"원";
     }
+
     public int getRemaining(){
         return getLimitCount() - getIssueCount();
     }
-
 }

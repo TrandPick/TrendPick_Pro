@@ -91,7 +91,7 @@
                         <span th:text="${notification.getOrderState()}"></span>
                     </div>
                     <div>
-                        날짜: <span th:text="${#temporals.format(notification.getCreateDate(), 'yyyy-MM-dd HH:mm')}"></span>
+                        날짜: <span th:text="${#temporals.format(notification.getCreatedDate(), 'yyyy-MM-dd HH:mm')}"></span>
                     </div>
                     <div>
                         상품명:
@@ -113,7 +113,7 @@
                         <i class="fa-regular fa-clock"></i>알림
                     </div>
                     <div class="text-gray-400">
-                        <span th:text="${#temporals.format(notification.getCreateDate(), 'yyyy-MM-dd')}"></span>
+                        <span th:text="${#temporals.format(notification.getCreatedDate(), 'yyyy-MM-dd')}"></span>
                     </div>
                 </div>
                 <div class="notification-content">
@@ -121,7 +121,7 @@
                         <span th:text="${notification.getDeliveryState()}"></span>
                     </div>
                     <div>
-                        날짜: <span th:text="${#temporals.format(notification.getCreateDate(), 'yyyy-MM-dd HH:mm')}"></span>
+                        날짜: <span th:text="${#temporals.format(notification.getCreatedDate(), 'yyyy-MM-dd HH:mm')}"></span>
                     </div>
                     <div>
                         상품명:

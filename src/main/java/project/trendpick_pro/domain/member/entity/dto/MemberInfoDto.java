@@ -1,25 +1,22 @@
 package project.trendpick_pro.domain.member.entity.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import project.trendpick_pro.domain.member.entity.Member;
 
 @Getter
 @NoArgsConstructor
 @Setter
 public class MemberInfoDto {
+
     private String bankAccount;
-
     private String address;
-
     private String phone;
-
     private String name;
-
     private String bankName;
-
     private String email;
-
     private Long memberId;
 
     @Builder
@@ -35,18 +32,5 @@ public class MemberInfoDto {
 
     public static MemberInfoDto of(Member member){
         return new MemberInfoDto(member);
-    }
-
-    @Override
-    public String toString() {
-        return "MemberInfoDto{" +
-                "memberId=" + memberId +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address='" + address + '\'' +
-                ", bankName='" + bankName + '\'' +
-                ", bankAccount='" + bankAccount + '\'' +
-                '}';
     }
 }
