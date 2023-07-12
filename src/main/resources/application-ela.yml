@@ -1,9 +1,0 @@
-spring:
-  data:
-    elasticsearch:
-      client:
-        rest:
-          uris: ${elasticKey.uris}
-          cluster-nodes: ${elasticKey.uris}
-          username: ${elasticKey.username}
-          password: ${elasticKey.password}
