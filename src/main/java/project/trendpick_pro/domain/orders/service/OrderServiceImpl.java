@@ -11,6 +11,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.CartItem;
@@ -95,11 +96,11 @@ public class OrderServiceImpl implements OrderService{
     @Transactional
     public RsData<Order> productToOrder(Member member, Long id, int quantity, String size, String color) {
         try {
-            Product product = productService.findById(id);
-            OrderItem orderItem = OrderItem.of(product, quantity, size, color);
+            OrderItem orderItem = OrderItem.of(productService.findById(id), quantity, size, color);
 
-            Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem);
-            Order saveOrder = orderRepository.save(order);
+            Order saveOrder = orderRepository.save(
+                    Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItem)
+            );
 
             kafkaTemplate.send("orders", String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
 
@@ -123,7 +124,11 @@ public class OrderServiceImpl implements OrderService{
             for (OrderItem orderItem : order.getOrderItems()) {
                 orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
                 if (orderItem.getProduct().getProductOption().getStock() == 0) {
-                    productService.deleteCache(orderItem.getProduct().getProductOption());
+                    //productService.deleteCache(orderItem.getProduct().getProductOption());
+                    System.out.println("재고가 없는 상품이 있습니다.");
+                    return;
+                } else {
+                    System.out.println("재고는 " + orderItem.getProduct().getProductOption().getStock() + "개 남았습니다.");
                 }
             }
             order.modifyStatus(OrderStatus.ORDERED);
