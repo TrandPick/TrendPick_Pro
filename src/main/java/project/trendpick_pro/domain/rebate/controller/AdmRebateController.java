@@ -34,7 +34,7 @@ public class AdmRebateController {
         @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
         public String showMakeData() {
                 Member member=rq.getRollMember();
-                if(member.getRole().getValue().equals("BRAND_ADMIN")){
+                if(!member.getRole().getValue().equals("BRAND_ADMIN")){
                         return rq.historyBack("브랜드 관리자만 접근할 수 있습니다.");
                 }
                 return "trendpick/admin/makeData";
@@ -55,7 +55,7 @@ public class AdmRebateController {
         @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
         public String showRebateOrderItemList(String yearMonth, Model model) {
                 Member member=rq.getRollMember();
-                if(member.getRole().getValue().equals("BRAND_ADMIN")){
+                if(!member.getRole().getValue().equals("BRAND_ADMIN")){
                         return rq.historyBack("브랜드 관리자만 접근할 수 있습니다.");
                 }
 
