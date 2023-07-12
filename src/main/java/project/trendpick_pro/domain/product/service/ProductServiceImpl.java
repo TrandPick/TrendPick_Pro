@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,15 +65,10 @@ public class ProductServiceImpl implements ProductService{
     private final TagService tagService;
 
     private final Rq rq;
-//    private final SearchService searchService;
 
     private final AmazonS3 amazonS3;
-
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-
-    @Value("https://kr.object.ncloudstorage.com/{cloud.aws.s3.bucket}/")
-    private String filePath;
 
     @Transactional
     @CacheEvict(value = "products", allEntries = true)
@@ -112,7 +107,6 @@ public class ProductServiceImpl implements ProductService{
         product.addTag(tags);
 
         Product saveProduct = productRepository.save(product);
-//        searchService.createProduct(saveProduct);
         return RsData.of("S-1", "상품 등록이 완료되었습니다.", saveProduct.getId());
     }
 
@@ -145,32 +139,25 @@ public class ProductServiceImpl implements ProductService{
         tagService.delete(product.getTags());
         product.modifyTag(tags);
         product.update(productSaveRequest, optionSaveRequest, mainFile);
-//        searchService.modifyProduct(product);
         return RsData.of("S-1", "상품 수정 완료되었습니다.", product.getId());
     }
 
     @Transactional
-    @CacheEvict(value = "products", allEntries = true)  
+    @CacheEvict(value = "products", allEntries = true)
     public void delete(Long productId) {
         rq.getAdmin();
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         product.getFile().deleteFile(amazonS3, bucket);
-//        searchService.deleteProduct(product);
         productRepository.delete(product);
     }
 
     @Cacheable(value = "product", key = "#productId")
     @Transactional(readOnly = true)
     public ProductResponse getProduct(Long productId) {
-
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
-
-        if(rq.checkLogin()){
-            if(rq.checkMember()){
-                updateFavoriteTag(product);
-            }
+        if(rq.checkLogin() && rq.checkMember()){
+            updateFavoriteTag(product);
         }
-
         return ProductResponse.of(product);
     }
 
@@ -182,8 +169,9 @@ public class ProductServiceImpl implements ProductService{
 
     public void updateFavoriteTag(Product product) {
         Member member = rq.getMember();
-        if(member.getRole().equals(RoleType.MEMBER))
+        if(member.getRole().equals(RoleType.MEMBER)) {
             favoriteTagService.updateTag(member, product, TagType.SHOW);
+        }
     }
 
     @Transactional
@@ -195,45 +183,23 @@ public class ProductServiceImpl implements ProductService{
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "#offset + #mainCategory + #subCategory")
     public Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory) {
-
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
         PageRequest pageable = PageRequest.of(offset, 18);
-
-        Page<ProductListResponse> listResponses = productRepository.findAllByCategoryId(cond, pageable);
-
-        List<ProductListResponse> list = listResponses.getContent().stream()
-                .map(product -> getProducts(product.getId()))
-                .peek(product -> {
-                    String updatedMainFile = product.getMainFile();
-                    product.setMainFile(updatedMainFile);
-                }).toList();
-
-        return new PageImpl<>(list, pageable, listResponses.getTotalElements());
-    }
-
-    @Transactional(readOnly = true)
-    public Page<ProductListResponse> findAllByKeyword(String keyword, int offset) {
-
-        ProductSearchCond cond = new ProductSearchCond(keyword);
-        PageRequest pageable = PageRequest.of(offset, 18);
-
-        Page<ProductListResponse> listResponses = productRepository.findAllByKeyword(cond, pageable);
-
-        List<ProductListResponse> list = listResponses.getContent().stream()
-                .map(product -> getProducts(product.getId()))
-                .peek(product -> {
-                    String updatedMainFile = product.getMainFile();
-                    product.setMainFile(updatedMainFile);
-                }).toList();
-
-        return new PageImpl<>(list, pageable, listResponses.getTotalElements());
+        return productRepository.findAllByCategoryId(cond, pageable);
     }
 
     @Transactional(readOnly = true)
     public Page<ProductListResponse> getAllProducts(Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), 18);
         Page<Product> products = productRepository.findAll(pageable);
-        return products.map(this::convertToProductListResponse);
+        return products.map(ProductListResponse::of);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductListResponse> findAllByKeyword(String keyword, int offset) {
+        ProductSearchCond cond = new ProductSearchCond(keyword);
+        PageRequest pageable = PageRequest.of(offset, 18);
+        return productRepository.findAllByKeyword(cond, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -304,18 +270,6 @@ public class ProductServiceImpl implements ProductService{
     public void applyDiscount(Long productId, double discountRate) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         product.applyDiscount(discountRate);
-    }
-
-    public ProductListResponse convertToProductListResponse(Product product) {
-        return new ProductListResponse(
-                product.getId(),
-                product.getName(),
-                product.getBrand().getName(),
-                product.getFile().getFileName(),
-                product.getProductOption().getPrice(),
-                product.getDiscountRate(),
-                product.getDiscountedPrice()
-        );
     }
 
     @Transactional(readOnly = true)
