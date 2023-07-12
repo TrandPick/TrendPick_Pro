@@ -1,6 +1,7 @@
 package project.trendpick_pro.domain.tags.favoritetag.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
@@ -20,6 +21,7 @@ public class FavoriteTagServiceImpl implements FavoriteTagService {
     private final TagRepository tagRepository;
 
     @Override
+    @Async
     @Transactional
     public void updateTag(Member member, Product product, TagType type) {
         List<Tag> tagList = tagRepository.findAllByProduct(product);

@@ -186,8 +186,6 @@ public class ProductController {
     @PostMapping("/admin/discount/{productId}")
     public String applyDiscount(@PathVariable Long productId, @RequestParam double discountRate, Model model) {
         productService.applyDiscount(productId, discountRate);
-//        ProductDiscountResponse productDiscountResponse = ProductDiscountResponse.of(productService.findById(productId));
-//        model.addAttribute("discountProduct", productDiscountResponse);
         return "redirect:/trendpick/products/admin/list?page=0";
     }
 
