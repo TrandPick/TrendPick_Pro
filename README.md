@@ -1,12 +1,19 @@
 ## 👖 TrendPick, 취향에 맞게 상품을 추천 해주는 서비스
+<div align="center">
+<p align="center">
+<img src="https://github.com/TrandPick/TrendPick_Pro/assets/62290451/0ecc6545-4151-472c-9121-f531a4de69ae" width="700" height="400"/>
 
-상품 구매시 사용자의 고민을 덜어주고자 자신만의 스타일, 선호하는 스타일로 태그 기반 상품을 추천하는 서비스 제공합니다.  
+
+자신만의 스타일, 선호하는 스타일로 태그 기반 상품을 추천하는 서비스 제공합니다.  
 
 트렌드한 태그들, 상품 추천 **Trend Pick**
+</p>
+</div>
+<br>
 
----
 
-### 👩‍💻 기획 **계기**
+
+## 👩‍💻 기획 **계기**
 
 옷을 고르는 일은 즐겁지만 때때로 까다롭고 시간이 많이 소요될 수 있습니다. 수많은 선택지 중에서 마음에 드는 한 두 벌의 옷을 찾아내는 것은 실제로 상당히 어려운 일입니다.
 
@@ -14,20 +21,20 @@
 
 이렇게 하면, 사용자는 수많은 제품 중에서 직접 골라야 하는 불편함을 줄일 수 있으며, 각자의 개인적인 스타일에 맞는 아이템을 더욱 빠르게 찾아낼 수 있을 것입니다.
 
----
+<br>
 
 
 ## 💡 설명
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/3342852f-8388-4c83-843b-9354841b5abe/Untitled.png)
+<p align="center">
+
+<img src="https://github.com/TrandPick/TrendPick_Pro/assets/62290451/63a4c96c-1aa0-45fa-8ecf-273187a34567" width="700" height="400"/>
 
 **트렌드픽**은 사용자 가입 시 지정한 선호 태그를 활용하여 맞춤형 상품 추천을 제공합니다. 이런 방식은 사용자에게 보다 효율적이고 개인화된 쇼핑 경험을 제공하는 데 초점을 맞추고 있습니다.
 
 사용자가 선호하는 스타일과 코디에 기반하여, 우리의 서비스는 그들에게 가장 적합한 상품들을 추천합니다. 이를 통해 고객은 어떤 상품을 선택하고 구매할지에 대해 더욱 신중하고 효과적으로 결정할 수 있습니다. 이러한 방식은 고객의 쇼핑 경험을 더욱 즐겁고 만족스럽게 만들 것입니다.
+</p>
+<br>
 
-- 왜 그 기술을 사용했는지 →
-- 여러분이 당면했던 문제나 나중에 추가하고 싶은 기능이 무엇인지 → ORM 사용 미숙으로 엔티티가 너무 커지는? 문제 발생, 메소드 중 너무 많은 역할을 하는 것들이 있음
-
----
 
 ## 🛠️ 사용 기술 스택
 
@@ -53,19 +60,25 @@ Kubernates, Docker, NGINX, Github Action, Elastic Search, Data Dog
 
 Git, Discord, Notion, slack
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8d1c2ba4-a29f-4c03-afd7-813b08dce8c8/Untitled.png)
+<br>
 
----
+
+![image](https://github.com/TrandPick/TrendPick_Pro/assets/62290451/ac26b8fd-ad51-4a5d-997c-337f22508bdb)
+
+
+<br>
+
 
 ## 📝 설계내용
 
-**요구 사항 도출 과정**
+### 요구 사항 도출 과정
 
 1. **`문제 이해`**: 처음으로 문제를 정의하고 이해하는 단계입니다. 패션 이커머스 시스템을 개발하려는 목표를 설정하고 그에 따른 대략적인 요구사항을 도출합니다.
 2. **`사용자와의 상호작용`**: 다음으로 사용자의 입장에서 시스템을 어떻게 사용할지 고민합니다. 사용자의 필요한 기능을 파악하고 이를 시스템의 요구사항으로 변환합니다.
 3. **`세부 요구사항 도출`**: 각 요구사항의 세부사항을 정의합니다. 예를 들어, 상품에 대한 요구사항을 정의하면서 상품 리스트, 상품 검색, 상품 상세페이지 등의 세부 요구사항을 도출합니다.
 4. **`요구사항 검토 및 확정`**: 도출한 요구사항을 검토하고 수정, 보완한 뒤 최종적으로 확정합니다. 이 과정에서 각 요구사항이 시스템의 목표와 잘 부합하는지, 사용자의 요구를 충족시키는지 등을 검토합니다.
 5. **`요구사항 문서화`**: 마지막으로 도출한 요구사항을 문서화합니다. 이 문서는 개발 과정에서 참조할 수 있도록 구체적이고 명확해야 합니다.
+<br>
 
 <details>
 <summary>요구사항 명세서</summary>
@@ -103,19 +116,26 @@ Git, Discord, Notion, slack
 </div>
 </details>
 
-API명세서
+<details>
+<summary>API 명세서</summary>
+<div markdown="1">
+
+[API명세서 보러가기](https://www.notion.so/API-ceb28ac33799464f8983486c33d9cb5d)
+
+</div>
+</details>
 
 <details>
 <summary>Git 컨벤션</summary>
-<div markdown="1">       
-<br>
-<br>
-    
-**Git-Flow 전략을 사용**
+<div markdown="1">    
+  
+### Git-Flow 전략을 사용
 
 main / development / feat, refactor, …/이슈번호_기능명
 
 development 브랜치에서 실제 개발을 완료하여, 최종 배포코드를 main에 Pull Request
+
+<br>
 
 ### 브랜치 컨벤션
 
@@ -124,6 +144,8 @@ development 브랜치에서 실제 개발을 완료하여, 최종 배포코드�
 브랜치 명 : **feat, refactor, …/issue번호_issue명**
 
 PR 생성 명 : **[Feat, Refactor, …/issue번호] 이슈 내용**
+
+<br>
 
 ### Commit 컨벤션
 
@@ -147,6 +169,7 @@ Footer // issue tracker를 사용하는 경우 참조한 issue tracker ID를 기
 **개별 패키지 구조**
 
 도메인 → controller, service, repository, (domain→ entity, dto), exception
+<br>
 
 **인텔리제이 네이버 코딩 컨벤션**
 
@@ -159,7 +182,6 @@ Footer // issue tracker를 사용하는 경우 참조한 issue tracker ID를 기
 <summary>그라운드룰</summary>
 <div markdown="1">       
 <br>
-<br>
 💡 1. 사소한 것이라도 말을 하자!<br><br>
 💡 2. 나만 아는 지식이 없도록 하자!<br><br>
 💡 3. 어떠한 것을 하고자 할 때는 동료들에게 근거를 제시하자!<br><br>
@@ -170,11 +192,15 @@ Footer // issue tracker를 사용하는 경우 참조한 issue tracker ID를 기
 
 </div>
 </details>
-ERD 설계도
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f122b99e-530a-4c0e-90d7-d96c3a3dae27/Untitled.png)
+<br>
 
----
+### ERD 설계도
+
+![image](https://github.com/TrandPick/TrendPick_Pro/assets/62290451/555f5b17-9a28-455a-a9db-08536e8e5454)
+
+<br>
+
 
 ## ✅ 기능요약
 
@@ -183,24 +209,28 @@ ERD 설계도
 - 상품 검색
 - 상품 메인/서브 카테고리
 - 전체 관리자일 경우
-    - 출금 승인
+    - 출금 승인/취소
 - 브랜드 관리자일 경우
     - 상품 등록, 수정, 삭제/ 할인 적용/ 쿠폰 발급 / 정산 데이터 생성/ 출금 신청
 - 일반 유저일 경우
     - 구매 / 리뷰 작성 / 개인 회원 정보 관리
     
 
----
+<br>
+
 
 ## ⭕ 부하테스트 및 개선
 
 쇼핑몰은 이벤트나 타임 세일 등 어떤 기간 동안 갑자기 사용자가 몰리는 경우, 최대 몇 명의 사용자들이 서버를 사용할 수 있는지 상황을 확인하고 대비하고자 부하 테스트를 진행하여 로직을 개선해보고자 했습니다. 환경은 상품 3만 개, 유저는 1천명을 가정하고 진행했습니다.
 
 부하 테스트에는 몇 가지 시나리오를 설정해서 부하 테스트를 진행했습니다. 
+<p align="center">
+<img src="https://github.com/TrandPick/TrendPick_Pro/assets/62290451/0e8ddc2d-8c4f-4c18-813f-0439242044cf" width="400" height="600"/>
+  
+<br>
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/20aa6150-841d-4eee-955a-d6aae9cb928f/Untitled.png)
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/2f328bde-21af-46c1-bd35-0b2e90d2cf4e/Untitled.png)
+<img src="https://github.com/TrandPick/TrendPick_Pro/assets/62290451/80ae2670-f58e-4613-9a42-02c9c6e127e9" width="600" height="200"/>
+</p>
 
 평균적으로 3.1초에서 4초 정도의 요청 시간이 나타났습니다.
 
