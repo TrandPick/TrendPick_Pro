@@ -12,6 +12,33 @@
 </head>
 <body>
 <main layout:fragment="main" class="bg-white">
+    <script>
+        $(document).ready(function() {
+            function switchToSlide(target) {
+                var $target = $(target);
+
+                if ($target.length) {
+                    $('.carousel-item').hide();
+                    $target.show();
+                }
+            }
+
+            $('.btn.btn-circle').click(function(e) {
+                e.preventDefault();
+
+                var target = $(this).data('target');
+                switchToSlide(target);
+            });
+
+            setInterval(function() {
+                var $currentSlide = $('.carousel-item:visible');
+                var $nextSlide = $currentSlide.next('.carousel-item');
+                var nextSlideId = $nextSlide.length ? $nextSlide.attr('id') : $('.carousel-item').first().attr('id');
+
+                switchToSlide('#' + nextSlideId);
+            }, 4000);  // 4초 마다 다음 슬라이드로 넘어감
+        });
+    </script>
     <div th:if="${mainCategoryName} != '추천' or ${mainCategoryName} != 'search'" class="flex flex-row flex-wrap bg-gray-200 p-2 rounded">
         <a th:href="@{/trendpick/products/list(main-category=${mainCategoryName},sub-category='전체')}"
            th:text="전체"
@@ -27,22 +54,22 @@
         <div id="slide1" class="carousel-item relative w-full">
             <img src="https://kr.object.ncloudstorage.com/trendpick/home/TREND1.png" class="w-full" />
             <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                <a href="#slide3" class="btn btn-circle">❮</a>
-                <a href="#slide2" class="btn btn-circle">❯</a>
+                <a data-target="#slide3" class="btn btn-circle">❮</a>
+                <a data-target="#slide2" class="btn btn-circle">❯</a>
             </div>
         </div>
         <div id="slide2" class="carousel-item relative w-full">
             <img src="https://kr.object.ncloudstorage.com/trendpick/home/TREND2.png" class="w-full" />
             <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                <a href="#slide1" class="btn btn-circle">❮</a>
-                <a href="#slide3" class="btn btn-circle">❯</a>
+                <a data-target="#slide1" class="btn btn-circle">❮</a>
+                <a data-target="#slide3" class="btn btn-circle">❯</a>
             </div>
         </div>
         <div id="slide3" class="carousel-item relative w-full">
             <img src="https://kr.object.ncloudstorage.com/trendpick/home/TREND3.png" class="w-full" />
             <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                <a href="#slide2" class="btn btn-circle">❮</a>
-                <a href="#slide1" class="btn btn-circle">❯</a>
+                <a data-target="#slide2" class="btn btn-circle">❮</a>
+                <a data-target="#slide1" class="btn btn-circle">❯</a>
             </div>
         </div>
     </div>
