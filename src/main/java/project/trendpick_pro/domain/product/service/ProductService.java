@@ -44,8 +44,6 @@ public interface ProductService {
 
     void applyDiscount(Long productId, double discountRate);
 
-    ProductListResponse convertToProductListResponse(Product product);
-
     Product findById(Long id);
     Product findByIdWithBrand(Long productId);
 }

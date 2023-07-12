@@ -6,11 +6,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
+import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSaveRequest;
@@ -29,6 +31,7 @@ public class JmeterController {
 
     private final Rq rq;
 
+    private final OrderService orderService;
     private final ProductService productService;
 
     @GetMapping("/member/login")
@@ -41,23 +44,18 @@ public class JmeterController {
         return new ResponseEntity<>(memberInfoDto, headers, HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasAuthority({'MEMBER'})")
-//    @PostMapping("/order")
-//    public OrderDetailResponse processOrder() {
-//        Member member = rq.CheckMember().get();
-//        Product product = productRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
-//
-//        List<OrderItemDto> orderItemDtoList = new ArrayList<>();
-//        orderItemDtoList.add(OrderItemDto.of(product, 1));
-//        OrderForm orderForm = new OrderForm(MemberInfoDto.of(member), orderItemDtoList);
-//        orderForm.connectPaymentMethod("신용카드");
-//
-//        RsData<Long> result = orderService.order(member, orderForm);
-//        if(result.isFail())
-//            throw new IllegalArgumentException(result.getMsg());
-//
-//        return orderService.showOrderItems(member, result.getData()).getData();
-//    }
+    @PreAuthorize("hasAuthority({'MEMBER'})")
+    @PostMapping("/order")
+    public void processOrder() {
+        Member member = rq.getMember();
+
+        Long id = 1L;
+        int quantity = 1;
+        String size = "80";
+        String color = "Teal";
+
+        orderService.productToOrder(member, id, quantity, size, color);
+    }
 
     @PostMapping("/edit")
     public void modifyProduct(@RequestParam("productId") Long productId,

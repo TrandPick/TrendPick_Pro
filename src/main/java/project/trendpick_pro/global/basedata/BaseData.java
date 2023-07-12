@@ -415,7 +415,7 @@ public class BaseData {
     private static String selectRandomFilePath(List<String> filePaths) {
         Random random = new Random();
         String path = filePaths.get(random.nextInt(filePaths.size()));
-        while (path.equals("trendpick_logo.png")) {
+        while (path.equals("trendpick_logo.png") || path.endsWith("/")) {
             path = filePaths.get(random.nextInt(filePaths.size()));
         }
         return path;
