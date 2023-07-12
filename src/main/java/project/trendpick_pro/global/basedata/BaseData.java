@@ -311,9 +311,14 @@ public class BaseData {
                         .build();
                 Set<Tag> tags = new LinkedHashSet<>();
                 for (int i = 1; i <= (Math.random() * 13)+5; i++) {
-                    result = (long) (Math.random() * 30);
-                    TagName tagName = tagNameService.findById(result + 1L);
-                    tags.add(new Tag(tagName.getName()));
+                    while (true) {
+                        result = (long) (Math.random() * 30);
+                        TagName tagName = tagNameService.findById(result + 1L);
+                        Tag tag = new Tag(tagName.getName());
+                        if (tags.add(tag)) {
+                            break;
+                        }
+                    }
                 }
                 product.addTag(tags);
                 products.add(product);

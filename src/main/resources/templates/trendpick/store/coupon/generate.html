@@ -130,7 +130,12 @@
                 var today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                if (selectedDate < tomorrow) {
+                var tomorrow = new Date();
+                tomorrow.setDate(today.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+
+
+                if (selectedDate.getTime() < tomorrow.getTime()) {
                     toast.error('쿠폰 발급은 다음날 0시 0분부터 가능합니다.');
                     this.value = tomorrow.toISOString().slice(0, 16);
                     endDateInput.value = '';
