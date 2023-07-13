@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,7 +71,6 @@ public class ProductServiceImpl implements ProductService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    @CacheEvict(value = "products", allEntries = true)
     @Transactional
     public RsData<Long> register(ProductRequest request, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException, ExecutionException, InterruptedException {
 
@@ -110,7 +110,7 @@ public class ProductServiceImpl implements ProductService {
         return RsData.of("S-1", "상품 등록이 완료되었습니다.", saveProduct.getId());
     }
 
-    @CacheEvict(value = "products", allEntries = true)
+    @CachePut(key = "#productId", value = "product")
     @Transactional
     public RsData<Long> modify(Long productId, ProductRequest productRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
@@ -156,33 +156,31 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse getProduct(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         if(rq.checkLogin() && rq.checkMember()){
-            updateFavoriteTag(product);
+            favoriteTagService.updateTag(rq.getMember(), product, TagType.SHOW);
         }
         return ProductResponse.of(product);
-    }
-
-    @Transactional(readOnly = true)
-    public ProductListResponse getProducts(Long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
-        return ProductListResponse.of(product);
     }
 
     @Cacheable(value = "products", key = "#offset + #mainCategory + #subCategory")
     @Transactional(readOnly = true)
     public Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory) {
+        log.info("getProducts 캐싱 ============================================");
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
         PageRequest pageable = PageRequest.of(offset, 18);
         return productRepository.findAllByCategoryId(cond, pageable);
     }
 
+    @Cacheable(key = "#pageable.offset", value = "products")
     @Transactional(readOnly = true)
     public Page<ProductListResponse> getAllProducts(Pageable pageable) {
+        log.info("getAllProducts 캐싱 ============================================");
         pageable = PageRequest.of(pageable.getPageNumber(), 18);
         Page<Product> products = productRepository.findAll(pageable);
         return products.map(ProductListResponse::of);
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(key = "#keyword + #offset", value = "searchProducts")
     public Page<ProductListResponse> findAllByKeyword(String keyword, int offset) {
         ProductSearchCond cond = new ProductSearchCond(keyword);
         PageRequest pageable = PageRequest.of(offset, 18);
@@ -257,10 +255,5 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByIdWithBrand(productId);
     }
 
-    private void updateFavoriteTag(Product product) {
-        Member member = rq.getMember();
-        if(member.getRole().equals(RoleType.MEMBER)) {
-            favoriteTagService.updateTag(member, product, TagType.SHOW);
-        }
-    }
+
 }
