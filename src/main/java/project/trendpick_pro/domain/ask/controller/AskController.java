@@ -11,8 +11,8 @@ import project.trendpick_pro.domain.answer.service.AnswerService;
 import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 import project.trendpick_pro.domain.ask.service.AskService;
-import project.trendpick_pro.domain.common.base.rq.Rq;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rq.Rq;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.Objects;
 
@@ -20,6 +20,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @RequestMapping("/trendpick/customerservice/asks")
 public class AskController {
+
     private final AskService askService;
     private final AnswerService answerService;
 
@@ -39,8 +40,7 @@ public class AskController {
         RsData<Long> result = askService.register(rq.getMember(), askForm);
         if(result.isFail()) {
             return rq.historyBack(result);
-        }
-        return rq.redirectWithMsg("/trendpick/products/%s".formatted(askForm.getProductId()), result);
+        } return rq.redirectWithMsg("/trendpick/products/%s".formatted(askForm.getProductId()), result);
     }
 
     @PreAuthorize("permitAll()")
@@ -58,8 +58,7 @@ public class AskController {
         RsData<Long> result = askService.delete(rq.getMember(), askId);
         if(result.isFail()) {
             return rq.historyBack(result);
-        }
-        return rq.redirectWithMsg("/trendpick/products/%s".formatted(result.getData()), result);
+        } return rq.redirectWithMsg("/trendpick/products/%s".formatted(result.getData()), result);
     }
 
     @PreAuthorize("hasAuthority('MEMBER')")
@@ -79,8 +78,6 @@ public class AskController {
         RsData<AskResponse> result = askService.modify(rq.getMember(), askId, askForm);
         if (result.isFail()) {
             return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), result);
-        }
-        return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), "문의글 수정이 완료되었습니다.");
+        } return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), "문의글 수정이 완료되었습니다.");
     }
-
 }

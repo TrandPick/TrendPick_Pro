@@ -16,25 +16,21 @@ import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 import project.trendpick_pro.domain.ask.service.AskService;
 import project.trendpick_pro.domain.brand.service.BrandService;
-import project.trendpick_pro.domain.category.entity.dto.response.MainCategoryResponse;
-import project.trendpick_pro.domain.category.entity.dto.response.SubCategoryResponse;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
-import project.trendpick_pro.domain.common.base.rq.Rq;
-import project.trendpick_pro.domain.common.view.service.ViewService;
+import project.trendpick_pro.global.basedata.tagname.service.impl.TagNameServiceImpl;
+import project.trendpick_pro.global.util.rq.Rq;
+import project.trendpick_pro.global.kafka.view.service.ViewService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
-import project.trendpick_pro.domain.product.entity.product.Product;
-import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSaveRequest;
+import project.trendpick_pro.domain.product.entity.product.dto.response.ProductListResponse;
 import project.trendpick_pro.domain.product.entity.product.dto.response.ProductListResponseBySeller;
-import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
 import project.trendpick_pro.domain.review.entity.dto.response.ReviewProductResponse;
 import project.trendpick_pro.domain.review.service.ReviewService;
-import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -55,7 +51,7 @@ public class ProductController {
     private final RecommendService recommendService;
     private final MemberService memberService;
 
-    private final TagNameService tagNameService;
+    private final TagNameServiceImpl tagNameServiceImpl;
     private final BrandService brandService;
 
     private final MainCategoryService mainCategoryService;
@@ -124,7 +120,7 @@ public class ProductController {
     @GetMapping("/{productId}")
     public String showProduct(@PathVariable Long productId, Pageable pageable, Model model) {
         model.addAttribute("productResponse", productService.getProduct(productId));
-        Page<ReviewProductResponse> productReviews = reviewService.getProductReviews(productId, pageable);
+        Page<ReviewProductResponse> productReviews = reviewService.getReviews(productId, pageable);
         Page<AskResponse> productAsk = askService.showAsksByProduct(productId, 0);
         model.addAttribute("productReview", productReviews);
         model.addAttribute("productAsk", productAsk);
@@ -137,9 +133,8 @@ public class ProductController {
     public String showAllProduct(@RequestParam(value = "page", defaultValue = "0") int offset,
                                  @RequestParam(value = "main-category", defaultValue = "all") String mainCategory,
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
-                                 Pageable pageable, Model model, HttpSession session) throws InterruptedException {
+                                 Pageable pageable, Model model, HttpSession session) {
         viewService.requestIncrementViewCount(session);
-        Thread.sleep(200);
         model.addAttribute("totalView", viewService.getCount());
         if (mainCategory.equals("recommend")) {
             mainCategory = "추천";
@@ -182,24 +177,29 @@ public class ProductController {
         return "trendpick/admin/products";
     }
 
+    @GetMapping("/keyword")
+    public String searchQuery(@RequestParam String keyword, @RequestParam(value = "page", defaultValue = "0") int offset,  Model model) {
+        Page<ProductListResponse> products = productService.findAllByKeyword(keyword, offset);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("productResponses", products);
+        return "trendpick/products/list";
+    }
 
     @PostMapping("/admin/discount/{productId}")
     public String applyDiscount(@PathVariable Long productId, @RequestParam double discountRate, Model model) {
         productService.applyDiscount(productId, discountRate);
-//        ProductDiscountResponse productDiscountResponse = ProductDiscountResponse.of(productService.findById(productId));
-//        model.addAttribute("discountProduct", productDiscountResponse);
         return "redirect:/trendpick/products/admin/list?page=0";
     }
 
     private void readyHtml(Model model) {
-        model.addAttribute("tags", tagNameService.findAll());
+        model.addAttribute("tags", tagNameServiceImpl.findAll());
 
-        List<MainCategoryResponse> MainCategories = mainCategoryService.findAll();
+        List<String> MainCategories = mainCategoryService.findAll();
         model.addAttribute("mainCategories", MainCategories);
 
-        Map<String, List<SubCategoryResponse>> subCategoryList = new HashMap<>();
-        for (MainCategoryResponse mainCategoryResponse : MainCategories) {
-            subCategoryList.put(mainCategoryResponse.getName(), subCategoryService.findAll(mainCategoryResponse.getName()));
+        Map<String, List<String>> subCategoryList = new HashMap<>();
+        for (String mainCategory : MainCategories) {
+            subCategoryList.put(mainCategory, subCategoryService.findAll(mainCategory));
         }
 
         model.addAttribute("subCategoriesList", subCategoryList);

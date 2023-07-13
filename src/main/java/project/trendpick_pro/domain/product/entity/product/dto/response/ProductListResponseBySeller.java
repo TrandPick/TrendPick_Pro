@@ -1,7 +1,10 @@
 package project.trendpick_pro.domain.product.entity.product.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.text.NumberFormat;
 import java.time.LocalDateTime;

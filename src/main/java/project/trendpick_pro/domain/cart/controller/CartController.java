@@ -5,18 +5,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
 import project.trendpick_pro.domain.cart.entity.dto.response.CartItemResponse;
 import project.trendpick_pro.domain.cart.service.CartService;
-import project.trendpick_pro.domain.common.base.rq.Rq;
-import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.service.MemberService;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rq.Rq;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.List;
 
@@ -27,16 +25,14 @@ import java.util.List;
 public class CartController {
 
     private final CartService cartService;
-    private final MemberService memberService;
 
     private final Rq rq;
 
     @PreAuthorize("hasAuthority('MEMBER')")
     @GetMapping("/list")
     public String showCart( Model model) {
-        Member member = rq.getMember();
-        Cart carts = cartService.getCartByUser(member.getId());
-        List<CartItem> cartItems = cartService.CartView(carts);
+        Cart carts = cartService.getCartByUser(rq.getMember().getId());
+        List<CartItem> cartItems = cartService.currentCartItems(carts);
         model.addAttribute("cartItems", cartItems);
         return "trendpick/usr/cart/list";
     }
@@ -54,10 +50,10 @@ public class CartController {
     public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
         if(!rq.checkLogin())
             return rq.historyBack("로그인 후 이용하실 수 있습니다.");
-        RsData<CartItemResponse> cartItemResponse = cartService.addItemToCart(rq.getMember(), cartItemRequests);
-       if(cartItemResponse.isFail()){
+        RsData<CartItemResponse> cartItemResponse = cartService.addCartItem(rq.getMember(), cartItemRequests);
+        if(cartItemResponse.isFail()){
            return rq.redirectWithMsg("/trendpick/products/list?main-category=상의",cartItemResponse);
-       }
+        }
         model.addAttribute("cartItemResponse", cartItemResponse);
         return rq.redirectWithMsg("/trendpick/usr/cart/list", "상품이 추가되었습니다.");
     }
@@ -66,7 +62,7 @@ public class CartController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("delete/{cartItemId}")
     public String removeItem(@PathVariable("cartItemId") Long cartItemId) {
-        cartService.removeItemFromCart(cartItemId);
+        cartService.deleteCartItem(cartItemId);
         return rq.redirectWithMsg("/trendpick/usr/cart/list", "상품이 삭제되었습니다.");
     }
 
@@ -75,7 +71,7 @@ public class CartController {
     @PostMapping("/update")
     public String updateCount(@RequestParam("cartItemId") Long cartItemId,
                               @RequestParam("quantity") int newQuantity) {
-        RsData<CartItem> cartItems=  cartService.updateItemCount(cartItemId, newQuantity);
+        RsData<CartItem> cartItems=  cartService.updateCartItem(cartItemId, newQuantity);
         if(cartItems.isFail()){
             rq.redirectWithMsg("/trendpick/usr/cart/list",cartItems);
         }

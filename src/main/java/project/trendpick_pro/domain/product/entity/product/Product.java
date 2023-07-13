@@ -6,22 +6,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.brand.entity.Brand;
-import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.common.file.CommonFile;
-import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSaveRequest;
 import project.trendpick_pro.domain.product.entity.productOption.ProductOption;
 import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
-import project.trendpick_pro.domain.recommend.entity.Recommend;
-import project.trendpick_pro.domain.review.entity.Review;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -50,31 +44,22 @@ public class Product extends BaseTimeEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Tag> tags = new LinkedHashSet<>();
+
     @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
     private CommonFile file;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Tag> tags = new LinkedHashSet<>();
-
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ProductOption productOption;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CartItem> cartItems = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Review> reviews = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<OrderItem> orderItems = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Recommend> recommendList;
-
     private int reviewCount = 0;
+
     private double rateAvg = 0;
+
     private int saleCount = 0;
+    
     private int askCount = 0;
 
     private double discountRate;
@@ -116,21 +101,6 @@ public class Product extends BaseTimeEntity {
 
     public void disconnectFile(){
         this.file = null;
-    }
-
-    public void increaseAskCount(){
-        this.askCount++;
-    }
-    public void decreaseAskCount(){
-        this.askCount--;
-    }
-
-    public void increaseSaleCount(int quantity){
-        this.saleCount += quantity;
-    }
-
-    public void decreaseSaleCount(int quantity){
-        this.saleCount -= quantity;
     }
 
     public void addReview(int rating){

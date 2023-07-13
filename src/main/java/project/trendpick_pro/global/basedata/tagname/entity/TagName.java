@@ -20,12 +20,4 @@ public class TagName {
     public TagName(String name) {
         this.name = name;
     }
-
-    @Override
-    public String toString() {
-        return "TagName{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }

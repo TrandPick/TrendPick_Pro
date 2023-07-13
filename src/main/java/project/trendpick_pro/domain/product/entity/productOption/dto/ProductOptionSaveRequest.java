@@ -27,7 +27,7 @@ public class ProductOptionSaveRequest {
     private String status;
 
     @Builder
-    public ProductOptionSaveRequest(List<String> sizes, List<String> colors, int stock, int price, String status) {
+    private ProductOptionSaveRequest(List<String> sizes, List<String> colors, int stock, int price, String status) {
         this.sizes = sizes;
         this.colors = colors;
         this.stock = stock;

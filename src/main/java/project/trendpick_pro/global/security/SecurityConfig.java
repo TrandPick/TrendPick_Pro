@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .and()
                 .logout()
                 .logoutUrl("/trendpick/member/logout")
-                .logoutSuccessUrl("/trendpick/products/list?main-category=all")
+                .logoutSuccessUrl("/trendpick/member/login")
                 .permitAll();
         return http.build();
     }
@@ -75,9 +75,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*")); // set access from specific domain
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
-        // setAllowCredentials(true) is important, else, the session will be shared between services.
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -27,10 +27,11 @@ public class Notification extends BaseTimeEntity {
     private Member member;
 
     private String orderState;
+
     private String deliveryState;
 
     @Builder
-    public Notification(Order order, Member member, String orderState, String deliveryState) {
+    private Notification(Order order, Member member, String orderState, String deliveryState) {
         this.order = order;
         this.member = member;
         this.orderState = orderState;

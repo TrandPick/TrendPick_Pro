@@ -23,7 +23,8 @@ public class AskResponse {
 
     @Builder
     @QueryProjection
-    public AskResponse(Long askId, Long productId, String productName, String memberName, Long memberId, String title,String content, String status, LocalDateTime createdDate) {
+    public AskResponse(Long askId, Long productId, String productName, String memberName, Long memberId, String title,
+                       String content, String status, LocalDateTime createdDate) {
         this.askId = askId;
         this.productId = productId;
         this.productName = productName;

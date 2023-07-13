@@ -30,16 +30,13 @@ public class Ut {
         }
     }
 
-    ;
-
     public static class time {
         public static String diffFormat1Human(LocalDateTime time1, LocalDateTime time2) {
             String suffix = time1.isAfter(time2) ? "전" : "후";
 
-            // 두개의 시간의 차이를 초로 환산
             long diff = Math.abs(ChronoUnit.SECONDS.between(time1, time2));
 
-            long diffSeconds = diff % 60; // 초 부분만
+            long diffSeconds = diff % 60;
             long diffMinutes = diff / (60) % 60; // 분 부분만
             long diffHours = diff / (60 * 60) % 24; // 시간 부분만
             long diffDays = diff / (60 * 60 * 24); // 나머지는 일 부분으로
@@ -259,13 +256,10 @@ public class Ut {
 
                 map.put(key, value);
             }
-
             return map;
         }
-
         public static String nf(long number) {
             return String.format("%,d", (int) number);
         }
     }
-
 }

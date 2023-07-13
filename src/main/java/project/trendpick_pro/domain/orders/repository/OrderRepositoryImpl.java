@@ -8,6 +8,7 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.QOrderResponse;
@@ -131,43 +132,28 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public List<OrderResponse> findAllByMonth(OrderSearchCond orderSearchCond) {
+    public int findAllByMonth(OrderSearchCond orderSearchCond) {
         // 현재 날짜를 가져옴
         LocalDate currentDate = LocalDate.now();
 
         // 현재 월을 가져옴
         int currentMonth = currentDate.getMonthValue();
 
-        List<OrderResponse> result = queryFactory
-                .select(new QOrderResponse(
-                        orderItem.order.id,
-                        orderItem.product.id,
-                        orderItem.product.file.fileName,
-                        orderItem.product.brand.name,
-                        orderItem.product.name,
-                        orderItem.quantity,
-                        orderItem.orderPrice,
-                        orderItem.discountPrice,
-                        orderItem.order.createdDate,
-                        orderItem.order.modifiedDate,
-                        orderItem.size,
-                        orderItem.color,
-                        orderItem.order.status.stringValue(),
-                        orderItem.order.delivery.state.stringValue())
-                )
+        Integer result = queryFactory
+                .select(orderItem.orderPrice.sum())
                 .from(orderItem)
                 .join(orderItem.order, order)
                 .join(order.member, member)
-                .on(orderItem.product.brand.name.eq(orderSearchCond.getBrand()))
-                .where(Expressions.dateTemplate(
-                        Integer.class,
-                        "MONTH({0})",
-                        orderItem.order.createdDate
-                ).eq(currentMonth))
-                .orderBy(orderItem.order.createdDate.desc())
-                .fetch();
+                .where(orderItem.product.brand.name.eq(orderSearchCond.getBrand()),
+                        Expressions.dateTemplate(
+                                Integer.class,
+                                "MONTH({0})",
+                                orderItem.order.createdDate
+                        ).eq(currentMonth),
+                        orderItem.order.status.stringValue().eq("ORDERED"))
+                .fetchOne();
 
-        return result;
+        return result == null ? 0 : result;
     }
 
 

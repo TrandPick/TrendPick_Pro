@@ -27,13 +27,9 @@ public class Answer extends BaseTimeEntity {
     private String content;
 
     public static Answer write(AnswerForm answerForm) {
-        Answer answer = Answer
-                .builder()
+        return Answer.builder()
                 .content(answerForm.getContent())
-                .build()
-                ;
-
-        return answer;
+                .build();
     }
 
     public void connectAsk(Ask ask){
