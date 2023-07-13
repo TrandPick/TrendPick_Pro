@@ -14,7 +14,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.exceoption.OrderItemNotFoundException;
 import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.List;
 

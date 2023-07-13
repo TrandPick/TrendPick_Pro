@@ -7,17 +7,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import project.trendpick_pro.domain.common.base.rq.Rq;
-import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.notification.entity.Notification;
 import project.trendpick_pro.domain.notification.service.NotificationService;
-import project.trendpick_pro.domain.orders.service.OrderService;
+import project.trendpick_pro.global.util.rq.Rq;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("trendpick/usr/notification")
+@RequestMapping("trendpick/notification")
 @RequiredArgsConstructor
 public class NotificationController {
 
@@ -26,25 +24,22 @@ public class NotificationController {
 
     @GetMapping("/list")
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    public String showList(Model model) {
-        Member member=rq.getMember();
+    public String findAll(Model model) {
+        List<Notification>notifications=notificationService.findByMember(rq.getMember().getId());
 
-       List<Notification>notifications=notificationService.findByMember(member.getId());
-       List<Notification> orderNotifications = notifications.stream().toList();
-
-        List<Notification> deliveryNotifications = notifications.stream()
-                .filter(n -> !n.getDeliveryState().equals("준비중")&&!n.getDeliveryState().equals("배송전취소"))
-                .collect(Collectors.toList());
-
-        model.addAttribute("orderNotifications", orderNotifications);
-        model.addAttribute("deliveryNotifications", deliveryNotifications);
+        model.addAttribute("orderNotifications", notifications.stream().toList());
+        model.addAttribute("deliveryNotifications",
+            notifications.stream()
+            .filter(n -> !n.getDeliveryState().equals("준비중")&&!n.getDeliveryState().equals("배송전취소"))
+            .collect(Collectors.toList())
+        );
         return "trendpick/usr/notification/list";
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("delete/{notificationId}")
-    public String removeItem(@PathVariable("notificationId") Long notificationId) {
-        notificationService.removeNotification(notificationId);
+    @GetMapping("/{notificationId}")
+    public String remove(@PathVariable("notificationId") Long notificationId) {
+        notificationService.delete(notificationId);
         return rq.redirectWithMsg("/trendpick/usr/notification/list", "알림이 삭제되었습니다.");
     }
 }

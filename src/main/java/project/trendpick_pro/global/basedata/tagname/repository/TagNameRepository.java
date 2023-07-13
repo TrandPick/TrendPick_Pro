@@ -8,6 +8,5 @@ import java.util.List;
 public interface TagNameRepository extends JpaRepository<TagName, Long> {
 
     TagName findByName(String tagName);
-
     List<TagName> findAllBy();
 }

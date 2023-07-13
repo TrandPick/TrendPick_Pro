@@ -3,7 +3,7 @@ package project.trendpick_pro.domain.answer.service;
 import project.trendpick_pro.domain.answer.entity.dto.response.AnswerResponse;
 import project.trendpick_pro.domain.answer.entity.form.AnswerForm;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.List;
 

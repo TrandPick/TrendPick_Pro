@@ -3,17 +3,14 @@ package project.trendpick_pro.domain.rebate.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import project.trendpick_pro.domain.brand.entity.Brand;
-import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cash.entity.CashLog;
 import project.trendpick_pro.domain.coupon.entity.CouponCard;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.product.entity.product.Product;
 
 import java.time.LocalDateTime;
@@ -22,10 +19,8 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @SuperBuilder
-@ToString(callSuper = true)
 public class RebateOrderItem {
 
     @Id

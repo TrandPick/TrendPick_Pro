@@ -1,11 +1,13 @@
 package project.trendpick_pro.domain.product.entity.product.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.product.entity.product.Product;
 
 import java.io.Serializable;
-//import project.trendpick_pro.global.search.entity.ProductSearch;
 
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -52,13 +54,4 @@ public class ProductListResponse implements Serializable {
                     .build();
         }
     }
-
-//        public static ProductListResponse of(ProductSearch product) {
-//        return ProductListResponse.builder()
-//                .id(product.getId())
-//                .name(product.getName())
-//                .brand(product.getBrand())
-//                .price(product.getPrice())
-//                .build();
-//    }
 }

@@ -46,30 +46,4 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
         return PageableExecutionUtils.getPage(result, pageable, CountQuery::fetchOne);
     }
-
-//    @Override
-//    public Page<ReviewProductResponse> findAllByProductId(Long productId, Pageable pageable) {
-//        List<ReviewProductResponse> reviewProductResponses = queryFactory
-//                .select(Projections.constructor(ReviewProductResponse.class,
-//                        qReview.id,
-//                        qReview.writer,
-//                        qReview.title,
-//                        qReview.content,
-//                        qReview.rating))
-//                .from(qReview)
-//                .where(qReview.product.id.eq(productId))
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .fetch();
-//
-//        long totalCount = queryFactory
-//                .selectFrom(qReview)
-//                .where(qReview.product.id.eq(productId))
-//                .fetchCount();
-//
-//        return new PageImpl<>(reviewProductResponses, pageable, totalCount);
-//    }
 }
-//        long totalCount = queryFactory.selectFrom(qReview)
-//                .where(qReview.product.id.eq(productId))
-//                .fetchCount();

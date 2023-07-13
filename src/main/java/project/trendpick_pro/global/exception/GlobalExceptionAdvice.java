@@ -8,12 +8,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.domain.ask.exception.AskNotFoundException;
+import project.trendpick_pro.domain.ask.exception.AskNotMatchException;
+import project.trendpick_pro.domain.coupon.exception.CouponNotFoundException;
 import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
+import project.trendpick_pro.domain.notification.exception.NotificationNotFoundException;
+import project.trendpick_pro.domain.orders.exceoption.OrderItemNotFoundException;
+import project.trendpick_pro.domain.orders.exceoption.OrderNotFoundException;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
+import project.trendpick_pro.domain.product.exception.ProductStockOutException;
+import project.trendpick_pro.global.util.rq.Rq;
 
 @Slf4j
 @ControllerAdvice
@@ -21,18 +27,22 @@ import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 public class GlobalExceptionAdvice {
 
     private final Rq rq;
+
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSize;
 
-    @ExceptionHandler(MemberNotFoundException.class)
-    public String MemberNotFoundHandleException(HttpServletRequest request, MemberNotFoundException e, Model model) {
+    @ExceptionHandler({MemberNotFoundException.class, ProductNotFoundException.class,
+                        CouponNotFoundException.class, OrderItemNotFoundException.class,
+                        AskNotFoundException.class, OrderNotFoundException.class,
+                        NotificationNotFoundException.class})
+    public String NotFoundHandleException(HttpServletRequest request, BaseException e, Model model) {
         log.error("[exceptionHandle] ex", e);
         model.addAttribute("errorMessage", e.getMessage());
         return request.getRequestURI();
     }
 
-    @ExceptionHandler(MemberNotMatchException.class)
-    public String MemberNotMatchHandleException(HttpServletRequest request, MemberNotMatchException e, Model model) {
+    @ExceptionHandler({MemberNotMatchException.class, AskNotMatchException.class})
+    public String NotMatchHandleException(HttpServletRequest request, BaseException e, Model model) {
         log.error("[exceptionHandle] ex", e);
         model.addAttribute("errorMessage", e.getMessage());
         return request.getRequestURI();
@@ -45,8 +55,8 @@ public class GlobalExceptionAdvice {
         return request.getRequestURI();
     }
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public String ProductNotFoundHandleException(HttpServletRequest request, ProductNotFoundException e, Model model) {
+    @ExceptionHandler(ProductStockOutException.class)
+    public String ProductStockOutHandleException(HttpServletRequest request, ProductStockOutException e, Model model) {
         log.error("[exceptionHandle] ex", e);
         model.addAttribute("errorMessage", e.getMessage());
         return request.getRequestURI();

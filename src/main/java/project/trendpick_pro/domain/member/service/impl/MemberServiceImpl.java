@@ -21,7 +21,7 @@ import project.trendpick_pro.domain.store.entity.Store;
 import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.dto.request.TagRequest;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,7 +39,7 @@ public class MemberServiceImpl implements MemberService {
     private final CashService cashService;
     private final BrandService brandService;
 
-    private Member makeMember(JoinForm joinForm) {
+    private Member settingMember(JoinForm joinForm) {
         RoleType roleType = RoleType.getRoleType(joinForm.state());
         Member member = Member.of(joinForm, passwordEncoder.encode(joinForm.password()), roleType);
         if (roleType == RoleType.BRAND_ADMIN) {
@@ -54,25 +54,27 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public RsData<Member> register(JoinForm joinForm) {
-        if (isEmailInUse(joinForm.email())) {
+    public RsData<Member> join(JoinForm joinForm) {
+        if (isEmailSave(joinForm.email())) {
             return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(joinForm.email()));
         }
-        Member member = makeMember(joinForm);
+        Member member = settingMember(joinForm);
         Member savedMember = memberRepository.save(member);
-        recommendService.select(savedMember.getEmail());
+        if (member.getRole() == RoleType.MEMBER) {
+            recommendService.rankRecommend(savedMember);
+        }
         return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
     }
 
     @Transactional
     @Override
-    public RsData<List<Member>> saveAll(List<JoinForm> joinForms) {
+    public RsData<List<Member>> joinAll(List<JoinForm> joinForms) {
         List<Member> members = new ArrayList<>();
         for (JoinForm joinForm : joinForms) {
-            if (isEmailInUse(joinForm.email())) {
+            if (isEmailSave(joinForm.email())) {
                 return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(joinForm.email()));
             }
-            members.add(makeMember(joinForm));
+            members.add(settingMember(joinForm));
         }
         memberRepository.saveAll(members);
         return RsData.of("S-1", "회원가입이 완료되었습니다.", members);
@@ -80,7 +82,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void manageTag(String username, TagRequest tagRequest){
+    public void modifyTag(String username, TagRequest tagRequest){
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
         Set<FavoriteTag> tags = new LinkedHashSet<>();
         for (String tag : tagRequest.getTags()) {
@@ -92,7 +94,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public RsData<Member> manageAddress(Member member, String address){
+    public RsData<Member> modifyAddress(Member member, String address){
         member.connectAddress(address);
         return RsData.of("S-1", "주소 수정이 완료되었습니다.", member);
     }
@@ -127,12 +129,10 @@ public class MemberServiceImpl implements MemberService {
         if(!member.getBrand().equals(brand)){
             return RsData.of("F-1","해당 브랜드와 관리자가 일치하지 않습니다.");
         }
-
         CashLog cashLog = cashService.addCash(member, price, relEntity.getName(),relEntity.getId(), eventType);
 
         long newRestCash = getRestCash(member) + cashLog.getPrice();
         member.connectCash(newRestCash);
-        memberRepository.save(member);
 
         return RsData.of("S-1", "성공", new CashResponse(cashLog, newRestCash));
     }
@@ -143,7 +143,7 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findById(member.getId()).get().getRestCash();
     }
 
-    private boolean isEmailInUse(String email) {
+    private boolean isEmailSave(String email) {
         return memberRepository.findByEmail(email).isPresent();
     }
 

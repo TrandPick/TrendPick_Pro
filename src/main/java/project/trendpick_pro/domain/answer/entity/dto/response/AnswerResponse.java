@@ -1,11 +1,10 @@
 package project.trendpick_pro.domain.answer.entity.dto.response;
 
-import lombok.*;
-import com.querydsl.core.annotations.QueryProjection;
-import org.springframework.data.domain.Page;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.answer.entity.Answer;
-import project.trendpick_pro.domain.ask.entity.Ask;
-import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,9 +32,10 @@ public class AnswerResponse {
 
     public static List<AnswerResponse> of(List<Answer> answers){
         List<AnswerResponse> answerResponseList = new ArrayList<>();
-        for (Answer answer : answers) {
-            AnswerResponse answerResponse = AnswerResponse.of(answer);
-            answerResponseList.add(answerResponse);
+        for (Answer answer : answers) {;
+            answerResponseList.add(
+                    AnswerResponse.of(answer)
+            );
         }
         return answerResponseList;
     }

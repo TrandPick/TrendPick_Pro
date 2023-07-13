@@ -4,17 +4,13 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import project.trendpick_pro.domain.member.entity.Member;
-
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cart {
     @Id
@@ -29,7 +25,6 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
 
-    // 총 수량 필드
     private int totalCount;
 
     public static Cart createCart(Member member){
@@ -47,12 +42,15 @@ public class Cart {
         this.totalCount=totalCount;
     }
 
-
     public void updateTotalCount() {
         int totalCount = 0;
         for (CartItem cartItem : cartItems) {
             totalCount += cartItem.getQuantity();
         }
-        setTotalCount(totalCount);
+        this.totalCount = totalCount;
+    }
+
+    public void updateCount(int quantity){
+        this.totalCount += quantity;
     }
 }

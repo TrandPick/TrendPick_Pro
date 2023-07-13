@@ -102,9 +102,9 @@ public class MakeRecommendProductJobConfig {
         return new ItemProcessor<Member, List<Recommend>>() {
             @Override
             public List<Recommend> process(Member member) throws Exception {
-                recommendRepository.deleteAllByMemberId(member.getId());
+                recommendRepository.deleteAllByMemberId(member.getEmail());
 
-                List<ProductByRecommended> tags = productRepository.findRecommendProduct(member.getUsername());
+                List<ProductByRecommended> tags = productRepository.findRecommendProduct(member.getEmail());
                 Set<FavoriteTag> memberTags = member.getTags();
 
                 //태그명에 따라 가지고 있는 product_id

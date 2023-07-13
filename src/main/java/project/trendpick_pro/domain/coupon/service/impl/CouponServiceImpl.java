@@ -12,7 +12,7 @@ import project.trendpick_pro.domain.coupon.repository.CouponRepository;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.store.service.StoreService;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

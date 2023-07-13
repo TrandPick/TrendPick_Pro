@@ -5,6 +5,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.product.dto.response.ProductListResponse;
 
 public interface RecommendService {
-    void select(String username);
+    void rankRecommend(Member member);
     Page<ProductListResponse> getFindAll(Member member, int offset);
+    void rankRecommendFirst(Member member);
 }

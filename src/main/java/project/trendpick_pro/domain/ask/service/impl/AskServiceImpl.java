@@ -16,7 +16,7 @@ import project.trendpick_pro.domain.ask.service.AskService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.service.ProductService;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.Objects;
 
