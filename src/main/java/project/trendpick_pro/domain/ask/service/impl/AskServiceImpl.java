@@ -1,6 +1,7 @@
 package project.trendpick_pro.domain.ask.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +62,7 @@ public class AskServiceImpl implements AskService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(key = "#root.methodName + #productId", value = "asks")
     public Page<AskResponse> showAsksByProduct(Long productId, int offset) {
         Pageable pageable = PageRequest.of(offset, 10);
         return askRepository.findAllByProductId(productId, pageable);

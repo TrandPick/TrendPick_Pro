@@ -3,6 +3,7 @@ package project.trendpick_pro.domain.review.service.impl;
 import com.amazonaws.services.s3.AmazonS3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -90,6 +91,7 @@ public class ReviewServiceImpl implements ReviewService {
         return ReviewResponse.of(review);
     }
 
+    @Cacheable(key = "#root.methodName + #productId", value = "reviews")
     public Page<ReviewProductResponse> getReviews(Long productId, Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), 6);
         return reviewRepository.findAllByProductId(productId, pageable);
