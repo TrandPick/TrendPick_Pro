@@ -25,7 +25,7 @@ public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
     }
 
     @Override
-    public Page<ProductListResponse> findAllByMemberName(String username, Pageable pageable) {
+    public Page<ProductListResponse> findAllByEmail(String email, Pageable pageable) {
 
         List<ProductListResponse> result = queryFactory
                 .select(new QProductListResponse(
@@ -41,7 +41,7 @@ public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
                 .leftJoin(recommend.member, member)
                 .leftJoin(recommend.product, product)
                 .leftJoin(product.productOption, productOption)
-                .where(recommend.member.username.eq(username))
+                .where(recommend.member.username.eq(email))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -51,7 +51,7 @@ public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
                 .from(recommend)
                 .leftJoin(recommend.member, member)
                 .leftJoin(recommend.product, product)
-                .where(recommend.member.username.eq(username));
+                .where(recommend.member.username.eq(email));
 
         return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
     }

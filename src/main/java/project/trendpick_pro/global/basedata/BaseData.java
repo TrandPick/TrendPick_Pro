@@ -22,7 +22,7 @@ import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
-import project.trendpick_pro.domain.common.view.service.ViewService;
+import project.trendpick_pro.global.kafka.view.service.ViewService;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
 import project.trendpick_pro.domain.coupon.repository.CouponRepository;
@@ -43,7 +43,8 @@ import project.trendpick_pro.domain.store.entity.Store;
 import project.trendpick_pro.domain.store.repository.StoreRepository;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.global.basedata.tagname.entity.TagName;
-import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
+import project.trendpick_pro.global.basedata.tagname.service.impl.TagNameServiceImpl;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.*;
 
@@ -88,12 +89,12 @@ public class BaseData {
 
     @Bean
     CommandLineRunner initData(
-            TagNameService tagNameService,
+            TagNameServiceImpl tagNameServiceImpl,
             MemberService memberService,
             MainCategoryService mainCategoryService,
             SubCategoryService subCategoryService,
-            BrandService brandService,
             RecommendService recommendService,
+            BrandService brandService,
             ProductService productService,
             ViewService viewService,
             ProductRepository productRepository,
@@ -106,8 +107,8 @@ public class BaseData {
             @Transactional
             public void run(String... args) {
 
-                tagNameService.saveAll(tags);
-                memberService.saveAll(makeBrandMembers(brands));
+                tagNameServiceImpl.saveAll(tags);
+                memberService.joinAll(makeBrandMembers(brands));
                 mainCategoryService.saveAll(mainCategories);
 
                 SaveAllSubCategories(mainCategoryService, subCategoryService);
@@ -118,15 +119,15 @@ public class BaseData {
                 accessKeyMap.put("bucket", bucket);
 
                 int memberCount = 100;
-                int productCount = 2000;
+                int productCount = 500;
                 int reviewCount = 100;
                 int couponCount = 100;
                 String brandName = "polo";
 
-                saveMembers(memberCount, tagNameService, memberService, recommendService);
+                saveMembers(memberCount, tagNameServiceImpl, memberService);
                 saveUniqueMembers(memberService, brandName);
 
-                saveProducts(productCount, accessKeyMap, mainCategoryService, brandService, tagNameService, productRepository, brandName, sizeTops, sizeBottoms, sizeShoes, colors);
+                saveProducts(productCount, accessKeyMap, mainCategoryService, brandService, tagNameServiceImpl, productRepository, brandName, sizeTops, sizeBottoms, sizeShoes, colors);
                 updateRecommends(memberService, recommendService);
 
                 saveReviews(reviewCount, productCount, accessKeyMap, memberService, productService ,reviewRepository);
@@ -141,12 +142,12 @@ public class BaseData {
         };
     }
 
-    private void saveMembers(int count, TagNameService tagNameService, MemberService memberService, RecommendService recommendService) {
+    private void saveMembers(int count, TagNameServiceImpl tagNameServiceImpl, MemberService memberService) {
         List<JoinForm> members = new ArrayList<>();
         for(int i=1; i<=count; i++){
             List<String> memberTags = new ArrayList<>();
             for (int j = 1; j <= (Math.random() * 10)+1; j++) {
-                TagName tagName = tagNameService.findById((long)(Math.random() * 30) + 1L);
+                TagName tagName = tagNameServiceImpl.findById((long)(Math.random() * 30) + 1L);
                 memberTags.add(tagName.getName());
             }
             JoinForm member = JoinForm.builder()
@@ -159,10 +160,9 @@ public class BaseData {
                     .build();
             members.add(member);
         }
-        List<Member> memberList = memberService.saveAll(members).getData();
+        List<Member> memberList = memberService.joinAll(members).getData();
         for (Member member : memberList) {
             member.connectAddress("서울특별시 어디구 어디로 123");
-            recommendService.select(member.getEmail());
         }
     }
 
@@ -183,6 +183,7 @@ public class BaseData {
     }
 
     private void saveUniqueMembers(MemberService memberService, String brandName) {
+        List<JoinForm> members = new ArrayList<>();
         JoinForm admin = JoinForm.builder()
                 .email("admin@naver.com")
                 .password("12345")
@@ -190,7 +191,7 @@ public class BaseData {
                 .phoneNumber("010-1234-1234")
                 .state("ADMIN")
                 .build();
-        memberService.register(admin);
+        members.add(admin);
 
         JoinForm brandAdmin = JoinForm.builder()
                 .email("brand@naver.com")
@@ -200,7 +201,7 @@ public class BaseData {
                 .state("BRAND_ADMIN")
                 .brand(brandName)
                 .build();
-        memberService.register(brandAdmin);
+        members.add(brandAdmin);
 
         JoinForm member = JoinForm.builder()
                 .email("trendpick@naver.com")
@@ -210,8 +211,7 @@ public class BaseData {
                 .state("MEMBER")
                 .tags(tags)
                 .build();
-        Member RsMember1 = memberService.register(member).getData();
-        RsMember1.connectAddress("서울특별시 진짜 주인공 123");
+        members.add(member);
 
         JoinForm member2 = JoinForm.builder()
                 .email("hye_0000@naver.com")
@@ -221,19 +221,21 @@ public class BaseData {
                 .state("MEMBER")
                 .tags(List.of("오버핏청바지", "로맨틱룩"))
                 .build();
-        Member RsMember2 = memberService.register(member2).getData();
-        RsMember2.connectAddress("서울특별시 진짜 주인공 123");
+        members.add(member2);
+        RsData<List<Member>> data = memberService.joinAll(members);
+        for (Member saveMember : data.getData()) {
+            saveMember.connectAddress("서울특별시 어디구 어디로 123");
+        }
     }
 
     public void updateRecommends(MemberService memberService, RecommendService recommendService) {
         Optional<Member> findMember = memberService.findByEmail("trendpick@naver.com");
-        findMember.ifPresent(member -> recommendService.select(member.getEmail()));
+        findMember.ifPresent(recommendService::rankRecommendFirst);
         findMember = memberService.findByEmail("hye_0000@naver.com");
-        findMember.ifPresent(member -> recommendService.select(member.getEmail()));
-
+        findMember.ifPresent(recommendService::rankRecommendFirst);
     }
 
-    private static void saveProducts(int count, Map<String, String> keys, MainCategoryService mainCategoryService, BrandService brandService, TagNameService tagNameService, ProductRepository productRepository, String brandName,
+    private static void saveProducts(int count, Map<String, String> keys, MainCategoryService mainCategoryService, BrandService brandService, TagNameServiceImpl tagNameServiceImpl, ProductRepository productRepository, String brandName,
                                      List<String> sizeTops, List<String> sizeBottoms, List<String> sizeShoes, List<String> colors) {
         long result;
         List<Product> products = new ArrayList<>();
@@ -313,7 +315,7 @@ public class BaseData {
                 for (int i = 1; i <= (Math.random() * 13)+5; i++) {
                     while (true) {
                         result = (long) (Math.random() * 30);
-                        TagName tagName = tagNameService.findById(result + 1L);
+                        TagName tagName = tagNameServiceImpl.findById(result + 1L);
                         Tag tag = new Tag(tagName.getName());
                         if (tags.add(tag)) {
                             break;

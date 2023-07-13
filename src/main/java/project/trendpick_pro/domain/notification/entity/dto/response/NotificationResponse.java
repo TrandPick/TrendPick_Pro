@@ -18,8 +18,7 @@ public class NotificationResponse {
     private LocalDateTime createDate;
 
     @Builder
-    @QueryProjection
-    public NotificationResponse(Long id, String orderState, String deliveryState, LocalDateTime createDate) {
+    private NotificationResponse(Long id, String orderState, String deliveryState, LocalDateTime createDate) {
         this.id = id;
         this.orderState=orderState;
         this.deliveryState = deliveryState;

@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.withdraw.entity.WithdrawApply;
 import project.trendpick_pro.domain.withdraw.service.WithdrawService;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rq.Rq;
 
 import java.util.List;
 
@@ -20,6 +19,7 @@ import java.util.List;
 @RequestMapping("/trendpick/admin")
 @RequiredArgsConstructor
 public class AdmWithdrawController {
+
     private final WithdrawService withdrawService;
     private final Rq rq;
 
@@ -40,16 +40,12 @@ public class AdmWithdrawController {
     @PreAuthorize("hasAuthority({'ADMIN'})")
     @PostMapping("/{withdrawApplyId}")
     public String applyDone(@PathVariable Long withdrawApplyId) {
-        RsData withdrawRsData = withdrawService.withdraw(withdrawApplyId);
-
-        return rq.redirectWithMsg("/trendpick/admin/withDrawList", withdrawRsData);
+        return rq.redirectWithMsg("/trendpick/admin/withDrawList", withdrawService.withdraw(withdrawApplyId));
     }
 
     @PreAuthorize("hasAuthority({'ADMIN'})")
     @PostMapping("/{withdrawApplyId}/cancel")
     public String cancel(@PathVariable Long withdrawApplyId) {
-        RsData withdrawRsData = withdrawService.cancelApply(withdrawApplyId);
-
-        return rq.redirectWithMsg("/trendpick/admin/withDrawList", withdrawRsData);
+        return rq.redirectWithMsg("/trendpick/admin/withDrawList", withdrawService.cancelApply(withdrawApplyId));
     }
 }

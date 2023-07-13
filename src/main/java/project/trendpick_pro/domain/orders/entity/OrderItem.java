@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name = "order_item")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItem {
 
@@ -69,10 +68,6 @@ public class OrderItem {
         this.payDate=LocalDateTime.now();
     }
 
-    public void modifyQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public static OrderItem of(Product product, OrderItemDto orderItemDto) {
         return new OrderItem(product, orderItemDto.getQuantity(), orderItemDto.getSize(), orderItemDto.getColor());
     }
@@ -96,6 +91,7 @@ public class OrderItem {
     public void applyCouponCard(CouponCard couponCard) {
         this.couponCard = couponCard;
     }
+
     public void cancelCouponCard(){
         this.couponCard = null;
         this.cancelDiscount();

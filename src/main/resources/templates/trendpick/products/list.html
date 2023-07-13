@@ -147,8 +147,14 @@
             <div th:unless="${productResponses.number/5 + 1 + 4} < ${productResponses.totalPages}">
                 <div class="flex">
                     <div th:each="i : ${#numbers.sequence(productResponses.number/5 * 5 + 1, productResponses.totalPages)}">
+                        <p th:if="${keyword} == null">
                         <a th:href="@{|/trendpick/products/list?main-category=${mainCategoryName}&sub-category=${subCategoryName}&page=${i - 1}|}"
                            th:text="${i}" th:class="${productResponses.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                        </p>
+                        <p th:if="${keyword} != null">
+                        <a th:href="@{|/trendpick/products/list?keyword=${keyword}&page=${i - 1}|}"
+                           th:text="${i}" th:class="${productResponses.number == (i - 1) ? 'btn btn-active' : 'btn'}"></a>
+                        </p>
                     </div>
                 </div>
             </div>

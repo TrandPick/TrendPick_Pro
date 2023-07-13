@@ -1,7 +1,7 @@
 package project.trendpick_pro.domain.review.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,15 +12,14 @@ import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.review.entity.dto.request.ReviewSaveRequest;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review extends BaseTimeEntity {
     @Id @Column(name = "review_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String writer;
 
     @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
@@ -29,12 +28,15 @@ public class Review extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private Product product;    //Product
+    private Product product;
 
+    @Column(nullable = false)
     private String title;
+
     @Column(columnDefinition = "LONGTEXT")
     private String content;
 
+    @Column(nullable = false)
     private int rating;
 
     public void disconnectFile() {
@@ -42,8 +44,8 @@ public class Review extends BaseTimeEntity {
     }
 
     @Builder
-    public Review(Member member, Product product, CommonFile file, String title, String content, int rating){
-        this.writer = member.getUsername();
+    private Review(String writer, Product product, CommonFile file, String title, String content, int rating){
+        this.writer = writer;
         this.product = product;
         this.file = file;
         this.title = title;
@@ -68,5 +70,4 @@ public class Review extends BaseTimeEntity {
         this.rating = reviewSaveRequest.rating();
         this.file = file;
     }
-
 }

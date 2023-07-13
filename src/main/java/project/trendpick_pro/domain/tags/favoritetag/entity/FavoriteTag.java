@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.tags.type.TagType;
+import project.trendpick_pro.domain.tags.tag.entity.TagType;
 
 @Entity
 @Getter
@@ -27,13 +27,11 @@ public class FavoriteTag {
         this.name = name;
     }
 
-    //양방향 메서드
     public void connectMember(Member member){
         this.member = member;
     }
 
     public void increaseScore(TagType type){
-        //유형에 따라 가중치
         switch (type) {
             case ORDER -> score += 10;
             case CART -> score += 5;
@@ -43,7 +41,6 @@ public class FavoriteTag {
     }
 
     public void decreaseScore(TagType type){
-        //유형에 따라 가중치
         switch (type) {
             case ORDER -> score -= 10;
             case CART -> score -= 5;
@@ -51,5 +48,4 @@ public class FavoriteTag {
             default -> score -= 1;
         }
     }
-
 }

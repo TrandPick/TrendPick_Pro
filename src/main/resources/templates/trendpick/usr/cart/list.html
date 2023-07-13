@@ -109,7 +109,7 @@
                     </div>
                 </td>
             </form>
-            <td class="px-4 py-3 text-center" th:text="${#temporals.format(item.getCreateDate(), 'MM/dd')}"></td>
+            <td class="px-4 py-3 text-center" th:text="${#temporals.format(item.getCreatedDate(), 'MM/dd')}"></td>
             <td class="px-4 py-3 text-center">
                 <a th:href="@{/trendpick/usr/cart/delete/{cartItemId}(cartItemId=${item.getId()})}"
                    class="text-red-500 hover:text-red-700">X</a>

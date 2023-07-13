@@ -1,16 +1,13 @@
 package project.trendpick_pro.domain.orders.entity.dto.response;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 import project.trendpick_pro.domain.product.entity.product.Product;
 
 import java.text.NumberFormat;
 import java.util.Locale;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
 public class OrderItemDto {
     private Long productId;
     private String productName;
@@ -19,6 +16,17 @@ public class OrderItemDto {
     private String color;
     private int price;
     private Long cartItemId;
+
+    @Builder
+    private OrderItemDto(Long productId, String productName, int quantity, String size, String color, int price, Long cartItemId) {
+        this.productId = productId;
+        this.productName = productName;
+        this.quantity = quantity;
+        this.size = size;
+        this.color = color;
+        this.price = price;
+        this.cartItemId = cartItemId;
+    }
 
     public static OrderItemDto of(Product product, int quantity, String size, String color) {
         return OrderItemDto.builder()

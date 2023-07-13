@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.global.util.rq.Rq;
 import project.trendpick_pro.domain.coupon.entity.dto.response.CouponCardByApplyResponse;
 import project.trendpick_pro.domain.coupon.service.CouponCardService;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.List;
 

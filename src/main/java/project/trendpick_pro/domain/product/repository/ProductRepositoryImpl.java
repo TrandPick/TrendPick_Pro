@@ -9,19 +9,17 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSearchCond;
 import project.trendpick_pro.domain.product.entity.product.dto.response.*;
-import project.trendpick_pro.domain.product.entity.productOption.QProductOption;
 
 import java.util.List;
 
 import static project.trendpick_pro.domain.brand.entity.QBrand.brand;
-import static project.trendpick_pro.domain.category.entity.QMainCategory.*;
-import static project.trendpick_pro.domain.category.entity.QSubCategory.*;
+import static project.trendpick_pro.domain.category.entity.QMainCategory.mainCategory;
+import static project.trendpick_pro.domain.category.entity.QSubCategory.subCategory;
 import static project.trendpick_pro.domain.common.file.QCommonFile.commonFile;
-import static project.trendpick_pro.domain.product.entity.product.QProduct.*;
-import static project.trendpick_pro.domain.product.entity.productOption.QProductOption.*;
+import static project.trendpick_pro.domain.product.entity.product.QProduct.product;
+import static project.trendpick_pro.domain.product.entity.productOption.QProductOption.productOption;
 import static project.trendpick_pro.domain.tags.favoritetag.entity.QFavoriteTag.favoriteTag;
 import static project.trendpick_pro.domain.tags.tag.entity.QTag.tag;
 
@@ -58,7 +56,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-//                .orderBy(orderSelector(cond.getSortCode())) //정렬추가
                 .fetch();
 
         JPAQuery<Long> count = queryFactory
@@ -78,24 +75,21 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public List<ProductByRecommended> findRecommendProduct(String username) {
-        List<ProductByRecommended> list = queryFactory
+    public List<ProductByRecommended> findRecommendProduct(String email) {
+        return queryFactory
                 .select(new QProductByRecommended(
-                                tag.product.id,
-                                tag.name
-                        )
-                )
+                        tag.product.id,
+                        tag.name
+                ))
                 .from(tag)
                 .where(tag.name.in(
-                                JPAExpressions.select(favoriteTag.name)
-                                        .from(favoriteTag)
-                                        .where(favoriteTag.member.username.eq(username))
-                        )
+                    JPAExpressions.select(favoriteTag.name)
+                        .from(favoriteTag)
+                        .where(favoriteTag.member.email.eq(email))
+                    )
                 )
                 .distinct()
                 .fetch();
-
-        return list;
     }
 
     @Override
@@ -121,7 +115,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                 .where(product.brand.name.eq(brand))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(product.createdDate.desc()) //정렬추가
+                .orderBy(product.createdDate.desc())
                 .fetch();
 
         JPAQuery<Long> count = queryFactory
@@ -195,9 +189,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     orderSelector(Integer sortCode) {
         return switch (sortCode) {
             case 2 -> product.id.asc();
-            case 3 -> product.rateAvg.desc(); //평점
+            case 3 -> product.rateAvg.desc();
             case 4 -> product.rateAvg.asc();
-            case 5 -> product.reviewCount.desc(); //리뷰수
+            case 5 -> product.reviewCount.desc();
             default -> product.id.desc();
         };
     }

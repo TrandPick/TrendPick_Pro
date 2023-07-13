@@ -1,7 +1,9 @@
 package project.trendpick_pro.domain.tags.tag.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.product.entity.product.Product;
 
 @Entity
@@ -29,11 +31,4 @@ public class Tag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
-
-    @Override
-    public String toString() {
-        return "Tag{" +
-                "name='" + name + '\'' +
-                '}';
-    }
 }

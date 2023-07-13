@@ -18,7 +18,7 @@ public class ProductByRecommended {
     @QueryProjection
     public ProductByRecommended(Long productId, String tagName){
         this.productId = productId;
-        this.tagName = tagName; //리턴할때는 불필요한 데이터
+        this.tagName = tagName;
         totalScore = 0;
     }
 

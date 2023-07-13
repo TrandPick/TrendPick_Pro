@@ -6,10 +6,7 @@ import lombok.Data;
 public class ProductOrderRequest {
 
         private Long productId;
-
         private int quantity;
-
         private String size;
-
         private String color;
 }
