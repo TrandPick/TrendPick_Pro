@@ -62,8 +62,8 @@ Git, Discord, Notion, slack
 
 <br>
 
+![image](https://github.com/TrandPick/TrendPick_Pro/assets/62290451/71f5644b-9481-49cb-ac07-44ff99de16be)
 
-![image](https://github.com/TrandPick/TrendPick_Pro/assets/62290451/ac26b8fd-ad51-4a5d-997c-337f22508bdb)
 
 
 <br>
@@ -221,25 +221,37 @@ Footer // issue tracker를 사용하는 경우 참조한 issue tracker ID를 기
 
 ## ⭕ 부하테스트 및 개선
 
-쇼핑몰은 이벤트나 타임 세일 등 어떤 기간 동안 갑자기 사용자가 몰리는 경우, 최대 몇 명의 사용자들이 서버를 사용할 수 있는지 상황을 확인하고 대비하고자 부하 테스트를 진행하여 로직을 개선해보고자 했습니다. 환경은 상품 3만 개, 유저는 1천명을 가정하고 진행했습니다.
+ 쇼핑몰은 이벤트나 타임 세일 등 어떤 기간 동안 갑자기 사용자가 몰리는 경우, 최대 몇 명의 사용자들이 서버를 사용할 수 있는지 상황을 확인하고 대비하고자 부하 테스트를 진행하여 로직을 개선해보고자 했습니다. 
 
-부하 테스트에는 몇 가지 시나리오를 설정해서 부하 테스트를 진행했습니다. 
-<p align="center">
-<img src="https://github.com/TrandPick/TrendPick_Pro/assets/62290451/0e8ddc2d-8c4f-4c18-813f-0439242044cf" width="400" height="600"/>
-  
 <br>
 
-<img src="https://github.com/TrandPick/TrendPick_Pro/assets/62290451/80ae2670-f58e-4613-9a42-02c9c6e127e9" width="600" height="200"/>
+ 테스트 시나리오: 상품 2000건에 대한 요청 처리
+ 
+ 부하 조건: 초당 트래픽 1000, 총 테스트 기간 300초
+
+<br>
+
+<p align="center">
+ 
+![image](https://github.com/TrandPick/TrendPick_Pro/assets/62290451/71eb122d-e143-4674-9ba0-eb733ffd572e)
+### 초기 평균 응답 시간에 비해 약 19.8%, TPS는 약 22.5%의 개선이 이루어졌습니다.
+<br>
+ 
+ ![image](https://github.com/TrandPick/TrendPick_Pro/assets/62290451/cb5ba7e4-6a33-4454-bc2b-4224d08934e2)
+ ### 초기 평균 응답 시간에 비해 약 1.65%, TPS는 약 9.8%의 개선이 이루어졌습니다.
+<br>
+
 </p>
 
-평균적으로 3.1초에서 4초 정도의 요청 시간이 나타났습니다.
 
 이를 개선하고자 상품 별로 캐시를 적용하고 상품의 값이 자주 바뀌는 특성 상 수정이나 삭제 로직  수행 시 캐시의 내용도 변경되도록 했습니다.
 
-캐시 변경 시에도 요청 시간이 그대로인지, 늘어났는지 상황을 부여하여 확인했고 멤버 email에 DB인덱싱을 적용하여 개선을 이끌어내고자 했습니다. 전체적으로는 필요한 데이터만 받으면서 최적화된 데이터 전송을 하도록 반환 값들을 dto 객체로 수정했습니다. 이렇게 개선 후에는 전체적으로 요청 당 1.1초 정도 감소한 것을 보실 수 있습니다.<br><br>
+캐시 변경 시에도 요청 시간이 그대로인지, 늘어났는지 상황을 부여하여 확인했고 멤버 email에 DB인덱싱을 적용하여 개선을 이끌어내고자 했습니다. 전체적으로는 필요한 데이터만 받으면서 최적화된 데이터 전송을 하도록 반환 값들을 dto 객체로 수정했습니다.
+
+<br><br>
 
 
-## 😆 팀원 소개
+## 👏 팀원 소개
 | [<img src="https://avatars.githubusercontent.com/u/26915908?v=4" width="200">](https://github.com/angelSooho) | [<img src="https://avatars.githubusercontent.com/u/71963159?v=4" width="200">](https://github.com/hye-0000) | [<img src="https://avatars.githubusercontent.com/u/110995932?v=4">](https://github.com/jooooonj) | [<img src="https://avatars.githubusercontent.com/u/62290451?v=4" width="200">](https://github.com/mmunkyeong) |  
 |:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------:|
 |                                [이수호](https://github.com/angelSooho)                                |                                  [권혜영](https://github.com/hye-0000)                                   |                                   [이재준](https://github.com/jooooonj)                                   |                                  [제문경](https://github.com/mmunkyeong)                                  |
