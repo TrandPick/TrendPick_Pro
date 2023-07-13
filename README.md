@@ -44,25 +44,25 @@ HTML5, CSS3, JavaScript, Thymeleaf
 
 ### 백엔드
 
-Java17, Gradle, SpringBoot 3.x. Spring Data JPA, MYSQL, OAuth2.0, Spring Security, Spring Data Redis, Spring Batch, Spring Data Elastic Search, JUnit5, MockMvc
+Java17, Gradle, SpringBoot 3.x. Spring Data JPA, MYSQL, OAuth2.0, Spring Security, Spring Data Redis, Spring Batch, Spring Kafka, JUnit5, Mockito
 
 ### 테스트
 
-Apache JMeter
+Apache JMeter-CLI
 
 ### 인프라
 
 Naver Clound Platform - Server(EC2), Object Storage(S3), Cloud DB for MYSQL(RDS), 
 
-Kubernates, Docker, NGINX, Github Action, Elastic Search, Data Dog
+Kubernates, Docker, NGINX, Github Action, Pinpoint, Confluent Kafka
 
 ### 협업 툴
 
-Git, Discord, Notion, slack
+Git, Discord, Notion
 
 <br>
 
-![image](https://github.com/TrandPick/TrendPick_Pro/assets/62290451/71f5644b-9481-49cb-ac07-44ff99de16be)
+<img width="993" alt="image" src="https://github.com/TrandPick/TrendPick_Pro/assets/26915908/0ec026c9-5ea3-46c9-99f6-2a530a54fa4b">
 
 
 
