@@ -33,7 +33,7 @@ public class KafkaConsumerService {
     }
 
     @KafkaListener(topicPattern = "views", groupId = "group_id")
-    public void handleIncrementViewCount(@Payload String viewId) throws InterruptedException {
+    public void handleIncrementViewCount(@Payload String viewId) {
         viewService.incrementViewCount(viewId);
     }
 }

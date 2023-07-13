@@ -37,8 +37,7 @@ public class ViewService {
 
     @Transactional
     public void incrementViewCount(String viewId) {
-        View totalView = viewRepository.findById(Long.valueOf(viewId)).get();
-        totalView.increment();
+        viewRepository.findById(Long.valueOf(viewId)).get().increment();
     }
 
     @Transactional(readOnly = true)
