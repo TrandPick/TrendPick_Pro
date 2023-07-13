@@ -4,13 +4,10 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
-import project.trendpick_pro.domain.delivery.entity.DeliveryState;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.notification.entity.Notification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +29,14 @@ public class Order extends BaseTimeEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany
+    @JoinColumn(name = "order_id")
     private List<CartItem> cartItems = new ArrayList<>();
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<Notification> notifications = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
-    @Column(name = "payment_method", nullable = false)
+
     private String paymentMethod;
 
     @Enumerated(EnumType.STRING)
@@ -74,7 +69,6 @@ public class Order extends BaseTimeEntity {
     }
     public void addCartItem(CartItem cartItem) {
         cartItems.add(cartItem);
-        cartItem.connectOrder(this);
     }
     public static Order createOrder(Member member, Delivery delivery, OrderStatus status, List<OrderItem> orderItems, List<CartItem> cartItems) {
         Order order = new Order();
@@ -111,6 +105,14 @@ public class Order extends BaseTimeEntity {
         this.status = status;
     }
 
+    public int getTotalDiscountedPrice(){
+        int totalDisCountPrice = 0;
+        for (OrderItem orderItem : getOrderItems()) {
+            totalDisCountPrice += orderItem.getDiscountPrice();
+        }
+        return totalDisCountPrice;
+    }
+
     public String getOrderState(){
         return switch (status.getValue()){
             case "ORDERED"->"결제완료";
@@ -129,14 +131,6 @@ public class Order extends BaseTimeEntity {
         };
     }
 
-    public int getTotalDiscountedPrice(){
-        int totalDisCountPrice = 0;
-        for (OrderItem orderItem : getOrderItems()) {
-            totalDisCountPrice += orderItem.getDiscountPrice();
-        }
-        return totalDisCountPrice;
-    }
-
     public void cancel() {
         this.status = OrderStatus.CANCELED;
         this.delivery.canceledDelivery();
@@ -153,7 +147,6 @@ public class Order extends BaseTimeEntity {
         }
     }
 
-    //총금액 - 할인받은금액들
     public void updateWithPayment(){
         for (OrderItem orderItem : getOrderItems()) {
             this.totalPrice -= orderItem.getDiscountPrice();

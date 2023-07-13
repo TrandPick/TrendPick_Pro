@@ -10,7 +10,7 @@ import project.trendpick_pro.domain.notification.repository.NotificationReposito
 import project.trendpick_pro.domain.notification.service.NotificationService;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.service.OrderService;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.Comparator;
 import java.util.List;
@@ -20,12 +20,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
-    private final OrderService orderService;
     private final NotificationRepository notificationRepository;
+
+    private final OrderService orderService;
 
     @Transactional
     @Override
-    public void make(Member member, Long orderId) {
+    public void create(Member member, Long orderId) {
         Order order=orderService.findById(orderId);
         if(!order.getOrderState().equals("미결제")) {
             Notification notification = Notification.of(member, order);
@@ -47,13 +48,12 @@ public class NotificationServiceImpl implements NotificationService {
             Notification newNotification = Notification.of(notification.getMember(), order);
             notificationRepository.save(newNotification);
         }
-
         return RsData.of("S-1","주문상태 업데이트 되었습니다.",notification);
     }
 
     @Transactional
     @Override
-    public void removeNotification(Long notificationId) {
+    public void delete(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(
                 () -> new NotificationNotFoundException("해당 알림이 없습니다."));
         notificationRepository.delete(notification);

@@ -1,10 +1,7 @@
 package project.trendpick_pro.domain.ask.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import project.trendpick_pro.domain.answer.entity.Answer;
 import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
@@ -15,10 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ask extends BaseTimeEntity {
 
     @Id
@@ -44,8 +39,16 @@ public class Ask extends BaseTimeEntity {
     private AskStatus status;
 
     @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Answer> answerList = new ArrayList<>();
+
+    @Builder
+    private Ask(Member author, Product product, String title, String content, AskStatus status) {
+        this.author = author;
+        this.product = product;
+        this.title = title;
+        this.content = content;
+        this.status = status;
+    }
 
     public static Ask of(Member member, Product product, AskForm askForm) {
         return Ask.builder()

@@ -25,7 +25,7 @@ public class Recommend {
     private Member member;
 
     @Builder
-    public Recommend(Product product) {
+    private Recommend(Product product) {
         this.product = product;
     }
 

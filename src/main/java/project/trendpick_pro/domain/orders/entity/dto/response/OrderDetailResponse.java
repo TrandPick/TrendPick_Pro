@@ -1,19 +1,13 @@
 package project.trendpick_pro.domain.orders.entity.dto.response;
 
-
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.orders.entity.Order;
 
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class OrderDetailResponse {
     private Long orderId;
     private String orderStatus;
@@ -22,14 +16,24 @@ public class OrderDetailResponse {
     private String paymentMethod;
     private LocalDateTime orderDate;
 
+    @Builder
+    private OrderDetailResponse(Long orderId, String orderStatus, List<OrderResponse> orderItems, int totalPrice, String paymentMethod, LocalDateTime orderDate) {
+        this.orderId = orderId;
+        this.orderStatus = orderStatus;
+        this.orderItems = orderItems;
+        this.totalPrice = totalPrice;
+        this.paymentMethod = paymentMethod;
+        this.orderDate = orderDate;
+    }
+
     public static OrderDetailResponse of(Order order, List<OrderResponse> orderItems) {
-        OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
-        orderDetailResponse.orderId = order.getId();
-        orderDetailResponse.orderStatus = order.getStatus().getValue();
-        orderDetailResponse.orderItems = orderItems;
-        orderDetailResponse.orderDate = order.getCreatedDate();
-        orderDetailResponse.paymentMethod = order.getPaymentMethod();
-        orderDetailResponse.totalPrice = order.getTotalPrice();
-        return orderDetailResponse;
+        return OrderDetailResponse.builder()
+                .orderId(order.getId())
+                .orderStatus(order.getStatus().getValue())
+                .orderItems(orderItems)
+                .orderDate(order.getCreatedDate())
+                .paymentMethod(order.getPaymentMethod())
+                .totalPrice(order.getTotalPrice())
+                .build();
     }
 }

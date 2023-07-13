@@ -7,7 +7,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import project.trendpick_pro.domain.common.base.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
@@ -15,7 +14,8 @@ import project.trendpick_pro.domain.orders.entity.dto.request.ProductOrderReques
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
-import project.trendpick_pro.global.rsData.RsData;
+import project.trendpick_pro.global.util.rq.Rq;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 @Slf4j
 @Controller
@@ -77,17 +77,15 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("usr/orders")
     public String orderListByMember(@RequestParam(value = "page", defaultValue = "0") int offset, Model model) {
-        Page<OrderResponse> orderList = orderService.findAllByMember(rq.getMember(), offset);
+        Page<OrderResponse> orderList = orderService.findAll(rq.getMember(), offset);
         model.addAttribute("orderList", orderList);
         return "trendpick/usr/member/orders";
     }
 
     @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
     @GetMapping("admin/list")
-    public String orderListBySeller(
-            @RequestParam(value = "page", defaultValue = "0") int offset,
-            Model model) {
-        Page<OrderResponse> orderList = orderService.findAllBySeller(rq.getAdmin(), offset);
+    public String orderListBySeller(@RequestParam(value = "page", defaultValue = "0") int offset, Model model) {
+        Page<OrderResponse> orderList = orderService.findAll(rq.getAdmin(), offset);
         model.addAttribute("orderList", orderList);
         int totalPricePerMonth = orderService.settlementOfSales(rq.getAdmin());
         model.addAttribute("totalPricePerMonth", totalPricePerMonth);
@@ -103,7 +101,6 @@ public class OrderController {
         if(result.isFail()) {
             return rq.historyBack(result);
         }
-
         model.addAttribute("address", member.getAddress());
         model.addAttribute("order", result.getData());
         return "trendpick/orders/detail";
@@ -111,17 +108,9 @@ public class OrderController {
 
     @GetMapping("/usr/refunds")
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    public String showCanceledOrderListByMember(@RequestParam(value = "page", defaultValue = "0") int offset,
-                                                Model model){
+    public String showCanceledOrderListByMember(@RequestParam(value = "page", defaultValue = "0") int offset, Model model){
         Page<OrderResponse> orderList = orderService.findCanceledOrders(rq.getMember(), offset);
         model.addAttribute("orderList", orderList);
         return "trendpick/usr/member/refunds";
     }
-
-//    @GetMapping("/admin/settlement")
-//    public String settlemnetPerMonth(Model model) {
-//        int totalPricePerMonth = orderService.settlementOfSales(rq.getMember());
-//        model.addAttribute("totalPricePerMonth", totalPricePerMonth);
-//        return "trendpick/admin/sales";
-//    }
 }

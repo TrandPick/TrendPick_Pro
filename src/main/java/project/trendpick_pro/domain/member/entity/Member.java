@@ -5,17 +5,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
-import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
-import project.trendpick_pro.domain.tags.type.TagType;
+import project.trendpick_pro.domain.tags.tag.entity.TagType;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -46,14 +42,8 @@ public class Member extends BaseTimeEntity {
 
     private String brand;
 
-    @OneToOne(mappedBy = "member")
-    private Cart cart;
-
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FavoriteTag> tags = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Order> Orders = new ArrayList<>();
 
     private String bankName;
     private String bankAccount;
@@ -62,7 +52,7 @@ public class Member extends BaseTimeEntity {
     private long restCash;
 
     @Builder
-    public Member(String email, String password, String username, String phoneNumber, RoleType role,String brand) {
+    private Member(String email, String password, String username, String phoneNumber, RoleType role,String brand) {
         this.email = email;
         this.password = password;
         this.username = username;

@@ -5,17 +5,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.review.entity.Review;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewProductResponse {
     private Long id;
-    private String writer;   //User
+    private String writer;
     private String title;
 
     private String mainFile;

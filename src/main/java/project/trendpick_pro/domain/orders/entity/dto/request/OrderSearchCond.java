@@ -1,6 +1,5 @@
 package project.trendpick_pro.domain.orders.entity.dto.request;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;

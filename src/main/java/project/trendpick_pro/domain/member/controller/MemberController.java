@@ -2,7 +2,6 @@ package project.trendpick_pro.domain.member.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,18 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import project.trendpick_pro.domain.common.base.rq.Rq;
+import project.trendpick_pro.global.basedata.tagname.service.impl.TagNameServiceImpl;
+import project.trendpick_pro.global.util.rq.Rq;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.dto.MemberInfoDto;
-import project.trendpick_pro.domain.member.entity.form.AccountForm;
+import project.trendpick_pro.domain.member.entity.dto.response.MemberInfoResponse;
 import project.trendpick_pro.domain.member.entity.form.AddressForm;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.recommend.service.RecommendService;
-import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
-import project.trendpick_pro.global.rsData.RsData;
-
-import java.util.Optional;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,27 +25,27 @@ import java.util.Optional;
 public class MemberController {
 
     private final MemberService memberService;
-    private final TagNameService tagNameService;
+    private final TagNameServiceImpl tagNameServiceImpl;
     private final RecommendService recommendService;
 
     private final Rq rq;
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/register")
-    public String register(JoinForm joinForm, Model model) {
+    public String join(JoinForm joinForm, Model model) {
         model.addAttribute("joinForm", joinForm);
-        model.addAttribute("allTags", tagNameService.findAll());
+        model.addAttribute("allTags", tagNameServiceImpl.findAll());
         return "trendpick/usr/member/join";
     }
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/register")
-    public String register(@ModelAttribute @Valid JoinForm joinForm) {
-        RsData<Member> member = memberService.register(joinForm);
+    public String join(@ModelAttribute @Valid JoinForm joinForm) {
+        RsData<Member> member = memberService.join(joinForm);
         if (member.isFail())
             return rq.historyBack(member);
         if(member.getData().getRole().getValue().equals("MEMBER"))
-            recommendService.select(member.getData().getEmail());
+            recommendService.rankRecommend(member.getData());
         return rq.redirectWithMsg("/trendpick/member/login", member);
     }
 
@@ -61,39 +57,24 @@ public class MemberController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/info")
-    public String showMe(Model model) {
-        model.addAttribute("MemberInfo", MemberInfoDto.of(rq.getLogin()));
+    public String myInfo(Model model) {
+        model.addAttribute("MemberInfo", MemberInfoResponse.of(rq.getLogin()));
         model.addAttribute("myTags", rq.getMember().getTags());
         return "trendpick/usr/member/info";
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("/info/address")
-    public String registerAddress(AddressForm addressForm, Model model) {
-        model.addAttribute("addressForm", addressForm);
-        return "trendpick/usr/member/address";
-    }
-
-    @PreAuthorize("hasAuthority({'MEMBER'})")
-    @PostMapping("/info/address")
-    public String manageAddress(@ModelAttribute @Valid AddressForm addressForm, Model model) {
-        RsData<Member> member = memberService.manageAddress(rq.getLogin(), addressForm.address());
-        model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
-        return rq.redirectWithMsg("/trendpick/member/info", member);
-    }
-
-    @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("/edit/address")
-    public String editAddress(Model model) {
+    public String modifyAddress(Model model) {
         model.addAttribute("originalAdrress", rq.getMember().getAddress());
         return "trendpick/usr/member/address";
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/edit/address")
-    public String editAddress(@ModelAttribute @Valid AddressForm addressForm, Model model) {
-        RsData<Member> member = memberService.manageAddress(rq.getLogin(), addressForm.address());
-        model.addAttribute("MemberInfo", MemberInfoDto.of(member.getData()));
+    public String modifyAddress(@ModelAttribute @Valid AddressForm addressForm, Model model) {
+        RsData<Member> member = memberService.modifyAddress(rq.getLogin(), addressForm.address());
+        model.addAttribute("MemberInfo", MemberInfoResponse.of(member.getData()));
         return rq.redirectWithMsg("/trendpick/member/info", member);
     }
 }
