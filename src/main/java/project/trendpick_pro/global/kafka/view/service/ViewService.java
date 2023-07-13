@@ -3,6 +3,7 @@ package project.trendpick_pro.global.kafka.view.service;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.global.kafka.view.entity.View;
@@ -26,6 +27,7 @@ public class ViewService {
         return viewRepository.findAll().size();
     }
 
+    @Async
     public void requestIncrementViewCount(HttpSession session) {
         if (session.getAttribute("visited") == null) {
             kafkaTemplate.send("views", "increment", "1");
