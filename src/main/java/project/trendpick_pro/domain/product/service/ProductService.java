@@ -22,7 +22,6 @@ public interface ProductService {
     RsData<Long> modify(Long productId, ProductRequest productRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException;
     void delete(Long productId);
     ProductResponse getProduct(Long productId);
-    ProductListResponse getProducts(Long productId);
     public List<Product> getRecommendProduct(Member member);
     Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory);
     Page<ProductListResponse> findAllByKeyword(String keyword, int offset);

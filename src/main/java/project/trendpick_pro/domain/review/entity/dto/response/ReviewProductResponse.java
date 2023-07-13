@@ -7,9 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.review.entity.Review;
 
+import java.io.Serializable;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReviewProductResponse {
+public class ReviewProductResponse implements Serializable {
     private Long id;
     private String writer;
     private String title;

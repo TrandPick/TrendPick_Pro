@@ -5,11 +5,12 @@ import lombok.*;
 import org.springframework.data.domain.Page;
 import project.trendpick_pro.domain.ask.entity.Ask;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AskResponse {
+public class AskResponse implements Serializable {
 
     private Long askId;
     private Long productId;

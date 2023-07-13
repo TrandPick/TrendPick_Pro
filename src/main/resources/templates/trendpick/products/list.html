@@ -45,8 +45,8 @@
            class="mx-1 my-1 px-2 py-1 bg-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-400">
         </a>
         <a th:each="subCategory : ${subCategories}"
-           th:href="@{/trendpick/products/list(main-category=${mainCategoryName},sub-category=${subCategory.name})}"
-           th:text="${subCategory.name}"
+           th:href="@{/trendpick/products/list(main-category=${mainCategoryName},sub-category=${subCategory})}"
+           th:text="${subCategory}"
            class="mx-1 my-1 px-2 py-1 bg-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-400">
         </a>
     </div>
