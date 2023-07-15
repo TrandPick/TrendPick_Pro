@@ -250,6 +250,9 @@ Footer // issue tracker를 사용하는 경우 참조한 issue tracker ID를 기
 
 <br><br>
 
+## 프로젝트 트러블 슈팅
+- [카프카와 Redis를 활용한 재고에 대한 동시성 처리 - 1 / 이수호](https://suho0303.tistory.com/48) 
+
 
 ## 👏 팀원 소개
 | [<img src="https://avatars.githubusercontent.com/u/26915908?v=4" width="200">](https://github.com/angelSooho) | [<img src="https://avatars.githubusercontent.com/u/71963159?v=4" width="200">](https://github.com/hye-0000) | [<img src="https://avatars.githubusercontent.com/u/110995932?v=4">](https://github.com/jooooonj) | [<img src="https://avatars.githubusercontent.com/u/62290451?v=4" width="200">](https://github.com/mmunkyeong) |  
