@@ -66,7 +66,6 @@ public class ProductServiceImpl implements ProductService {
     private final TagService tagService;
 
     private final Rq rq;
-
     private final AmazonS3 amazonS3;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -164,7 +163,6 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(value = "products", key = "#offset + #mainCategory + #subCategory")
     @Transactional(readOnly = true)
     public Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory) {
-        log.info("getProducts 캐싱 ============================================");
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
         PageRequest pageable = PageRequest.of(offset, 18);
         return productRepository.findAllByCategoryId(cond, pageable);
@@ -173,7 +171,6 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(key = "#pageable.offset", value = "products")
     @Transactional(readOnly = true)
     public Page<ProductListResponse> getAllProducts(Pageable pageable) {
-        log.info("getAllProducts 캐싱 ============================================");
         pageable = PageRequest.of(pageable.getPageNumber(), 18);
         Page<Product> products = productRepository.findAll(pageable);
         return products.map(ProductListResponse::of);
@@ -205,8 +202,6 @@ public class ProductServiceImpl implements ProductService {
             recommendProductByProductId.put(response.getProductId(), response);
         }
 
-        //실제로직! member 선호태그에는 점수가 있을 것이다.
-        //그러니까  우리가 반환하려고 하는 추천상품이 점수가 몇점인지 갱신하는 코드이다.
         for (FavoriteTag memberTag : member.getTags()) {
             if (productIdListByTagName.containsKey(memberTag.getName())) {
                 List<Long> productIdList = productIdListByTagName.get(memberTag.getName());
@@ -220,7 +215,6 @@ public class ProductServiceImpl implements ProductService {
                 .sorted(Comparator.comparing(ProductByRecommended::getTotalScore).reversed())
                 .toList();
 
-        //Product 변환해서 리턴
         List<Product> products = new ArrayList<>();
         for (ProductByRecommended recommendProduct : recommendProductList) {
             products.add(productRepository.findById(recommendProduct.getProductId()).orElseThrow(
