@@ -42,7 +42,6 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
     @Cacheable(key = "#mainCategoryName", value = "subCategories")
     public List<String> findAll(String mainCategoryName) {
-        log.info("subCategories 캐싱 ============================================");
         List<SubCategory> categories;
         if (mainCategoryName.equals("전체")){
             categories = subCategoryRepository.findAllBy();

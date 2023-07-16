@@ -1,6 +1,7 @@
 package project.trendpick_pro.global.jmeter;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Profile("dev")
 @RequestMapping("/jmeter")
 public class JmeterController {
 
