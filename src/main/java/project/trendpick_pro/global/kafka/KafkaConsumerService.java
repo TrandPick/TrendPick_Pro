@@ -52,7 +52,6 @@ public class KafkaConsumerService {
                 ConsumerRecord<String, String> record = queue.poll();
                 executorService.submit(() -> {
                     try {
-                        log.info("record: {}, {}, {}", record.timestamp(), record.value(), record.key());
                         orderService.tryOrder(record.key());
                     } catch (Exception e) {
                         log.error("Error processing message", e);
