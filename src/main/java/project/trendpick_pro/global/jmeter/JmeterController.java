@@ -18,7 +18,9 @@ import project.trendpick_pro.domain.product.entity.product.dto.request.ProductSa
 import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
+import project.trendpick_pro.global.kafka.KafkaProducerService;
 import project.trendpick_pro.global.util.rq.Rq;
+import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,6 +35,8 @@ public class JmeterController {
 
     private final OrderService orderService;
     private final ProductService productService;
+
+    private final KafkaProducerService kafkaProducerService;
 
     @GetMapping("/member/login")
     public ResponseEntity<MemberInfoResponse> getMemberInfo() {
@@ -54,7 +58,8 @@ public class JmeterController {
         String size = "80";
         String color = "Sliver";
 
-        orderService.productToOrder(member, id, quantity, size, color);
+        RsData<Long> data = orderService.productToOrder(member, id, quantity, size, color);
+        kafkaProducerService.sendMessage(data.getData());
     }
 
     @PostMapping("/edit")
