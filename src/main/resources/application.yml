@@ -1,3 +1,7 @@
+server:
+  tomcat:
+    threads:
+      max: 300
 spring:
   profiles:
     active: dev

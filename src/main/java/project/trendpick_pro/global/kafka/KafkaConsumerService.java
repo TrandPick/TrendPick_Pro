@@ -53,14 +53,13 @@ public class KafkaConsumerService {
                 executorService.submit(() -> {
                     try {
                         orderService.tryOrder(record.key());
-                    } catch (Exception e) {
-                        log.error("Error processing message", e);
+                    } catch (JsonProcessingException e) {
+                        log.info("json 변환에 실패했습니다.");
                     }
                 });
-            }
-            ack.acknowledge();
+            } ack.acknowledge();
         } catch (Exception e) {
-            log.error("Error processing messages", e);
+            log.error("큐에 메세지가 입력되지 않았습니다. | {}", e.getMessage());
         }
     }
 
