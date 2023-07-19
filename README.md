@@ -63,7 +63,8 @@ Git, Discord, Notion
 
 <br>
 
-<img width="993" alt="image" src="https://github.com/기 - 1 / 이수호](https://suho0303.tistory.com/48)
+## 프로젝트 트러블 슈팅
+- [카프카와 Redis를 활용한 재고에 대한 동시성 처리기 - 1 / 이수호](https://suho0303.tistory.com/48)
 - [카프카를 활용한 재고에 대한 동시성 처리기 - 2 / 이수호](https://suho0303.tistory.com/50)
 - [카프카와 레디스를 활용한 재고에 대한 동시성 처리기 - 3 / 이수호](https://suho0303.tistory.com/51)
 - [CI/CD 구축 시 방식에 대한 고민(Jenkins, Github Actions) / 이수호](https://suho0303.tistory.com/49)
