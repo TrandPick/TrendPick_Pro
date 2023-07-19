@@ -82,7 +82,7 @@ public class OrderServiceImpl implements OrderService {
         Order saveOrder = orderRepository.save(createOrder(member, cartItems));
 
         OutboxMessage message = new OutboxMessage("orders",
-                saveOrder.getCreatedDate().format(dateTimeFormatter), String.valueOf(saveOrder.getId()));
+                String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
         outboxMessageService.save(message);
         return RsData.of("S-1", "주문을 시작합니다.", message.getId());
     }
@@ -96,7 +96,7 @@ public class OrderServiceImpl implements OrderService {
                     )
             );
             OutboxMessage message = new OutboxMessage("orders",
-                    saveOrder.getCreatedDate().format(dateTimeFormatter), String.valueOf(saveOrder.getId()));
+                    String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
             outboxMessageService.save(message);
             return RsData.of("S-1", "주문을 시작합니다.", message.getId());
         } catch (ProductNotFoundException e) {
