@@ -7,6 +7,7 @@
 자신만의 스타일, 선호하는 스타일로 태그 기반 상품을 추천하는 서비스 제공합니다.  
 
 트렌드한 태그들, 상품 추천 **Trend Pick**
+https://trendpick.k8s-1.suho.info
 </p>
 </div>
 <br>
