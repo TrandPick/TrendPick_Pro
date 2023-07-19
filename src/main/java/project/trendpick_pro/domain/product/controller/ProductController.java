@@ -158,7 +158,7 @@ public class ProductController {
         } else if(mainCategory.equals("전체")){
             model.addAttribute("subCategoryName", subCategory);
             model.addAttribute("mainCategoryName", mainCategory);
-            model.addAttribute("productResponses", productService.getAllProducts(pageable));
+            model.addAttribute("productResponses", productService.getProducts(offset, mainCategory, subCategory));
         } else {
             model.addAttribute("subCategoryName", subCategory);
             model.addAttribute("mainCategoryName", mainCategory);

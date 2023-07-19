@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -140,6 +141,10 @@ public class ProductServiceImpl implements ProductService {
         return RsData.of("S-1", "상품 수정 완료되었습니다.", product.getId());
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "product", key = "#productId"),
+            @CacheEvict(value = "productList", allEntries = true)
+    })
     @Transactional
     public void delete(Long productId) {
         rq.getAdmin();
@@ -148,6 +153,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(product);
     }
 
+    @Cacheable(value = "product", key = "#productId")
     @Transactional(readOnly = true)
     public ProductResponse getProduct(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
@@ -157,18 +163,12 @@ public class ProductServiceImpl implements ProductService {
         return ProductResponse.of(product);
     }
 
+    @Cacheable(value = "productList", key = "#offset")
     @Transactional(readOnly = true)
     public Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory) {
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
         PageRequest pageable = PageRequest.of(offset, 18);
         return productRepository.findAllByCategoryId(cond, pageable);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<ProductListResponse> getAllProducts(Pageable pageable) {
-        pageable = PageRequest.of(pageable.getPageNumber(), 18);
-        Page<Product> products = productRepository.findAll(pageable);
-        return products.map(ProductListResponse::of);
     }
 
     @Transactional(readOnly = true)

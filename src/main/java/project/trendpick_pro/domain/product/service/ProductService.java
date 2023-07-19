@@ -25,7 +25,6 @@ public interface ProductService {
     public List<Product> getRecommendProduct(Member member);
     Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory);
     Page<ProductListResponse> findAllByKeyword(String keyword, int offset);
-    Page<ProductListResponse> getAllProducts(Pageable pageable);
     RsData<Page<ProductListResponseBySeller>> findProductsBySeller(Member member, int offset);
     void applyDiscount(Long productId, double discountRate);
     Product findById(Long id);
