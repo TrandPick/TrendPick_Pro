@@ -62,7 +62,6 @@ public class AskServiceImpl implements AskService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(key = "#root.methodName + #productId", value = "asks")
     public Page<AskResponse> showAsksByProduct(Long productId, int offset) {
         Pageable pageable = PageRequest.of(offset, 10);
         return askRepository.findAllByProductId(productId, pageable);

@@ -91,7 +91,6 @@ public class ReviewServiceImpl implements ReviewService {
         return ReviewResponse.of(review);
     }
 
-    @Cacheable(key = "#root.methodName + #productId", value = "reviews")
     public Page<ReviewProductResponse> getReviews(Long productId, Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), 6);
         return reviewRepository.findAllByProductId(productId, pageable);

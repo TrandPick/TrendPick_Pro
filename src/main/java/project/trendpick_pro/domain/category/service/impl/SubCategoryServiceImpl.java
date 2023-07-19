@@ -40,7 +40,6 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         subCategoryRepository.delete(subCategory);
     }
 
-    @Cacheable(key = "#mainCategoryName", value = "subCategories")
     public List<String> findAll(String mainCategoryName) {
         List<SubCategory> categories;
         if (mainCategoryName.equals("전체")){

@@ -3,6 +3,7 @@ package project.trendpick_pro.domain.orders.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -47,6 +48,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -109,12 +111,8 @@ public class OrderServiceImpl implements OrderService {
         String email = order.getMember().getEmail();
         try {
             for (OrderItem orderItem : order.getOrderItems()) {
-                if (orderItem.getProduct().getProductOption().getStock() == 0) {
-                    OutOfStockProduct(orderItem.getProduct());
-                    return;
-                } else {
-                    orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
-                }
+                orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
+                log.info("재고 : {}", orderItem.getProduct().getProductOption().getStock());
             }
             order.modifyStatus(OrderStatus.ORDERED);
             sendMessage("Success", order.getId(), email);
@@ -124,12 +122,6 @@ public class OrderServiceImpl implements OrderService {
                 sendMessage("Fail", order.getId(), email);
             }
         }
-    }
-
-    @CacheEvict(value = "product", key = "#product.id")
-    @Transactional
-    public void OutOfStockProduct(Product product) {
-        product.getProductOption().connectStatus(ProductStatus.SOLD_OUT);
     }
 
     private void sendMessage(String message, Long orderId, String email) throws JsonProcessingException {

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
@@ -12,6 +13,7 @@ import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import java.io.Serializable;
 import java.util.List;
 
+@Slf4j
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -70,6 +72,7 @@ public class ProductOption implements Serializable {
     public void decreaseStock(int quantity) {
         int restStock = this.stock - quantity;
         if (restStock < 0) {
+            this.status = ProductStatus.SOLD_OUT;
             throw new ProductStockOutException("재고가 부족합니다.");
         }
         this.stock = restStock;
