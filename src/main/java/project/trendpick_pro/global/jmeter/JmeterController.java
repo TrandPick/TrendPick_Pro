@@ -49,7 +49,8 @@ public class JmeterController {
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
-    @PostMapping("/order")
+    @GetMapping("/order")
+    @ResponseBody
     public void processOrder() {
         Member member = rq.getMember();
 

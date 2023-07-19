@@ -25,6 +25,7 @@ public class KafkaProducerService {
         OutboxMessage outboxMessage = outboxMessageService.findById(id);
         retryTemplate.execute(context -> {
             kafkaTemplate.send(outboxMessage.getTopic(), outboxMessage.getPayload(), outboxMessage.getMessage());
+            log.info("Message sent: {}", outboxMessage.getMessage());
             outboxMessageService.delete(outboxMessage);
             return null;
         }, context -> {
