@@ -28,6 +28,7 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.17.4'
 
     // log
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
