@@ -8,8 +8,9 @@ import project.trendpick_pro.domain.ask.entity.Ask;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class AskResponse implements Serializable {
 
     private Long askId;
@@ -43,7 +44,7 @@ public class AskResponse implements Serializable {
                 .memberName(ask.getAuthor().getUsername())
                 .memberId(ask.getAuthor().getId())
                 .productId(ask.getProduct().getId())
-                .productName(ask.getProduct().getName())
+                .productName(ask.getProduct().getTitle())
                 .title(ask.getTitle())
                 .content(ask.getContent())
                 .status(ask.getStatus().getValue())

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.global.kafka.view.entity.View;
 import project.trendpick_pro.global.kafka.view.repository.ViewRepository;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class ViewService {
@@ -22,7 +23,6 @@ public class ViewService {
         viewRepository.save(new View());
     }
 
-    @Transactional(readOnly = true)
     public int findSize() {
         return viewRepository.findAll().size();
     }
@@ -40,7 +40,6 @@ public class ViewService {
         viewRepository.findById(Long.valueOf(viewId)).get().increment();
     }
 
-    @Transactional(readOnly = true)
     public Long getCount() {
         return viewRepository.findById(1L).get().getCount();
     }

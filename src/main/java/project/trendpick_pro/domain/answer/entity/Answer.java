@@ -1,7 +1,7 @@
 package project.trendpick_pro.domain.answer.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,9 +10,7 @@ import project.trendpick_pro.domain.ask.entity.Ask;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Answer extends BaseTimeEntity {
     @Id
@@ -26,15 +24,20 @@ public class Answer extends BaseTimeEntity {
 
     private String content;
 
-    public static Answer write(AnswerForm answerForm) {
+    @Builder
+    private Answer(String content) {
+        this.content = content;
+    }
+
+    public static Answer write(String content) {
         return Answer.builder()
-                .content(answerForm.getContent())
+                .content(content)
                 .build();
     }
 
     public void connectAsk(Ask ask){
         ask.getAnswerList().add(this);
-        ask.changeStatus();
+        ask.updateStatus();
         this.ask = ask;
     }
 

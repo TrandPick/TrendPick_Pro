@@ -70,13 +70,18 @@ public class JmeterController {
         Product product = productService.findById(productId);
 
         ProductSaveRequest productSaveRequest = new ProductSaveRequest(
-                product.getName(), product.getDescription(),
-                product.getMainCategory().getName(), product.getSubCategory().getName(), product.getBrand().getName(),
-                product.getTags().stream().map(Tag::getName).toList());
+                product.getTitle(), product.getDescription(),
+                product.getProductOption().getMainCategory().getName(),
+                product.getProductOption().getSubCategory().getName(),
+                product.getProductOption().getBrand().getName(),
+                product.getTags().stream().map(Tag::getName).toList()
+        );
 
         ProductOptionSaveRequest productOptionSaveRequest = ProductOptionSaveRequest.of(
                 product.getProductOption().getSizes(), product.getProductOption().getColors(),
-                product.getProductOption().getStock(), product.getProductOption().getPrice(), product.getProductOption().getStatus().getText());
+                product.getProductOption().getStock(), product.getProductOption().getPrice(),
+                product.getProductOption().getStatus().getText()
+        );
 
         ProductRequest productRequest = new ProductRequest(productSaveRequest, productOptionSaveRequest);
         productService.modify(productId, productRequest, mainFile, subFiles);

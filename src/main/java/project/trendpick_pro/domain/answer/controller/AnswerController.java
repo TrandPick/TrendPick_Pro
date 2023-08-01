@@ -15,7 +15,7 @@ import project.trendpick_pro.global.util.rsData.RsData;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/trendpick/customerservice/answers")
+@RequestMapping("/trendpick/answers")
 public class AnswerController {
 
     private final AnswerService answerService;
@@ -27,7 +27,7 @@ public class AnswerController {
         RsData<Long> result = answerService.register(rq.getAdmin(), askId, answerForm);
         if(result.isFail()) {
             return rq.historyBack(result);
-        } return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), result);
+        } return rq.redirectWithMsg("/trendpick/asks/%s".formatted(askId), result);
     }
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{answerId}")
@@ -35,7 +35,7 @@ public class AnswerController {
         RsData<Long> result = answerService.delete(rq.getAdmin(), answerId);
         if(result.isFail()) {
             return rq.historyBack(result);
-        } return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(result.getData()), result);
+        } return rq.redirectWithMsg("/trendpick/asks/%s".formatted(result.getData()), result);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -44,6 +44,6 @@ public class AnswerController {
         RsData<Long> result = answerService.modify(rq.getAdmin(), answerId, answerForm);
         if(result.isFail()) {
             return rq.historyBack(result);
-        } return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(result.getData()), result);
+        } return rq.redirectWithMsg("/trendpick/asks/%s".formatted(result.getData()), result);
     }
 }

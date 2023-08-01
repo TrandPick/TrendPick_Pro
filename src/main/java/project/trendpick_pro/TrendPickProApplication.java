@@ -7,10 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableAsync
-@EnableCaching
 @EnableScheduling
-@EnableJpaAuditing
 @SpringBootApplication
 public class TrendPickProApplication {
 

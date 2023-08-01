@@ -28,10 +28,10 @@ public class AnswerServiceImpl implements AnswerService {
         Ask ask = askRepository.findById(askId).orElseThrow(
                 () -> new NoSuchElementException("해당 문의는 없는 문의입니다.")
         );
-        if (!member.getBrand().equals(ask.getProduct().getBrand().getName()))
+        if (!member.getBrand().equals(ask.getProduct().getProductOption().getBrand().getName()))
             return RsData.of("F-1", "타 브랜드 상품에 대한 문의글에는 답변 권한이 없습니다.");
 
-        Answer answer = Answer.write(answerForm);
+        Answer answer = Answer.write(answerForm.getContent());
         answer.connectAsk(ask);
         answerRepository.save(answer);
         return RsData.of("S-1", "답변이 성공적으로 등록되었습니다.", ask.getId());
@@ -43,13 +43,13 @@ public class AnswerServiceImpl implements AnswerService {
                 () -> new NoSuchElementException("해당 답변은 없는 답변입니다.")
         );
 
-        if(!answer.getAsk().getProduct().getBrand().getName().equals(member.getBrand()))
+        if(!answer.getAsk().getProduct().getProductOption().getBrand().getName().equals(member.getBrand()))
             return RsData.of("F-1", "접근 권한이 없습니다.");
 
         Ask ask = answer.getAsk();
         ask.getAnswerList().remove(answer);
         if(ask.getAnswerList().size() == 0)
-            ask.changeStatusYet();
+            ask.updateStatusYet();
 
         return RsData.of("S-1", "답변이 삭제되었습니다.", answer.getAsk().getId());
     }

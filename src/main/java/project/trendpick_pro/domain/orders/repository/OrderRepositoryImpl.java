@@ -12,6 +12,7 @@ import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.QOrderResponse;
+import project.trendpick_pro.domain.product.entity.product.QProduct;
 
 import java.util.List;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.time.Month;
 import static project.trendpick_pro.domain.member.entity.QMember.member;
 import static project.trendpick_pro.domain.orders.entity.QOrder.order;
 import static project.trendpick_pro.domain.orders.entity.QOrderItem.orderItem;
+import static project.trendpick_pro.domain.product.entity.product.QProduct.*;
 
 public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
@@ -34,26 +36,29 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     public Page<OrderResponse> findAllByMember(OrderSearchCond orderSearchCond, Pageable pageable) {
         List<OrderResponse> result = queryFactory
                 .select(new QOrderResponse(
-                        orderItem.order.id,
-                        orderItem.product.id,
-                        orderItem.product.file.fileName,
-                        orderItem.product.brand.name,
-                        orderItem.product.name,
+                        order.id,
+                        product.id,
+                        product.productOption.file.fileName,
+                        product.productOption.brand.name,
+                        product.title,
                         orderItem.quantity,
                         orderItem.orderPrice,
                         orderItem.discountPrice,
-                        orderItem.order.createdDate,
-                        orderItem.order.modifiedDate,
+                        order.createdDate,
+                        order.modifiedDate,
                         orderItem.size,
                         orderItem.color,
-                        orderItem.order.status.stringValue(),
-                        orderItem.order.delivery.state.stringValue())
+                        order.status.stringValue(),
+                        order.delivery.state.stringValue())
                 )
                 .from(orderItem)
                 .join(orderItem.order, order)
+                .leftJoin(orderItem.product, product)
                 .join(order.member, member)
-                .on(member.id.eq(orderSearchCond.getMemberId()))
-                .where(statusEq(orderSearchCond))
+                .where(
+                        statusEq(orderSearchCond),
+                        memberIdEq(orderSearchCond)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(orderItem.order.createdDate.desc())
@@ -63,60 +68,68 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .select(order.count())
                 .from(order)
                 .join(order.member, member)
-                .on(member.id.eq(orderSearchCond.getMemberId()))
-                ;
+                .where(
+                        memberIdEq(orderSearchCond)
+                );
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
+    }
+
+    private static BooleanExpression memberIdEq(OrderSearchCond orderSearchCond) {
+        return member.id.eq(orderSearchCond.getMemberId());
     }
 
     @Override
     public List<OrderResponse> findOrderItemsByOrderId(Long orderId) {
         return queryFactory
                 .select(new QOrderResponse(
-                        orderItem.order.id,
-                        orderItem.product.id,
-                        orderItem.product.file.fileName,
-                        orderItem.product.brand.name,
-                        orderItem.product.name,
+                        order.id,
+                        product.id,
+                        product.productOption.file.fileName,
+                        product.productOption.brand.name,
+                        product.title,
                         orderItem.quantity,
                         orderItem.orderPrice,
                         orderItem.discountPrice,
-                        orderItem.order.createdDate,
-                        orderItem.order.modifiedDate,
+                        order.createdDate,
+                        order.modifiedDate,
                         orderItem.size,
                         orderItem.color,
-                        orderItem.order.status.stringValue(),
-                        orderItem.order.delivery.state.stringValue())
+                        order.status.stringValue(),
+                        order.delivery.state.stringValue())
                 )
                 .from(orderItem)
                 .join(orderItem.order, order)
+                .leftJoin(orderItem.product, product)
                 .where(order.id.eq(orderId))
                 .fetch();
     }
 
-    //나의 판매목록
     @Override
     public Page<OrderResponse> findAllBySeller(OrderSearchCond orderSearchCond, Pageable pageable) {
         List<OrderResponse> result = queryFactory
                 .select(new QOrderResponse(
-                        orderItem.order.id,
-                        orderItem.product.id,
-                        orderItem.product.file.fileName,
-                        orderItem.product.brand.name,
-                        orderItem.product.name,
+                        order.id,
+                        product.id,
+                        product.productOption.file.fileName,
+                        product.productOption.brand.name,
+                        product.title,
                         orderItem.quantity,
                         orderItem.orderPrice,
                         orderItem.discountPrice,
-                        orderItem.order.createdDate,
-                        orderItem.order.modifiedDate,
+                        order.createdDate,
+                        order.modifiedDate,
                         orderItem.size,
                         orderItem.color,
-                        orderItem.order.status.stringValue(),
-                        orderItem.order.delivery.state.stringValue())
+                        order.status.stringValue(),
+                        order.delivery.state.stringValue())
                 )
                 .from(orderItem)
                 .join(orderItem.order, order)
+                .leftJoin(orderItem.product, product)
                 .join(order.member, member)
-                .on(orderItem.product.brand.name.eq(orderSearchCond.getBrand()))
+                .where(
+                        brandEq(orderSearchCond)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(orderItem.order.createdDate.desc())
@@ -126,17 +139,14 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .select(order.count())
                 .from(order)
                 .join(order.member, member)
-                .on(orderItem.product.brand.name.eq(orderSearchCond.getBrand()));
+                .where(brandEq(orderSearchCond));
 
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }
 
     @Override
     public int findAllByMonth(OrderSearchCond orderSearchCond) {
-        // 현재 날짜를 가져옴
         LocalDate currentDate = LocalDate.now();
-
-        // 현재 월을 가져옴
         int currentMonth = currentDate.getMonthValue();
 
         Integer result = queryFactory
@@ -144,7 +154,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 .from(orderItem)
                 .join(orderItem.order, order)
                 .join(order.member, member)
-                .where(orderItem.product.brand.name.eq(orderSearchCond.getBrand()),
+                .where(brandEq(orderSearchCond),
                         Expressions.dateTemplate(
                                 Integer.class,
                                 "MONTH({0})",
@@ -156,8 +166,10 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return result == null ? 0 : result;
     }
 
+    private static BooleanExpression brandEq(OrderSearchCond orderSearchCond) {
+        return product.productOption.brand.name.eq(orderSearchCond.getBrand());
+    }
 
-    //동적 처리, 환불 내역을 볼 때만 값을 지정
     private static BooleanExpression statusEq(OrderSearchCond orderSearchCond) {
         if(orderSearchCond.getStatus() == null)
             return null;

@@ -28,8 +28,8 @@
             </div>
             <div th:if="${@rq.checkMember()}">
                 <div class="flex justify-end" th:if="${@rq.getMember().id} == ${ask.memberId}">
-                    <a th:href="@{|/trendpick/customerservice/asks/edit/${ask.askId}|}" class="mr-2">수정</a>
-                    <form th:action="@{|/trendpick/customerservice/asks/delete/${ask.askId}|}" method="post"
+                    <a th:href="@{|/trendpick/asks/edit/${ask.askId}|}" class="mr-2">수정</a>
+                    <form th:action="@{|/trendpick/asks/delete/${ask.askId}|}" method="post"
                           style="display: inline;">
                         <input type="hidden" name="_method" value="POST"/>
                         <button type="submit" class="mr-2">삭제</button>
@@ -52,7 +52,7 @@
                     </div>
                     <div th:if="${@rq.checkLogin()}">
                         <div class="flex justify-end" th:if="${@rq.checkBrand()}">
-                            <form th:action="@{|/trendpick/customerservice/answers/delete/${answer.answerId}|}"
+                            <form th:action="@{|/trendpick/answers/delete/${answer.answerId}|}"
                                   method="post" style="display: inline;">
                                 <input type="hidden" name="_method" value="POST"/>
                                 <button type="submit" class="mr-2">삭제</button>
@@ -65,7 +65,7 @@
 
         <div th:if="${@rq.checkAdminOrBrand()}">
             <form th:object="${answerForm}" method="post"
-                  th:action="@{|/trendpick/customerservice/answers/register?ask=${ask.askId}|}">
+                  th:action="@{|/trendpick/answers/register?ask=${ask.askId}|}">
                 <div class="mb-3">
                     <label class="form-label">답변</label>
                     <div class="border rounded">

@@ -94,7 +94,7 @@
             <tr th:each="orderItem, itemStat : ${order.orderItems}" class="bg-blue-50">
                 <td class="text-center" th:text="${itemStat.count}">1</td>
                 <td class="image-main" style="width: 100px; height: 100px;">
-                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${orderItem.product.getFile().getFileName()}|"  alt="Product Image"/>
+                    <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${orderItem.product.getProductOption().getFile().getFileName()}|"  alt="Product Image"/>
                 </td>
                 <td class="text-center">
                     <span class="text-center" id="Product" th:text="${orderItem.product.name}"></span>
@@ -171,8 +171,8 @@
     <script src="https://js.tosspayments.com/v1/payment-widget"></script>
     <link id="clientKey" th:data-contextPath="${@environment.getProperty('toss.clientKey')}"/>
     <script>
-        // const url = "http://localhost:8080"
-        const serverUrl = "https://trendpick.k8s-1.suho.info"
+        const serverUrl = "http://localhost:8080"
+        // const serverUrl = "https://trendpick.k8s-1.suho.info"
 
         const clientKey = document.querySelector("#clientKey").getAttribute("data-contextPath");
         const customerKey = PaymentWidget.ANONYMOUS

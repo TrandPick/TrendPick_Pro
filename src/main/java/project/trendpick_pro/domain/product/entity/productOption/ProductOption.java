@@ -6,6 +6,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import project.trendpick_pro.domain.brand.entity.Brand;
+import project.trendpick_pro.domain.category.entity.MainCategory;
+import project.trendpick_pro.domain.category.entity.SubCategory;
+import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
@@ -13,7 +17,6 @@ import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import java.io.Serializable;
 import java.util.List;
 
-@Slf4j
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,9 +44,21 @@ public class ProductOption implements Serializable {
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
-    public void connectStatus(ProductStatus status){
-        this.status = status;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "main_category_id")
+    private MainCategory mainCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_category_id")
+    private SubCategory subCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
+    @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    @JoinColumn(name = "file_id")
+    private CommonFile file;
 
     @Builder
     private ProductOption(List<String> size, List<String> color, int stock, int price) {
@@ -53,7 +68,7 @@ public class ProductOption implements Serializable {
         this.price = price;
     }
 
-    public static ProductOption of (ProductOptionSaveRequest request) {
+    public static ProductOption of(ProductOptionSaveRequest request) {
         return ProductOption.builder()
                 .size(request.getSizes())
                 .color(request.getColors())
@@ -62,11 +77,23 @@ public class ProductOption implements Serializable {
                 .build();
     }
 
+    public void settingConnection(Brand brand, MainCategory mainCategory, SubCategory subCategory, CommonFile file, ProductStatus status) {
+        this.brand = brand;
+        this.mainCategory = mainCategory;
+        this.subCategory = subCategory;
+        this.file = file;
+        this.status = status;
+    }
+
     public void update(ProductOptionSaveRequest request) {
         this.sizes = request.getSizes();
         this.colors = request.getColors();
         this.stock = request.getStock();
         this.price = request.getPrice();
+    }
+
+    public void updateFile(CommonFile file) {
+        this.file = file;
     }
 
     public void decreaseStock(int quantity) {

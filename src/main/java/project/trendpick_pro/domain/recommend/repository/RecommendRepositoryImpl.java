@@ -30,9 +30,9 @@ public class RecommendRepositoryImpl implements RecommendRepositoryCustom {
         List<ProductListResponse> result = queryFactory
                 .select(new QProductListResponse(
                         product.id,
-                        product.name,
-                        product.brand.name,
-                        product.file.fileName,
+                        product.title,
+                        product.productOption.brand.name,
+                        product.productOption.file.fileName,
                         productOption.price,
                         product.discountRate,
                         product.discountedPrice

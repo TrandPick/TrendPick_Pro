@@ -13,10 +13,12 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@EnableAsync
 @Configuration
 @RequiredArgsConstructor
 public class KafkaConfig {

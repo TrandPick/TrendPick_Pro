@@ -14,9 +14,9 @@ import project.trendpick_pro.domain.category.service.SubCategoryService;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Slf4j
+@Service
 public class SubCategoryServiceImpl implements SubCategoryService {
 
     private final SubCategoryRepository subCategoryRepository;
@@ -35,14 +35,14 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         subCategoryRepository.saveAll(list);
     }
 
-    @CacheEvict(key = "#mainCategoryName", value = "subCategories")
+//    @CacheEvict(key = "#mainCategoryName", value = "subCategories")
     @Transactional
     public void delete(Long id){
         SubCategory subCategory = subCategoryRepository.findById(id).orElseThrow();
         subCategoryRepository.delete(subCategory);
     }
 
-    @Cacheable(key = "#mainCategoryName", value = "subCategories")
+//    @Cacheable(key = "#mainCategoryName", value = "subCategories")
     public List<String> findAll(String mainCategoryName) {
         List<SubCategory> categories;
         if (mainCategoryName.equals("전체")){

@@ -50,7 +50,7 @@ import java.util.*;
 
 @Slf4j
 @Configuration
-@Profile({"dev", "test"})
+@Profile({"dev", "prod"})
 public class BaseData {
 
     @Value("${tag}")
@@ -119,7 +119,7 @@ public class BaseData {
                 accessKeyMap.put("bucket", bucket);
 
                 int memberCount = 100;
-                int productCount = 500;
+                int productCount = 100;
                 int reviewCount = 100;
                 int couponCount = 100;
                 String brandName = "polo";
@@ -300,17 +300,14 @@ public class BaseData {
 
                 ProductOptionSaveRequest request = ProductOptionSaveRequest.of(inputSizes, selectedColors, stockRandom, priceRandom, ProductStatus.SALE.getText());
                 ProductOption productOption = ProductOption.of(request);
+                productOption.settingConnection(brand, mainCategory, subCategory, commonFile, ProductStatus.SALE);
 
                 Product product = Product
                         .builder()
-                        .name(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
+                        .title(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
                         .description(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
-                        .productOption(productOption)
-                        .mainCategory(mainCategory)
-                        .subCategory(subCategory)
-                        .brand(brand)
-                        .file(commonFile)
                         .build();
+                product.connectProductOption(productOption);
                 Set<Tag> tags = new LinkedHashSet<>();
                 for (int i = 1; i <= (Math.random() * 13)+5; i++) {
                     while (true) {
@@ -322,7 +319,7 @@ public class BaseData {
                         }
                     }
                 }
-                product.addTag(tags);
+                product.updateTags(tags);
                 products.add(product);
             }
         }

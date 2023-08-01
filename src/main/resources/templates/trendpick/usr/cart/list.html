@@ -51,11 +51,11 @@
         <thead>
         <tr>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 rounded-tl rounded-bl text-center"><input type="checkbox" id="selectAllCheckbox" checked></th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">상품정보</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">상품 정보</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">가격</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center"></th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">수량</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">담은날짜</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">담은 날짜</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-700 text-sm bg-gray-100 text-center">삭제</th>
         </tr>
         </thead>
@@ -72,13 +72,13 @@
             <td class="px-4 py-3 flex items-center space-x-3 text-center">
                 <div>
                     <a th:href="|/trendpick/products/${item.product.id}|">
-                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${item.getProduct().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
+                        <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${item.getProduct().getProductOption().getFile().getFileName()}|" alt="Product Image" class="w-16 h-16 object-cover rounded">
                     </a>
                 </div>
                 <div>
                     <a th:href="@{/trendpick/products/{productId}(productId=${item.getProduct().getId()})}"
-                       th:text="${item.getProduct().getName()}" class="font-semibold text-gray-900 hover:text-blue-500"></a>
-                    <div class="text-sm text-gray-500 text-left" th:text="${item.getProduct().getBrand().getName()}"></div>
+                       th:text="${item.getProduct().getTitle()}" class="font-semibold text-gray-900 hover:text-blue-500"></a>
+                    <div class="text-sm text-gray-500 text-left" th:text="${item.getProduct().getProductOption().getBrand().getName()}"></div>
                     <div class="text-sm text-gray-500 text-left" th:text="'size: ' + ${item.size} + ' / ' + 'color: ' + ${item.color}"></div>
 
                 </div>
@@ -124,7 +124,7 @@
         <div class="mt-8 flex justify-end items-center">
             <span class="text-2xl font-semibold mr-4">총 주문 금액: </span>
             <span id="totalPrice" class="text-3xl font-bold text-black">0 원</span>
-            <button type="submit" class="bg-black text-white rounded-lg px-8 py-2 ml-8">구매하기</button>
+            <button type="submit" class="bg-black text-white rounded-lg px-8 py-2 ml-8">구매 하기</button>
         </div>
     </form>
     <br/><br/>

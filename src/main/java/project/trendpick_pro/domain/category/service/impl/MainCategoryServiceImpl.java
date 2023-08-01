@@ -10,6 +10,7 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class MainCategoryServiceImpl implements MainCategoryService {

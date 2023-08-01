@@ -121,7 +121,7 @@ public class ProductController {
     public String showProduct(@PathVariable Long productId, Pageable pageable, Model model) {
         model.addAttribute("productResponse", productService.getProduct(productId));
         Page<ReviewProductResponse> productReviews = reviewService.getReviews(productId, pageable);
-        Page<AskResponse> productAsk = askService.showAsksByProduct(productId, 0);
+        Page<AskResponse> productAsk = askService.findAsksByProduct(productId, 0);
         model.addAttribute("productReview", productReviews);
         model.addAttribute("productAsk", productAsk);
         model.addAttribute("productRequest", new ProductRequest());
@@ -180,6 +180,7 @@ public class ProductController {
     @GetMapping("/keyword")
     public String searchQuery(@RequestParam String keyword, @RequestParam(value = "page", defaultValue = "0") int offset,  Model model) {
         Page<ProductListResponse> products = productService.findAllByKeyword(keyword, offset);
+        model.addAttribute("totalView", viewService.getCount());
         model.addAttribute("keyword", keyword);
         model.addAttribute("productResponses", products);
         return "trendpick/products/list";

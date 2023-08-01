@@ -31,7 +31,7 @@ public class OrderItemDto {
     public static OrderItemDto of(Product product, int quantity, String size, String color) {
         return OrderItemDto.builder()
                 .productId(product.getId())
-                .productName(product.getName())
+                .productName(product.getTitle())
                 .price(product.getProductOption().getPrice())
                 .quantity(quantity)
                 .size(size)
@@ -43,7 +43,7 @@ public class OrderItemDto {
     public static OrderItemDto of(Product product, int quantity, String size, String color,Long cartItemId) {
         return OrderItemDto.builder()
                 .productId(product.getId())
-                .productName(product.getName())
+                .productName(product.getTitle())
                 .price(product.getProductOption().getPrice())
                 .quantity(quantity)
                 .size(size)

@@ -49,7 +49,7 @@ public class CouponServiceImpl implements CouponService {
     @Transactional(readOnly = true)
     public  List<SimpleCouponResponse> findCouponsByProduct(Long productId) {
         Product product = productService.findByIdWithBrand(productId);
-        List<Coupon> coupons = filteredCoupons(couponRepository.findAllByBrand(product.getBrand().getName()), product);
+        List<Coupon> coupons = filteredCoupons(couponRepository.findAllByBrand(product.getProductOption().getBrand().getName()), product);
         return convertCouponsToResponses(coupons);
     }
 

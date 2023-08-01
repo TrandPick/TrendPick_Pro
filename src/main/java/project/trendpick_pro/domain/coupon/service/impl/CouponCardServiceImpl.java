@@ -48,7 +48,7 @@ public class CouponCardServiceImpl implements CouponCardService {
     public List<CouponCardByApplyResponse> showCouponCardsByOrderItem(Long orderItemId) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(
                 () -> new OrderItemNotFoundException("주문되지 않은 상품입니다."));
-        List<CouponCard> couponCards = couponCardRepository.findAllByBrand(orderItem.getProduct().getBrand().getName());
+        List<CouponCard> couponCards = couponCardRepository.findAllByBrand(orderItem.getProduct().getProductOption().getBrand().getName());
         return createCouponCardByApplyResponseList(couponCards, orderItem);
     }
 

@@ -37,17 +37,17 @@ public class ProductListResponse implements Serializable {
         if (product.getDiscountedPrice() == 0 && product.getDiscountRate() == 0) {
             return ProductListResponse.builder()
                     .id(product.getId())
-                    .name(product.getName())
-                    .brand(product.getBrand().getName())
-                    .mainFile(product.getFile().getFileName())
+                    .name(product.getTitle())
+                    .brand(product.getProductOption().getBrand().getName())
+                    .mainFile(product.getProductOption().getFile().getFileName())
                     .price(product.getProductOption().getPrice())
                     .build();
         } else {
             return ProductListResponse.builder()
                     .id(product.getId())
-                    .name(product.getName())
-                    .brand(product.getBrand().getName())
-                    .mainFile(product.getFile().getFileName())
+                    .name(product.getTitle())
+                    .brand(product.getProductOption().getBrand().getName())
+                    .mainFile(product.getProductOption().getFile().getFileName())
                     .price(product.getProductOption().getPrice())
                     .discountedPrice(product.getDiscountedPrice())
                     .discountRate(product.getDiscountRate())
