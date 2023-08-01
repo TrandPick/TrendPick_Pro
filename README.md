@@ -248,8 +248,16 @@ Footer // issue tracker를 사용하는 경우 참조한 issue tracker ID를 기
 
 캐시 변경 시에도 요청 시간이 그대로인지, 늘어났는지 상황을 부여하여 확인했고 멤버 email에 DB인덱싱을 적용하여 개선을 이끌어내고자 했습니다. 전체적으로는 필요한 데이터만 받으면서 최적화된 데이터 전송을 하도록 반환 값들을 dto 객체로 수정했습니다.
 
-<br><br>
+<br>
 
+## 프로젝트 트러블 슈팅
+- [카프카와 Redis를 활용한 재고에 대한 동시성 처리기 - 1 / 이수호](https://suho0303.tistory.com/48)
+- [카프카를 활용한 재고에 대한 동시성 처리기 - 2 / 이수호](https://suho0303.tistory.com/50)
+- [카프카와 레디스를 활용한 재고에 대한 동시성 처리기 - 3 / 이수호](https://suho0303.tistory.com/51)
+- [CI/CD 구축 시 방식에 대한 고민(Jenkins, Github Actions) / 이수호](https://suho0303.tistory.com/49)
+
+
+<br>
 
 ## 👏 팀원 소개
 | [<img src="https://avatars.githubusercontent.com/u/26915908?v=4" width="200">](https://github.com/angelSooho) | [<img src="https://avatars.githubusercontent.com/u/71963159?v=4" width="200">](https://github.com/hye-0000) | [<img src="https://avatars.githubusercontent.com/u/110995932?v=4">](https://github.com/jooooonj) | [<img src="https://avatars.githubusercontent.com/u/62290451?v=4" width="200">](https://github.com/mmunkyeong) |  

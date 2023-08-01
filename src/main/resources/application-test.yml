@@ -1,0 +1,16 @@
+spring:
+  thymeleaf:
+    enabled: false
+  datasource:
+    driver-class-name: ${db.driver}
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+  jpa:
+    hibernate:
+      ddl-auto: create
+  data:
+    redis:
+      host: ${redis.devHost}
+  kafka:
+    bootstrap-servers: localhost:${custom.kafka.devPort}
