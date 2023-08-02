@@ -1,4 +1,4 @@
-package project.trendpick_pro.domain.common.redisson.service;
+package project.trendpick_pro.global.redis.redisson.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
