@@ -150,8 +150,8 @@
                     </h3>
                     <div class="grid grid-cols-3 gap-4 cursor-pointer label">
                         <div th:each="tag, iterStat : ${allTags}" class="flex items-center space-x-2">
-                            <input type="checkbox" th:field="*{tags}" th:name="${tag.name}" th:value="${tag.name}" id="tag_${iterStat.index}" class="checkbox checkbox-success" />
-                            <label th:for="'tag_' + ${iterStat.index}" class="ml-2" th:text="${tag.name}"></label>
+                            <input type="checkbox" th:field="*{tags}" th:name="${tag}" th:value="${tag}" id="tag_${iterStat.index}" class="checkbox checkbox-success" />
+                            <label th:for="'tag_' + ${iterStat.index}" class="ml-2" th:text="${tag}"></label>
                         </div>
                     </div>
                 </div>

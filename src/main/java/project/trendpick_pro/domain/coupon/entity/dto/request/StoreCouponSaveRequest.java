@@ -3,7 +3,7 @@ package project.trendpick_pro.domain.coupon.entity.dto.request;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class StoreCouponSaveRequest {
 
     @NotBlank(message = "쿠폰 이름을 입력해주세요.")
@@ -32,4 +31,19 @@ public class StoreCouponSaveRequest {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer issueAfterDate;
+
+    @Builder
+    private StoreCouponSaveRequest(String name, int limitCount, int limitIssueDate,
+                                  Integer minimumPurchaseAmount, int discountPercent,
+                                  String expirationType, LocalDateTime startDate, LocalDateTime endDate, Integer issueAfterDate) {
+        this.name = name;
+        this.limitCount = limitCount;
+        this.limitIssueDate = limitIssueDate;
+        this.minimumPurchaseAmount = minimumPurchaseAmount;
+        this.discountPercent = discountPercent;
+        this.expirationType = expirationType;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.issueAfterDate = issueAfterDate;
+    }
 }
