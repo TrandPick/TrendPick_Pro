@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AskTest {
 
-    @DisplayName("답변 생성지 답변 상태는 YET 이다.")
+    @DisplayName("문의 생성시 답변 상태는 YET 이다.")
     @Test
     void initAsk() throws Exception {
         //given //when
@@ -18,7 +18,7 @@ class AskTest {
         assertThat(ask.getStatus()).isEqualTo(AskStatus.YET);
     }
 
-    @DisplayName("답변이 완료되면 답변 상태는 COMPLETED 이다.")
+    @DisplayName("문의에 대한 답변이 완료되면 문의 상태는 COMPLETED 이다.")
     @Test
     void updateAskStatus() throws Exception {
         //given

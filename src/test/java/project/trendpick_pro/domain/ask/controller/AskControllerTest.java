@@ -1,19 +1,18 @@
 package project.trendpick_pro.domain.ask.controller;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import project.trendpick_pro.ControllerTestSupport;
+import project.trendpick_pro.domain.answer.service.AnswerService;
 import project.trendpick_pro.domain.ask.entity.dto.form.AskForm;
 import project.trendpick_pro.domain.ask.entity.dto.response.AskResponse;
-import project.trendpick_pro.domain.ask.service.impl.AskServiceImpl;
+import project.trendpick_pro.domain.ask.service.AskService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.RoleType;
-import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.global.util.rsData.RsData;
 
 import static org.mockito.BDDMockito.given;
@@ -24,14 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AskControllerTest extends ControllerTestSupport {
 
-    @Mock
-    protected MemberRepository memberRepository;
-
-    @MockBean
-    protected AskServiceImpl askService;
-
-    @BeforeEach
-    void setUp() {
+    @AfterEach
+    void tearDown() {
         memberRepository.deleteAllInBatch();
     }
 
