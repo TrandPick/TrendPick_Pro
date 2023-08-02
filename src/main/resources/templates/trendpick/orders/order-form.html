@@ -97,7 +97,7 @@
                     <img th:src="|https://kr.object.ncloudstorage.com/trendpick/${orderItem.product.getProductOption().getFile().getFileName()}|"  alt="Product Image"/>
                 </td>
                 <td class="text-center">
-                    <span class="text-center" id="Product" th:text="${orderItem.product.name}"></span>
+                    <span class="text-center" id="Product" th:text="${orderItem.product.getTitle()}"></span>
                 </td>
                 <td class="text-center">
                     <span class="text-center" th:text="${orderItem.size}"></span>

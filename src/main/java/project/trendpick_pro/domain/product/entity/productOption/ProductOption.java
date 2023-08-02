@@ -77,8 +77,12 @@ public class ProductOption implements Serializable {
                 .build();
     }
 
-    public void settingConnection(Brand brand, MainCategory mainCategory, SubCategory subCategory, CommonFile file, ProductStatus status) {
+    public void connectBrand(Brand brand) {
         this.brand = brand;
+    }
+
+    public void settingConnection(Brand brand, MainCategory mainCategory, SubCategory subCategory, CommonFile file, ProductStatus status) {
+        connectBrand(brand);
         this.mainCategory = mainCategory;
         this.subCategory = subCategory;
         this.file = file;
