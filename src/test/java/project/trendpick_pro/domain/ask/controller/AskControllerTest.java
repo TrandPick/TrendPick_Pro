@@ -45,9 +45,9 @@ class AskControllerTest extends ControllerTestSupport {
                         .param("productId", "1")
                         .param("title", "ask title")
                         .param("content", "ask content")
-                )
-                .andDo(print())
-                .andExpect(status().isOk());
+        )
+        .andDo(print())
+        .andExpect(status().isOk());
     }
 
     @WithMockUser(username = "testUser", roles = {"MEMBER"})
@@ -65,15 +65,15 @@ class AskControllerTest extends ControllerTestSupport {
 
         //when //then
         mockMvc.perform(
-                        post("/trendpick/asks/edit/" + 1)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .param("askId", "1")
-                                .param("productId", "1")
-                                .param("title", "ask title")
-                                .param("content", "ask content")
-                )
-                .andDo(print())
-                .andExpect(status().isOk());
+                post("/trendpick/asks/edit/" + 1)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("askId", "1")
+                .param("productId", "1")
+                .param("title", "ask title")
+                .param("content", "ask content")
+        )
+        .andDo(print())
+        .andExpect(status().isOk());
     }
 
     @DisplayName("누구나 상품에 대한 문의 내용을 조회할 수 있다.")
@@ -84,11 +84,11 @@ class AskControllerTest extends ControllerTestSupport {
 
         //when //then
         mockMvc.perform(
-                        get("/trendpick/asks/" + 1)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                )
-                .andDo(print())
-                .andExpect(status().isOk());
+                get("/trendpick/asks/" + 1)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        )
+        .andDo(print())
+        .andExpect(status().isOk());
     }
 
     private Member createMember() {
