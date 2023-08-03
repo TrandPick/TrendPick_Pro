@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +15,7 @@ import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.delivery.entity.DeliveryState;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.MemberRoleType;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
@@ -30,7 +29,6 @@ import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.product.Product;
-import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -177,7 +175,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public Page<OrderResponse> findAll(Member member, int offset) {
         Page<OrderResponse> findOrders;
-        if (member.getRole().equals(RoleType.MEMBER)) {
+        if (member.getRole().equals(MemberRoleType.MEMBER)) {
             findOrders = orderRepository.findAllByMember(new OrderSearchCond(member.getId()), PageRequest.of(offset, 10));
         } else {
             findOrders = orderRepository.findAllBySeller(new OrderSearchCond(member.getBrand()), PageRequest.of(offset, 10));

@@ -1,7 +1,6 @@
 package project.trendpick_pro.domain.coupon.repository;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,7 @@ import project.trendpick_pro.IntegrationTestSupport;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
 import project.trendpick_pro.domain.coupon.entity.CouponCard;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.MemberRoleType;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.store.entity.Store;
 import project.trendpick_pro.domain.store.repository.StoreRepository;
@@ -20,7 +19,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 class CouponCardRepositoryTest extends IntegrationTestSupport {
@@ -56,7 +54,7 @@ class CouponCardRepositoryTest extends IntegrationTestSupport {
                 .password("12345")
                 .username("TrendPick")
                 .phoneNumber("010-1234-5678")
-                .role(RoleType.MEMBER)
+                .role(MemberRoleType.MEMBER)
                 .brand("Polo")
                 .build();
         Member savedMember = memberRepository.save(member);
@@ -94,7 +92,7 @@ class CouponCardRepositoryTest extends IntegrationTestSupport {
                 .password("12345")
                 .username("TrendPick")
                 .phoneNumber("010-1234-5678")
-                .role(RoleType.MEMBER)
+                .role(MemberRoleType.MEMBER)
                 .brand("Polo")
                 .build();
         Member savedMember = memberRepository.save(member);
