@@ -18,6 +18,7 @@ import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.global.util.rsData.RsData;
 import project.trendpick_pro.global.util.Ut;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class Rq {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<Member> member = memberService.findByEmail(username);
-        member.ifPresent(memberService::updateRecentlyAccessDate);
+        member.ifPresent(member1 -> memberService.updateRecentlyAccessDate(member1, LocalDateTime.now()));
     }
 
     public Boolean checkLogin() {

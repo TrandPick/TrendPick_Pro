@@ -9,44 +9,39 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import project.trendpick_pro.global.basedata.tagname.service.impl.TagNameServiceImpl;
-import project.trendpick_pro.global.util.rq.Rq;
-import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.dto.response.MemberInfoResponse;
 import project.trendpick_pro.domain.member.entity.form.AddressForm;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.service.MemberService;
-import project.trendpick_pro.domain.recommend.service.RecommendService;
+import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
+import project.trendpick_pro.global.util.rq.Rq;
 import project.trendpick_pro.global.util.rsData.RsData;
 
-@Controller
-@RequiredArgsConstructor
 @RequestMapping("/trendpick/member")
+@RequiredArgsConstructor
+@Controller
 public class MemberController {
 
-    private final MemberService memberService;
-    private final TagNameServiceImpl tagNameServiceImpl;
-    private final RecommendService recommendService;
-
     private final Rq rq;
+
+    private final MemberService memberService;
+    private final TagNameService tagNameService;
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/register")
     public String join(JoinForm joinForm, Model model) {
         model.addAttribute("joinForm", joinForm);
-        model.addAttribute("allTags", tagNameServiceImpl.findAll());
+        model.addAttribute("allTags", tagNameService.findAll());
         return "trendpick/usr/member/join";
     }
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/register")
-    public String join(@ModelAttribute @Valid JoinForm joinForm) {
-        RsData<Member> member = memberService.join(joinForm);
-        if (member.isFail())
-            return rq.historyBack(member);
-        if(member.getData().getRole().getValue().equals("MEMBER"))
-            recommendService.rankRecommend(member.getData());
-        return rq.redirectWithMsg("/trendpick/member/login", member);
+    public String join(@Valid JoinForm joinForm) {
+        RsData<Long> memberId = memberService.join(joinForm);
+        if (memberId.isFail())
+            return rq.historyBack(memberId);
+        return rq.redirectWithMsg("/trendpick/member/login", memberId);
     }
 
     @PreAuthorize("isAnonymous()")
@@ -72,9 +67,9 @@ public class MemberController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/edit/address")
-    public String modifyAddress(@ModelAttribute @Valid AddressForm addressForm, Model model) {
-        RsData<Member> member = memberService.modifyAddress(rq.getLogin(), addressForm.address());
-        model.addAttribute("MemberInfo", MemberInfoResponse.of(member.getData()));
+    public String modifyAddress(@Valid AddressForm addressForm, Model model) {
+        RsData<MemberInfoResponse> member = memberService.modifyAddress(rq.getLogin(), addressForm.address());
+        model.addAttribute("MemberInfo", member);
         return rq.redirectWithMsg("/trendpick/member/info", member);
     }
 }

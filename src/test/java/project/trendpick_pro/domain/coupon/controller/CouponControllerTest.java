@@ -14,14 +14,15 @@ import java.util.List;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class CouponControllerTest extends ControllerTestSupport {
 
-    @WithMockUser(username = "testUser", roles = {"MEMBER"})
+    @WithMockUser(username = "testUser", roles = {"BRAND_ADMIN"})
     @DisplayName("쿠폰을 발행한다.")
     @Test
-    void generated() throws Exception {
+    void createCoupon() throws Exception {
         //given
         StoreCouponSaveRequest request = StoreCouponSaveRequest.builder()
                 .name("coupon")
@@ -36,7 +37,7 @@ class CouponControllerTest extends ControllerTestSupport {
 
         //when //then
         // params StoreCouponSaveRequest
-        mockMvc.perform(post("/trendpick/coupons/polo//generate")
+        mockMvc.perform(post("/trendpick/coupons/polo/generate")
                 .param("name", request.getName())
                 .param("limitCount", String.valueOf(request.getLimitCount()))
                 .param("limitIssueDate", String.valueOf(request.getLimitIssueDate()))
@@ -47,7 +48,6 @@ class CouponControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk());
     }
 
-    @WithMockUser(username = "testUser", roles = {"MEMBER"})
     @DisplayName("발행했던 쿠폰들을 확인한다.")
     @Test
     void showAllCoupons() throws Exception {
@@ -70,8 +70,10 @@ class CouponControllerTest extends ControllerTestSupport {
 
         //when //then
         mockMvc.perform(get("/trendpick/coupons/box")
-                        .param("productId", "1"))
-                .andExpect(status().isOk());
+                        .param("productId", "1")
+        )
+        .andDo(print())
+        .andExpect(status().isOk());
 
     }
 }

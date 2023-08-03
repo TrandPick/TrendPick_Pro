@@ -8,4 +8,8 @@ import java.util.List;
 public class TagRequest {
 
     List<String> tags;
+
+    public TagRequest(List<String> tags) {
+        this.tags = tags;
+    }
 }
