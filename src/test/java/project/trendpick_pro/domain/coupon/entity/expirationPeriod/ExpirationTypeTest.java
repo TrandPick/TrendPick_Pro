@@ -18,7 +18,7 @@ class ExpirationTypeTest {
         );
     }
 
-    @DisplayName("상품 타입이 재고 관련 타입인지 체크한다.")
+    @DisplayName("쿠폰 타입이 ExpirationType 관련 타입인지 체크한다.")
     @MethodSource("provideCouponTypeCheckingExpirationType")
     @ParameterizedTest
     void containsExpirationType(ExpirationType expirationType, boolean expected) throws Exception {
