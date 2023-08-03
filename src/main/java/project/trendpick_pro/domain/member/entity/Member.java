@@ -38,7 +38,7 @@ public class Member extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private RoleType role;
+    private MemberRoleType role;
 
     private String brand;
 
@@ -52,7 +52,7 @@ public class Member extends BaseTimeEntity {
     private long restCash;
 
     @Builder
-    private Member(String email, String password, String username, String phoneNumber, RoleType role,String brand) {
+    private Member(String email, String password, String username, String phoneNumber, MemberRoleType role,String brand) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -61,7 +61,7 @@ public class Member extends BaseTimeEntity {
         this.brand = brand;
     }
 
-    public static Member of(JoinForm joinForm, String password, RoleType role, String brand) {
+    public static Member of(JoinForm joinForm, String password, MemberRoleType role, String brand) {
         return Member.builder()
                 .email(joinForm.email())
                 .password(password)
@@ -72,7 +72,7 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
-    public static Member of(JoinForm joinForm, String password, RoleType role) {
+    public static Member of(JoinForm joinForm, String password, MemberRoleType role) {
         return Member.builder()
                 .email(joinForm.email())
                 .password(password)

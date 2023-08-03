@@ -11,7 +11,7 @@ import project.trendpick_pro.domain.cash.entity.CashLog;
 import project.trendpick_pro.domain.cash.entity.dto.CashResponse;
 import project.trendpick_pro.domain.cash.service.CashService;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.MemberRoleType;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
@@ -40,9 +40,9 @@ public class MemberServiceImpl implements MemberService {
     private final BrandService brandService;
 
     private Member settingMember(JoinForm joinForm) {
-        RoleType roleType = RoleType.getRoleType(joinForm.state());
+        MemberRoleType roleType = MemberRoleType.getRoleType(joinForm.state());
         Member member = Member.of(joinForm, passwordEncoder.encode(joinForm.password()), roleType);
-        if (roleType == RoleType.BRAND_ADMIN) {
+        if (roleType == MemberRoleType.BRAND_ADMIN) {
             member = Member.of(joinForm, passwordEncoder.encode(joinForm.password()), roleType, joinForm.brand());
             saveBrandAndStoreIfNotExists(joinForm.brand());
         }
@@ -60,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
         }
         Member member = settingMember(joinForm);
         Member savedMember = memberRepository.save(member);
-        if (member.getRole() == RoleType.MEMBER) {
+        if (member.getRole() == MemberRoleType.MEMBER) {
             recommendService.rankRecommend(savedMember);
         }
         return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
