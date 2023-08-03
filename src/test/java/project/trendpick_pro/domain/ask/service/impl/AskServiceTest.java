@@ -20,8 +20,7 @@ import project.trendpick_pro.domain.product.repository.ProductRepository;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.*;
 
 class AskServiceTest extends IntegrationTestSupport {
 
@@ -163,6 +162,15 @@ class AskServiceTest extends IntegrationTestSupport {
         assertThat(response)
                 .extracting("title", "content")
                 .contains("title2", "content2");
+    }
+
+    @DisplayName("저장되지 않은 문의는 조회할 수 없다.")
+    @Test
+    void findAskNoSave() throws Exception {
+        //when //then
+        assertThatThrownBy(() -> askService.find(1L))
+                .isInstanceOf(AskNotFoundException.class)
+                .hasMessage("해당 문의글은 존재하지 않습니다.");
     }
 
     @DisplayName("임의로 지정한 상품에 대한 문의 내역을 확인한다.")
