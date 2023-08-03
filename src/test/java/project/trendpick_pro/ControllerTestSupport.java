@@ -17,9 +17,11 @@ import project.trendpick_pro.domain.coupon.controller.CouponCardController;
 import project.trendpick_pro.domain.coupon.controller.CouponController;
 import project.trendpick_pro.domain.coupon.service.CouponCardService;
 import project.trendpick_pro.domain.coupon.service.CouponService;
+import project.trendpick_pro.domain.member.controller.MemberController;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.service.ProductService;
+import project.trendpick_pro.global.basedata.tagname.service.TagNameService;
 import project.trendpick_pro.global.security.SecurityConfig;
 import project.trendpick_pro.global.util.rq.Rq;
 
@@ -29,7 +31,8 @@ import project.trendpick_pro.global.util.rq.Rq;
     controllers = {
         AskController.class,
         CouponCardController.class,
-        CouponController.class
+        CouponController.class,
+        MemberController.class
     }
 )
 public abstract class ControllerTestSupport {
@@ -42,6 +45,9 @@ public abstract class ControllerTestSupport {
 
     @MockBean
     protected Rq rq;
+
+    @MockBean
+    protected TagNameService tagNameService;
 
     @MockBean
     protected ProductService productService;
