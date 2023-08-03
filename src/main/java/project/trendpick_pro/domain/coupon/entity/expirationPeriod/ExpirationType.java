@@ -2,6 +2,8 @@ package project.trendpick_pro.domain.coupon.entity.expirationPeriod;
 
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public enum ExpirationType {
     PERIOD("PERIOD"),  //oo일 부터 oo일
@@ -11,5 +13,9 @@ public enum ExpirationType {
 
     ExpirationType(String value) {
         this.value = value;
+    }
+
+    public static boolean isType(ExpirationType expirationType) {
+        return List.of(PERIOD, ISSUE_AFTER_DATE).contains(expirationType);
     }
 }

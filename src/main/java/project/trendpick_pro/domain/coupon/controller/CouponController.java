@@ -14,19 +14,20 @@ import project.trendpick_pro.global.util.rsData.RsData;
 @RequestMapping("/trendpick/coupons")
 @RequiredArgsConstructor
 public class CouponController {
+
     private final CouponService couponService;
     private final Rq rq;
 
     @GetMapping("/{storeName}/generate")
-    public String generate(@PathVariable("storeName") String storeName, StoreCouponSaveRequest storeCouponSaveRequest, Model model) {
+    public String createCoupon(@PathVariable("storeName") String storeName, StoreCouponSaveRequest storeCouponSaveRequest, Model model) {
         model.addAttribute("couponForm", storeCouponSaveRequest);
         model.addAttribute("storeName", storeName);
         return "/trendpick/store/coupon/generate";
     }
 
     @PostMapping("/{storeName}/generate")
-    public String generate(@PathVariable("storeName") String storeName, @Valid StoreCouponSaveRequest storeCouponSaveRequest) {
-        RsData<String> result = couponService.generate(storeName, storeCouponSaveRequest);
+    public String createCoupon(@PathVariable("storeName") String storeName, @Valid StoreCouponSaveRequest storeCouponSaveRequest) {
+        RsData<String> result = couponService.createCoupon(storeName, storeCouponSaveRequest);
         if (result.isFail()) {
             return rq.historyBack(result);
         } return rq.redirectWithMsg("/trendpick/products/list?main-category=all", "쿠폰이 성공적으로 발급되었습니다.");

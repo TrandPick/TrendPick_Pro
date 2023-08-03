@@ -5,11 +5,12 @@ import project.trendpick_pro.domain.coupon.entity.dto.response.CouponCardByApply
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.global.util.rsData.RsData;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CouponCardService {
 
-    RsData<CouponCard> issue(Member member, Long couponId);
+    RsData issue(Member member, Long couponId, LocalDateTime dateTime);
 
     List<CouponCardByApplyResponse> showCouponCardsByOrderItem(Long orderItemId);
 

@@ -10,11 +10,12 @@ import project.trendpick_pro.domain.coupon.entity.dto.response.CouponCardByApply
 import project.trendpick_pro.domain.coupon.service.CouponCardService;
 import project.trendpick_pro.global.util.rsData.RsData;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Controller
-@RequiredArgsConstructor
 @RequestMapping("/trendpick/usr/couponCards")
+@RequiredArgsConstructor
+@Controller
 public class CouponCardController {
 
     private final Rq rq;
@@ -23,7 +24,8 @@ public class CouponCardController {
     @PreAuthorize("hasRole('MEMBER')")
     @PostMapping("/{couponId}/issue")
     public String issueCoupon(@PathVariable("couponId") Long couponId, HttpServletRequest req) {
-        return processRequest(couponCardService.issue(rq.getMember(), couponId), "쿠폰이 발급되었습니다.", req);
+        RsData result = couponCardService.issue(rq.getMember(), couponId, LocalDateTime.now());
+        return processRequest(result, "쿠폰이 발급 되었습니다.", req);
     }
 
     @PreAuthorize("hasRole('MEMBER')")
@@ -36,13 +38,15 @@ public class CouponCardController {
     @PreAuthorize("hasRole('MEMBER')")
     @PostMapping("apply")
     public String applyCoupon(@RequestParam("couponCard") Long couponCardId, @RequestParam("orderItem") Long orderItemId, HttpServletRequest req) {
-        return processRequest(couponCardService.apply(couponCardId, orderItemId), "쿠폰이 적용되었습니다.", req);
+        RsData result = couponCardService.apply(couponCardId, orderItemId);
+        return processRequest(result, "쿠폰이 적용되었습니다.", req);
     }
 
     @PreAuthorize("hasRole('MEMBER')")
     @PostMapping("cancel")
     public String cancelCoupon(@RequestParam("orderItem") Long orderItemId, HttpServletRequest req) {
-        return processRequest(couponCardService.cancel(orderItemId), "쿠폰 적용이 취소되었습니다.", req);
+        RsData result = couponCardService.cancel(orderItemId);
+        return processRequest(result, "쿠폰 적용이 취소되었습니다.", req);
     }
 
     private String processRequest(RsData result, String successMsg, HttpServletRequest req) {
