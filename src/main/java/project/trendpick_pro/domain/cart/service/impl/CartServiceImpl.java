@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.Cart;
 import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.cart.entity.dto.request.CartItemRequest;
-import project.trendpick_pro.domain.cart.entity.dto.response.CartItemResponse;
 import project.trendpick_pro.domain.cart.repository.CartItemRepository;
 import project.trendpick_pro.domain.cart.repository.CartRepository;
 import project.trendpick_pro.domain.cart.service.CartService;
@@ -22,6 +21,7 @@ import project.trendpick_pro.global.util.rsData.RsData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public RsData<CartItemResponse> addCartItem(Member member, CartItemRequest cartItemRequest) {
+    public RsData<CartItem> addCartItem(Member member, CartItemRequest cartItemRequest) {
 
         Cart cart = cartRepository.findByMemberId(member.getId());
         Product product = productService.findById(cartItemRequest.getProductId());
@@ -50,74 +50,70 @@ public class CartServiceImpl implements CartService {
         }
         CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId());
 
-        if (cartItem != null) {
-            cartItem.addCount(cartItemRequest.getQuantity());
-            cart.updateCount(cart.getTotalCount() + 1);
-        } else {
+        if (cartItem == null)
             cartItem = CartItem.of(cart, product, cartItemRequest);
-            cart.updateCount(cart.getTotalCount() + 1);
-            cartItemRepository.save(cartItem);
-        }
+
+        cartItem.updateCount(cartItemRequest.getQuantity());
+        cartItemRepository.save(cartItem);
 
         favoriteTagService.updateTag(member, product, TagType.CART);
-        return RsData.of("S-1", "상품이 추가되었습니다.", CartItemResponse.of(cartItem));
+        return RsData.of("S-1", "상품이 추가되었습니다.", cartItem);
+
     }
 
-    @Transactional
-    @Override
-    public RsData<CartItem> updateCartItem(Long cartItemId, int quantity) {
-        CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
-        if (cartItem == null) {
-            return RsData.of("F-1", "해당 상품은 장바구니에 없습니다.");
-        }
-        cartItem.update(quantity);
-        return RsData.of("S-1", "상품 수량이 업데이트 되었습니다.", cartItem);
-    }
-
-
-    @Transactional
-    @Override
-    public void deleteCartItem(Long cartItemId) {
-        CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
-        if(cartItem != null){
-            Cart cart = cartItem.getCart();
-            cart.updateCount(cart.getTotalCount() - 1);
-        }
-        cartItemRepository.deleteById(cartItemId);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<CartItem> currentCartItems(Cart cart) {
-        return cartItemRepository.findAllByCart(cart);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<CartItem> currentCartItems(Member member, CartToOrderRequest request) {
-        Cart cart = getCartByUser(member.getId());
-        List<CartItem> cartItemList = new ArrayList<>();
-
-        for (Long id : request.getSelectedItems()) {
-            for (CartItem item : cartItemRepository.findByProductId(id)) {
-                if (Objects.equals(item.getCart().getId(), cart.getId())) {
-                    cartItemList.add(item);
-                }
+        @Transactional
+        @Override
+        public RsData updateCartItemCount (Long cartItemId,int quantity){
+            CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
+            if (cartItem == null) {
+                return RsData.of("F-1", "해당 상품은 장바구니에 없습니다.");
             }
+            cartItem.updateCount(quantity);
+            return RsData.of("S-1", "상품 수량이 업데이트 되었습니다.");
         }
-        return cartItemList;
-    }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Cart getCartByUser(Long memberId) {
-        return cartRepository.findByMemberId(memberId);
-    }
 
-    @Transactional
-    @Override
-    public void deleteCartItemsByMember(Order order) {
-        cartItemRepository.deleteAllInBatch(order.getCartItems());
+        @Transactional
+        @Override
+        public void deleteCartItem (Long cartItemId){
+            CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
+            if (cartItem != null) {
+                Cart cart = cartItem.getCart();
+                cart.updateTotalCount(-1 * cartItem.getQuantity());
+            }
+            cartItemRepository.deleteById(cartItemId);
+        }
+
+        @Transactional(readOnly = true)
+        @Override
+        public List<CartItem> getAllCartItems(Cart cart){
+            return cartItemRepository.findAllByCart(cart);
+        }
+
+        @Transactional(readOnly = true)
+        @Override
+        public List<CartItem> getSelectedCartItems(Member member, CartToOrderRequest request){
+            Cart cart = getCartByUser(member.getId());
+            List<CartItem> cartItemList = new ArrayList<>();
+
+            for (Long productId : request.getSelectedItems()) {
+                CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId);
+                if(cartItem!=null)
+                    cartItemList.add(cartItem);
+            }
+            return cartItemList;
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public Cart getCartByUser (Long memberId){
+            return cartRepository.findByMemberId(memberId);
+        }
+
+        @Transactional
+        @Override
+        public void deleteCartItemsByMember (Order order){
+            cartItemRepository.deleteAllInBatch(order.getCartItems());
+        }
     }
-}
 
