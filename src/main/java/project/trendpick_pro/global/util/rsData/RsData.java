@@ -2,6 +2,7 @@ package project.trendpick_pro.global.util.rsData;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import project.trendpick_pro.domain.cart.entity.CartItem;
 
 @Getter
 @AllArgsConstructor
@@ -20,6 +21,10 @@ public class RsData<T> {
 
     public static <T> RsData<T> successOf(T data) {
         return of("S-1", "성공", data);
+    }
+
+    public static RsData success() {
+        return of("S-1", "성공");
     }
 
     public static <T> RsData<T> failOf(T data) {

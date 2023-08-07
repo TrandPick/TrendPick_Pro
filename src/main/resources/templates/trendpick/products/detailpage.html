@@ -89,14 +89,14 @@
                     </button>
                 </form>
                 <div class="form-container">
-                    <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" th:object="${productRequest}" method="post" onsubmit="return confirmCart()">
+                    <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" method="post" onsubmit="return confirmCart()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="size" id="addToCartSize" value="1">
                         <input type="hidden" name="color" id="addToCartColor" value="1">
                         <input type="hidden" id="addToCartQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
-                    <form onsubmit="buyNow(this); return false;" id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${productRequest}" method="post">
+                    <form onsubmit="buyNow(this); return false;" id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" method="post">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="size" id="buySize" value="1">
                         <input type="hidden" name="color" id="buyColor" value="1">
