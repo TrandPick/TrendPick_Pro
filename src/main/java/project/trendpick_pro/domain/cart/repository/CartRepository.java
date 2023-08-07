@@ -9,6 +9,4 @@ import java.util.List;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
     Cart findByMemberId(Long memberId);
-    @Query("select c from Cart c where c.member = :member")
-    List<Cart> findByCartMember(Member member);
 }

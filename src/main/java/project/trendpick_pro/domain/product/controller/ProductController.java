@@ -124,7 +124,6 @@ public class ProductController {
         Page<AskResponse> productAsk = askService.findAsksByProduct(productId, 0);
         model.addAttribute("productReview", productReviews);
         model.addAttribute("productAsk", productAsk);
-        model.addAttribute("productRequest", new ProductRequest());
         return "trendpick/products/detailpage";
     }
 

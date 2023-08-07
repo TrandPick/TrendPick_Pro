@@ -73,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
         if(request.getSelectedItems().isEmpty()){
             return RsData.of("F-1","상품을 선택한 후 주문해주세요.");
         }
-        List<CartItem> cartItems = cartService.currentCartItems(member, request);
+        List<CartItem> cartItems = cartService.getSelectedCartItems(member, request);
         if (!Objects.equals(cartItems.get(0).getCart().getMember().getId(), member.getId())) {
             return RsData.of("F-1", "현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
         }
