@@ -11,7 +11,8 @@ import project.trendpick_pro.domain.cash.entity.CashLog;
 import project.trendpick_pro.domain.cash.entity.dto.CashResponse;
 import project.trendpick_pro.domain.cash.service.CashService;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.MemberRoleType;
+import project.trendpick_pro.domain.member.entity.dto.response.MemberInfoResponse;
 import project.trendpick_pro.domain.member.entity.form.JoinForm;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
@@ -23,6 +24,7 @@ import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.dto.request.TagRequest;
 import project.trendpick_pro.global.util.rsData.RsData;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,31 +41,16 @@ public class MemberServiceImpl implements MemberService {
     private final CashService cashService;
     private final BrandService brandService;
 
-    private Member settingMember(JoinForm joinForm) {
-        RoleType roleType = RoleType.getRoleType(joinForm.state());
-        Member member = Member.of(joinForm, passwordEncoder.encode(joinForm.password()), roleType);
-        if (roleType == RoleType.BRAND_ADMIN) {
-            member = Member.of(joinForm, passwordEncoder.encode(joinForm.password()), roleType, joinForm.brand());
-            saveBrandAndStoreIfNotExists(joinForm.brand());
-        }
-        if (joinForm.tags() != null) {
-            member.changeTags(createFavoriteTags(joinForm.tags()));
-        }
-        return member;
-    }
-
     @Transactional
     @Override
-    public RsData<Member> join(JoinForm joinForm) {
+    public RsData<Long> join(JoinForm joinForm) {
         if (isEmailSave(joinForm.email())) {
-            return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(joinForm.email()));
+            return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중 입니다.".formatted(joinForm.email()));
         }
         Member member = settingMember(joinForm);
         Member savedMember = memberRepository.save(member);
-        if (member.getRole() == RoleType.MEMBER) {
-            recommendService.rankRecommend(savedMember);
-        }
-        return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
+        checkingMemberType(member);
+        return RsData.of("S-1", "회원가입이 완료 되었습니다.", member.getId());
     }
 
     @Transactional
@@ -72,45 +59,40 @@ public class MemberServiceImpl implements MemberService {
         List<Member> members = new ArrayList<>();
         for (JoinForm joinForm : joinForms) {
             if (isEmailSave(joinForm.email())) {
-                return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(joinForm.email()));
+                return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중 입니다.".formatted(joinForm.email()));
             }
             members.add(settingMember(joinForm));
         }
         memberRepository.saveAll(members);
-        return RsData.of("S-1", "회원가입이 완료되었습니다.", members);
+        return RsData.of("S-1", "회원가입이 완료 되었습니다.", members);
     }
 
     @Transactional
     @Override
-    public void modifyTag(String username, TagRequest tagRequest){
-        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
-        Set<FavoriteTag> tags = new LinkedHashSet<>();
-        for (String tag : tagRequest.getTags()) {
-            FavoriteTag favoriteTag = new FavoriteTag(tag);
-            tags.add(favoriteTag);
-        }
+    public void modifyTag(Member member, TagRequest tagRequest){
+        Set<FavoriteTag> tags = tagRequest.getTags().stream()
+                .map(FavoriteTag::new)
+                .collect(Collectors.toSet());
         member.changeTags(tags);
     }
 
     @Transactional
     @Override
-    public RsData<Member> modifyAddress(Member member, String address){
+    public RsData<MemberInfoResponse> modifyAddress(Member member, String address){
         member.connectAddress(address);
-        return RsData.of("S-1", "주소 수정이 완료되었습니다.", member);
+        return RsData.of("S-1", "주소 수정이 완료되었습니다.", MemberInfoResponse.of(member));
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
     }
-    @Transactional(readOnly = true)
+
     @Override
     public Member findByBrandMember(String name){
         return memberRepository.findByBrand(name);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Optional<Member> findByEmail(String username){
         return memberRepository.findByEmail(username);
@@ -118,8 +100,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updateRecentlyAccessDate(Member member){
-        member.updateRecentlyAccessDate();
+    public void updateRecentlyAccessDate(Member member, LocalDateTime dateTime){
+        member.updateRecentlyAccessDate(dateTime);
     }
 
     @Transactional
@@ -137,10 +119,28 @@ public class MemberServiceImpl implements MemberService {
         return RsData.of("S-1", "성공", new CashResponse(cashLog, newRestCash));
     }
 
-    @Transactional(readOnly = true)
     @Override
     public long getRestCash(Member member) {
         return memberRepository.findById(member.getId()).get().getRestCash();
+    }
+
+    private void checkingMemberType(Member member) {
+        if (member.getRole() == MemberRoleType.MEMBER) {
+            recommendService.rankRecommend(member);
+        }
+    }
+
+    private Member settingMember(JoinForm joinForm) {
+        MemberRoleType memberRoleType = MemberRoleType.getRoleType(joinForm.state());
+        Member member = Member.of(joinForm, passwordEncoder.encode(joinForm.password()), memberRoleType);
+        if (memberRoleType == MemberRoleType.BRAND_ADMIN) {
+            member.connectBrand(joinForm.brand());
+            saveBrandAndStoreIfNotExists(joinForm.brand());
+        }
+        if (joinForm.tags() != null) {
+            member.changeTags(createFavoriteTags(joinForm.tags()));
+        }
+        return member;
     }
 
     private boolean isEmailSave(String email) {

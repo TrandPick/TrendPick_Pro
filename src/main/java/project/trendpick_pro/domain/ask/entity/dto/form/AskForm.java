@@ -1,12 +1,11 @@
 package project.trendpick_pro.domain.ask.entity.dto.form;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class AskForm {
 
@@ -15,4 +14,11 @@ public class AskForm {
     private String title;
     @NotBlank
     private String content;
+
+    @Builder
+    public AskForm(Long productId, String title, String content) {
+        this.productId = productId;
+        this.title = title;
+        this.content = content;
+    }
 }

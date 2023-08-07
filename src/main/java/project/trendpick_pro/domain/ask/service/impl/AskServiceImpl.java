@@ -1,7 +1,6 @@
 package project.trendpick_pro.domain.ask.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,31 +20,34 @@ import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.Objects;
 
-@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Service
 public class AskServiceImpl implements AskService {
 
     private final AskRepository askRepository;
     private final ProductService productService;
 
-    @Override
     @Transactional
+    @Override
     public RsData<Long> register(Member member, AskForm askForm) {
         Product product = productService.findById(askForm.getProductId());
-        Ask savedAsk = askRepository.save(Ask.of(member, product, askForm));
-        return RsData.of("S-1", product.getName()+"에 대한 문의가 등록되었습니다.", savedAsk.getId());
+        Ask savedAsk = askRepository.save(Ask.of(askForm.getTitle(), askForm.getContent()));
+        savedAsk.connectProduct(product);
+        savedAsk.connectMember(member);
+        return RsData.of("S-1", product.getTitle()+"에 대한 문의가 등록되었습니다.", savedAsk.getId());
     }
 
-    @Override
     @Transactional
+    @Override
     public RsData<AskResponse> modify(Member member, Long askId, AskForm askForm) {
         Ask ask = getAskWithAuthValidation(member, askId);
         ask.update(askForm);
         return RsData.of("S-1", "상품 문의글 수정이 정상적으로 처리되었습니다.", AskResponse.of(ask));
     }
 
-    @Override
     @Transactional
+    @Override
     public RsData<Long> delete(Member member, Long askId) {
         Ask ask = getAskWithAuthValidation(member, askId);
         askRepository.delete(ask);
@@ -53,18 +55,16 @@ public class AskServiceImpl implements AskService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public AskResponse show(Long askId) {
-        Ask ask = askRepository.findById(askId)
-                .orElseThrow(() -> new AskNotFoundException("해당 문의글은 존재하지 않습니다."));
-        return AskResponse.of(ask);
+    public AskResponse find(Long askId) {
+        return AskResponse.of(
+            askRepository.findById(askId)
+                .orElseThrow(() -> new AskNotFoundException("해당 문의글은 존재하지 않습니다."))
+        );
     }
 
     @Override
-    @Transactional(readOnly = true)
-    @Cacheable(key = "#root.methodName + #productId", value = "asks")
-    public Page<AskResponse> showAsksByProduct(Long productId, int offset) {
-        Pageable pageable = PageRequest.of(offset, 10);
+    public Page<AskResponse> findAsksByProduct(Long productId, int offset) {
+        Pageable pageable = PageRequest.of(offset, 5);
         return askRepository.findAllByProductId(productId, pageable);
     }
 

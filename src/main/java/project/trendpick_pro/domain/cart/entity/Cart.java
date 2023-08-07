@@ -27,9 +27,9 @@ public class Cart {
 
     private int totalCount;
 
-    public static Cart createCart(Member member){
+    public static Cart createCart(Member member) {
         Cart cart = new Cart();
-        cart.member= member;
+        cart.member = member;
         cart.totalCount = 0;
         return cart;
     }
@@ -38,19 +38,12 @@ public class Cart {
         this.member = member;
     }
 
-    public void update(int totalCount){
-        this.totalCount=totalCount;
-    }
-
-    public void updateTotalCount() {
-        int totalCount = 0;
-        for (CartItem cartItem : cartItems) {
-            totalCount += cartItem.getQuantity();
-        }
+    public void update(int totalCount) {
         this.totalCount = totalCount;
     }
 
-    public void updateCount(int quantity){
+    public void updateTotalCount(int quantity) {
         this.totalCount += quantity;
     }
+
 }

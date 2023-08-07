@@ -13,7 +13,7 @@ import project.trendpick_pro.domain.ask.entity.dto.response.QAskResponse;
 import java.util.List;
 
 import static project.trendpick_pro.domain.ask.entity.QAsk.ask;
-import static project.trendpick_pro.domain.member.entity.QMember.*;
+import static project.trendpick_pro.domain.member.entity.QMember.member;
 import static project.trendpick_pro.domain.product.entity.product.QProduct.product;
 
 public class AskRepositoryImpl implements AskRepositoryCustom {
@@ -30,7 +30,7 @@ public class AskRepositoryImpl implements AskRepositoryCustom {
                 .select(new QAskResponse(
                         ask.id,
                         product.id,
-                        product.name,
+                        product.title,
                         member.username,
                         member.id,
                         ask.title,
@@ -40,8 +40,10 @@ public class AskRepositoryImpl implements AskRepositoryCustom {
                 ))
                 .from(ask)
                 .innerJoin(ask.product, product)
-                .on(askByProductIdEq(productId))
                 .innerJoin(ask.author, member)
+                .where(
+                    askByProductIdEq(productId)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -50,8 +52,10 @@ public class AskRepositoryImpl implements AskRepositoryCustom {
                 .select(ask.count())
                 .from(ask)
                 .innerJoin(ask.product, product)
-                .on(askByProductIdEq(productId))
-                .innerJoin(ask.author, member);
+                .innerJoin(ask.author, member)
+                .where(
+                    askByProductIdEq(productId)
+                );
 
         return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
     }

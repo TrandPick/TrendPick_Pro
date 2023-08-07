@@ -95,10 +95,10 @@
                     </div>
                     <div>
                         상품명:
-                        <span th:if="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getName()) > 10}"
-                              th:text="${#strings.substring(notification.getOrder().getOrderItems().get(0).getProduct().getName(), 0, 10)} + '...'"></span>
-                        <span th:unless="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getName()) > 10}"
-                              th:text="${notification.getOrder().getOrderItems().get(0).getProduct().getName()}"></span>
+                        <span th:if="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getTitle()) > 10}"
+                              th:text="${#strings.substring(notification.getOrder().getOrderItems().get(0).getProduct().getTitle(), 0, 10)} + '...'"></span>
+                        <span th:unless="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getTitle()) > 10}"
+                              th:text="${notification.getOrder().getOrderItems().get(0).getProduct().getTitle()()}"></span>
                         <span th:if="${notification.getOrder().getOrderItems().size() > 1}">외
                             <span th:text="${notification.getOrder().getOrderItems().size() - 1}"></span>개</span>
                     </div>
@@ -125,10 +125,10 @@
                     </div>
                     <div>
                         상품명:
-                        <span th:if="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getName()) > 10}"
-                              th:text="${#strings.substring(notification.getOrder().getOrderItems().get(0).getProduct().getName(), 0, 10)} + '...'"></span>
-                        <span th:unless="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getName()) > 10}"
-                              th:text="${notification.getOrder().getOrderItems().get(0).getProduct().getName()}"></span>
+                        <span th:if="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getTitle()) > 10}"
+                              th:text="${#strings.substring(notification.getOrder().getOrderItems().get(0).getProduct().getTitle(), 0, 10)} + '...'"></span>
+                        <span th:unless="${#strings.length(notification.getOrder().getOrderItems().get(0).getProduct().getTitle()) > 10}"
+                              th:text="${notification.getOrder().getOrderItems().get(0).getProduct().getTitle()()}"></span>
                         <span th:if="${notification.getOrder().getOrderItems().size() > 1}">외
                             <span th:text="${notification.getOrder().getOrderItems().size() - 1}"></span>개</span>
                     </div>

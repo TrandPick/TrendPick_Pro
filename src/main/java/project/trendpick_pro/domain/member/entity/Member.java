@@ -38,21 +38,22 @@ public class Member extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private RoleType role;
+    private MemberRoleType role;
 
     private String brand;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private Set<FavoriteTag> tags = new LinkedHashSet<>();
 
     private String bankName;
     private String bankAccount;
+
     private String address;
     private LocalDateTime recentlyAccessDate;
     private long restCash;
 
     @Builder
-    private Member(String email, String password, String username, String phoneNumber, RoleType role,String brand) {
+    private Member(String email, String password, String username, String phoneNumber, MemberRoleType role, String brand) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -61,18 +62,7 @@ public class Member extends BaseTimeEntity {
         this.brand = brand;
     }
 
-    public static Member of(JoinForm joinForm, String password, RoleType role, String brand) {
-        return Member.builder()
-                .email(joinForm.email())
-                .password(password)
-                .username(joinForm.username())
-                .phoneNumber(joinForm.phoneNumber())
-                .role(role)
-                .brand(brand)
-                .build();
-    }
-
-    public static Member of(JoinForm joinForm, String password, RoleType role) {
+    public static Member of(JoinForm joinForm, String password, MemberRoleType role) {
         return Member.builder()
                 .email(joinForm.email())
                 .password(password)
@@ -100,11 +90,13 @@ public class Member extends BaseTimeEntity {
     }
 
     public void changeTags(Set<FavoriteTag> tags) {
-        this.tags = tags;
-        for(FavoriteTag tag : tags){
+        this.tags.clear();
+        tags.forEach(tag -> {
             tag.connectMember(this);
             tag.increaseScore(TagType.REGISTER);
-        }
+        });
+        this.tags.addAll(tags);
+
     }
 
     public void addTag(FavoriteTag tag){
@@ -112,7 +104,7 @@ public class Member extends BaseTimeEntity {
         tag.connectMember(this);
     }
 
-    public void updateRecentlyAccessDate() {
-        this.recentlyAccessDate = LocalDateTime.now();
+    public void updateRecentlyAccessDate(LocalDateTime dateTime) {
+        this.recentlyAccessDate = dateTime;
     }
 }

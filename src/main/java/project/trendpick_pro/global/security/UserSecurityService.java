@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.MemberRoleType;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 
@@ -32,14 +32,14 @@ public class UserSecurityService implements UserDetailsService {
             throw new MemberNotFoundException("사용자를 찾을수 없습니다.");
         }
         Member siteUser = member.get();
-        RoleType role = member.get().getRole();
+        MemberRoleType role = member.get().getRole();
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (role.equals(RoleType.ADMIN)) {
-            authorities.add(new SimpleGrantedAuthority(RoleType.ADMIN.getValue()));
-        } else if (role.equals(RoleType.BRAND_ADMIN)) {
-            authorities.add(new SimpleGrantedAuthority(RoleType.BRAND_ADMIN.getValue()));
+        if (role.equals(MemberRoleType.ADMIN)) {
+            authorities.add(new SimpleGrantedAuthority(MemberRoleType.ADMIN.getValue()));
+        } else if (role.equals(MemberRoleType.BRAND_ADMIN)) {
+            authorities.add(new SimpleGrantedAuthority(MemberRoleType.BRAND_ADMIN.getValue()));
         } else {
-            authorities.add(new SimpleGrantedAuthority(RoleType.MEMBER.getValue()));
+            authorities.add(new SimpleGrantedAuthority(MemberRoleType.MEMBER.getValue()));
         }
         return new User(siteUser.getEmail(), siteUser.getPassword(), authorities);
     }

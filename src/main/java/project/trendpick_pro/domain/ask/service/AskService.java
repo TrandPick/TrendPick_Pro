@@ -10,6 +10,6 @@ public interface AskService {
     RsData<Long> register(Member member, AskForm askForm);
     RsData<AskResponse> modify(Member member, Long askId, AskForm askForm);
     RsData<Long> delete(Member member, Long askId);
-    AskResponse show(Long askId);
-    Page<AskResponse> showAsksByProduct(Long productId, int offset);
+    AskResponse find(Long askId);
+    Page<AskResponse> findAsksByProduct(Long productId, int offset);
 }

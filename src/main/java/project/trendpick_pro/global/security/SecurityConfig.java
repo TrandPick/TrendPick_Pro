@@ -59,6 +59,7 @@ public class SecurityConfig {
                 .logoutUrl("/trendpick/member/logout")
                 .logoutSuccessUrl("/trendpick/member/login")
                 .permitAll();
+        //http.csrf().disable();
         return http.build();
     }
 

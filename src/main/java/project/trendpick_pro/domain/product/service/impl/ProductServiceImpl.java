@@ -2,11 +2,10 @@ package project.trendpick_pro.domain.product.service.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,12 +18,9 @@ import project.trendpick_pro.domain.category.entity.MainCategory;
 import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
-import project.trendpick_pro.domain.common.file.FileTranslator;
-import project.trendpick_pro.domain.product.service.ProductService;
-import project.trendpick_pro.global.util.rq.Rq;
 import project.trendpick_pro.domain.common.file.CommonFile;
+import project.trendpick_pro.domain.common.file.FileTranslator;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
 import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.entity.product.ProductStatus;
@@ -38,11 +34,13 @@ import project.trendpick_pro.domain.product.entity.productOption.ProductOption;
 import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
+import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
-import project.trendpick_pro.domain.tags.tag.service.TagService;
 import project.trendpick_pro.domain.tags.tag.entity.TagType;
+import project.trendpick_pro.domain.tags.tag.service.TagService;
+import project.trendpick_pro.global.util.rq.Rq;
 import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.io.IOException;
@@ -50,7 +48,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
@@ -66,7 +64,6 @@ public class ProductServiceImpl implements ProductService {
     private final TagService tagService;
 
     private final Rq rq;
-
     private final AmazonS3 amazonS3;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -102,15 +99,14 @@ public class ProductServiceImpl implements ProductService {
         Brand brand = brandFuture.get();
 
         ProductOption productOption = ProductOption.of(optionSaveRequest);
-        productOption.connectStatus(ProductStatus.SALE);
-        Product product = Product.of(productSaveRequest, mainCategory, subCategory, brand, mainFile, productOption);
-        product.addTag(tags);
+        productOption.settingConnection(brand, mainCategory, subCategory, mainFile, ProductStatus.SALE);
+        Product product = Product.of(productSaveRequest.getName(), productSaveRequest.getDescription());
+        product.updateTags(tags);
 
         Product saveProduct = productRepository.save(product);
         return RsData.of("S-1", "상품 등록이 완료되었습니다.", saveProduct.getId());
     }
 
-    @CachePut(key = "#productId", value = "product")
     @Transactional
     public RsData<Long> modify(Long productId, ProductRequest productRequest, MultipartFile requestMainFile, List<MultipartFile> requestSubFiles) throws IOException {
 
@@ -120,16 +116,14 @@ public class ProductServiceImpl implements ProductService {
         ProductOptionSaveRequest optionSaveRequest = productRequest.getRequest2();
 
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
-
-        product.getFile().deleteFile(amazonS3, bucket);
-        product.disconnectFile();
-
         CommonFile mainFile = fileTranslator.saveFile(requestMainFile);
         List<CommonFile> subFiles = fileTranslator.saveFiles(requestSubFiles);
 
         for (CommonFile subFile : subFiles) {
             mainFile.connectFile(subFile);
         }
+        product.getProductOption().getFile().deleteFile(amazonS3, bucket);
+        product.getProductOption().updateFile(mainFile);
 
         Set<Tag> tags = new LinkedHashSet<>();
         for (String tagName : productSaveRequest.getTags()) {
@@ -137,22 +131,24 @@ public class ProductServiceImpl implements ProductService {
         }
 
         tagService.delete(product.getTags());
-        product.modifyTag(tags);
-        product.update(productSaveRequest, optionSaveRequest, mainFile);
+        product.updateTags(tags);
+        product.update(productSaveRequest, optionSaveRequest);
         return RsData.of("S-1", "상품 수정 완료되었습니다.", product.getId());
     }
 
+//    @Caching(evict = {
+//            @CacheEvict(value = "product", key = "#productId"),
+//            @CacheEvict(value = "productList", allEntries = true)
+//    })
     @Transactional
-    @CacheEvict(value = "products", allEntries = true)
     public void delete(Long productId) {
         rq.getAdmin();
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
-        product.getFile().deleteFile(amazonS3, bucket);
+        product.getProductOption().getFile().deleteFile(amazonS3, bucket);
         productRepository.delete(product);
     }
 
-    @Cacheable(value = "product", key = "#productId")
-    @Transactional(readOnly = true)
+//    @Cacheable(value = "product", key = "#productId")
     public ProductResponse getProduct(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
         if(rq.checkLogin() && rq.checkMember()){
@@ -161,33 +157,20 @@ public class ProductServiceImpl implements ProductService {
         return ProductResponse.of(product);
     }
 
-    @Cacheable(value = "products", key = "#offset + #mainCategory + #subCategory")
-    @Transactional(readOnly = true)
+//    @Cacheable(value = "productList", key = "#offset")
     public Page<ProductListResponse> getProducts(int offset, String mainCategory, String subCategory) {
-        log.info("getProducts 캐싱 ============================================");
         ProductSearchCond cond = new ProductSearchCond(mainCategory, subCategory);
         PageRequest pageable = PageRequest.of(offset, 18);
-        return productRepository.findAllByCategoryId(cond, pageable);
+        Page<ProductListResponse> allByCategoryId = productRepository.findAllByCategoryId(cond, pageable);
+        return allByCategoryId;
     }
 
-    @Cacheable(key = "#pageable.offset", value = "products")
-    @Transactional(readOnly = true)
-    public Page<ProductListResponse> getAllProducts(Pageable pageable) {
-        log.info("getAllProducts 캐싱 ============================================");
-        pageable = PageRequest.of(pageable.getPageNumber(), 18);
-        Page<Product> products = productRepository.findAll(pageable);
-        return products.map(ProductListResponse::of);
-    }
-
-    @Transactional(readOnly = true)
-    @Cacheable(key = "#keyword + #offset", value = "searchProducts")
     public Page<ProductListResponse> findAllByKeyword(String keyword, int offset) {
         ProductSearchCond cond = new ProductSearchCond(keyword);
         PageRequest pageable = PageRequest.of(offset, 18);
         return productRepository.findAllByKeyword(cond, pageable);
     }
 
-    @Transactional(readOnly = true)
     public List<Product> getRecommendProduct(Member member) {
         List<ProductByRecommended> tags = productRepository.findRecommendProduct(member.getEmail());
 
@@ -205,8 +188,6 @@ public class ProductServiceImpl implements ProductService {
             recommendProductByProductId.put(response.getProductId(), response);
         }
 
-        //실제로직! member 선호태그에는 점수가 있을 것이다.
-        //그러니까  우리가 반환하려고 하는 추천상품이 점수가 몇점인지 갱신하는 코드이다.
         for (FavoriteTag memberTag : member.getTags()) {
             if (productIdListByTagName.containsKey(memberTag.getName())) {
                 List<Long> productIdList = productIdListByTagName.get(memberTag.getName());
@@ -220,7 +201,6 @@ public class ProductServiceImpl implements ProductService {
                 .sorted(Comparator.comparing(ProductByRecommended::getTotalScore).reversed())
                 .toList();
 
-        //Product 변환해서 리턴
         List<Product> products = new ArrayList<>();
         for (ProductByRecommended recommendProduct : recommendProductList) {
             products.add(productRepository.findById(recommendProduct.getProductId()).orElseThrow(
@@ -230,7 +210,6 @@ public class ProductServiceImpl implements ProductService {
         return products;
     }
 
-    @Transactional(readOnly = true)
     public RsData<Page<ProductListResponseBySeller>> findProductsBySeller(Member member, int offset) {
         if (member.getBrand() == null)
             RsData.of("F-1", "브랜드 관리자의 브랜드를 알 수 없습니다. 브랜드를 설정하세요.");
@@ -245,12 +224,10 @@ public class ProductServiceImpl implements ProductService {
         product.applyDiscount(discountRate);
     }
 
-    @Transactional(readOnly = true)
     public Product findById(Long id) {
         return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
     }
 
-    @Transactional(readOnly = true)
     public Product findByIdWithBrand(Long productId) {
         return productRepository.findByIdWithBrand(productId);
     }

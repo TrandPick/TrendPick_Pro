@@ -3,7 +3,7 @@ package project.trendpick_pro.domain.orders.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +15,7 @@ import project.trendpick_pro.domain.cart.service.CartService;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.delivery.entity.DeliveryState;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.MemberRoleType;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
@@ -29,23 +29,28 @@ import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.product.Product;
-import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
+import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.TagType;
+import project.trendpick_pro.global.kafka.kafkasave.entity.OutboxMessage;
+import project.trendpick_pro.global.kafka.kafkasave.service.OutboxMessageService;
 import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
 
@@ -53,82 +58,68 @@ public class OrderServiceImpl implements OrderService {
     private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
 
+    private final OutboxMessageService outboxMessageService;
+
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+
     @Transactional
-    public RsData<Order> cartToOrder(Member member, CartToOrderRequest request) {
+    public RsData<Long> cartToOrder(Member member, CartToOrderRequest request) {
         if(member.getAddress().trim().length() == 0) {
             return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
         }
         if(request.getSelectedItems().isEmpty()){
             return RsData.of("F-1","상품을 선택한 후 주문해주세요.");
         }
-
-        List<CartItem> cartItems = cartService.currentCartItems(member, request);
+        List<CartItem> cartItems = cartService.getSelectedCartItems(member, request);
         if (!Objects.equals(cartItems.get(0).getCart().getMember().getId(), member.getId())) {
             return RsData.of("F-1", "현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
         }
+        Order saveOrder = orderRepository.save(createOrder(member, cartItems));
 
-        List<OrderItem> orderItemList = new ArrayList<>();
-        for (CartItem cartItem : cartItems) {
-            Product product = productService.findById(cartItem.getProduct().getId());
-            if (product.getProductOption().getStock() < cartItem.getQuantity()) {
-                return RsData.of("F-2", product.getName()+"의 재고가 부족합니다.");
-            }
-            favoriteTagService.updateTag(member, product, TagType.ORDER);
-            orderItemList.add(OrderItem.of(product, cartItem));
-        }
-        Order order = Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
-        Order saveOrder = orderRepository.save(order);
-
-        kafkaTemplate.send("orders", String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
-        return RsData.of("S-1", "주문을 시작합니다.", saveOrder);
+        OutboxMessage message = new OutboxMessage("orders",
+                String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
+        outboxMessageService.save(message);
+        return RsData.of("S-1", "주문을 시작합니다.", message.getId());
     }
 
     @Transactional
-    public RsData<Order> productToOrder(Member member, Long id, int quantity, String size, String color) {
+    public RsData<Long> productToOrder(Member member, Long id, int quantity, String size, String color) {
         try {
             Order saveOrder = orderRepository.save(
                     Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP,
                             OrderItem.of(productService.findById(id), quantity, size, color)
                     )
             );
-            kafkaTemplate.send("orders", String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
-            return RsData.of("S-1", "주문을 시작합니다.", saveOrder);
+            OutboxMessage message = new OutboxMessage("orders",
+                    String.valueOf(saveOrder.getId()), String.valueOf(saveOrder.getId()));
+            outboxMessageService.save(message);
+            return RsData.of("S-1", "주문을 시작합니다.", message.getId());
         } catch (ProductNotFoundException e) {
             return RsData.of("F-1", "존재하지 않는 상품입니다.");
         }
     }
 
     @Transactional
-    public void tryOrder(String Id) throws JsonProcessingException {
-        Order order = orderRepository.findById(Long.parseLong(Id)).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
-        Member member = order.getMember();
-
+    public void tryOrder(String id) throws JsonProcessingException {
+        Order order = orderRepository.findById(Long.parseLong(id))
+                .orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
+        String email = order.getMember().getEmail();
         try {
             for (OrderItem orderItem : order.getOrderItems()) {
-                if (orderItem.getProduct().getProductOption().getStock() == 0) {
-                    OutOfStockProduct(orderItem.getProduct());
-                    return;
-                } else {
-                    orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
-                }
+                orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
+                log.info("재고 : {}", orderItem.getProduct().getProductOption().getStock());
             }
             order.modifyStatus(OrderStatus.ORDERED);
-            sendMessage("Success", order.getId(), member.getEmail());
+            sendMessage("Success", order.getId(), email);
         } finally {
             if (order.getStatus() == OrderStatus.TEMP) {
                 order.cancelTemp();
-                sendMessage("Fail", order.getId(), member.getEmail());
+                sendMessage("Fail", order.getId(), email);
             }
         }
-    }
-
-    @CacheEvict(value = "product", key = "#product.id")
-    @Transactional
-    public void OutOfStockProduct(Product product) {
-        product.getProductOption().connectStatus(ProductStatus.SOLD_OUT);
     }
 
     private void sendMessage(String message, Long orderId, String email) throws JsonProcessingException {
@@ -184,7 +175,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public Page<OrderResponse> findAll(Member member, int offset) {
         Page<OrderResponse> findOrders;
-        if (member.getRole().equals(RoleType.MEMBER)) {
+        if (member.getRole().equals(MemberRoleType.MEMBER)) {
             findOrders = orderRepository.findAllByMember(new OrderSearchCond(member.getId()), PageRequest.of(offset, 10));
         } else {
             findOrders = orderRepository.findAllBySeller(new OrderSearchCond(member.getBrand()), PageRequest.of(offset, 10));
@@ -211,5 +202,18 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public List<OrderItem> findAllByPayDateBetweenOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate) {
         return orderItemRepository.findAllByPayDateBetween(fromDate, toDate);
+    }
+
+    private Order createOrder(Member member, List<CartItem> cartItems) {
+        List<OrderItem> orderItemList = new ArrayList<>();
+        for (CartItem cartItem : cartItems) {
+            Product product = productService.findById(cartItem.getProduct().getId());
+            if (product.getProductOption().getStock() < cartItem.getQuantity()) {
+                throw new ProductStockOutException("재고가 부족합니다.");
+            }
+            favoriteTagService.updateTag(member, product, TagType.ORDER);
+            orderItemList.add(OrderItem.of(product, cartItem));
+        }
+        return Order.createOrder(member, new Delivery(member.getAddress()), OrderStatus.TEMP, orderItemList, cartItems);
     }
 }

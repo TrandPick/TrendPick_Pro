@@ -5,6 +5,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import project.trendpick_pro.domain.brand.entity.Brand;
+import project.trendpick_pro.domain.category.entity.MainCategory;
+import project.trendpick_pro.domain.category.entity.SubCategory;
+import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.product.entity.product.ProductStatus;
 import project.trendpick_pro.domain.product.entity.productOption.dto.ProductOptionSaveRequest;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
@@ -39,9 +44,21 @@ public class ProductOption implements Serializable {
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
-    public void connectStatus(ProductStatus status){
-        this.status = status;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "main_category_id")
+    private MainCategory mainCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_category_id")
+    private SubCategory subCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
+    @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    @JoinColumn(name = "file_id")
+    private CommonFile file;
 
     @Builder
     private ProductOption(List<String> size, List<String> color, int stock, int price) {
@@ -51,13 +68,25 @@ public class ProductOption implements Serializable {
         this.price = price;
     }
 
-    public static ProductOption of (ProductOptionSaveRequest request) {
+    public static ProductOption of(ProductOptionSaveRequest request) {
         return ProductOption.builder()
                 .size(request.getSizes())
                 .color(request.getColors())
                 .stock(request.getStock())
                 .price(request.getPrice())
                 .build();
+    }
+
+    public void connectBrand(Brand brand) {
+        this.brand = brand;
+    }
+
+    public void settingConnection(Brand brand, MainCategory mainCategory, SubCategory subCategory, CommonFile file, ProductStatus status) {
+        connectBrand(brand);
+        this.mainCategory = mainCategory;
+        this.subCategory = subCategory;
+        this.file = file;
+        this.status = status;
     }
 
     public void update(ProductOptionSaveRequest request) {
@@ -67,9 +96,14 @@ public class ProductOption implements Serializable {
         this.price = request.getPrice();
     }
 
+    public void updateFile(CommonFile file) {
+        this.file = file;
+    }
+
     public void decreaseStock(int quantity) {
         int restStock = this.stock - quantity;
         if (restStock < 0) {
+            this.status = ProductStatus.SOLD_OUT;
             throw new ProductStockOutException("재고가 부족합니다.");
         }
         this.stock = restStock;

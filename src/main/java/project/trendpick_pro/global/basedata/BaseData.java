@@ -22,6 +22,7 @@ import project.trendpick_pro.domain.category.entity.SubCategory;
 import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
+import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationType;
 import project.trendpick_pro.global.kafka.view.service.ViewService;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
@@ -50,7 +51,7 @@ import java.util.*;
 
 @Slf4j
 @Configuration
-@Profile({"dev", "test"})
+@Profile({"dev", "prod"})
 public class BaseData {
 
     @Value("${tag}")
@@ -119,7 +120,7 @@ public class BaseData {
                 accessKeyMap.put("bucket", bucket);
 
                 int memberCount = 100;
-                int productCount = 500;
+                int productCount = 100;
                 int reviewCount = 100;
                 int couponCount = 100;
                 String brandName = "polo";
@@ -300,17 +301,14 @@ public class BaseData {
 
                 ProductOptionSaveRequest request = ProductOptionSaveRequest.of(inputSizes, selectedColors, stockRandom, priceRandom, ProductStatus.SALE.getText());
                 ProductOption productOption = ProductOption.of(request);
+                productOption.settingConnection(brand, mainCategory, subCategory, commonFile, ProductStatus.SALE);
 
                 Product product = Product
                         .builder()
-                        .name(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
+                        .title(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
                         .description(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
-                        .productOption(productOption)
-                        .mainCategory(mainCategory)
-                        .subCategory(subCategory)
-                        .brand(brand)
-                        .file(commonFile)
                         .build();
+                product.connectProductOption(productOption);
                 Set<Tag> tags = new LinkedHashSet<>();
                 for (int i = 1; i <= (Math.random() * 13)+5; i++) {
                     while (true) {
@@ -322,7 +320,7 @@ public class BaseData {
                         }
                     }
                 }
-                product.addTag(tags);
+                product.updateTags(tags);
                 products.add(product);
             }
         }
@@ -353,20 +351,28 @@ public class BaseData {
             int issueAfterDate = (int) (Math.random() * 20) + 7;
             long result = (long) (Math.random() * 7) + 1L;
             Store store = storeRepository.findById(result + 1L).get();
-            StoreCouponSaveRequest storeCouponSaveRequest = new StoreCouponSaveRequest(
-                    "쿠폰" + i,
-                    limitCount,
-                    limitIssueDate,
-                    minimumPurchaseAmount,
-                    discountPercent,
-                    "ISSUE_AFTER_DATE",
-                    null,
-                    null,
-                    issueAfterDate
-            );
-            coupons.add(Coupon.generate(store, storeCouponSaveRequest));
+            StoreCouponSaveRequest request = StoreCouponSaveRequest.builder()
+                    .name("쿠폰" + i)
+                    .limitCount(limitCount)
+                    .limitIssueDate(limitIssueDate)
+                    .minimumPurchaseAmount(minimumPurchaseAmount)
+                    .discountPercent(discountPercent)
+                    .expirationType("ISSUE_AFTER_DATE")
+                    .issueAfterDate(issueAfterDate)
+                    .build();
+            Coupon coupon = Coupon.of(request, store.getBrand());
+            updateExpirationType(request, coupon);
+            coupon.connectStore(store);
+            coupons.add(coupon);
         }
         couponRepository.saveAll(coupons);
+    }
+
+    private static void updateExpirationType(StoreCouponSaveRequest request, Coupon coupon) {
+        if(request.getExpirationType().equals(ExpirationType.PERIOD.getValue()))
+            coupon.assignPeriodExpiration(request.getStartDate(), request.getEndDate());
+        else if(request.getExpirationType().equals(ExpirationType.ISSUE_AFTER_DATE.getValue()))
+            coupon.assignPostIssueExpiration(request.getIssueAfterDate());
     }
 
     private void SaveAllSubCategories(MainCategoryService mainCategoryService, SubCategoryService subCategoryService) {

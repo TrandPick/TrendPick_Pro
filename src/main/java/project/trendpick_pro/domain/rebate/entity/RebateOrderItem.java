@@ -100,7 +100,7 @@ public class RebateOrderItem {
         quantity=orderItem.getQuantity();
         payDate=orderItem.getPayDate();
         // 상품 추가 데이터
-        productSubject=orderItem.getProduct().getName();
+        productSubject=orderItem.getProduct().getTitle();
 
         // 주문 품목 추가데이터
         orderItemCreateDate=orderItem.getOrder().getCreatedDate();
@@ -110,8 +110,8 @@ public class RebateOrderItem {
         buyerName=orderItem.getOrder().getMember().getUsername();
 
         // 판매자 추가 데이터
-        seller=orderItem.getProduct().getBrand();
-        sellerName=orderItem.getProduct().getBrand().getName();
+        seller=orderItem.getProduct().getProductOption().getBrand();
+        sellerName=orderItem.getProduct().getProductOption().getBrand().getName();
     }
 
     public int calculateRebatePrice() {
@@ -145,12 +145,12 @@ public class RebateOrderItem {
         color=item.getColor();
         quantity=item.getQuantity();
         payDate=item.getPayDate();
-        productSubject=item.getProduct().getName();
+        productSubject=item.getProduct().getTitle();
         orderItemCreateDate=item.getOrder().getCreatedDate();
         buyer=item.getOrder().getMember();
         buyerName=item.getOrder().getMember().getUsername();
-        seller=item.getProduct().getBrand();
-        sellerName=item.getProduct().getBrand().getName();
+        seller=item.getProduct().getProductOption().getBrand();
+        sellerName=item.getProduct().getProductOption().getBrand().getName();
     }
 }
 

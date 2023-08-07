@@ -36,7 +36,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         List<ProductListResponse> result = queryFactory
                 .select(new QProductListResponse(
                         product.id,
-                        product.name,
+                        product.title,
                         brand.name,
                         commonFile.fileName,
                         productOption.price,
@@ -45,11 +45,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         )
                 )
                 .from(product)
-                .leftJoin(product.mainCategory, mainCategory)
-                .leftJoin(product.subCategory, subCategory)
-                .leftJoin(product.brand, brand)
                 .leftJoin(product.productOption, productOption)
-                .leftJoin(product.file, commonFile)
+                .leftJoin(productOption.mainCategory, mainCategory)
+                .leftJoin(productOption.subCategory, subCategory)
+                .leftJoin(productOption.brand, brand)
+                .leftJoin(productOption.file, commonFile)
                 .where(
                         mainCategoryEq(cond),
                         subCategoryEq(cond)
@@ -61,11 +61,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         JPAQuery<Long> count = queryFactory
                 .select(product.count())
                 .from(product)
-                .leftJoin(product.mainCategory, mainCategory)
-                .leftJoin(product.subCategory, subCategory)
-                .leftJoin(product.brand, brand)
                 .leftJoin(product.productOption, productOption)
-                .leftJoin(product.file, commonFile)
+                .leftJoin(productOption.mainCategory, mainCategory)
+                .leftJoin(productOption.subCategory, subCategory)
+                .leftJoin(productOption.brand, brand)
+                .leftJoin(productOption.file, commonFile)
                 .where(
                         mainCategoryEq(cond),
                         subCategoryEq(cond)
@@ -97,7 +97,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         List<ProductListResponseBySeller> list = queryFactory
                 .select(new QProductListResponseBySeller(
                         product.id,
-                        product.name,
+                        product.title,
                         commonFile.fileName,
                         productOption.price,
                         productOption.stock,
@@ -110,9 +110,9 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         product.discountedPrice
                 ))
                 .from(product)
-                .leftJoin(product.file, commonFile)
                 .leftJoin(product.productOption, productOption)
-                .where(product.brand.name.eq(brand))
+                .leftJoin(productOption.file, commonFile)
+                .where(productOption.brand.name.eq(brand))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(product.createdDate.desc())
@@ -121,8 +121,8 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         JPAQuery<Long> count = queryFactory
                 .select(product.count())
                 .from(product)
-                .leftJoin(product.file, commonFile)
-                .where(product.brand.name.eq(brand));
+                .leftJoin(product.productOption.file, commonFile)
+                .where(product.productOption.brand.name.eq(brand));
 
         return PageableExecutionUtils.getPage(list, pageable, count::fetchOne);
     }
@@ -132,7 +132,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         List<ProductListResponse> result = queryFactory
                 .select(new QProductListResponse(
                         product.id,
-                        product.name,
+                        product.title,
                         brand.name,
                         commonFile.fileName,
                         productOption.price,
@@ -141,13 +141,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         )
                 )
                 .from(product)
-                .leftJoin(product.mainCategory, mainCategory)
-                .leftJoin(product.subCategory, subCategory)
-                .leftJoin(product.brand, brand)
                 .leftJoin(product.productOption, productOption)
-                .leftJoin(product.file, commonFile)
+                .leftJoin(productOption.mainCategory, mainCategory)
+                .leftJoin(productOption.subCategory, subCategory)
+                .leftJoin(productOption.brand, brand)
+                .leftJoin(productOption.file, commonFile)
                 .where(
-                        product.name.contains(cond.getKeyword())
+                        product.title.contains(cond.getKeyword())
                     .or(brand.name.contains(cond.getKeyword()))
                     .or(mainCategory.name.contains(cond.getKeyword()))
                     .or(subCategory.name.contains(cond.getKeyword()))
@@ -159,12 +159,13 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         JPAQuery<Long> count = queryFactory
                 .select(product.count())
                 .from(product)
-                .leftJoin(product.mainCategory, mainCategory)
-                .leftJoin(product.subCategory, subCategory)
-                .leftJoin(product.brand, brand)
-                .leftJoin(product.file, commonFile)
+                .leftJoin(product.productOption, productOption)
+                .leftJoin(productOption.mainCategory, mainCategory)
+                .leftJoin(productOption.subCategory, subCategory)
+                .leftJoin(productOption.brand, brand)
+                .leftJoin(productOption.file, commonFile)
                 .where(
-                        product.name.contains(cond.getKeyword())
+                        product.title.contains(cond.getKeyword())
                                 .or(brand.name.contains(cond.getKeyword()))
                                 .or(mainCategory.name.contains(cond.getKeyword()))
                                 .or(subCategory.name.contains(cond.getKeyword()))
@@ -174,7 +175,11 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     }
 
     private static BooleanExpression mainCategoryEq(ProductSearchCond cond) {
-        return mainCategory.name.eq(cond.getMainCategory());
+        if (cond.getMainCategory().equals("전체")) {
+            return null;
+        } else {
+            return mainCategory.name.eq(cond.getMainCategory());
+        }
     }
 
     private static BooleanExpression subCategoryEq(ProductSearchCond cond) {

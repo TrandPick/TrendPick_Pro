@@ -1,21 +1,22 @@
 package project.trendpick_pro.domain.coupon.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
 import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationPeriod;
-import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationType;
 import project.trendpick_pro.domain.store.entity.Store;
 
 import java.time.LocalDateTime;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 public class Coupon extends BaseTimeEntity {
 
     @Id
@@ -26,67 +27,52 @@ public class Coupon extends BaseTimeEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "store_id")
     private Store store;
 
-    @Embedded
     @Column(nullable = false)
+    @Embedded
     private ExpirationPeriod expirationPeriod;
 
-    @Column(name = "limit_count")
     private int limitCount;
-    @Column(name = "issue_count")
     private int issueCount;
 
-    @Column(name = "discount_percent", nullable = false)
     private int discountPercent;
+    private int minimumPurchaseAmount;
 
-    @Column(name = "limit_issue_date", nullable = false)
     private int limitIssueDate;
 
-    @Column(name = "minimum_purchase_amount")
-    private Integer minimumPurchaseAmount;
-
     @Builder
-    private Coupon(Store store, String name, int limitCount, int limitIssueDate,Integer minimumPurchaseAmount, int discountPercent, ExpirationPeriod expirationPeriod) {
-        this.store = store;
-        this.name = "["+store.getBrand()+"]"+" "+name;
+    private Coupon(String name, int limitCount, int limitIssueDate, int minimumPurchaseAmount, int discountPercent) {
+        this.name = name;
         this.limitCount = limitCount;
         this.limitIssueDate = limitIssueDate;
         this.minimumPurchaseAmount = minimumPurchaseAmount;
         this.discountPercent = discountPercent;
-        this.expirationPeriod = expirationPeriod;
         this.issueCount = 0;
     }
 
-    public static Coupon generate(Store store, StoreCouponSaveRequest storeCouponSaveRequest) {
-        Coupon coupon = Coupon
+    public static Coupon of(StoreCouponSaveRequest request, String store) {
+        return Coupon
                 .builder()
-                .store(store)
-                .name(storeCouponSaveRequest.getName())
-                .limitCount(storeCouponSaveRequest.getLimitCount())
-                .limitIssueDate(storeCouponSaveRequest.getLimitIssueDate())
-                .minimumPurchaseAmount(storeCouponSaveRequest.getMinimumPurchaseAmount())
-                .discountPercent(storeCouponSaveRequest.getDiscountPercent())
+                .name(createCouponName(store, request.getName()))
+                .limitCount(request.getLimitCount())
+                .limitIssueDate(request.getLimitIssueDate())
+                .minimumPurchaseAmount(request.getMinimumPurchaseAmount())
+                .discountPercent(request.getDiscountPercent())
                 .build();
-        coupon.assignExpirationPeriod(storeCouponSaveRequest);
-
-        return coupon;
     }
 
-    private void assignExpirationPeriod(StoreCouponSaveRequest storeCouponSaveRequest) {
-        if(storeCouponSaveRequest.getExpirationType().equals(ExpirationType.PERIOD.getValue()))
-            this.expirationPeriod = ExpirationPeriod.assignPeriod(storeCouponSaveRequest.getStartDate(), storeCouponSaveRequest.getEndDate());
-        else if(storeCouponSaveRequest.getExpirationType().equals(ExpirationType.ISSUE_AFTER_DATE.getValue()))
-            this.expirationPeriod = ExpirationPeriod.assignIssueAfterDate(storeCouponSaveRequest.getIssueAfterDate());
+    public void connectStore(Store store){
+        this.store = store;
     }
 
     public boolean validateLimitCount(){
         return this.issueCount <= this.limitCount;
     }
 
-    public boolean validateLimitIssueDate(){
-        return LocalDateTime.now().isBefore(this.getCreatedDate().plusDays(this.limitIssueDate));
+    public boolean validateLimitIssueDate(LocalDateTime dateTime){
+        return dateTime.isBefore(this.getCreatedDate().plusDays(this.limitIssueDate));
     }
 
     public boolean validateMinimumPurchaseAmount(int price){
@@ -94,10 +80,22 @@ public class Coupon extends BaseTimeEntity {
     }
 
     public void increaseIssueCount(){
-        this.issueCount = getIssueCount() + 1;
+        this.issueCount++;
     }
 
     public void decreaseIssueCount(){
-        this.issueCount -= - 1;
+        this.issueCount--;
+    }
+
+    public void assignPeriodExpiration(LocalDateTime startDate, LocalDateTime endDate) {
+        this.expirationPeriod = ExpirationPeriod.assignPeriod(startDate, endDate);
+    }
+
+    public void assignPostIssueExpiration(Integer issueAfterDate) {
+        this.expirationPeriod = ExpirationPeriod.assignIssueAfterDate(issueAfterDate);
+    }
+
+    private static String createCouponName(String store, String requestName) {
+        return "[" + store + "]" + " " + requestName;
     }
 }

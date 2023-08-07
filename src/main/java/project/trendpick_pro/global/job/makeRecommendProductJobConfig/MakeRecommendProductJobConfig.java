@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.PlatformTransactionManager;
 import project.trendpick_pro.domain.member.entity.Member;
-import project.trendpick_pro.domain.member.entity.RoleType;
+import project.trendpick_pro.domain.member.entity.MemberRoleType;
 import project.trendpick_pro.domain.member.repository.MemberRepository;
 import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.entity.product.dto.response.ProductByRecommended;
@@ -90,7 +90,7 @@ public class MakeRecommendProductJobConfig {
                 .repository(memberRepository)
                 .methodName("findAllByRoleAndRecentlyAccessDateBetween")
                 .pageSize(10)
-                .arguments(Arrays.asList(RoleType.MEMBER, fromDate, toDate))
+                .arguments(Arrays.asList(MemberRoleType.MEMBER, fromDate, toDate))
                 .sorts(Collections.singletonMap("id", Sort.Direction.DESC))
                 .build();
     }

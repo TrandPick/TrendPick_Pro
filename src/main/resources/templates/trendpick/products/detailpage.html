@@ -89,14 +89,14 @@
                     </button>
                 </form>
                 <div class="form-container">
-                    <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" th:object="${productRequest}" method="post" onsubmit="return confirmCart()">
+                    <form id="addToCartForm" th:action="@{/trendpick/usr/cart/add}" method="post" onsubmit="return confirmCart()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="size" id="addToCartSize" value="1">
                         <input type="hidden" name="color" id="addToCartColor" value="1">
                         <input type="hidden" id="addToCartQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
-                    <form onsubmit="buyNow(this); return false;" id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" th:object="${productRequest}" method="post">
+                    <form onsubmit="buyNow(this); return false;" id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" method="post">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="size" id="buySize" value="1">
                         <input type="hidden" name="color" id="buyColor" value="1">
@@ -178,7 +178,7 @@
         <h1 class="text-2xl font-semibold">QnA 상품문의</h1>
         <div th:if="${@rq.checkLogin()}">
             <div th:if="${@rq.checkMember()}" class="flex justify-end">
-                <a th:href="@{|/trendpick/customerservice/asks/register?product=${productResponse.id}|}" class="btn btn-outline btn-accent text-black btn-sm">문의 하기</a>
+                <a th:href="@{|/trendpick/asks/register?product=${productResponse.id}|}" class="btn btn-outline btn-accent text-black btn-sm">문의 하기</a>
             </div>
         </div>
         <div class="bg-white rounded-md shadow p-4" th:if="${productAsk != null}">
@@ -192,7 +192,7 @@
 
             <div th:each="ask, loop : ${productAsk}" class="grid grid-cols-5 gap-4 border-b py-2">
                 <div class="text-center py-2">
-                    <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}" class="text-blue-600 hover:underline">
+                    <a th:href="@{/trendpick/asks/{askId}(askId=${ask.askId})}" class="text-blue-600 hover:underline">
                         <span th:text="${productAsk.number * 10 + loop.count}"></span>
                     </a>
                 </div>
@@ -201,7 +201,7 @@
                     <p th:unless="${ask.status} == 'YET'">답변 완료</p>
                 </div>
                 <div class="text-center py-2">
-                    <a th:href="@{/trendpick/customerservice/asks/{askId}(askId=${ask.askId})}" class="text-blue-600 hover:underline">
+                    <a th:href="@{/trendpick/asks/{askId}(askId=${ask.askId})}" class="text-blue-600 hover:underline">
                         <p th:text="${ask.title}"></p>
                     </a>
                 </div>

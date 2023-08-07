@@ -43,7 +43,7 @@ public class ReviewResponse {
         return ReviewResponse.builder()
                 .id(review.getId())
                 .writer(review.getWriter())
-                .productName(review.getProduct().getName())
+                .productName(review.getProduct().getTitle())
                 .title(review.getTitle())
                 .content(review.getContent())
                 .mainFile(review.getFile().getFileName())

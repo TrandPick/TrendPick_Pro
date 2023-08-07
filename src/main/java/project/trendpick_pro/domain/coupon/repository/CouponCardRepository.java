@@ -8,6 +8,7 @@ import project.trendpick_pro.domain.coupon.entity.CouponCard;
 import java.util.List;
 
 public interface CouponCardRepository extends JpaRepository<CouponCard, Long> {
+
     @Query("select count(cc) from CouponCard cc" +
             " where cc.coupon.id = :couponId and cc.member.id = :memberId")
     int countByCouponIdAndMemberId(@Param("couponId") Long couponId, @Param("memberId") Long memberId);

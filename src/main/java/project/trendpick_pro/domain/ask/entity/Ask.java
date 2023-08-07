@@ -38,37 +38,41 @@ public class Ask extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private AskStatus status;
 
-    @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL)
     private List<Answer> answerList = new ArrayList<>();
 
     @Builder
-    private Ask(Member author, Product product, String title, String content, AskStatus status) {
-        this.author = author;
-        this.product = product;
+    private Ask(String title, String content, AskStatus status) {
         this.title = title;
         this.content = content;
         this.status = status;
     }
 
-    public static Ask of(Member member, Product product, AskForm askForm) {
+    public static Ask of(String title, String content) {
         return Ask.builder()
-                .author(member)
-                .product(product)
-                .title(askForm.getTitle())
-                .content(askForm.getContent())
+                .title(title)
+                .content(content)
                 .status(AskStatus.YET)
                 .build();
+    }
+
+    public void connectMember(Member member) {
+        this.author = member;
+    }
+
+    public void connectProduct(Product product) {
+        this.product = product;
     }
 
     public void update(AskForm askForm) {
         this.title = askForm.getTitle();
         this.content = askForm.getContent();
     }
-    public void changeStatus(){
+    public void updateStatus(){
         this.status = AskStatus.COMPLETED;
     }
 
-    public void changeStatusYet() {
+    public void updateStatusYet() {
         this.status = AskStatus.YET;
     }
 }

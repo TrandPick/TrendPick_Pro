@@ -14,6 +14,7 @@ import project.trendpick_pro.domain.orders.entity.dto.request.ProductOrderReques
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.service.OrderService;
+import project.trendpick_pro.global.kafka.KafkaProducerService;
 import project.trendpick_pro.global.util.rq.Rq;
 import project.trendpick_pro.global.util.rsData.RsData;
 
@@ -26,6 +27,8 @@ public class OrderController {
     private final OrderService orderService;
     private final Rq rq;
 
+    private final KafkaProducerService kafkaProducerService;
+
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("{orderId}/form")
     public String showOrderForm(@PathVariable("orderId") Long orderId, Model model){
@@ -36,13 +39,14 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/cart")
     @ResponseBody
-    public RsData<Void> cartToOrder(@RequestBody CartToOrderRequest request) {
+    public RsData<String> cartToOrder(@RequestBody CartToOrderRequest request) {
         try {
-            RsData<Order> order = orderService.cartToOrder(rq.getMember(), request);
-            if(order.isFail()) {
-                throw new Exception(order.getMsg());
+            RsData<Long> data = orderService.cartToOrder(rq.getMember(), request);
+            kafkaProducerService.sendMessage(data.getData());
+            if(data.isFail()) {
+                throw new Exception(data.getMsg());
             }
-            return RsData.of(order.getResultCode(), order.getMsg());
+            return RsData.of(data.getResultCode(), data.getMsg());
         } catch (Exception e){
             log.error(e.getMessage());
             return RsData.of("F-1", "주문이 완료되지 않았습니다.");
@@ -52,14 +56,15 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/product")
     @ResponseBody
-    public RsData<Void> productToOrder(@RequestBody ProductOrderRequest request) {
+    public RsData<String> productToOrder(@RequestBody ProductOrderRequest request) {
         try {
-            RsData<Order> order = orderService.productToOrder(rq.getMember(),
+            RsData<Long> data = orderService.productToOrder(rq.getMember(),
                     request.getProductId(), request.getQuantity(), request.getSize(), request.getColor());
-            if(order.isFail()) {
-                throw new Exception(order.getMsg());
+            kafkaProducerService.sendMessage(data.getData());
+            if(data.isFail()) {
+                throw new Exception(data.getMsg());
             }
-            return RsData.of(order.getResultCode(), order.getMsg());
+            return RsData.of(data.getResultCode(), data.getMsg());
         } catch (Exception e){
             log.error(e.getMessage());
             return RsData.of("F-1", "주문이 완료되지 않았습니다.");

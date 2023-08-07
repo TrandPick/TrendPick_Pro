@@ -2,6 +2,7 @@ package project.trendpick_pro.domain.ask.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +19,7 @@ import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/trendpick/customerservice/asks")
+@RequestMapping("/trendpick/asks")
 public class AskController {
 
     private final AskService askService;
@@ -31,25 +32,36 @@ public class AskController {
     public String registerForm(@RequestParam("product") Long productId, AskForm askForm, Model model) {
         askForm.setProductId(productId);
         model.addAttribute("askForm", askForm);
-        return "trendpick/customerservice/asks/register";
+        return "trendpick/asks/register";
     }
 
     @PreAuthorize("hasAuthority('MEMBER')")
     @PostMapping("/register")
-    public String registerAsk(@Valid AskForm askForm) {
+    public String registerAsk(@Valid @ModelAttribute AskForm askForm) {
         RsData<Long> result = askService.register(rq.getMember(), askForm);
         if(result.isFail()) {
             return rq.historyBack(result);
         } return rq.redirectWithMsg("/trendpick/products/%s".formatted(askForm.getProductId()), result);
     }
 
-    @PreAuthorize("permitAll()")
-    @GetMapping("/{askId}")
-    public String showAsk(@PathVariable Long askId, Model model) {
-        model.addAttribute("ask", askService.show(askId));
-        model.addAttribute("answers", answerService.showAll(askId));
-        model.addAttribute("answerForm", new AnswerForm());
-        return "trendpick/customerservice/asks/detail";
+    @PreAuthorize("hasAuthority('MEMBER')")
+    @GetMapping("/edit/{askId}")
+    public String modifyForm(@PathVariable Long askId, Model model) {
+        AskResponse ask = askService.find(askId);
+        if(!Objects.equals(ask.getMemberId(), rq.getMember().getId())) {
+            return rq.historyBack("자신이 올린 문의글에 대해서만 수정 권한이 있습니다.");
+        }
+        model.addAttribute("askForm", new AskForm(ask.getAskId(), ask.getTitle(), ask.getContent()));
+        return "trendpick/asks/register";
+    }
+
+    @PreAuthorize("hasAuthority('MEMBER')")
+    @PostMapping("/edit/{askId}")
+    public String modifyAsk(@PathVariable Long askId, @Valid AskForm askForm) {
+        RsData<AskResponse> result = askService.modify(rq.getMember(), askId, askForm);
+        if (result.isFail()) {
+            return rq.redirectWithMsg("/trendpick/asks/%s".formatted(askId), result);
+        } return rq.redirectWithMsg("/trendpick/asks/%s".formatted(askId), "문의글 수정이 완료되었습니다.");
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -61,23 +73,12 @@ public class AskController {
         } return rq.redirectWithMsg("/trendpick/products/%s".formatted(result.getData()), result);
     }
 
-    @PreAuthorize("hasAuthority('MEMBER')")
-    @GetMapping("/edit/{askId}")
-    public String modifyForm(@PathVariable Long askId, Model model) {
-        AskResponse ask = askService.show(askId);
-        if(!Objects.equals(ask.getMemberId(), rq.getMember().getId())) {
-            return rq.historyBack("자신이 올린 문의글에 대해서만 수정 권한이 있습니다.");
-        }
-        model.addAttribute("askForm", new AskForm(ask.getAskId(), ask.getTitle(), ask.getContent()));
-        return "trendpick/customerservice/asks/register";
-    }
-
-    @PreAuthorize("hasAuthority('MEMBER')")
-    @PostMapping("/edit/{askId}")
-    public String modifyAsk(@PathVariable Long askId, @Valid AskForm askForm) {
-        RsData<AskResponse> result = askService.modify(rq.getMember(), askId, askForm);
-        if (result.isFail()) {
-            return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), result);
-        } return rq.redirectWithMsg("/trendpick/customerservice/asks/%s".formatted(askId), "문의글 수정이 완료되었습니다.");
+    @PreAuthorize("permitAll()")
+    @GetMapping("/{askId}")
+    public String showAsk(@PathVariable Long askId, Model model) {
+        model.addAttribute("ask", askService.find(askId));
+        model.addAttribute("answers", answerService.showAll(askId));
+        model.addAttribute("answerForm", new AnswerForm());
+        return "trendpick/asks/detail";
     }
 }

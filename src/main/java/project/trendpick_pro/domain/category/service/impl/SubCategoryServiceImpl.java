@@ -2,6 +2,7 @@ package project.trendpick_pro.domain.category.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +14,9 @@ import project.trendpick_pro.domain.category.service.SubCategoryService;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Slf4j
+@Service
 public class SubCategoryServiceImpl implements SubCategoryService {
 
     private final SubCategoryRepository subCategoryRepository;
@@ -34,15 +35,15 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         subCategoryRepository.saveAll(list);
     }
 
+//    @CacheEvict(key = "#mainCategoryName", value = "subCategories")
     @Transactional
     public void delete(Long id){
         SubCategory subCategory = subCategoryRepository.findById(id).orElseThrow();
         subCategoryRepository.delete(subCategory);
     }
 
-    @Cacheable(key = "#mainCategoryName", value = "subCategories")
+//    @Cacheable(key = "#mainCategoryName", value = "subCategories")
     public List<String> findAll(String mainCategoryName) {
-        log.info("subCategories 캐싱 ============================================");
         List<SubCategory> categories;
         if (mainCategoryName.equals("전체")){
             categories = subCategoryRepository.findAllBy();

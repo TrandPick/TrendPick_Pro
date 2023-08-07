@@ -37,7 +37,7 @@ public class RebateServiceImpl implements RebateService {
         }
         List<OrderItem> brandOrderItems=new ArrayList<>();
         for(OrderItem item: orderItems) {
-            if (item.getProduct().getBrand().getName().equals(brandName)) {
+            if (item.getProduct().getProductOption().getBrand().getName().equals(brandName)) {
                 brandOrderItems.add(item);
             }
         }
