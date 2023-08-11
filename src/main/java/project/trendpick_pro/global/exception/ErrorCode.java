@@ -23,6 +23,7 @@ public enum ErrorCode {
     COUPON_NOT_FOUND(404, "COUPON-001", "쿠폰이 존재하지 않는 경우"),
 
     NOTIFICATION_NOT_FOUND(404, "NOTIFICATION-001", "알림이 존재하지 않는 경우"),
+    NOTIFICATIONTYPE_NOT_MATCH(404, "NOTIFICATIONTYPE-001", "알림 타입이 존재하지 않는 경우"),
 
     LOCK_ALREADY_USED(409, "LOCK-001", "이미 사용중인 락인 경우"),;
 

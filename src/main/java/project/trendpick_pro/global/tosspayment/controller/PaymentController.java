@@ -33,13 +33,15 @@ public class PaymentController {
             @RequestParam(value = "orderId") String orderId,
             @RequestParam(value = "amount") Integer amount,
             @RequestParam(value = "paymentKey") String paymentKey) {
+
         PaymentResultResponse response = paymentService.requestPayment(paymentKey, orderId, amount);
         Order order = orderService.findById(id);
 
         if (response.getStatus().equals("DONE")) {
-            order.connectPaymentMethod("TossPayments " + response.getMethod());
-            order.connectPaymentKey(response.getPaymentKey());
-            order.updateWithPayment();
+            order.connectPayment(
+                    response.getPaymentKey(),
+                    "TossPayments " + response.getMethod()
+            );
             notificationService.create(rq.getMember(), order.getId());
             return rq.redirectWithMsg("/trendpick/orders/%s".formatted(id), "주문이 완료되었습니다.");
         } else {
@@ -52,6 +54,6 @@ public class PaymentController {
         orderService.cancel(id);
         notificationService.create(rq.getMember(),id);
         paymentService.cancelPayment(orderService.findById(id).getPaymentKey());
-        return rq.redirectWithMsg("/trendpick/orders/usr/orders", "주문을 취소했습니다.");
+        return rq.redirectWithMsg("/trendpick/orders/usr", "주문을 취소했습니다.");
     }
 }

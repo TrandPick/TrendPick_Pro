@@ -15,8 +15,8 @@ import project.trendpick_pro.domain.member.exception.MemberAlreadyExistException
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
 import project.trendpick_pro.domain.member.exception.MemberNotMatchException;
 import project.trendpick_pro.domain.notification.exception.NotificationNotFoundException;
-import project.trendpick_pro.domain.orders.exceoption.OrderItemNotFoundException;
-import project.trendpick_pro.domain.orders.exceoption.OrderNotFoundException;
+import project.trendpick_pro.domain.orders.exception.OrderItemNotFoundException;
+import project.trendpick_pro.domain.orders.exception.OrderNotFoundException;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.global.util.rq.Rq;

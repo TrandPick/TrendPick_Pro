@@ -71,11 +71,11 @@
 
     <div class="flex justify-center my-4" th:if="${orderList != null and not #lists.isEmpty(orderList.content)}">
         <div class="btn-group">
-            <a th:if="${orderList.hasPrevious()}" th:href="@{/trendpick/orders/admin/list(page=${orderList.number - 1})}" class="btn">Previous</a>
+            <a th:if="${orderList.hasPrevious()}" th:href="@{/trendpick/orders/admin(page=${orderList.number - 1})}" class="btn">Previous</a>
             <span th:each="i : ${#numbers.sequence(0, orderList.totalPages - 1)}">
-            <a th:href="@{/trendpick/orders/admin/list(page=${i})}" th:text="${i+1}" th:class="${orderList.number == i ? 'btn btn-active' : 'btn'}"></a>
+            <a th:href="@{/trendpick/orders/admin(page=${i})}" th:text="${i+1}" th:class="${orderList.number == i ? 'btn btn-active' : 'btn'}"></a>
         </span>
-            <a th:if="${orderList.hasNext()}" th:href="@{/trendpick/orders/admin/list(page=${orderList.number + 1})}" class="btn">Next</a>
+            <a th:if="${orderList.hasNext()}" th:href="@{/trendpick/orders/admin(page=${orderList.number + 1})}" class="btn">Next</a>
         </div>
     </div>
 </main>

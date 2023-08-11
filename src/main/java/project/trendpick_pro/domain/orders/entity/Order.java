@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.delivery.entity.Delivery;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -29,80 +28,46 @@ public class Order extends BaseTimeEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToMany
-    @JoinColumn(name = "order_id")
-    private List<CartItem> cartItems = new ArrayList<>();
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
     private String paymentMethod;
 
+    private String paymentKey;
+
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus orderStatus;
 
     @Column(name = "total_price", nullable = false)
     private int totalPrice = 0;
-
-    private String paymentKey;
-
-    public void connectPaymentKey(String paymentKey) {
-        this.paymentKey = paymentKey;
-    }
 
     public void connectUser(Member member) {
         this.member = member;
     }
 
-    public void connectPaymentMethod(String paymentMethod) {
+    public void connectPayment(String paymentMethod, String paymentKey) {
         this.paymentMethod = paymentMethod;
+        this.paymentKey = paymentKey;
+        productDiscount();
     }
 
     public void connectDelivery(Delivery delivery) {
         this.delivery = delivery;
     }
 
-    public void addOrderItem(OrderItem orderItem) {
-        orderItems.add(orderItem);
-        orderItem.connectOrder(this);
-    }
-    public void addCartItem(CartItem cartItem) {
-        cartItems.add(cartItem);
-    }
-    public static Order createOrder(Member member, Delivery delivery, OrderStatus status, List<OrderItem> orderItems, List<CartItem> cartItems) {
+    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems) {
         Order order = new Order();
         order.connectUser(member);
         order.connectDelivery(delivery);
-        for (OrderItem orderItem : orderItems) {
-            order.addOrderItem(orderItem);
-            order.totalPrice += orderItem.getTotalPrice();
-        }
-        for (CartItem cartItem : cartItems) {
-            order.addCartItem(cartItem);
-        }
-        order.status = status;
+        order.settingOrderItems(orderItems);
+        order.orderStatus = OrderStatus.TEMP;
         order.paymentMethod = "";
-
         return order;
     }
 
-    public static Order createOrder(Member member, Delivery delivery, OrderStatus status, OrderItem orderItem) {
-        Order order = new Order();
-
-        order.connectUser(member);
-        order.connectDelivery(delivery);
-        order.addOrderItem(orderItem);
-
-        order.totalPrice += orderItem.getTotalPrice();
-        order.status = status;
-        order.paymentMethod = "";
-
-        return order;
-    }
-
-    public void modifyStatus(OrderStatus status) {
-        this.status = status;
+    public void updateStatus(OrderStatus status) {
+        this.orderStatus = status;
     }
 
     public int getTotalDiscountedPrice(){
@@ -113,8 +78,24 @@ public class Order extends BaseTimeEntity {
         return totalDisCountPrice;
     }
 
+    public void cancel() {
+        this.orderStatus = OrderStatus.CANCELED;
+        this.delivery.canceledDelivery();
+        for (OrderItem orderItem : this.orderItems) {
+            orderItem.cancel();
+        }
+    }
+
+    public void cancelTemp() {
+        this.orderStatus = OrderStatus.TEMP;
+        this.delivery.canceledDelivery();
+        for (OrderItem orderItem : this.orderItems) {
+            orderItem.cancel();
+        }
+    }
+
     public String getOrderState(){
-        return switch (status.getValue()){
+        return switch (orderStatus.getValue()){
             case "ORDERED"->"결제완료";
             case "CANCELED"->"주문취소";
             default -> "미결제";
@@ -131,25 +112,21 @@ public class Order extends BaseTimeEntity {
         };
     }
 
-    public void cancel() {
-        this.status = OrderStatus.CANCELED;
-        this.delivery.canceledDelivery();
-        for (OrderItem orderItem : this.orderItems) {
-            orderItem.getProduct().getProductOption().increaseStock(orderItem.getQuantity());
-        }
-    }
-
-    public void cancelTemp() {
-        this.status = OrderStatus.TEMP;
-        this.delivery.canceledDelivery();
-        for (OrderItem orderItem : this.orderItems) {
-            orderItem.getProduct().getProductOption().increaseStock(orderItem.getQuantity());
-        }
-    }
-
-    public void updateWithPayment(){
+    private void productDiscount(){
         for (OrderItem orderItem : getOrderItems()) {
             this.totalPrice -= orderItem.getDiscountPrice();
         }
+    }
+
+    private void settingOrderItems(List<OrderItem> orderItems) {
+        for (OrderItem orderItem : orderItems) {
+            this.addOrderItem(orderItem);
+            this.totalPrice += orderItem.getOrderItemByQuantity();
+        }
+    }
+
+    private void addOrderItem(OrderItem orderItem) {
+        orderItems.add(orderItem);
+        orderItem.connectOrder(this);
     }
 }

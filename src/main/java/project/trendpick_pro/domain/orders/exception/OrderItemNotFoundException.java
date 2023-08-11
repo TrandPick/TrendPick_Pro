@@ -1,4 +1,4 @@
-package project.trendpick_pro.domain.orders.exceoption;
+package project.trendpick_pro.domain.orders.exception;
 
 import org.springframework.http.HttpStatus;
 import project.trendpick_pro.global.exception.BaseException;

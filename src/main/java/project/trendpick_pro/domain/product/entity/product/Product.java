@@ -13,6 +13,7 @@ import project.trendpick_pro.domain.tags.tag.entity.Tag;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -21,6 +22,9 @@ public class Product extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "product_code", nullable = false, unique = true, updatable = false   )
+    private String productCode;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -44,13 +48,15 @@ public class Product extends BaseTimeEntity {
     private int discountedPrice;
 
     @Builder
-    private Product(String title, String description) {
+    private Product(String productCode, String title, String description) {
+        this.productCode = productCode;
         this.title = title;
         this.description = description;
     }
 
     public static Product of(String title, String description) {
         return Product.builder()
+                .productCode("P" + UUID.randomUUID().toString())
                 .title(title)
                 .description(description)
                 .build();

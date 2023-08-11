@@ -1,13 +1,16 @@
 package project.trendpick_pro.domain.orders.entity.dto.response;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.orders.entity.Order;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
+@Data
+@NoArgsConstructor
 public class OrderDetailResponse {
     private Long orderId;
     private String orderStatus;
@@ -29,7 +32,7 @@ public class OrderDetailResponse {
     public static OrderDetailResponse of(Order order, List<OrderResponse> orderItems) {
         return OrderDetailResponse.builder()
                 .orderId(order.getId())
-                .orderStatus(order.getStatus().getValue())
+                .orderStatus(order.getOrderStatus().getValue())
                 .orderItems(orderItems)
                 .orderDate(order.getCreatedDate())
                 .paymentMethod(order.getPaymentMethod())
