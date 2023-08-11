@@ -18,6 +18,7 @@ import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -56,6 +57,7 @@ class AskRepositoryTest extends IntegrationTestSupport {
         Member savedMember = memberRepository.save(member);
 
         Product product = Product.builder()
+                .productCode(UUID.randomUUID().toString())
                 .title("이쁜셔츠의 이름")
                 .description("이쁜셔츠의 내용")
                 .build();
@@ -94,6 +96,7 @@ class AskRepositoryTest extends IntegrationTestSupport {
     void findAllWithOutProductIdAndMember() throws Exception {
         //given
         Product product = Product.builder()
+                .productCode(UUID.randomUUID().toString())
                 .title("이쁜셔츠의 이름")
                 .description("이쁜셔츠의 내용")
                 .build();

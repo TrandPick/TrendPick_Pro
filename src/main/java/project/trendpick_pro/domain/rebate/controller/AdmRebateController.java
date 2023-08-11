@@ -53,7 +53,7 @@ public class AdmRebateController {
                 if (!StringUtils.hasText(yearMonth)) {
                         yearMonth = Ut.date.getCurrentYearMonth();
                 }
-                List<RebateOrderItem> items = rebateService.findRebateOrderItemsByPayDateIn(rq.getBrandName(),yearMonth);
+                List<RebateOrderItem> items = rebateService.findRebateOrderItemsByCreatedDateIn(rq.getBrandName(),yearMonth);
 
                 model.addAttribute("yearMonth", yearMonth);
                 model.addAttribute("items", items);
