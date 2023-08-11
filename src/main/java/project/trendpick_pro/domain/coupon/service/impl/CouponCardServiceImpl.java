@@ -1,8 +1,6 @@
 package project.trendpick_pro.domain.coupon.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
@@ -14,7 +12,7 @@ import project.trendpick_pro.domain.coupon.repository.CouponRepository;
 import project.trendpick_pro.domain.coupon.service.CouponCardService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
-import project.trendpick_pro.domain.orders.exceoption.OrderItemNotFoundException;
+import project.trendpick_pro.domain.orders.exception.OrderItemNotFoundException;
 import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
 import project.trendpick_pro.global.util.rsData.RsData;
 
