@@ -305,6 +305,7 @@ public class BaseData {
 
                 Product product = Product
                         .builder()
+                        .productCode("P" + UUID.randomUUID())
                         .title(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
                         .description(brand.getName() + " " + mainCategory.getName() + " " + subCategory.getName() + " 멋사입니다. ")
                         .build();
