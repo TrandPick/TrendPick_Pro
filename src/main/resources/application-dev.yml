@@ -1,9 +1,9 @@
 spring:
   datasource:
-    driver-class-name: ${db.driver}
-    url: ${db.url}
-    username: ${db.username}
-    password: ${db.password}
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;
+    username: sa
+    password:
   jpa:
     hibernate:
       ddl-auto: create
@@ -16,6 +16,10 @@ spring:
 logging.level:
   org:
     hibernate.SQL: error
+
+custom:
+  redis:
+    host: ${redis.devHost}
 
 kafka:
   host: "localhost:"
