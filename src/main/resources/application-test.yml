@@ -14,3 +14,7 @@ spring:
       host: ${redis.devHost}
   kafka:
     bootstrap-servers: localhost:${custom.kafka.devPort}
+
+custom:
+  redis:
+    host: ${redis.devHost}

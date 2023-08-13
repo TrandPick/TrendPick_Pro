@@ -23,7 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaConfig {
 
-    @Value("${custom.kafka.devPort}")
+    @Value("${kafka.port}")
     private String kafkaPort;
 
     private final ConsumerFactory<String, String> consumerFactory;
