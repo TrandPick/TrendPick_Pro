@@ -19,4 +19,5 @@ custom:
   redis:
     host: ${redis.host}
 kafka:
+  host: "localhost:"
   port: ${custom.kafka.port}
