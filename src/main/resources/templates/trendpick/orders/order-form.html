@@ -171,8 +171,8 @@
     <script src="https://js.tosspayments.com/v1/payment-widget"></script>
     <link id="clientKey" th:data-contextPath="${@environment.getProperty('toss.clientKey')}"/>
     <script>
-        const serverUrl = "http://localhost:8080"
-        // const serverUrl = "https://trendpick.k8s-1.suho.info"
+        // const serverUrl = "http://localhost:8080"
+        const serverUrl = "https://trendpick.k8s-1.suho.info"
 
         const clientKey = document.querySelector("#clientKey").getAttribute("data-contextPath");
         const customerKey = PaymentWidget.ANONYMOUS
