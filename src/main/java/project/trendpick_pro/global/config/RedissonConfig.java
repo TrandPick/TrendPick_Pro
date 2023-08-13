@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${redis.host}")
+    @Value("${custom.redis.host}")
     private String redisHost;
 
     @Value("${redis.port}")
