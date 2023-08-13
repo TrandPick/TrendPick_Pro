@@ -2,10 +2,13 @@ package project.trendpick_pro.domain.product.service.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +52,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Transactional(readOnly = true)
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
@@ -220,12 +224,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     public void applyDiscount(Long productId, double discountRate) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품 입니다."));
         product.applyDiscount(discountRate);
     }
 
     public Product findById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품입니다."));
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품 입니다."));
     }
 
     public Product findByIdWithBrand(Long productId) {
@@ -233,4 +237,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    //test용
+    @Profile("test")
+    public Product findByIdInTest(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품 입니다."));
+        Hibernate.initialize(product.getProductOption());
+        return product;
+    }
+
+    @Profile("test")
+    @Transactional
+    public void decreaseStock(Long productId, int quantity) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품 입니다."));
+        product.getProductOption().decreaseStock(quantity);
+    }
 }

@@ -28,7 +28,7 @@ public class RebateServiceImpl implements RebateService {
     public RsData makeDate(String brandName, String yearMonth) {
         String fromDateStr = yearMonth + "-01 00:00:00.000000";
         String toDateStr = yearMonth + "-%02d 23:59:59.999999".formatted(Ut.date.getEndDayOf(yearMonth));
-        List<OrderItem> orderItems = orderService.findAllByPayDateBetweenOrderByIdAsc(
+        List<OrderItem> orderItems = orderService.findAllByCreatedDateBetweenOrderByIdAsc(
                 Ut.date.parse(fromDateStr), Ut.date.parse(toDateStr)
         );
 
@@ -70,7 +70,7 @@ public class RebateServiceImpl implements RebateService {
     }
 
     @Transactional(readOnly = true)
-    public List<RebateOrderItem> findRebateOrderItemsByPayDateIn(String brandName,String yearMonth) {
+    public List<RebateOrderItem> findRebateOrderItemsByCreatedDateIn(String brandName,String yearMonth) {
         int monthEndDay = Ut.date.getEndDayOf(yearMonth);
 
         String fromDateStr = yearMonth + "-01 00:00:00.000000";
@@ -78,7 +78,7 @@ public class RebateServiceImpl implements RebateService {
         LocalDateTime fromDate = Ut.date.parse(fromDateStr);
         LocalDateTime toDate = Ut.date.parse(toDateStr);
 
-        return rebateOrderItemRepository.findAllByPayDateBetweenAndSellerNameOrderByIdAsc(fromDate, toDate,brandName);
+        return rebateOrderItemRepository.findAllByCreatedDateBetweenAndSellerNameOrderByIdAsc(fromDate, toDate,brandName);
     }
 
     @Transactional

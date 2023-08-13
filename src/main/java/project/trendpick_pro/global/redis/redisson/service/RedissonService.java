@@ -1,11 +1,13 @@
 package project.trendpick_pro.global.redis.redisson.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import project.trendpick_pro.domain.orders.service.OrderService;
+import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.global.redis.exception.RedisLockException;
 
 import java.util.concurrent.TimeUnit;
@@ -24,7 +26,7 @@ public class RedissonService {
             try {
                 log.info(lock.getName());
                 orderService.tryOrder(orderKey);
-            } catch (Exception e) {
+            } catch (JsonProcessingException e) {
                 log.error("Error processing order", e);
             } finally {;
                 try {

@@ -17,6 +17,8 @@ import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import java.io.Serializable;
 import java.util.List;
 
+import static project.trendpick_pro.domain.product.entity.product.ProductStatus.*;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -57,7 +59,7 @@ public class ProductOption implements Serializable {
     private Brand brand;
 
     @OneToOne(fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_id")
+    @JoinColumn(name = "common_file_id")
     private CommonFile file;
 
     @Builder
@@ -101,15 +103,21 @@ public class ProductOption implements Serializable {
     }
 
     public void decreaseStock(int quantity) {
-        int restStock = this.stock - quantity;
-        if (restStock < 0) {
-            this.status = ProductStatus.SOLD_OUT;
-            throw new ProductStockOutException("재고가 부족합니다.");
+        if (this.stock - quantity == 0) {
+            this.stock -= quantity;
+            this.status = SOLD_OUT;
+            return;
         }
-        this.stock = restStock;
+        if (this.status == SOLD_OUT || this.stock - quantity < 0) {
+            throw new ProductStockOutException("재고가 부족 합니다.");
+        }
+        this.stock -= quantity;
     }
 
     public void increaseStock(int quantity) {
         this.stock += quantity;
+        if (this.status == SOLD_OUT && this.stock > 0) {
+            this.status = SALE;
+        }
     }
 }

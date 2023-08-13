@@ -72,7 +72,7 @@ public class MakeRebateDataJobConfig {
         return new RepositoryItemReaderBuilder<OrderItem>()
                 .name("orderItemReader")
                 .repository(orderItemRepository)
-                .methodName("findAllByPayDateBetween")
+                .methodName("findAllByCreatedDateBetween")
                 .pageSize(100)
                 .arguments(Arrays.asList(fromDate, toDate))
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))

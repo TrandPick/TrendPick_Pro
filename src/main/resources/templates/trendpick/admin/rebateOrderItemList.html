@@ -58,7 +58,7 @@
                                    type="checkbox" class="orderItemCheckbox checkbox" th:value="${item.orderItem.id}">
                         </td>
                         <td th:text="${item.orderItem.id}"></td>
-                        <td th:text="${#temporals.format(item.payDate, 'yy-MM-dd HH:mm')}"></td>
+                        <td th:text="${#temporals.format(item.createdDate, 'yy-MM-dd HH:mm')}"></td>
                         <td th:text="${item.productSubject}"></td>
                         <td th:text="${#numbers.formatDecimal(item.orderPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 '"></td>
                         <td th:text="${item.sellerName}"></td>
