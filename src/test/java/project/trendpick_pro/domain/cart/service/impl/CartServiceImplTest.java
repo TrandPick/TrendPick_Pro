@@ -40,9 +40,6 @@ class CartServiceImplTest {
     @Mock
     protected FavoriteTagService favoriteTagService;
 
-
-
-
     @DisplayName("상품을 장바구니에 담는다. 요청 수량만큼 총수량이 증가한다.(장바구니에 해당 상품이 존재하지 않는다.)")
     @Test
     void addCartItem() throws Exception {

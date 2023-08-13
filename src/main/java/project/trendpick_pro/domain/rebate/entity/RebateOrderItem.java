@@ -1,12 +1,13 @@
 package project.trendpick_pro.domain.rebate.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.cash.entity.CashLog;
+import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.coupon.entity.CouponCard;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.orders.entity.Order;
@@ -18,10 +19,9 @@ import java.time.LocalDateTime;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@NoArgsConstructor
-@SuperBuilder
-public class RebateOrderItem {
+public class RebateOrderItem extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,7 +61,6 @@ public class RebateOrderItem {
     @Column(name = "count", nullable = false)
     private int quantity;
 
-    private LocalDateTime payDate; // 결제날짜
     @ManyToOne(fetch = LAZY)
     @ToString.Exclude
     @JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -93,12 +92,11 @@ public class RebateOrderItem {
         product=orderItem.getProduct();
         couponCard=orderItem.getCouponCard();
         orderPrice=orderItem.getOrderPrice();
-        totalPrice=orderItem.getTotalPrice();
+        totalPrice=orderItem.getOrderItemByQuantity();
         discountPrice=orderItem.getDiscountPrice();
         size=orderItem.getSize();
         color=orderItem.getColor();
         quantity=orderItem.getQuantity();
-        payDate=orderItem.getPayDate();
         // 상품 추가 데이터
         productSubject=orderItem.getProduct().getTitle();
 
@@ -144,7 +142,6 @@ public class RebateOrderItem {
         size=item.getSize();
         color=item.getColor();
         quantity=item.getQuantity();
-        payDate=item.getPayDate();
         productSubject=item.getProduct().getTitle();
         orderItemCreateDate=item.getOrder().getCreatedDate();
         buyer=item.getOrder().getMember();

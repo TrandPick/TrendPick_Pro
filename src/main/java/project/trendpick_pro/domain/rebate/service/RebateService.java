@@ -13,6 +13,6 @@ public interface RebateService {
 
     RebateOrderItem toRebateOrderItem(OrderItem orderItem);
 
-    List<RebateOrderItem> findRebateOrderItemsByPayDateIn(String brandName,String yearMonth);
+    List<RebateOrderItem> findRebateOrderItemsByCreatedDateIn(String brandName,String yearMonth);
     RsData rebate(long orderItemId);
 }

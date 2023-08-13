@@ -10,19 +10,20 @@ import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailRespon
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.global.util.rsData.RsData;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderService {
-    RsData<Long> cartToOrder(Member member, CartToOrderRequest request);
-    RsData<Long> productToOrder(Member member, Long id, int quantity, String size, String color);
+    RsData cartToOrder(Member member, CartToOrderRequest request);
+    RsData productToOrder(Member member, Long id, int quantity, String size, String color);
     void tryOrder(String id)  throws JsonProcessingException;
     RsData cancel(Long orderId);
     void delete(Long id);
-    RsData<OrderDetailResponse> showOrderItems(Member member, Long orderId);
+    RsData<OrderDetailResponse> findOrderItems(Member member, Long orderId);
     Page<OrderResponse> findAll(Member member, int offset);
-    int settlementOfSales(Member member);
+    int settlementOfSales(Member member, LocalDate registeredDate);
     Order findById(Long id);
     Page<OrderResponse> findCanceledOrders(Member member, int offset);
-    List<OrderItem> findAllByPayDateBetweenOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate);
+    List<OrderItem> findAllByCreatedDateBetweenOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate);
 }

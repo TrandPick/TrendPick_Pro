@@ -5,29 +5,25 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.trendpick_pro.domain.cart.entity.CartItem;
+import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.coupon.entity.CouponCard;
-import project.trendpick_pro.domain.orders.entity.dto.response.OrderItemDto;
 import project.trendpick_pro.domain.product.entity.product.Product;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderItem {
+@Getter
+public class OrderItem extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_item_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    private LocalDateTime payDate;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -38,9 +34,9 @@ public class OrderItem {
     private int orderPrice;
 
     @Column(name = "total_price")
-    private int totalPrice;
+    private int orderItemByQuantity;
 
-    @Column(name = "discount_price")
+    @Column(name = "discount_price", nullable = false)
     private int discountPrice;
 
     @Column(name = "size", nullable = false)
@@ -52,26 +48,6 @@ public class OrderItem {
     @Column(name = "count", nullable = false)
     private int quantity;
 
-    private OrderItem(Product product,  int quantity, String size, String color) {
-        this.product = product;
-        if(product.getDiscountedPrice() > 0){
-            this.orderPrice = product.getDiscountedPrice();
-        }else{
-            this.orderPrice = product.getProductOption().getPrice();
-        }
-        this.quantity = quantity;
-        this.size = size;
-        this.color = color;
-        this.totalPrice = this.orderPrice * this.quantity;
-        this.discountPrice = 0;
-        product.getProductOption().decreaseStock(quantity);
-        this.payDate=LocalDateTime.now();
-    }
-
-    public static OrderItem of(Product product, OrderItemDto orderItemDto) {
-        return new OrderItem(product, orderItemDto.getQuantity(), orderItemDto.getSize(), orderItemDto.getColor());
-    }
-
     public static OrderItem of(Product product, int quantity, String size, String color) {
         return new OrderItem(product, quantity, size, color);
     }
@@ -80,27 +56,38 @@ public class OrderItem {
         return new OrderItem(product, cartItem.getQuantity(), cartItem.getSize(), cartItem.getColor());
     }
 
+    public void cancel() {
+        this.product.getProductOption().increaseStock(this.quantity);
+        if (this.couponCard != null) {
+            this.couponCard.cancel(this);
+        }
+    }
+
     public void connectOrder(Order order) {
         this.order = order;
     }
 
-    public void cancel() {
-        this.product.getProductOption().increaseStock(getQuantity());
-        this.couponCard.cancel(this);
-    }
     public void applyCouponCard(CouponCard couponCard) {
         this.couponCard = couponCard;
     }
 
     public void cancelCouponCard(){
         this.couponCard = null;
-        this.cancelDiscount();
+        this.discountPrice = 0;
     }
 
     public void discount(int price){
         this.discountPrice += price;
     }
-    private void cancelDiscount(){
+
+    private OrderItem(Product product, int quantity, String size, String color) {
+        this.product = product;
+        this.orderPrice = (product.getDiscountedPrice() > 0) ? product.getDiscountedPrice() : product.getProductOption().getPrice();
+        this.quantity = quantity;
+        this.size = size;
+        this.color = color;
         this.discountPrice = 0;
+        this.orderItemByQuantity = this.orderPrice * this.quantity;
+        product.getProductOption().decreaseStock(quantity);
     }
 }

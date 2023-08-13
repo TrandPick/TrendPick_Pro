@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface RebateOrderItemRepository extends JpaRepository<RebateOrderItem, Long> {
     Optional<RebateOrderItem> findByOrderItemId(long orderItemId);
-    List<RebateOrderItem> findAllByPayDateBetweenAndSellerNameOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate, String sellerName);
+    List<RebateOrderItem> findAllByCreatedDateBetweenAndSellerNameOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate, String sellerName);
 }

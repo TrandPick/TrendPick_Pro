@@ -39,13 +39,4 @@ public class FavoriteTag {
             default -> score += 1;
         }
     }
-
-    public void decreaseScore(TagType type){
-        switch (type) {
-            case ORDER -> score -= 10;
-            case CART -> score -= 5;
-            case REGISTER -> score -= 30;
-            default -> score -= 1;
-        }
-    }
 }

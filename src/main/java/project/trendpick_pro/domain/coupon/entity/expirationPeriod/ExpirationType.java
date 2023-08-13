@@ -16,6 +16,6 @@ public enum ExpirationType {
     }
 
     public static boolean isType(ExpirationType expirationType) {
-        return List.of(PERIOD, ISSUE_AFTER_DATE).contains(expirationType);
+        return List.of(values()).contains(expirationType);
     }
 }

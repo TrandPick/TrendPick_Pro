@@ -16,12 +16,12 @@ import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.TagType;
+import project.trendpick_pro.global.util.rq.Rq;
 import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +32,8 @@ public class CartServiceImpl implements CartService {
 
     private final ProductService productService;
     private final FavoriteTagService favoriteTagService;
+
+    private final Rq rq;
 
     @Transactional
     @Override
@@ -110,10 +112,28 @@ public class CartServiceImpl implements CartService {
             return cartRepository.findByMemberId(memberId);
         }
 
-        @Transactional
-        @Override
-        public void deleteCartItemsByMember (Order order){
-            cartItemRepository.deleteAllInBatch(order.getCartItems());
-        }
+    @Transactional
+    @Override
+    public void deleteCartItemsByMember(Order order) {
+
+        List<CartItem> cartProducts = getCartByUser(rq.getMember().getId()).getCartItems();
+
+        List<String> productCodes = collectProductCode(order);
+
+        List<CartItem> matchedCartItems = matchedCartProducts(cartProducts, productCodes);
+
+        cartItemRepository.deleteAllInBatch(matchedCartItems);
     }
+
+    private static List<CartItem> matchedCartProducts(List<CartItem> cartProducts, List<String> productCodes) {
+        return cartProducts.stream()
+                .filter(cartItem -> productCodes.contains(cartItem.getProduct().getProductCode()))
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> collectProductCode(Order order) {
+        return order.getOrderItems().stream()
+                .map(orderItem -> orderItem.getProduct().getProductCode()).collect(Collectors.toList());
+    }
+}
 

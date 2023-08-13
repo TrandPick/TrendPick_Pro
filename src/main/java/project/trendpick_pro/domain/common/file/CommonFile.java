@@ -29,7 +29,7 @@ public class CommonFile {
     private List<CommonFile> child = new ArrayList<>();
 
     @Builder
-    public CommonFile(String fileName) {
+    private CommonFile(String fileName) {
         this.fileName = fileName;
     }
 

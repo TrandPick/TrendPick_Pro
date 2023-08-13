@@ -19,6 +19,7 @@ import project.trendpick_pro.domain.product.entity.product.Product;
 import project.trendpick_pro.domain.product.repository.ProductRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -58,6 +59,7 @@ class AskServiceTest extends IntegrationTestSupport {
         Member savedMember = memberRepository.save(member);
 
         Product product = Product.builder()
+                .productCode(UUID.randomUUID().toString())
                 .title("nice shirt title")
                 .description("nice shirt description")
                 .build();
@@ -94,6 +96,7 @@ class AskServiceTest extends IntegrationTestSupport {
         Member savedMember = memberRepository.save(member);
 
         Product product = Product.builder()
+                .productCode(UUID.randomUUID().toString())
                 .title("nice shirt title")
                 .description("nice shirt description")
                 .build();
@@ -136,6 +139,7 @@ class AskServiceTest extends IntegrationTestSupport {
         Member savedMember = memberRepository.save(member);
 
         Product product = Product.builder()
+                .productCode(UUID.randomUUID().toString())
                 .title("nice shirt title")
                 .description("nice shirt description")
                 .build();
@@ -188,6 +192,7 @@ class AskServiceTest extends IntegrationTestSupport {
         Member savedMember = memberRepository.save(member);
 
         Product product = Product.builder()
+                .productCode(UUID.randomUUID().toString())
                 .title("nice shirt title")
                 .description("nice shirt description")
                 .build();

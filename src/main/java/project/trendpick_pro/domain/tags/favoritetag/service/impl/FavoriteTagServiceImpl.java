@@ -14,6 +14,7 @@ import project.trendpick_pro.domain.tags.tag.repository.TagRepository;
 import project.trendpick_pro.domain.tags.tag.entity.TagType;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +26,8 @@ public class FavoriteTagServiceImpl implements FavoriteTagService {
     @Transactional
     @Override
     public void updateTag(Member member, Product product, TagType type) {
-        List<Tag> tagList = tagRepository.findAllByProduct(product);
-        List<FavoriteTag> tags = favoriteTagRepository.findAllByMember(member);
+        Set<Tag> tagList = tagRepository.findAllByProduct(product);
+        Set<FavoriteTag> tags = favoriteTagRepository.findAllByMember(member);
 
         for(Tag tagByProduct : tagList){
             boolean hasTag = false;

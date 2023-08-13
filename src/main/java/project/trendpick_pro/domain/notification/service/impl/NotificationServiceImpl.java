@@ -16,8 +16,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Service
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -43,7 +44,8 @@ public class NotificationServiceImpl implements NotificationService {
         if(notification==null){
             return RsData.of("F-1","해당 주문내역은 없습니다.");
         }
-        if (!notification.getOrderState().equals(order.getOrderState())
+
+        if (!notification.getNotificationType().equals(order.getOrderState())
                 || !notification.getDeliveryState().equals(order.getDeliveryState())) {
             Notification newNotification = Notification.of(notification.getMember(), order);
             notificationRepository.save(newNotification);
@@ -59,7 +61,6 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.delete(notification);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Notification> findByMember(Long memberId) {
         List<Notification> notifications = notificationRepository.findByMemberId(memberId);
