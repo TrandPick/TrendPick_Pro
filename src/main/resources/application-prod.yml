@@ -32,4 +32,5 @@ custom:
   redis:
     host: ${redis.host}
 kafka:
+  host: "my-cluster-kafka-bootstrap.my-kafka-project.svc.cluster.local:"
   port: ${custom.kafka.port}

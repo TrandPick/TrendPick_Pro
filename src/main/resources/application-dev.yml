@@ -18,4 +18,5 @@ logging.level:
     hibernate.SQL: error
 
 kafka:
-    port: ${custom.kafka.devPort}
+  host: "localhost:"
+  port: ${custom.kafka.devPort}
