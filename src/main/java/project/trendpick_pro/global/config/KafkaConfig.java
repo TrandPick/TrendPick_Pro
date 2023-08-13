@@ -34,7 +34,7 @@ public class KafkaConfig {
     @Bean
     public KafkaAdmin admin() {
         Map<String, Object> configs = new HashMap<>();
-        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:"+kafkaPort);
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaHost+kafkaPort);
         return new KafkaAdmin(configs);
     }
 
