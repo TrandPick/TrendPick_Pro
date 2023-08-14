@@ -51,7 +51,7 @@ import java.util.*;
 
 @Slf4j
 @Configuration
-@Profile({"dev", "prod"})
+@Profile({"dev"})
 public class BaseData {
 
     @Value("${tag}")
