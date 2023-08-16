@@ -14,7 +14,7 @@ public interface CouponCardService {
 
     List<CouponCardByApplyResponse> showCouponCardsByOrderItem(Long orderItemId);
 
-    RsData apply(Long couponCardId, Long orderItemId);
+    RsData apply(Long couponCardId, Long orderItemId, LocalDateTime now);
 
     RsData cancel(Long orderItemId);
 
