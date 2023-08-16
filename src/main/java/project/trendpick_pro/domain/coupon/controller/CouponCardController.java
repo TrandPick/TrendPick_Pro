@@ -29,21 +29,21 @@ public class CouponCardController {
     }
 
     @PreAuthorize("hasRole('MEMBER')")
-    @GetMapping("apply")
+    @GetMapping("/apply")
     @ResponseBody
     public List<CouponCardByApplyResponse> showApplicableCoupons(@RequestParam("orderItem") Long orderItemId) {
         return couponCardService.showCouponCardsByOrderItem(orderItemId);
     }
 
     @PreAuthorize("hasRole('MEMBER')")
-    @PostMapping("apply")
+    @PostMapping("/apply")
     public String applyCoupon(@RequestParam("couponCard") Long couponCardId, @RequestParam("orderItem") Long orderItemId, HttpServletRequest req) {
-        RsData result = couponCardService.apply(couponCardId, orderItemId);
+        RsData result = couponCardService.apply(couponCardId, orderItemId, LocalDateTime.now());
         return processRequest(result, "쿠폰이 적용되었습니다.", req);
     }
 
     @PreAuthorize("hasRole('MEMBER')")
-    @PostMapping("cancel")
+    @PostMapping("/cancel")
     public String cancelCoupon(@RequestParam("orderItem") Long orderItemId, HttpServletRequest req) {
         RsData result = couponCardService.cancel(orderItemId);
         return processRequest(result, "쿠폰 적용이 취소되었습니다.", req);
