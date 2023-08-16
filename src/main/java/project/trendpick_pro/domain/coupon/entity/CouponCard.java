@@ -22,7 +22,7 @@ public class CouponCard extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon", nullable = false)
+    @JoinColumn(name = "coupon")
     private Coupon coupon;
 
     @Column(name = "coupon_code", nullable = false, unique = true)
@@ -66,8 +66,10 @@ public class CouponCard extends BaseTimeEntity {
     public void use(OrderItem orderItem, LocalDateTime dateTime) {
         settingStatusAndDate(dateTime);
         orderItem.applyCouponCard(this);
+        int discountPercent = this.coupon.getDiscountPercent();
+        int price = orderItem.getOrderPrice() * discountPercent / 100;
         orderItem.discount(
-            orderItem.getOrderPrice() * (this.coupon.getDiscountPercent() / 100)
+                price
         );
     }
 

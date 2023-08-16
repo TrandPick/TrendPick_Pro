@@ -33,7 +33,6 @@ public class OrderItem extends BaseTimeEntity {
     @Column(name = "order_price", nullable = false)
     private int orderPrice;
 
-    @Column(name = "total_price")
     private int orderItemByQuantity;
 
     @Column(name = "discount_price", nullable = false)

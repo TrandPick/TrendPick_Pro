@@ -35,25 +35,25 @@ public class CouponCardServiceImpl implements CouponCardService {
                 () -> new CouponNotFoundException("존재하지 않는 쿠폰입니다."));
         int count = couponCardRepository.countByCouponIdAndMemberId(couponId, member.getId());
 
-        RsData<CouponCard> of = validateCouponCard(count, coupon);
-        if (of != null) {
-            return of;
+        RsData<CouponCard> isValidate = validateCouponCard(count, coupon, dateTime);
+        if (isValidate != null) {
+            return isValidate;
         }
 
         CouponCard savedCouponCard = settingCouponCard(member, dateTime, coupon);
-        return RsData.of("S-1", coupon.getName() + " 쿠폰이 발급되었습니다.");
+         return RsData.of("S-1", coupon.getName() + " 쿠폰이 발급되었습니다.");
     }
 
     @Transactional
     @Override
-    public RsData apply(Long couponCardId, Long orderItemId) {
+    public RsData apply(Long couponCardId, Long orderItemId, LocalDateTime dateTime) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(
                 () -> new OrderItemNotFoundException("주문되지 않은 상품입니다."));
         CouponCard couponCard = couponCardRepository.findById(couponCardId).orElseThrow(
                 () -> new CouponNotFoundException("존재하지 않은 쿠폰입니다."));
-        if (!couponCard.validate(orderItem, LocalDateTime.now()))
+        if (!couponCard.validate(orderItem, dateTime))
             return RsData.of("F-1", "해당 주문상품에 적용된 쿠폰이 없습니다.");
-        couponCard.use(orderItem, LocalDateTime.now());
+        couponCard.use(orderItem, dateTime);
         return RsData.of("S-1", "쿠폰이 적용되었습니다.");
     }
 
@@ -83,12 +83,12 @@ public class CouponCardServiceImpl implements CouponCardService {
         return savedCouponCard;
     }
 
-    private static RsData<CouponCard> validateCouponCard(int count, Coupon coupon) {
+    private static RsData<CouponCard> validateCouponCard(int count, Coupon coupon, LocalDateTime dateTime) {
         if(count > 0)
             return RsData.of("F-3", "이미 발급 받으신 쿠폰입니다.");
         if(!coupon.validateLimitCount())
             return RsData.of("F-1", "수량이 모두 소진되었습니다.");
-        if(!coupon.validateLimitIssueDate(LocalDateTime.now()))
+        if(!coupon.validateLimitIssueDate(dateTime))
             return RsData.of("F-2", "쿠폰 발급 가능 날짜가 지났습니다.");
         return null;
     }
