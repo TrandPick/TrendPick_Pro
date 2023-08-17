@@ -29,6 +29,7 @@ import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.entity.productOption.ProductOption;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -91,6 +92,7 @@ public class OrderServiceImpl implements OrderService {
                             List.of(OrderItem.of(productService.findById(id), quantity, size, color))
                     )
             );
+            log.info("재고 : {}", saveOrder.getOrderItems().get(0).getProduct().getProductOption().getStock());
             OutboxMessage message = createOutboxMessage(saveOrder);
             kafkaProducerService.sendMessage(message.getId());
             return RsData.of("S-1", "주문을 시작합니다.");
@@ -105,7 +107,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문 입니다."));
         String email = order.getMember().getEmail();
         try {
-            decreaseStock(order);
             order.updateStatus(OrderStatus.ORDERED);
             sendMessage(order.getId(), "Success", email);
         } catch (ProductStockOutException e) {
@@ -212,16 +213,6 @@ public class OrderServiceImpl implements OrderService {
 
     private void sendMessage(Long orderId, String message, String email) throws JsonProcessingException {
         kafkaProducerService.sendMessage(orderId, message, email);
-    }
-
-    private static void decreaseStock(Order order) {
-        for (OrderItem orderItem : order.getOrderItems()) {
-            orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
-            if (orderItem.getProduct().getProductOption().getStock() < 0) {
-                throw new ProductStockOutException("재고가 부족 합니다.");
-            }
-            log.info("재고 : {}", orderItem.getProduct().getProductOption().getStock());
-        }
     }
 
     private Page<OrderResponse> settingOrderByMemberStatus(Member member, int offset) {
