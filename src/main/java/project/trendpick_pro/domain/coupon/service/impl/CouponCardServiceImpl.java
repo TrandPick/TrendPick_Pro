@@ -45,14 +45,14 @@ public class CouponCardServiceImpl implements CouponCardService {
 
     @Transactional
     @Override
-    public RsData apply(Long couponCardId, Long orderItemId) {
+    public RsData apply(Long couponCardId, Long orderItemId, LocalDateTime dateTime) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(
                 () -> new OrderItemNotFoundException("주문되지 않은 상품입니다."));
         CouponCard couponCard = couponCardRepository.findById(couponCardId).orElseThrow(
                 () -> new CouponNotFoundException("존재하지 않는 쿠폰입니다."));
-        if (!couponCard.validate(orderItem, LocalDateTime.now()))
+        if (!couponCard.validate(orderItem, dateTime))
             return RsData.of("F-1", "해당 주문상품에 해당 쿠폰을 적용할 수 없습니다.");
-        couponCard.use(orderItem, LocalDateTime.now());
+        couponCard.use(orderItem, dateTime);
         return RsData.of("S-1", "쿠폰이 적용되었습니다.");
     }
 

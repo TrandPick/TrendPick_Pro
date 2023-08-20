@@ -39,8 +39,8 @@ public class PaymentController {
 
         if (response.getStatus().equals("DONE")) {
             order.connectPayment(
-                    response.getPaymentKey(),
-                    "TossPayments " + response.getMethod()
+                    "TossPayments" + response.getMethod(),
+                    response.getPaymentKey()
             );
             notificationService.create(rq.getMember(), order.getId());
             return rq.redirectWithMsg("/trendpick/orders/%s".formatted(id), "주문이 완료되었습니다.");

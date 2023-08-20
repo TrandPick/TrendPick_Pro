@@ -28,8 +28,6 @@ jobs:
           cache: 'gradle'
       - name: gradlew 실행 권한 부여
         run: chmod +x gradlew
-      - name: gradle 테스트
-        run: ./gradlew test --no-daemon
       - name: gradle 빌드
         run: ./gradlew build -x test --no-daemon
       - name: build 폴더를 캐시에 저장

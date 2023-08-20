@@ -1,11 +1,13 @@
 package project.trendpick_pro.domain.orders.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.CartItem;
@@ -19,6 +21,7 @@ import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
+import project.trendpick_pro.domain.orders.entity.dto.request.OrderStateResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.exception.OrderNotFoundException;
@@ -26,6 +29,7 @@ import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.entity.productOption.ProductOption;
 import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.service.ProductService;
@@ -41,6 +45,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -87,6 +92,7 @@ public class OrderServiceImpl implements OrderService {
                             List.of(OrderItem.of(productService.findById(productId), quantity, size, color))
                     )
             );
+            log.info("재고 : {}", saveOrder.getOrderItems().get(0).getProduct().getProductOption().getStock());
             OutboxMessage message = createOutboxMessage(saveOrder);
             kafkaProducerService.sendMessage(message.getId());
             return RsData.of("S-1", "주문을 시작합니다.");
@@ -101,7 +107,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문 입니다."));
         String email = order.getMember().getEmail();
         try {
-            decreaseStock(order);
             order.updateStatus(OrderStatus.ORDERED);
             sendMessage(order.getId(), "Success", email);
         } catch (ProductStockOutException e) {
@@ -208,16 +213,6 @@ public class OrderServiceImpl implements OrderService {
 
     private void sendMessage(Long orderId, String message, String email) throws JsonProcessingException {
         kafkaProducerService.sendMessage(orderId, message, email);
-    }
-
-    private static void decreaseStock(Order order) {
-        for (OrderItem orderItem : order.getOrderItems()) {
-            orderItem.getProduct().getProductOption().decreaseStock(orderItem.getQuantity());
-            if (orderItem.getProduct().getProductOption().getStock() < 0) {
-                throw new ProductStockOutException("재고가 부족 합니다.");
-            }
-            log.info("재고 : {}", orderItem.getProduct().getProductOption().getStock());
-        }
     }
 
     private Page<OrderResponse> settingOrderByMemberStatus(Member member, int offset) {
