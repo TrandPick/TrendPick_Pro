@@ -26,12 +26,13 @@ public class AdmWithdrawController {
     @PreAuthorize("hasAuthority({'ADMIN', 'BRAND_ADMIN'})")
     @GetMapping("/withDrawList")
     public String showApplyList(Model model) {
-        Member member=rq.getRollMember();
+        Member member= rq.getAdmin();
         List<WithdrawApply> withdrawApplies;
+
         if(member.getRole().getValue().equals("ADMIN")) {
             withdrawApplies = withdrawService.findAll();
         }else{
-            withdrawApplies=withdrawService.findByWithdrawApplyId(member.getId());
+            withdrawApplies=withdrawService.findAllWithdrawByApplicantId(member.getId());
         }
         model.addAttribute("withdrawApplies", withdrawApplies);
         return "trendpick/admin/withDrawList";
