@@ -1,13 +1,11 @@
 package project.trendpick_pro.domain.orders.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.CartItem;
@@ -21,7 +19,6 @@ import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
-import project.trendpick_pro.domain.orders.entity.dto.request.OrderStateResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.exception.OrderNotFoundException;
@@ -44,7 +41,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -84,11 +80,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public RsData productToOrder(Member member, Long id, int quantity, String size, String color) {
+    public RsData productToOrder(Member member, Long productId, int quantity, String size, String color) {
         try {
             Order saveOrder = orderRepository.save(
                     Order.createOrder(member, new Delivery(member.getAddress()),
-                            List.of(OrderItem.of(productService.findById(id), quantity, size, color))
+                            List.of(OrderItem.of(productService.findById(productId), quantity, size, color))
                     )
             );
             OutboxMessage message = createOutboxMessage(saveOrder);

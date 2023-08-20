@@ -129,4 +129,9 @@ public class Order extends BaseTimeEntity {
         orderItems.add(orderItem);
         orderItem.connectOrder(this);
     }
+
+    //구매결정 완료된건지 (환불불가, 취소불가)
+    public boolean isCompletedPurchaseDecision(){
+        return this.getDeliveryState().equals("배송완료") && this.getOrderState().equals("결제완료");
+    }
 }
