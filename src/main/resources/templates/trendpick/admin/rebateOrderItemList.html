@@ -54,7 +54,7 @@
                     <tbody>
                     <tr th:each="item : ${items}">
                         <td>
-                            <input onchange="OrderItemCheckbox__changed();" th:if="${item.rebateAvailable}"
+                            <input onchange="OrderItemCheckbox__changed();" th:if="${item.checkAlreadyRebate}"
                                    type="checkbox" class="orderItemCheckbox checkbox" th:value="${item.orderItem.id}">
                         </td>
                         <td th:text="${item.orderItem.id}"></td>
@@ -65,7 +65,7 @@
                         <td th:text="${#numbers.formatDecimal(item.calculateRebatePrice(), 0, 'COMMA', 0, 'POINT')} + ' 원 '"></td>
                         <td th:text="${#temporals.format(item.rebateDate, 'yy-MM-dd HH:mm')}"></td>
                         <td>
-                            <a th:if="${item.rebateAvailable}" href="javascript:;" onclick="$(this).next().submit();"
+                            <a th:if="${item.checkAlreadyRebate}" href="javascript:;" onclick="$(this).next().submit();"
                                class="btn btn-primary btn-xs">정산</a>
                             <form method="POST" th:action="@{|/trendpick/admin/rebateOne/${item.orderItem.id}|}"
                                   hidden></form>
