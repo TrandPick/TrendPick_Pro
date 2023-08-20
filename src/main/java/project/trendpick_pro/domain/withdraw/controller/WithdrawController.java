@@ -24,30 +24,20 @@ import project.trendpick_pro.global.util.rsData.RsData;
 public class WithdrawController {
 
     private final WithdrawService withdrawService;
-    private final MemberService memberService;
     private final Rq rq;
 
     @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
     @GetMapping("/withDraw")
-    public String showApply(Model model) {
-        Member member = rq.getRollMember();
-        if(!member.getRole().getValue().equals("BRAND_ADMIN")){
-            return rq.historyBack("브랜드 관리자만 접근할 수 있습니다.");
-        }
-        model.addAttribute("actorRestCash", memberService.getRestCash(member));
+    public String showApplyForm(Model model) {
+        model.addAttribute("actorRestCash", withdrawService.showRestCash(rq.getBrandMember()));
         return "trendpick/admin/withDraw";
     }
 
     @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
     @PostMapping("/withDraw")
     public String apply(@Valid WithDrawApplyForm withDrawApplyForm) {
-        RsData<WithdrawApply> rsData = withdrawService.apply(
-                withDrawApplyForm.getBankName(),
-                withDrawApplyForm.getBankAccountNo(),
-                withDrawApplyForm.getPrice(),
-                rq.getBrandMember()
-        );
+        withdrawService.apply(withDrawApplyForm, rq.getBrandMember());
 
-        return rq.redirectWithMsg("/trendpick/admin/withDrawList","출금 신청이 완료되었습니다.");
+        return rq.redirectWithMsg("/trendpick/admin/withDrawList", "출금 신청이 완료되었습니다.");
     }
 }
