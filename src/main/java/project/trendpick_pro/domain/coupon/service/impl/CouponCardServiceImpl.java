@@ -35,8 +35,8 @@ public class CouponCardServiceImpl implements CouponCardService {
                 () -> new CouponNotFoundException("존재하지 않는 쿠폰입니다."));
         int count = couponCardRepository.countByCouponIdAndMemberId(couponId, member.getId());
 
-        RsData<CouponCard> validateResult = validateCouponCard(count, coupon);
-        if (validateResult != null)
+        RsData<CouponCard> validateResult = validateCouponCard(count, coupon, dateTime);
+        if (validateResult.isFail())
             return validateResult;
 
         CouponCard savedCouponCard = settingCouponCard(member, dateTime, coupon);
@@ -82,14 +82,14 @@ public class CouponCardServiceImpl implements CouponCardService {
         return savedCouponCard;
     }
 
-    private static RsData<CouponCard> validateCouponCard(int count, Coupon coupon) {
+    private static RsData<CouponCard> validateCouponCard(int count, Coupon coupon, LocalDateTime dateTime) {
         if(count > 0)
             return RsData.of("F-3", "이미 발급 받으신 쿠폰입니다.");
         if(!coupon.validateLimitCount())
             return RsData.of("F-1", "수량이 모두 소진되었습니다.");
-        if(!coupon.validateLimitIssueDate(LocalDateTime.now()))
+        if(!coupon.validateLimitIssueDate(dateTime))
             return RsData.of("F-2", "쿠폰 발급 가능 날짜가 지났습니다.");
-        return null;
+        return RsData.success();
     }
 
     private List<CouponCardByApplyResponse> createCouponCardByApplyResponseList(List<CouponCard> couponCards, OrderItem orderItem) {
