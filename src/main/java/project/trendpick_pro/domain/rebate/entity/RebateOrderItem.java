@@ -43,15 +43,16 @@ public class RebateOrderItem extends BaseTimeEntity {
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "coupon_card_id")
     private CouponCard couponCard;
-    @Column(name = "order_price", nullable = false)
-    private int orderPrice;
-
     @Column(name = "total_price")
-    private int totalPrice;
-
+    private int totalPrice; //전체금액 (할인제외)
+    @Column(name = "order_price", nullable = false)
+    private int orderPrice; //주문금액 (할인 계산된 금액)
     @Column(name = "discount_price")
-    private int discountPrice;
+    private int discountPrice; //할인 받은 금액
 
+    // 상품
+    @Column(name = "product_subject", nullable = false)
+    private String productSubject;
     @Column(name = "size", nullable = false)
     private String size;
 
@@ -60,14 +61,11 @@ public class RebateOrderItem extends BaseTimeEntity {
 
     @Column(name = "count", nullable = false)
     private int quantity;
-
-    @ManyToOne(fetch = LAZY)
+    @OneToOne(fetch = LAZY)
     @ToString.Exclude
     @JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private CashLog rebateCashLog; // 정산에 관련된 환급지급내역
     private LocalDateTime rebateDate;
-    // 상품
-    private String productSubject;
 
     // 주문품목
     private LocalDateTime orderItemCreateDate;
@@ -113,18 +111,18 @@ public class RebateOrderItem extends BaseTimeEntity {
     }
 
     public int calculateRebatePrice() {
-        return (totalPrice*quantity) - (int)(totalPrice * 0.05); // 정산금액 수수료 0.05% 제외하고 계산
+        return (totalPrice*quantity - discountPrice) - (int)(totalPrice * 0.05); // 정산금액 수수료 5%(임의) 제외하고 계산
     }
-    public boolean isRebateAvailable() {
+    public boolean checkAlreadyRebate() {
         if (rebateDate != null) {
             return false;
         }
         return true;
     }
 
-    public void setRebateDone(Long cashLogId) {
+    public void setRebateDone(CashLog cashLog) {
         rebateDate = LocalDateTime.now();
-        this.rebateCashLog = new CashLog(cashLogId);
+        this.rebateCashLog = cashLog;
     }
 
     public boolean isRebateDone() {

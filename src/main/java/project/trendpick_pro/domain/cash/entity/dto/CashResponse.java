@@ -7,7 +7,5 @@ import project.trendpick_pro.domain.cash.entity.CashLog;
 @Getter
 @AllArgsConstructor
 public class CashResponse {
-
     CashLog cashLog;
-    long newRestCash;
 }
