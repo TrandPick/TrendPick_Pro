@@ -3,12 +3,13 @@ package project.trendpick_pro.domain.withdraw.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.domain.brand.entity.Brand;
-import project.trendpick_pro.domain.brand.service.BrandService;
 import project.trendpick_pro.domain.cash.entity.CashLog;
+import project.trendpick_pro.domain.cash.service.CashService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
+import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.domain.withdraw.entity.WithdrawApply;
+import project.trendpick_pro.domain.withdraw.entity.dto.WithDrawApplyForm;
 import project.trendpick_pro.domain.withdraw.repository.WithdrawApplyRepository;
 import project.trendpick_pro.domain.withdraw.service.WithdrawService;
 import project.trendpick_pro.global.util.rsData.RsData;
@@ -18,35 +19,28 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WithdrawServiceImpl implements WithdrawService {
 
     private final WithdrawApplyRepository withdrawApplyRepository;
-
+    private final StoreService storeService;
     private final MemberService memberService;
-    private final BrandService brandService;
+    private final CashService cashService;
 
     @Transactional
     @Override
-    public RsData<WithdrawApply> apply(String bankName, String bankAccountNo, Integer price, Member applicant) {
-        WithdrawApply withdrawApply = WithdrawApply.builder()
-                .bankName(bankName)
-                .bankAccountNo(bankAccountNo)
-                .price(price)
-                .applicant(applicant)
-                .build();
-        withdrawApplyRepository.save(withdrawApply);
+    public RsData<WithdrawApply> apply(WithDrawApplyForm withDrawApplyForm, Member applicant) {
+        WithdrawApply withdrawApply = withdrawApplyRepository.save(WithdrawApply.of(withDrawApplyForm, applicant));
         return RsData.of("S-1", "출금 신청이 완료되었습니다.", withdrawApply);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<WithdrawApply> findAll() {
         return withdrawApplyRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<WithdrawApply> findByWithdrawApplyId(Long id){
+    public List<WithdrawApply> findAllWithdrawByApplicantId(Long id){
         return withdrawApplyRepository.findAllByApplicantId(id);
     }
 
@@ -54,28 +48,12 @@ public class WithdrawServiceImpl implements WithdrawService {
     public RsData withdraw(Long withdrawApplyId) {
         WithdrawApply withdrawApply = withdrawApplyRepository.findById(withdrawApplyId).orElse(null);
 
-        if (withdrawApply == null) {
-            return RsData.of("F-1", "출금신청 데이터를 찾을 수 없습니다.");
-        }
-        long restCash = memberService.getRestCash(withdrawApply.getApplicant());
+        RsData validateResult = validateAvailableWithdraw(withdrawApply); //캐시 출금 검증
+        if (validateResult.isFail()) return validateResult;
 
-        if (!withdrawApply.isApplyDoneAvailable()) {
-            return RsData.of("F-2", "이미 처리되었습니다.");
-        }
-        if (withdrawApply.getPrice() > restCash) {
-            return RsData.of("F-3", "예치금이 부족합니다.");
-        }
-        Brand brand=brandService.findByName(withdrawApply.getApplicant().getBrand());
-
-        CashLog cashLog = memberService.addCash(
-                        withdrawApply.getApplicant().getBrand(),
-                        withdrawApply.getPrice() * -1,
-                        brand,
-                        CashLog.EvenType.출금__통장입금
-                )
-                .getData().getCashLog();
-
-        withdrawApply.setApplyDone(cashLog.getId(), "관리자에 의해서 처리되었습니다.");
+        CashLog cashLog = cashService.addCashLog(withdrawApply);
+        withdrawApply.setApplyDone(cashLog, "관리자에 의해서 처리되었습니다.");
+        memberService.completeWithdraw(withdrawApply); //출금 신청한거 완료됐어요.
 
         return RsData.of(
                 "S-1",
@@ -86,16 +64,13 @@ public class WithdrawServiceImpl implements WithdrawService {
         );
     }
 
+
     @Transactional
     public RsData cancelApply(Long withdrawApplyId) {
         WithdrawApply withdrawApply = withdrawApplyRepository.findById(withdrawApplyId).orElse(null);
 
-        if (withdrawApply == null) {
-            return RsData.of("F-1", "출금신청 데이터를 찾을 수 없습니다.");
-        }
-        if (!withdrawApply.isCancelAvailable()) {
-            return RsData.of("F-2", "취소가 불가능합니다.");
-        }
+        RsData validateResult = validateAvailableCancel(withdrawApply); //취소 가능한지 검증
+        if (validateResult.isFail()) return validateResult;
 
         withdrawApply.setCancelDone("관리자에 의해서 취소되었습니다.");
 
@@ -104,5 +79,29 @@ public class WithdrawServiceImpl implements WithdrawService {
                 "%d번 출금신청이 취소되었습니다.".formatted(withdrawApply.getId()),
                 null
         );
+    }
+
+    @Override
+    public int showRestCash(Member brandMember) {
+        return storeService.getRestCash(brandMember.getBrand());
+    }
+
+    private static RsData<Object> validateAvailableCancel(WithdrawApply withdrawApply) {
+        if (withdrawApply == null)
+            return RsData.of("F-1", "출금신청 데이터를 찾을 수 없습니다.");
+
+        if (!withdrawApply.checkAlreadyProcessed())
+            return RsData.of("F-2", "이미 처리된 출금 신청 입니다.");
+
+        return RsData.success();
+    }
+    private RsData validateAvailableWithdraw(WithdrawApply withdrawApply) {
+        if (withdrawApply == null)
+            return RsData.of("F-1", "출금신청 데이터를 찾을 수 없습니다.");
+        if (withdrawApply.checkAlreadyProcessed())
+            return RsData.of("F-2", "이미 처리되었습니다.");
+        if (withdrawApply.getPrice() > withdrawApply.getApplicant().getRestCash())
+            return RsData.of("F-3", "예치금이 부족합니다.");
+        return RsData.success();
     }
 }

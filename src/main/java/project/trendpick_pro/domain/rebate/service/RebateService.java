@@ -7,12 +7,7 @@ import project.trendpick_pro.global.util.rsData.RsData;
 import java.util.List;
 
 public interface RebateService {
-    RsData makeDate(String brandName,String yearMonth);
-
-    void makeRebateOrderItem(RebateOrderItem item);
-
-    RebateOrderItem toRebateOrderItem(OrderItem orderItem);
-
-    List<RebateOrderItem> findRebateOrderItemsByCreatedDateIn(String brandName,String yearMonth);
-    RsData rebate(long orderItemId);
+    RsData makeData(String brandName,String yearMonth);
+    List<RebateOrderItem> findRebateDataByCurrentYearMonth(String brandName,String yearMonth);
+    RsData rebate(Long orderItemId);
 }

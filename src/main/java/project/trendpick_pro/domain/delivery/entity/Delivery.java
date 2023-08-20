@@ -26,7 +26,7 @@ public class Delivery extends BaseTimeEntity {
 
     public Delivery(String address){
         this.address = address;
-        state = DeliveryState.READY;
+        state = DeliveryState.COMPLETED; //원활한 테스트를 위해서 배송 완료로 임시 설정
     }
 
     public void updateStatus(String status){

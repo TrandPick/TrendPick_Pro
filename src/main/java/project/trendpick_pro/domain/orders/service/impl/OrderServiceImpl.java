@@ -85,11 +85,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public RsData productToOrder(Member member, Long id, int quantity, String size, String color) {
+    public RsData productToOrder(Member member, Long productId, int quantity, String size, String color) {
         try {
             Order saveOrder = orderRepository.save(
                     Order.createOrder(member, new Delivery(member.getAddress()),
-                            List.of(OrderItem.of(productService.findById(id), quantity, size, color))
+                            List.of(OrderItem.of(productService.findById(productId), quantity, size, color))
                     )
             );
             log.info("재고 : {}", saveOrder.getOrderItems().get(0).getProduct().getProductOption().getStock());

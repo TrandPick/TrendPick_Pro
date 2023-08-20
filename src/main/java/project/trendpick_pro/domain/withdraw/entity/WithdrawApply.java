@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import project.trendpick_pro.domain.cash.entity.CashLog;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.withdraw.entity.dto.WithDrawApplyForm;
 
 import java.time.LocalDateTime;
 
@@ -35,18 +36,19 @@ public class WithdrawApply {
     private LocalDateTime cancelDate;
     private String msg;
 
-    public boolean isApplyDoneAvailable() {
+    public boolean checkAlreadyProcessed() { //이미 처리되었는지 확인
         if (withdrawDate != null || withdrawCashLog != null || cancelDate != null) {
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
-    public void setApplyDone(Long cashLogId, String msg) {
+    public void setApplyDone(CashLog cashLog, String msg) {
         withdrawDate = LocalDateTime.now();
-        this.withdrawCashLog = new CashLog(cashLogId);
+        this.withdrawCashLog = cashLog;
         this.msg = msg;
+
     }
 
     public void setCancelDone(String msg) {
@@ -54,8 +56,13 @@ public class WithdrawApply {
         this.msg = msg;
     }
 
-    public boolean isCancelAvailable() {
-        return isApplyDoneAvailable();
+    static public WithdrawApply of(WithDrawApplyForm withDrawApplyForm, Member applicant){
+        return WithdrawApply.builder()
+                .bankName(withDrawApplyForm.getBankName())
+                .bankAccountNo(withDrawApplyForm.getBankAccountNo())
+                .price(withDrawApplyForm.getPrice())
+                .applicant(applicant)
+                .build();
     }
 
     public boolean isApplyDone() {

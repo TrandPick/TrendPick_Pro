@@ -145,12 +145,12 @@
                             </li>
                             <li>
                                   <span>
-                                    <a th:href="@{/trendpick/coupons/list}"><span>받을 수 있는 쿠폰목록</span></a>
+                                    <a th:href="@{/trendpick/coupons/list}"><span>쿠폰목록</span></a>
                                   </span>
                             </li>
                         </ul>
                     </div>
-                    <div class="dropdown dropdown-bottom dropdown-end" th:unless="${@rq.checkMember()}">
+                    <div class="dropdown dropdown-bottom dropdown-end" th:if="${@rq.checkBrand()}">
                         <label tabindex="0" class="btn btn-ghost btn-circle">
                             <i class="fa-solid fa-bars"></i>
                         </label>
@@ -173,7 +173,7 @@
                             </li>
                             <li>
                                   <span>
-                                    <a th:href="@{|/trendpick/admin/withDraw|}"><span>출금</span></a>
+                                    <a th:href="@{|/trendpick/admin/withDraw|}"><span>출금신청</span></a>
                                   </span>
                             </li>
                             <li>
@@ -189,6 +189,29 @@
                             <li>
                                   <span>
                                     <a th:href="@{|/trendpick/coupons/${@rq.getBrandName()}/generate|}"><span>쿠폰발급</span></a>
+                                  </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="dropdown dropdown-bottom dropdown-end" th:if="${@rq.checkAdmin()}">
+                        <label tabindex="0" class="btn btn-ghost btn-circle">
+                            <i class="fa-solid fa-bars"></i>
+                        </label>
+                        <ul tabindex="0"
+                            class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-64">
+                            <li>
+                                  <span>
+                                    <a th:href=""><span>회원관리</span></a>
+                                  </span>
+                            </li>
+                            <li>
+                                  <span>
+                                    <a th:href=""><span>스토어관리</span></a>
+                                  </span>
+                            </li>
+                            <li>
+                                  <span>
+                                    <a th:href=""><span>출금신청목록</span></a>
                                   </span>
                             </li>
                         </ul>

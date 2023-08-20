@@ -35,13 +35,12 @@ public class CouponCardServiceImpl implements CouponCardService {
                 () -> new CouponNotFoundException("존재하지 않는 쿠폰입니다."));
         int count = couponCardRepository.countByCouponIdAndMemberId(couponId, member.getId());
 
-        RsData<CouponCard> isValidate = validateCouponCard(count, coupon, dateTime);
-        if (isValidate != null) {
-            return isValidate;
-        }
+        RsData<CouponCard> validateResult = validateCouponCard(count, coupon, dateTime);
+        if (validateResult.isFail())
+            return validateResult;
 
         CouponCard savedCouponCard = settingCouponCard(member, dateTime, coupon);
-         return RsData.of("S-1", coupon.getName() + " 쿠폰이 발급되었습니다.");
+        return RsData.of("S-1", coupon.getName() + " 쿠폰이 발급되었습니다.");
     }
 
     @Transactional
@@ -50,9 +49,9 @@ public class CouponCardServiceImpl implements CouponCardService {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(
                 () -> new OrderItemNotFoundException("주문되지 않은 상품입니다."));
         CouponCard couponCard = couponCardRepository.findById(couponCardId).orElseThrow(
-                () -> new CouponNotFoundException("존재하지 않은 쿠폰입니다."));
+                () -> new CouponNotFoundException("존재하지 않는 쿠폰입니다."));
         if (!couponCard.validate(orderItem, dateTime))
-            return RsData.of("F-1", "해당 주문상품에 적용된 쿠폰이 없습니다.");
+            return RsData.of("F-1", "해당 주문상품에 해당 쿠폰을 적용할 수 없습니다.");
         couponCard.use(orderItem, dateTime);
         return RsData.of("S-1", "쿠폰이 적용되었습니다.");
     }
@@ -90,7 +89,7 @@ public class CouponCardServiceImpl implements CouponCardService {
             return RsData.of("F-1", "수량이 모두 소진되었습니다.");
         if(!coupon.validateLimitIssueDate(dateTime))
             return RsData.of("F-2", "쿠폰 발급 가능 날짜가 지났습니다.");
-        return null;
+        return RsData.success();
     }
 
     private List<CouponCardByApplyResponse> createCouponCardByApplyResponseList(List<CouponCard> couponCards, OrderItem orderItem) {

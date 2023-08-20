@@ -5,11 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.brand.service.BrandService;
-import project.trendpick_pro.domain.cash.entity.CashLog;
-import project.trendpick_pro.domain.cash.entity.dto.CashResponse;
-import project.trendpick_pro.domain.cash.service.CashService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.MemberRoleType;
 import project.trendpick_pro.domain.member.entity.dto.response.MemberInfoResponse;
@@ -22,6 +18,7 @@ import project.trendpick_pro.domain.store.entity.Store;
 import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.domain.tags.favoritetag.entity.FavoriteTag;
 import project.trendpick_pro.domain.tags.tag.entity.dto.request.TagRequest;
+import project.trendpick_pro.domain.withdraw.entity.WithdrawApply;
 import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.time.LocalDateTime;
@@ -38,7 +35,6 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final RecommendService recommendService;
     private final StoreService storeService;
-    private final CashService cashService;
     private final BrandService brandService;
 
     @Transactional
@@ -89,7 +85,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member findByBrandMember(String name){
+    public Member findBrandMember(String name){
         return memberRepository.findByBrand(name);
     }
 
@@ -104,24 +100,9 @@ public class MemberServiceImpl implements MemberService {
         member.updateRecentlyAccessDate(dateTime);
     }
 
-    @Transactional
-    @Override
-    public RsData<CashResponse> addCash(String brand, long price, Brand relEntity, CashLog.EvenType eventType) {
-        Member member=findByBrandMember(brand);
-        if(!member.getBrand().equals(brand)){
-            return RsData.of("F-1","해당 브랜드와 관리자가 일치하지 않습니다.");
-        }
-        CashLog cashLog = cashService.addCash(member, price, relEntity.getName(),relEntity.getId(), eventType);
-
-        long newRestCash = getRestCash(member) + cashLog.getPrice();
-        member.connectCash(newRestCash);
-
-        return RsData.of("S-1", "성공", new CashResponse(cashLog, newRestCash));
-    }
-
     @Override
     public long getRestCash(Member member) {
-        return memberRepository.findById(member.getId()).get().getRestCash();
+        return member.getRestCash();
     }
 
     private void checkingMemberType(Member member) {
@@ -158,5 +139,13 @@ public class MemberServiceImpl implements MemberService {
         return tagList.stream()
                 .map(FavoriteTag::new)
                 .collect(Collectors.toSet());
+    }
+
+    @Transactional
+    @Override
+    public void completeWithdraw(WithdrawApply withdrawApply) {
+        Member member = withdrawApply.getApplicant();
+        long newRestCash = member.getRestCash() - withdrawApply.getPrice();
+        member.connectCash(newRestCash);
     }
 }
