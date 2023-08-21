@@ -10,7 +10,7 @@ import java.util.List;
 public interface WithdrawService {
     RsData<WithdrawApply> apply(WithDrawApplyForm withDrawApplyForm, Member applicant);
     List<WithdrawApply> findAll();
-    List<WithdrawApply> findAllWithdrawByApplicantId(Long id);
+    List<WithdrawApply> findAllWithdrawByStoreName(String storeName);
     RsData withdraw(Long withdrawApplyId);
     RsData cancelApply(Long withdrawApplyId);
     int showRestCash(Member brandMember);

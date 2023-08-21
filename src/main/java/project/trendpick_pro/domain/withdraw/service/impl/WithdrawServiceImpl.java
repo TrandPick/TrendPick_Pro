@@ -30,6 +30,9 @@ public class WithdrawServiceImpl implements WithdrawService {
     @Transactional
     @Override
     public RsData<WithdrawApply> apply(WithDrawApplyForm withDrawApplyForm, Member applicant) {
+        RsData validateResult = validateAvailableApply(withDrawApplyForm, applicant);
+        if(validateResult.isFail())
+            return validateResult;
         WithdrawApply withdrawApply = withdrawApplyRepository.save(WithdrawApply.of(withDrawApplyForm, applicant));
         return RsData.of("S-1", "출금 신청이 완료되었습니다.", withdrawApply);
     }
@@ -40,8 +43,8 @@ public class WithdrawServiceImpl implements WithdrawService {
     }
 
     @Override
-    public List<WithdrawApply> findAllWithdrawByApplicantId(Long id){
-        return withdrawApplyRepository.findAllByApplicantId(id);
+    public List<WithdrawApply> findAllWithdrawByStoreName(String storeName){
+        return withdrawApplyRepository.findWithdrawsByStoreName(storeName);
     }
 
     @Transactional
@@ -57,10 +60,7 @@ public class WithdrawServiceImpl implements WithdrawService {
 
         return RsData.of(
                 "S-1",
-                "%d번 출금신청이 처리되었습니다. %s원이 출금되었습니다.".formatted(withdrawApply.getId(), Ut.nf(withdrawApply.getPrice())),
-                Ut.mapOf(
-                        "cashLogId", cashLog.getId()
-                )
+                "출금신청이 처리되었습니다. %s원이 출금되었습니다.".formatted(Ut.nf(withdrawApply.getPrice()))
         );
     }
 
@@ -81,12 +81,7 @@ public class WithdrawServiceImpl implements WithdrawService {
         );
     }
 
-    @Override
-    public int showRestCash(Member brandMember) {
-        return storeService.getRestCash(brandMember.getBrand());
-    }
-
-    private static RsData<Object> validateAvailableCancel(WithdrawApply withdrawApply) {
+    private  RsData validateAvailableCancel(WithdrawApply withdrawApply) {
         if (withdrawApply == null)
             return RsData.of("F-1", "출금신청 데이터를 찾을 수 없습니다.");
 
@@ -100,8 +95,19 @@ public class WithdrawServiceImpl implements WithdrawService {
             return RsData.of("F-1", "출금신청 데이터를 찾을 수 없습니다.");
         if (withdrawApply.checkAlreadyProcessed())
             return RsData.of("F-2", "이미 처리되었습니다.");
-        if (withdrawApply.getPrice() > withdrawApply.getApplicant().getRestCash())
-            return RsData.of("F-3", "예치금이 부족합니다.");
+        if (withdrawApply.getPrice() >  storeService.getRestCash(withdrawApply.getApplicant().getBrand()))
+            return RsData.of("F-3", "캐시보다 더 많은 금액을 출금할 수 없습니다.");
         return RsData.success();
+    }
+
+    private RsData validateAvailableApply(WithDrawApplyForm withDrawApplyForm, Member applicant) {
+        if(withDrawApplyForm.getPrice() > storeService.getRestCash(applicant.getBrand()))
+            return RsData.of("F-1", "출금 요청 금액은 잔여 캐시보다 많을 수 없습니다.");
+        return RsData.success();
+    }
+
+    @Override
+    public int showRestCash(Member brandMember) {
+        return storeService.getRestCash(brandMember.getBrand());
     }
 }
