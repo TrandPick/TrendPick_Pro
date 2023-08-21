@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.*;
 @DataJpaTest
 class CartItemRepositoryTest {
     @Autowired
-    CartItemRepository cartItemRepository;
+    protected CartItemRepository cartItemRepository;
     @Autowired
-    ProductRepository productRepository;
+    protected ProductRepository productRepository;
     @Autowired
-    CartRepository cartRepository;
+    protected CartRepository cartRepository;
     @Autowired
-    MemberRepository memberRepository;
+    protected MemberRepository memberRepository;
 
     @BeforeEach
     void before(){

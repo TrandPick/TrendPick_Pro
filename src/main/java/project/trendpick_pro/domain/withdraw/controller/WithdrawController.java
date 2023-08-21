@@ -36,8 +36,9 @@ public class WithdrawController {
     @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
     @PostMapping("/withDraw")
     public String apply(@Valid WithDrawApplyForm withDrawApplyForm) {
-        withdrawService.apply(withDrawApplyForm, rq.getBrandMember());
-
+        RsData<WithdrawApply> result = withdrawService.apply(withDrawApplyForm, rq.getBrandMember());
+        if(result.isFail())
+            rq.historyBack(result);
         return rq.redirectWithMsg("/trendpick/admin/withDrawList", "출금 신청이 완료되었습니다.");
     }
 }

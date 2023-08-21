@@ -32,7 +32,7 @@ public class AdmWithdrawController {
         if(member.getRole().getValue().equals("ADMIN")) {
             withdrawApplies = withdrawService.findAll();
         }else{
-            withdrawApplies=withdrawService.findAllWithdrawByApplicantId(member.getId());
+            withdrawApplies=withdrawService.findAllWithdrawByStoreName(member.getBrand());
         }
         model.addAttribute("withdrawApplies", withdrawApplies);
         return "trendpick/admin/withDrawList";
