@@ -98,30 +98,31 @@
                     </form>
                 </li>
                 <div th:if="${@rq.checkLogin()}">
-                    <button class="btn btn-ghost btn-circle" th:if="!${@rq.checkAdmin()}">
-                        <div class="indicator">
-                            <a th:href="@{|/trendpick/usr/cart/list|}">
+
+                    <span>
+                        <a th:href="@{|/trendpick/usr/cart/list|}">
+                            <div class="btn btn-ghost" th:if="${@rq.checkMember()}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                      stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                           d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
-                            </a>
-                        </div>
-                    </button>
-                    <button class="btn btn-ghost btn-circle" th:if="!${@rq.checkAdmin()}">
-                        <div class="indicator">
-                        <a th:href="@{|/trendpick/notification/list|}">
-                            <svg xmlns="http://www.w3.org/2000/svg"  class="h-5 w-5" height="1em" viewBox="0 0 448 512">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M224 0c-17.7 0-32 14.3-32 32V49.9C119.5 61.4 64 124.2 64 200v33.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V200c0-75.8-55.5-138.6-128-150.1V32c0-17.7-14.3-32-32-32zm0 96h8c57.4 0 104 46.6 104 104v33.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V200c0-57.4 46.6-104 104-104h8zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z"/></svg>
+                            </div>
                         </a>
-                       </div>
-                    </button>
-                </div>
-                <div th:if="${@rq.checkLogin()}">
+                    </span>
+
+                    <span>
+                        <a th:href="@{|/trendpick/notification/list|}">
+                            <div class="btn btn-ghost" th:if="${@rq.checkMember()}">
+                                    <svg xmlns="http://www.w3.org/2000/svg"  class="h-5 w-5" height="1em" viewBox="0 0 448 512">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M224 0c-17.7 0-32 14.3-32 32V49.9C119.5 61.4 64 124.2 64 200v33.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V200c0-75.8-55.5-138.6-128-150.1V32c0-17.7-14.3-32-32-32zm0 96h8c57.4 0 104 46.6 104 104v33.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V200c0-57.4 46.6-104 104-104h8zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z"/></svg>
+                            </div>
+                        </a>
+                    </span>
+
                     <div class="dropdown dropdown-bottom dropdown-end" th:if="${@rq.checkMember()}">
-                        <label tabindex="0" class="flex btn btn-ghost btn-circle">
+                        <label tabindex="0" class="flex btn btn-ghost">
                             <div class="flex justify-center items-center">
                                 <i class="fa-solid fa-bars"></i>
                             </div>
@@ -151,7 +152,7 @@
                         </ul>
                     </div>
                     <div class="dropdown dropdown-bottom dropdown-end" th:if="${@rq.checkBrand()}">
-                        <label tabindex="0" class="btn btn-ghost btn-circle">
+                        <label tabindex="0" class="btn btn-ghost">
                             <i class="fa-solid fa-bars"></i>
                         </label>
                         <ul tabindex="0"
@@ -194,7 +195,7 @@
                         </ul>
                     </div>
                     <div class="dropdown dropdown-bottom dropdown-end" th:if="${@rq.admin()}">
-                        <label tabindex="0" class="btn btn-ghost btn-circle">
+                        <label tabindex="0" class="btn btn-ghost">
                             <i class="fa-solid fa-bars"></i>
                         </label>
                         <ul tabindex="0"
