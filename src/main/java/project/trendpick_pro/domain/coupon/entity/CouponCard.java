@@ -66,11 +66,6 @@ public class CouponCard extends BaseTimeEntity {
     public void use(OrderItem orderItem, LocalDateTime dateTime) {
         settingStatusAndDate(dateTime);
         orderItem.applyCouponCard(this);
-        int discountPercent = this.coupon.getDiscountPercent();
-        int price = orderItem.getOrderPrice() * discountPercent / 100;
-        orderItem.discount(
-                price
-        );
     }
 
     public void cancel(OrderItem orderItem){
