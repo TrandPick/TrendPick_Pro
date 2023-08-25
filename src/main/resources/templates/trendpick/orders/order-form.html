@@ -109,7 +109,7 @@
                     <span class="text-center" th:text="${orderItem.quantity}"></span>
                 </td>
                 <td class="text-center font-bold">
-                    <span th:text="${#numbers.formatDecimal(orderItem.getOrderItemByQuantity, 0, 'COMMA', 0, 'POINT')}" th:value="${order.getTotalPrice}"></span> 원
+                    <span th:text="${#numbers.formatDecimal(orderItem.getTotalPrice, 0, 'COMMA', 0, 'POINT')}" th:value="${order.getTotalPrice}"></span> 원
                 </td>
                 <td class="text-center font-bold">
                     <form th:if="${orderItem.discountPrice} == 0" class="card-actions justify-center" id="couponForm">

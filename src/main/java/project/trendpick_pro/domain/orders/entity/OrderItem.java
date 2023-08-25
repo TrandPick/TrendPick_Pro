@@ -33,7 +33,7 @@ public class OrderItem extends BaseTimeEntity {
     @Column(name = "order_price", nullable = false)
     private int orderPrice;
 
-    private int orderItemByQuantity;
+    private int totalPrice; //계산된 가격 (실제 지불한)
 
     @Column(name = "discount_price", nullable = false)
     private int discountPrice;
@@ -68,6 +68,9 @@ public class OrderItem extends BaseTimeEntity {
 
     public void applyCouponCard(CouponCard couponCard) {
         this.couponCard = couponCard;
+        int discountPercent = couponCard.getCoupon().getDiscountPercent();
+        int price = getOrderPrice() * discountPercent / 100; //쿠폰은 상품 한 개 가격에서 할인 적용
+        discount(price);
     }
 
     public void cancelCouponCard(){
@@ -75,8 +78,9 @@ public class OrderItem extends BaseTimeEntity {
         this.discountPrice = 0;
     }
 
-    public void discount(int price){
+    private void discount(int price){
         this.discountPrice += price;
+        this.totalPrice -= this.discountPrice;
     }
 
     private OrderItem(Product product, int quantity, String size, String color) {
@@ -85,8 +89,8 @@ public class OrderItem extends BaseTimeEntity {
         this.quantity = quantity;
         this.size = size;
         this.color = color;
-        this.discountPrice = 0;
-        this.orderItemByQuantity = this.orderPrice * this.quantity;
+        this.discountPrice = 0; //쿠폰으로 인한 할인가만 적용
+        this.totalPrice = this.orderPrice * this.quantity;
         product.getProductOption().decreaseStock(quantity);
     }
 }

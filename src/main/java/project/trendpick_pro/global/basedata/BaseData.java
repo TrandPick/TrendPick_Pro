@@ -23,6 +23,7 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationType;
+import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.global.kafka.view.service.ViewService;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
@@ -97,6 +98,7 @@ public class BaseData {
             RecommendService recommendService,
             BrandService brandService,
             ProductService productService,
+            StoreService storeService,
             ViewService viewService,
             ProductRepository productRepository,
             ReviewRepository reviewRepository,
@@ -109,6 +111,8 @@ public class BaseData {
             public void run(String... args) {
 
                 tagNameServiceImpl.saveAll(tags);
+                brandService.saveAll(brands);
+                storeService.saveAll(brands);
                 memberService.joinAll(makeBrandMembers(brands));
                 mainCategoryService.saveAll(mainCategories);
 
@@ -119,10 +123,10 @@ public class BaseData {
                 accessKeyMap.put("secretKey", secretKey);
                 accessKeyMap.put("bucket", bucket);
 
-                int memberCount = 100;
-                int productCount = 2000;
-                int reviewCount = 100;
-                int couponCount = 100;
+                int memberCount = 10;
+                int productCount = 200;
+                int reviewCount = 10;
+                int couponCount = 10;
                 String brandName = "polo";
 
                 saveMembers(memberCount, tagNameServiceImpl, memberService);

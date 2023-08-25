@@ -121,7 +121,7 @@ public class Order extends BaseTimeEntity {
     private void settingOrderItems(List<OrderItem> orderItems) {
         for (OrderItem orderItem : orderItems) {
             this.addOrderItem(orderItem);
-            this.totalPrice += orderItem.getOrderItemByQuantity();
+            this.totalPrice += orderItem.getTotalPrice();
         }
     }
 

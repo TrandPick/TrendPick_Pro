@@ -25,6 +25,7 @@ public class WithdrawApply {
     private Long id;
     @ManyToOne(fetch = LAZY)
     private Member applicant;
+    private String store;
     private String bankName;
     private String bankAccountNo;
     private int price;
@@ -62,6 +63,7 @@ public class WithdrawApply {
                 .bankAccountNo(withDrawApplyForm.getBankAccountNo())
                 .price(withDrawApplyForm.getPrice())
                 .applicant(applicant)
+                .store(applicant.getBrand())
                 .build();
     }
 
