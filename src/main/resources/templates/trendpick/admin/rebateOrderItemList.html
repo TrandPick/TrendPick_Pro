@@ -14,22 +14,34 @@
                 정산
             </h1>
 
-            <div class="mt-2">
-                <select name="yearMonth" class="select select-bordered"
-                        th:currentUrl="${@rq.modifyQueryParam('yearMonth', '')}"
-                        onchange="location.href = this.getAttribute('currentUrl') + this.value;">
-                    <option value="2023-06">2023-06</option>
-                    <option value="2023-07">2023-07</option>
-                    <option value="2023-08">2023-08</option>
-                    <option value="2023-09">2023-09</option>
-                    <option value="2023-10">2023-10</option>
-                    <option value="2023-11">2023-11</option>
-                    <option value="2023-12">2023-12</option>
-                </select>
-                <script th:inline="javascript">
-                    const yearMonth = /*[[ ${yearMonth} ]]*/ null;
-                    $('select[name=yearMonth]').last().val(yearMonth);
-                </script>
+            <div class="flex">
+                <div class="mt-2 flex flex-column">
+                    <select name="yearMonth" class="select select-bordered"
+                            th:currentUrl="${@rq.modifyQueryParam('yearMonth', '')}"
+                            onchange="location.href = this.getAttribute('currentUrl') + this.value;">
+                        <option value="2023-06">2023-06</option>
+                        <option value="2023-07">2023-07</option>
+                        <option value="2023-08">2023-08</option>
+                        <option value="2023-09">2023-09</option>
+                        <option value="2023-10">2023-10</option>
+                        <option value="2023-11">2023-11</option>
+                        <option value="2023-12">2023-12</option>
+                    </select>
+                    <script th:inline="javascript">
+                        const yearMonth = /*[[ ${yearMonth} ]]*/ null;
+                        $('select[name=yearMonth]').last().val(yearMonth);
+                    </script>
+                </div>
+                <div class="flex p-4">
+                    <div class="flex mb-2 mr-4">
+                        <div class="font-bold">월 총매출 </div>
+                        <div th:text="' : ' + ${#numbers.formatDecimal(monthRebateData.totalSales, 0, 'COMMA', 0, 'POINT')} + ' 원 '"></div>
+                    </div>
+                    <div class="flex mb-2">
+                        <div class="font-bold">월 정산금액 </div>
+                        <div th:text="' : ' + ${#numbers.formatDecimal(monthRebateData.netProfit, 0, 'COMMA', 0, 'POINT')} + ' 원 '"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="overflow-x-auto mt-2">
@@ -43,8 +55,11 @@
                         <th>주문품목번호</th>
                         <th>결제날짜</th>
                         <th>상품명</th>
-                        <th>결제가격</th>
-                        <th>판매자</th>
+                        <th>객단가</th>
+                        <th>구매수량</th>
+                        <th>쿠폰할인금액</th>
+                        <th>결제금액</th>
+                        <th>정산수수료</th>
                         <th>정산금액</th>
                         <th>정산날짜</th>
                         <th>정산</th>
@@ -54,18 +69,22 @@
                     <tbody>
                     <tr th:each="item : ${items}">
                         <td>
-                            <input onchange="OrderItemCheckbox__changed();" th:if="${item.checkAlreadyRebate}"
+                            <input onchange="OrderItemCheckbox__changed();" th:unless="${item.isAlreadyRebated()}"
                                    type="checkbox" class="orderItemCheckbox checkbox" th:value="${item.orderItem.id}">
                         </td>
                         <td th:text="${item.orderItem.id}"></td>
                         <td th:text="${#temporals.format(item.createdDate, 'yy-MM-dd HH:mm')}"></td>
                         <td th:text="${item.productSubject}"></td>
-                        <td th:text="${#numbers.formatDecimal(item.orderPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 '"></td>
-                        <td th:text="${item.sellerName}"></td>
+                        <td th:text="${#numbers.formatDecimal(item.totalPrice/item.quantity, 0, 'COMMA', 0, 'POINT')} + ' 원 '"></td>
+                        <td th:text="${item.quantity} + '개'"></td>
+                        <td th:text="${#numbers.formatDecimal(item.discountPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 '"></td>
+                        <td th:text="${#numbers.formatDecimal(item.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' 원 '"></td>
+                        <td th:text="${#numbers.formatDecimal(item.totalPrice * 0.05, 0, 'COMMA', 0, 'POINT')} + ' 원 '"></td>
                         <td th:text="${#numbers.formatDecimal(item.calculateRebatePrice(), 0, 'COMMA', 0, 'POINT')} + ' 원 '"></td>
                         <td th:text="${#temporals.format(item.rebateDate, 'yy-MM-dd HH:mm')}"></td>
                         <td>
-                            <a th:if="${item.checkAlreadyRebate}" href="javascript:;" onclick="$(this).next().submit();"
+                            <a th:if="${item.isAlreadyRebated()}">정산완료</a>
+                            <a th:unless="${item.isAlreadyRebated()}" href="javascript:;" onclick="$(this).next().submit();"
                                class="btn btn-primary btn-xs">정산</a>
                             <form method="POST" th:action="@{|/trendpick/admin/rebateOne/${item.orderItem.id}|}"
                                   hidden></form>
@@ -75,14 +94,10 @@
                 </table>
             </div>
 
-            <div class="grid grid-cols-2 mt-2 gap-2">
-                <button type="button" onclick="history.back();" class="btn btn-outline">
-                    <i class="fa-solid fa-angle-left"></i>
-                    <span class="ml-1">뒤로가기</span>
-                </button>
-                <a href="javascript:;" onclick="RebateForm__submit();" class="btn btn-outline">선택정산</a>
-                <form method="POST" name="rebateForm"  th:action="@{|/trendpick/admin/rebate|}" hidden>
-                    <input type="hidden" name="ids">
+            <div class="form-container grid grid-cols-1 mt-2 gap-1">
+                <a href="javascript:;" onclick="if (RebateForm__submit()) document.getElementById('rebateForm').submit();" class="btn btn-outline">전체정산처리</a>
+                <form id="rebateForm" th:action="@{|/trendpick/admin/rebate|}" method="post" hidden>
+                    <input type="hidden" name="yearMonth" th:value="${yearMonth}">
                 </form>
             </div>
 
@@ -108,34 +123,14 @@
                 function RebateForm__submit() {
                     if (RebateForm__submitDone) return;
 
-                    const form = document.rebateForm;
-
-                    const $checked = $('.orderItemCheckbox:checked');
-
-                    if ($checked.length == 0) {
-                        alert('정산할 주문품목을 선택해주세요.');
-                        return;
-                    }
-
-                    var confirmAction = confirm("선택 상품들을 정산하시겠습니까?" +
-                        "\n(한 번 정산하면 취소할 수 없습니다.)");
+                    var confirmAction = confirm("정산처리 하시겠습니까?" +
+                        "\n(명월 10일에 자동 정산처리됩니다.)");
                     if (confirmAction) {
-                        // 폼 전송
-                        //return true;
-                        const ids = $checked.map((index, el) => $(el).val()).get();
-                        form.ids.value = ids;
-                        form.submit();
-                        RebateForm__submitDone = true;
                         return true;
                     } else {
-                        // 폼 전송 후 페이지 이동 취소
-                        setTimeout(function () {
-                            window.stop();
-                        }, 0);
                         return false;
                     }
                 }
-
             </script>
         </div>
     </section>

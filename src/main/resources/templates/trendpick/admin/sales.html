@@ -10,7 +10,7 @@
     <h1 class="text-center text-5xl font-bold mb-6">판매내역</h1>
 
     <div class="text-black p-2 rounded-lg font-bold text-right" style="font-size: 2em;">
-        <span th:text="${#dates.format(#dates.createNow(), 'MM')+'월 정산금: '+ #numbers.formatDecimal(totalPricePerMonth, 0, 'COMMA', 0, 'POINT')}+'원'"></span>
+        <span th:text="${#dates.format(#dates.createNow(), 'MM')+'월 매출현황: '+ #numbers.formatDecimal(totalPricePerMonth, 0, 'COMMA', 0, 'POINT')}+'원'"></span>
     </div>
 
     <table class="table">
