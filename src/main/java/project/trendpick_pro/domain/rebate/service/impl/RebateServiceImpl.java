@@ -7,13 +7,17 @@ import project.trendpick_pro.domain.cash.entity.CashLog;
 import project.trendpick_pro.domain.cash.service.CashService;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.service.OrderService;
+import project.trendpick_pro.domain.rebate.entity.MonthRebateData;
 import project.trendpick_pro.domain.rebate.entity.RebateOrderItem;
+import project.trendpick_pro.domain.rebate.repository.MonthRebateDataRepository;
 import project.trendpick_pro.domain.rebate.repository.RebateOrderItemRepository;
 import project.trendpick_pro.domain.rebate.service.RebateService;
 import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.global.util.rsData.RsData;
 import project.trendpick_pro.global.util.Ut;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +26,14 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class RebateServiceImpl implements RebateService {
     private final RebateOrderItemRepository rebateOrderItemRepository;
+    private final MonthRebateDataRepository monthRebateDataRepository;
     private final OrderService orderService;
     private final CashService cashService;
     private final StoreService storeService;
 
     @Transactional
     @Override
-    public RsData makeData(String brandName, String yearMonth) {
+    public RsData makeRebateOrderItem(String brandName, String yearMonth) {
         String fromDateStr = yearMonth + "-01 00:00:00.000000";
         String toDateStr = yearMonth + "-%02d 23:59:59.999999".formatted(Ut.date.getEndDayOf(yearMonth));
         List<OrderItem> orderItems = orderService.findAllByCreatedDateBetweenOrderByIdAsc(
@@ -38,25 +43,16 @@ public class RebateServiceImpl implements RebateService {
         if(orderItems.isEmpty())
             return RsData.of("F-1","정산할 주문내역이 없습니다.");
 
-        List<OrderItem> brandOrderItems=new ArrayList<>();
-        for(OrderItem item: orderItems) {
-            if (item.getProduct().getProductOption().getBrand().getName().equals(brandName)) {
-                brandOrderItems.add(item);
-            }
-        }
+        List<RebateOrderItem> rebateOrderItems = convertToRebateOrderItem(brandName, orderItems);
 
-        List<RebateOrderItem> rebateOrderItems = brandOrderItems
-                .stream()
-                .map(this::toRebateOrderItem)
-                .toList();
-
-        rebateOrderItems.forEach(this::updateOrCreateRebateData);
-        return RsData.of("S-1", "정산데이터가 성공적으로 생성되었습니다.");
+        rebateOrderItems.forEach(this::updateOrCreateRebateOrderItem);
+        return RsData.of("S-1", "정산 데이터가 성공적으로 생성되었습니다.");
     }
+    
 
     @Transactional
     @Override
-    public RsData rebate(Long orderItemId) {
+    public RsData rebate(String storeName, Long orderItemId) {
         RebateOrderItem rebateOrderItem = rebateOrderItemRepository.findByOrderItemId(orderItemId).orElse(null);
 
         RsData<Object> validateResult = validateAvailableRebate(rebateOrderItem);
@@ -64,8 +60,12 @@ public class RebateServiceImpl implements RebateService {
 
         //캐시로그 생성
         CashLog cashLog = cashService.addCashLog(rebateOrderItem);
-        //스토어 정산캐시 추가
-        storeService.addRebateCash(rebateOrderItem.getSellerName(), rebateOrderItem.calculateRebatePrice());
+
+        //월정산
+        String yearMonth = rebateOrderItem.getOrderItemCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        MonthRebateData monthRebateData = findMonthRebateData(storeName, yearMonth);
+        monthRebateData.rebate(rebateOrderItem);
+
         //정산완료
         rebateOrderItem.setRebateDone(cashLog);
         return RsData.of(
@@ -75,7 +75,32 @@ public class RebateServiceImpl implements RebateService {
     }
 
     @Override
-    public List<RebateOrderItem> findRebateDataByCurrentYearMonth(String brandName,String yearMonth) {
+    @Transactional
+    public RsData rebate(String storeName, String yearMonth) {
+        List<RebateOrderItem> rebateOrderItems = findRebateOrderItemByCurrentYearMonth(storeName, yearMonth);
+        int count = 0;
+        for (RebateOrderItem rebateOrderItem : rebateOrderItems){
+            if(rebate(storeName, rebateOrderItem.getOrderItem().getId()).isSuccess()) //정산 성공 개수 세기
+                count++;
+        }
+
+        if(count == 0)
+            return RsData.of("F-1", "정산 처리 가능한 데이터가 존재하지 않습니다.");
+
+        return RsData.of("S-1", "%s건의 데이터를 정산처리 하였습니다.".formatted(count));
+    }
+
+    @Override
+    @Transactional
+    public MonthRebateData findMonthRebateData(String brandName, String yearMonth) {
+        MonthRebateData monthRebateData = monthRebateDataRepository.findByStoreNameAndYearMonth(brandName, yearMonth).orElse(null);
+        if(monthRebateData == null)
+            return monthRebateDataRepository.save(new MonthRebateData(storeService.findByBrand(brandName), yearMonth));
+        return monthRebateData;
+    }
+
+    @Override
+    public List<RebateOrderItem> findRebateOrderItemByCurrentYearMonth(String brandName, String yearMonth) {
         int monthEndDay = Ut.date.getEndDayOf(yearMonth);
         String fromDateStr = yearMonth + "-01 00:00:00.000000";
         String toDateStr = yearMonth + "-%02d 23:59:59.999999".formatted(monthEndDay);
@@ -85,34 +110,39 @@ public class RebateServiceImpl implements RebateService {
         return rebateOrderItemRepository.findAllByCreatedDateBetweenAndSellerNameOrderByIdAsc(fromDate, toDate, brandName);
     }
 
-
     private static RsData<Object> validateAvailableRebate(RebateOrderItem rebateOrderItem) {
         if(rebateOrderItem == null)
             return RsData.of("F-2", "존재하지 않는 정산 데이터입니다.");
-        if (!rebateOrderItem.checkAlreadyRebate())
+        if (rebateOrderItem.isAlreadyRebated())
             return RsData.of("F-1", "이미 정산된 데이터입니다.");
         if(!rebateOrderItem.getOrder().isCompletedPurchaseDecision())
             return RsData.of("F-3", "구매결정이 완료되지 않은 데이터입니다.");
         return RsData.success();
     }
 
-    private void updateOrCreateRebateData(RebateOrderItem item) {
-        //orderItem의 id값으로 조회해봐서 이미 정산데이터로 생성되어 있다면, 업데이트 처리
+    private Long updateOrCreateRebateOrderItem(RebateOrderItem item) {
         RebateOrderItem oldRebateOrderItem = rebateOrderItemRepository.findByOrderItemId(item.getOrderItem().getId()).orElse(null);
-        if (oldRebateOrderItem != null) {
-            if (oldRebateOrderItem.isRebateDone()) {
-                return;
-            }
+        if(oldRebateOrderItem == null) //없으면 생성
+            return rebateOrderItemRepository.save(item).getId();
 
-            oldRebateOrderItem.updateWith(item);
-            rebateOrderItemRepository.save(oldRebateOrderItem);
-        } else {
-            rebateOrderItemRepository.save(item);
-        }
+        if (oldRebateOrderItem.isRebateDone()) //이미 정산처리 되어있다면 return
+            return oldRebateOrderItem.getId();
+
+        return rebateOrderItemRepository.save(oldRebateOrderItem.updateWith(item)).getId(); //둘 다 아니라면 업데이트 후 리턴
     }
-
     private RebateOrderItem toRebateOrderItem(OrderItem orderItem) {
         return new RebateOrderItem(orderItem);
     }
-
+    private  List<RebateOrderItem> convertToRebateOrderItem(String brandName, List<OrderItem> orderItems) {
+        List<OrderItem> filteredOrderItem = new ArrayList<>();
+        for(OrderItem item: orderItems) {
+            if (item.getProduct().getProductOption().getBrand().getName().equals(brandName))
+                filteredOrderItem.add(item);
+        }
+        
+        return filteredOrderItem 
+                .stream()
+                .map(this::toRebateOrderItem)
+                .toList();
+    }
 }
