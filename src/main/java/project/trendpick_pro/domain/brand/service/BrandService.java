@@ -13,4 +13,5 @@ public interface BrandService {
     Brand findByName(String name);
     Brand findById(Long id);
     Long count();
+    void saveAll(List<String> brands);
 }
