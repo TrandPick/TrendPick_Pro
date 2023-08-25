@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.store.entity.Store;
 import project.trendpick_pro.domain.store.repository.StoreRepository;
 import project.trendpick_pro.domain.store.service.StoreService;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,7 +17,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     @Transactional
-    public Store save(Store store){
+    public Store save(Store store) {
         return storeRepository.save(store);
     }
 
@@ -28,13 +30,23 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     @Transactional
-    public void addRebateCash(String storeName, int calculateRebatePrice) {
-        Store store = findByBrand(storeName);
-        store.addRebatedCash(calculateRebatePrice);
+    public void addRebateCash(Store store, long price) {
+        store.addRebatedCash(price);
+        storeRepository.save(store);
     }
 
     @Override
     public int getRestCash(String storeName) {
         return findByBrand(storeName).getRebatedCash();
+    }
+
+    @Override
+    @Transactional
+    public void saveAll(List<String> names) {
+        List<Store> list = new ArrayList<>();
+        for (String name : names) {
+            list.add(new Store(name));
+        }
+        storeRepository.saveAll(list);
     }
 }

@@ -26,7 +26,7 @@ public class Store extends BaseTimeEntity {
         this.brand = brand;
     }
 
-    public void addRebatedCash(int price) {
+    public void addRebatedCash(long price) {
         this.rebatedCash += price;
     }
 
