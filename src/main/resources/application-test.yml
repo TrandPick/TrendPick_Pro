@@ -17,7 +17,7 @@ spring:
 
 custom:
   redis:
-    host: ${redis.host}
+    host: ${redis.devHost}
 kafka:
   host: "localhost:"
   port: ${custom.kafka.port}
