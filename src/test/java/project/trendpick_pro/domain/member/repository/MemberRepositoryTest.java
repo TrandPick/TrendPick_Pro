@@ -4,8 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.IntegrationTestSupport;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.entity.MemberRoleType;
 import project.trendpick_pro.domain.member.exception.MemberNotFoundException;
@@ -14,8 +13,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
-class MemberRepositoryTest extends IntegrationTestSupport {
+@DataJpaTest
+class MemberRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;

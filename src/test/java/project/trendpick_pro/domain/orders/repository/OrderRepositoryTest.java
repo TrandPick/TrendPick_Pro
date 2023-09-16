@@ -4,11 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
-import project.trendpick_pro.IntegrationTestSupport;
 import project.trendpick_pro.domain.brand.entity.Brand;
 import project.trendpick_pro.domain.brand.repository.BrandRepository;
 import project.trendpick_pro.domain.category.entity.MainCategory;
@@ -37,8 +36,8 @@ import static org.assertj.core.groups.Tuple.tuple;
 import static project.trendpick_pro.domain.orders.entity.OrderStatus.*;
 import static project.trendpick_pro.domain.product.entity.product.ProductStatus.*;
 
-@Transactional
-class OrderRepositoryTest extends IntegrationTestSupport {
+@DataJpaTest
+class OrderRepositoryTest {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
