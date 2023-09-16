@@ -95,9 +95,10 @@ public class CouponCard extends BaseTimeEntity {
 
     private void updateStatus(LocalDateTime dateTime) {
         checkDateNotNull(dateTime);
-        if(dateTime.isBefore(this.coupon.getExpirationPeriod().getStartDate())) {
+        if(dateTime.isBefore(this.coupon.getExpirationPeriod().getStartDate()))
             this.status = CouponStatus.NOT_YET_ACTIVE;
-        } this.status = CouponStatus.AVAILABLE;
+        else
+            this.status = CouponStatus.AVAILABLE;
     }
 
     private void checkDateNotNull(LocalDateTime dateTime) {

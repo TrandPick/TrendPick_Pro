@@ -38,7 +38,7 @@ public class CartController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/add")
-    public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests, Model model) {
+    public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests) {
         RsData<CartItem> result = cartService.addCartItem(rq.getMember(), cartItemRequests);
 
         if(result.isFail())

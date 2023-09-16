@@ -39,7 +39,7 @@ public class CouponCardServiceImpl implements CouponCardService {
         if (validateResult.isFail())
             return validateResult;
 
-        CouponCard savedCouponCard = settingCouponCard(member, dateTime, coupon);
+        settingCouponCard(member, dateTime, coupon);
         return RsData.of("S-1", coupon.getName() + " 쿠폰이 발급되었습니다.");
     }
 
@@ -76,9 +76,8 @@ public class CouponCardServiceImpl implements CouponCardService {
     private CouponCard settingCouponCard(Member member, LocalDateTime dateTime, Coupon coupon) {
         CouponCard couponCard = new CouponCard(coupon);
         couponCard.updatePeriod(dateTime);
+        couponCard.connectMember(member);
         CouponCard savedCouponCard = couponCardRepository.save(couponCard);
-        savedCouponCard.updatePeriod(dateTime);
-        savedCouponCard.connectMember(member);
         return savedCouponCard;
     }
 

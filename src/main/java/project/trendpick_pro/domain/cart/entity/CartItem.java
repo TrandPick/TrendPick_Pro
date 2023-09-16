@@ -54,7 +54,7 @@ public class CartItem extends BaseTimeEntity {
     }
 
     public void updateCount(int quantity){
-        this.cart.updateTotalCount(quantity - this.quantity);
-        this.quantity = quantity;
+        this.cart.updateTotalCount(quantity);
+        this.quantity += quantity;
     }
 }
