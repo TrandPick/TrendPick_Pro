@@ -1,10 +1,7 @@
 package project.trendpick_pro.domain.cash.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.rebate.entity.RebateOrderItem;
@@ -15,7 +12,8 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @NoArgsConstructor
-@SuperBuilder
+@AllArgsConstructor
+@Builder
 @ToString(callSuper = true)
 public class CashLog extends BaseTimeEntity { //돈의 흐름을 기록하기 위한 엔티티
     @Id
