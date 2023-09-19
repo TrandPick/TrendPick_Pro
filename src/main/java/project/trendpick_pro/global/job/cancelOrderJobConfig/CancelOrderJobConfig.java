@@ -71,9 +71,9 @@ public class CancelOrderJobConfig{
         return new RepositoryItemReaderBuilder<Order>()
                 .name("orderReader")
                 .repository(orderRepository)
-                .methodName("findAllByStatusAndCreatedDateIsBefore")
+                .methodName("findAllByPaymentKeyIsNullAndCreatedDateIsBefore")
                 .pageSize(100)
-                .arguments(Arrays.asList(OrderStatus.TEMP, date))
+                .arguments(Arrays.asList(date))
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
     }
