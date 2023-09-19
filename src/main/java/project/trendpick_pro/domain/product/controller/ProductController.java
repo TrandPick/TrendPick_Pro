@@ -20,7 +20,6 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.global.basedata.tagname.service.impl.TagNameServiceImpl;
 import project.trendpick_pro.global.util.rq.Rq;
-import project.trendpick_pro.global.kafka.view.service.ViewService;
 import project.trendpick_pro.domain.member.entity.Member;
 import project.trendpick_pro.domain.member.service.MemberService;
 import project.trendpick_pro.domain.product.entity.dto.ProductRequest;
@@ -59,8 +58,6 @@ public class ProductController {
 
     private final ReviewService reviewService;
     private final AskService askService;
-
-    private final ViewService viewService;
 
     private final Rq rq;
 
@@ -133,8 +130,6 @@ public class ProductController {
                                  @RequestParam(value = "main-category", defaultValue = "all") String mainCategory,
                                  @RequestParam(value = "sub-category", defaultValue = "전체") String subCategory,
                                  Pageable pageable, Model model, HttpSession session) {
-        viewService.requestIncrementViewCount(session);
-        model.addAttribute("totalView", viewService.getCount());
         if (mainCategory.equals("recommend")) {
             mainCategory = "추천";
         } else if (mainCategory.equals("all")) {
@@ -179,7 +174,6 @@ public class ProductController {
     @GetMapping("/keyword")
     public String searchQuery(@RequestParam String keyword, @RequestParam(value = "page", defaultValue = "0") int offset,  Model model) {
         Page<ProductListResponse> products = productService.findAllByKeyword(keyword, offset);
-        model.addAttribute("totalView", viewService.getCount());
         model.addAttribute("keyword", keyword);
         model.addAttribute("productResponses", products);
         return "trendpick/products/list";

@@ -10,8 +10,8 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.global.redis.redisson.service.RedissonService;
-import project.trendpick_pro.global.kafka.view.service.ViewService;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderStateResponse;
 
 @Slf4j
@@ -20,19 +20,18 @@ import project.trendpick_pro.domain.orders.entity.dto.request.OrderStateResponse
 public class KafkaConsumerService {
 
     private final RedissonService redissonService;
-    private final ViewService viewService;
-
     private final SimpMessagingTemplate messagingTemplate;
     private final ObjectMapper objectMapper;
-
+    private final OrderService orderService;
 
     @KafkaListener(topics = "orders", groupId = "order")
     public void orderToOrder(ConsumerRecord<String, String> message, Acknowledgment ack) {
         try {
-            redissonService.processOrderWithLock(message.key());
-            ack.acknowledge();
+            redissonService.processOrderWithLock(message.key(), message.value());
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("orderToOrder process error : {} ", e.getMessage());
+        } finally {
+            ack.acknowledge();
         }
     }
 
@@ -40,10 +39,5 @@ public class KafkaConsumerService {
     public void message(@Payload String json) throws JsonProcessingException {
         OrderStateResponse response = objectMapper.readValue(json, OrderStateResponse.class);
         messagingTemplate.convertAndSendToUser(response.getEmail(), "/topic/standByOrder", json);
-    }
-
-    @KafkaListener(topicPattern = "views", groupId = "view")
-    public void handleIncrementViewCount(@Payload String viewId) {
-        viewService.incrementViewCount(viewId);
     }
 }
