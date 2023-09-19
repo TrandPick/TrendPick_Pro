@@ -1,4 +1,4 @@
-## 👖 TrendPick, 취향에 맞게 상품을 추천 해주는 서비스
+## 👖 TrendPick, 취향에 맞게 상품을 추천 해주는 서비스 
 <div align="center">
 <p align="center">
 <img src="https://github.com/TrandPick/TrendPick_Pro/assets/62290451/0ecc6545-4151-472c-9121-f531a4de69ae" width="700" height="400"/>

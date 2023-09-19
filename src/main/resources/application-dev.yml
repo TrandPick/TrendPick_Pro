@@ -1,26 +1,25 @@
 spring:
   datasource:
-    driver-class-name: ${db.driver}
-    url: ${db.url}
-    username: ${db.username}
-    password: ${db.password}
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:${dev.dataSource.kind}://${dev.dataSource.host}:${dev.dataSource.port}/${dev.dataSource.db}
+    username: ${dev.dataSource.username}
+    password: ${dev.dataSource.password}
   jpa:
     hibernate:
       ddl-auto: create
   data:
     redis:
-      host: ${redis.devHost}
+      host: ${dev.redis.host}
   kafka:
-      bootstrap-servers: localhost:${custom.kafka.devPort}
+      bootstrap-servers: ${dev.kafka.host}:${dev.kafka.port}
 
 logging.level:
   org:
     hibernate.SQL: error
 
-custom:
-  redis:
-    host: ${redis.devHost}
-
 kafka:
-  host: "localhost:"
-  port: ${custom.kafka.devPort}
+  host: ${dev.kafka.host}
+  port: ${dev.kafka.port}
+redis:
+  host: ${dev.redis.host}
+  port: ${dev.redis.port}

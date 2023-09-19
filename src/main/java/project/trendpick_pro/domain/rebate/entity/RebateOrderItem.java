@@ -86,35 +86,35 @@ public class RebateOrderItem extends BaseTimeEntity {
 
     public RebateOrderItem(OrderItem orderItem) {
         this.orderItem = orderItem;
-        this.order=orderItem.getOrder();
-        this.product=orderItem.getProduct();
-        this.couponCard=orderItem.getCouponCard();
-        this.orderPrice=orderItem.getOrderPrice();
-        this.totalPrice=orderItem.getTotalPrice();
-        this.discountPrice=orderItem.getDiscountPrice();
-        this.size=orderItem.getSize();
-        this.color=orderItem.getColor();
-        this.quantity=orderItem.getQuantity();
+        this.order = orderItem.getOrder();
+        this.product = orderItem.getProduct();
+        this.couponCard = orderItem.getCouponCard();
+        this.orderPrice = orderItem.getOrderPrice();
+        this.totalPrice = orderItem.getTotalPrice();
+        this.discountPrice = orderItem.getDiscountPrice();
+        this.size = orderItem.getSize();
+        this.color = orderItem.getColor();
+        this.quantity = orderItem.getQuantity();
         // 상품 추가 데이터
-        this.productSubject=orderItem.getProduct().getTitle();
+        this.productSubject = orderItem.getProduct().getTitle();
 
         // 주문 품목 추가데이터
-        this.orderItemCreateDate=orderItem.getOrder().getCreatedDate();
+        this.orderItemCreateDate = orderItem.getOrder().getCreatedDate();
 
         // 구매자 추가 데이터
-        this.buyer=orderItem.getOrder().getMember();
-        this.buyerName=orderItem.getOrder().getMember().getUsername();
+        this.buyer = orderItem.getOrder().getMember();
+        this.buyerName = orderItem.getOrder().getMember().getUsername();
 
         // 판매자 추가 데이터
-        this.seller=orderItem.getProduct().getProductOption().getBrand();
-        this.sellerName=orderItem.getProduct().getProductOption().getBrand().getName();
+        this.seller = orderItem.getProduct().getProductOption().getBrand();
+        this.sellerName = orderItem.getProduct().getProductOption().getBrand().getName();
     }
 
     public int calculateRebatePrice() {
-        return totalPrice - (int)(totalPrice * 0.05); // 정산금액 수수료 5%(임의) 제외하고 계산
+        return totalPrice - (int) (totalPrice * 0.05); // 정산금액 수수료 5%(임의) 제외하고 계산
     }
     public boolean isAlreadyRebated() {
-        if(rebateDate == null)
+        if (rebateDate == null)
             return false;
         return true;
     }
@@ -128,23 +128,23 @@ public class RebateOrderItem extends BaseTimeEntity {
         return rebateDate != null;
     }
 
-    public RebateOrderItem updateWith(RebateOrderItem item){
+    public RebateOrderItem updateWith(RebateOrderItem item) {
         this.orderItem = item.getOrderItem();
-        this.order=item.getOrder();
-        this.product=item.getProduct();
-        this.couponCard=item.getCouponCard();
-        this.orderPrice=item.getOrderPrice();
-        this.totalPrice=item.getTotalPrice();
-        this.discountPrice=item.getDiscountPrice();
-        this.size=item.getSize();
-        this. color=item.getColor();
-        this. quantity=item.getQuantity();
-        this.productSubject=item.getProduct().getTitle();
-        this.orderItemCreateDate=item.getOrder().getCreatedDate();
-        this.buyer=item.getOrder().getMember();
-        this.buyerName=item.getOrder().getMember().getUsername();
-        this.seller=item.getProduct().getProductOption().getBrand();
-        this.sellerName=item.getProduct().getProductOption().getBrand().getName();
+        this.order = item.getOrder();
+        this.product = item.getProduct();
+        this.couponCard = item.getCouponCard();
+        this.orderPrice = item.getOrderPrice();
+        this.totalPrice = item.getTotalPrice();
+        this.discountPrice = item.getDiscountPrice();
+        this.size = item.getSize();
+        this.color = item.getColor();
+        this.quantity = item.getQuantity();
+        this.productSubject = item.getProduct().getTitle();
+        this.orderItemCreateDate = item.getOrder().getCreatedDate();
+        this.buyer = item.getOrder().getMember();
+        this.buyerName = item.getOrder().getMember().getUsername();
+        this.seller = item.getProduct().getProductOption().getBrand();
+        this.sellerName = item.getProduct().getProductOption().getBrand().getName();
         return this;
     }
 }

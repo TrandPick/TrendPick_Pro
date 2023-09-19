@@ -9,7 +9,6 @@ import project.trendpick_pro.global.util.rq.Rq;
 import project.trendpick_pro.domain.coupon.entity.dto.response.CouponCardByApplyResponse;
 import project.trendpick_pro.domain.coupon.service.CouponCardService;
 import project.trendpick_pro.global.util.rsData.RsData;
-
 import java.time.LocalDateTime;
 import java.util.List;
 

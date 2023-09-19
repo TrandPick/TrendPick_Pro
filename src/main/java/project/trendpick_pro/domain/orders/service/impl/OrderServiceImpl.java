@@ -1,13 +1,12 @@
 package project.trendpick_pro.domain.orders.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.trendpick_pro.domain.cart.entity.CartItem;
@@ -21,23 +20,17 @@ import project.trendpick_pro.domain.orders.entity.OrderItem;
 import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.request.OrderSearchCond;
-import project.trendpick_pro.domain.orders.entity.dto.request.OrderStateResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.domain.orders.exception.OrderNotFoundException;
 import project.trendpick_pro.domain.orders.repository.OrderItemRepository;
 import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.orders.service.OrderService;
-import project.trendpick_pro.domain.product.entity.product.Product;
-import project.trendpick_pro.domain.product.entity.productOption.ProductOption;
-import project.trendpick_pro.domain.product.exception.ProductNotFoundException;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.service.ProductService;
-import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
-import project.trendpick_pro.domain.tags.tag.entity.TagType;
 import project.trendpick_pro.global.kafka.KafkaProducerService;
-import project.trendpick_pro.global.kafka.kafkasave.entity.OutboxMessage;
-import project.trendpick_pro.global.kafka.kafkasave.service.OutboxMessageService;
+import project.trendpick_pro.global.kafka.outbox.entity.OrderMaterial;
+import project.trendpick_pro.global.kafka.outbox.service.OutboxMessageService;
 import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.time.LocalDate;
@@ -59,76 +52,60 @@ public class OrderServiceImpl implements OrderService {
 
     private final CartService cartService;
     private final ProductService productService;
-    private final FavoriteTagService favoriteTagService;
-
     private final OutboxMessageService outboxMessageService;
-
     private final KafkaProducerService kafkaProducerService;
 
     @Transactional
     public RsData cartToOrder(Member member, CartToOrderRequest request) {
-        if(member.getAddress().trim().isEmpty()) {
-            return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
-        }
-        if(request.getSelectedItems().isEmpty()){
-            return RsData.of("F-1","상품을 선택한 후 주문해주세요.");
-        }
         List<CartItem> cartItems = cartService.getSelectedCartItems(member, request);
-        if (!Objects.equals(cartItems.get(0).getCart().getMember().getId(), member.getId())) {
-            return RsData.of("F-1", "현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
-        }
-        Order order = createOrder(member, cartItems);
+        RsData result = validateCartToOrder(member, request, cartItems);
+        if (result.isFail()) return result;
 
-        OutboxMessage message = createOutboxMessage(order);
-        kafkaProducerService.sendMessage(message.getId());
+        Order order = orderRepository.save(Order.createTempOrder(member, new Delivery(member.getAddress())));
+        String uuidCode =  UUID.randomUUID().toString();
+
+        List<OrderMaterial> orderMaterials = new ArrayList<>();
+        for (CartItem cartItem : cartItems)
+            orderMaterials.add(new OrderMaterial(cartItem, uuidCode));
+        outboxMessageService.publishOrderCreationMessage("orders", String.valueOf(order.getId()), orderMaterials, uuidCode);
         return RsData.of("S-1", "주문을 시작 합니다.");
     }
 
     @Transactional
     public RsData productToOrder(Member member, Long productId, int quantity, String size, String color) {
-        try {
-            Order saveOrder = orderRepository.save(
-                    Order.createOrder(member, new Delivery(member.getAddress()),
-                            List.of(OrderItem.of(productService.findById(productId), quantity, size, color))
-                    )
-            );
-            log.info("재고 : {}", saveOrder.getOrderItems().get(0).getProduct().getProductOption().getStock());
-            OutboxMessage message = createOutboxMessage(saveOrder);
-            kafkaProducerService.sendMessage(message.getId());
-            return RsData.of("S-1", "주문을 시작합니다.");
-        } catch (ProductNotFoundException e) {
-            return RsData.of("F-1", "존재하지 않는 상품입니다.");
-        }
+        String uuidCode =  UUID.randomUUID().toString();
+
+        Order order = orderRepository.save(
+                Order.createTempOrder(member, new Delivery(member.getAddress())));
+
+        List<OrderMaterial> orderMaterials = List.of(new OrderMaterial(productId, quantity, size, color, uuidCode));
+        outboxMessageService.publishOrderCreationMessage("orders", String.valueOf(order.getId()), orderMaterials, uuidCode);
+        return RsData.of("S-1", "주문을 시작합니다.");
     }
 
-    @Transactional
-    public void tryOrder(String id) throws JsonProcessingException {
-        Order order = orderRepository.findById(Long.parseLong(id))
-                .orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문 입니다."));
-        String email = order.getMember().getEmail();
-        try {
+    @Transactional //실제 주문 로직 (재고 유효성 검사, 재고 감소, 상태 변경)
+    public void tryOrder(String id, List<OrderMaterial> orderMaterials) throws JsonProcessingException {
+        Order order = findById(Long.valueOf(id));
+        if(order.getOrderState().equals("결제완료")) //멱등성
+            throw new IllegalAccessError("이미 처리된 주문입니다.");
+
+        try{
+            List<OrderItem> orderItems = OrderMaterialsToOrderItems(orderMaterials);
+            order.settingOrderItems(orderItems);
             order.updateStatus(OrderStatus.ORDERED);
-            sendMessage(order.getId(), "Success", email);
-        } catch (ProductStockOutException e) {
-            if (order.getOrderStatus() == OrderStatus.TEMP) {
-                order.cancelTemp();
-            }
-            log.error("주문 실패 : {}", e.getMessage());
-            sendMessage(order.getId(), "Fail", email);
+            outboxMessageService.publishOrderProcessMessage("standByOrder", "Success", String.valueOf(order.getId()), order.getMember().getEmail());
+        } catch(ProductStockOutException e){
+            log.error("error message : {} ", e.getMessage());
+            kafkaProducerService.sendOrderProcessFailMessage(order.getId(), "Fail", order.getMember().getEmail());
         }
     }
 
     @Transactional
     public RsData cancel(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문입니다."));
-        if(order.getOrderStatus() == OrderStatus.CANCELED) {
-            return RsData.of("F-1", "이미 취소된 주문입니다.");
-        } else if (order.getDelivery().getState() == DeliveryState.COMPLETED) {
-            return RsData.of("F-2", "이미 배송완료된 상품은 취소가 불가능합니다.");
-        }
-        if (order.getDelivery().getState() == DeliveryState.DELIVERY_ING) {
-            return RsData.of("F-3", "이미 배송을 시작하여 취소가 불가능합니다.");
-        }
+        Order order = findById(orderId);
+        RsData result = validateAvailableCancel(order);
+        if (result.isFail()) return result;
+
         order.cancel();
         return RsData.of("S-1", "환불 요청이 정상적으로 진행 되었습니다. 환불까지는 최소 2일에서 최대 14일까지 소요될 수 있습니다.");
     }
@@ -143,7 +120,6 @@ public class OrderServiceImpl implements OrderService {
         try {
             Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("존재하지 않는 주문 입니다."));
             if (order.getOrderStatus() == OrderStatus.TEMP) {
-                orderRepository.delete(order);
                 return RsData.of("F-3", "존재하지 않는 주문입니다.");
             }
             if (!Objects.equals(order.getMember().getId(), member.getId())) {
@@ -180,41 +156,6 @@ public class OrderServiceImpl implements OrderService {
         return orderItemRepository.findAllByCreatedDateBetween(fromDate, toDate);
     }
 
-    private Order createOrder(Member member, List<CartItem> cartItems) {
-        List<OrderItem> orderItems = createOrderItem(member, cartItems);
-        Order order = Order.createOrder(member, new Delivery(member.getAddress()), orderItems);
-        return orderRepository.save(order);
-    }
-
-    private List<OrderItem> createOrderItem(Member member, List<CartItem> cartItems) {
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (CartItem cartItem : cartItems) {
-            Product product = checkingProductStock(cartItem);
-            favoriteTagService.updateTag(member, product, TagType.ORDER);
-            orderItems.add(OrderItem.of(product, cartItem));
-        }
-        return orderItems;
-    }
-
-    private Product checkingProductStock(CartItem cartItem) {
-        Product product = productService.findById(cartItem.getProduct().getId());
-        if (product.getProductOption().getStock() < cartItem.getQuantity()) {
-            throw new ProductStockOutException("재고가 부족합니다.");
-        }
-        return product;
-    }
-
-    private OutboxMessage createOutboxMessage(Order order) {
-        OutboxMessage message = new OutboxMessage("orders",
-                String.valueOf(order.getId()), String.valueOf(order.getId()));
-        outboxMessageService.save(message);
-        return message;
-    }
-
-    private void sendMessage(Long orderId, String message, String email) throws JsonProcessingException {
-        kafkaProducerService.sendMessage(orderId, message, email);
-    }
-
     private Page<OrderResponse> settingOrderByMemberStatus(Member member, int offset) {
         Page<OrderResponse> findOrders;
         PageRequest pageable = PageRequest.of(offset, 10);
@@ -228,9 +169,39 @@ public class OrderServiceImpl implements OrderService {
         return findOrders;
     }
 
-    private static List<OrderResponse> checkingTempStatus(Page<OrderResponse> findOrders) {
+    private List<OrderResponse> checkingTempStatus(Page<OrderResponse> findOrders) {
         return findOrders.stream()
                 .filter(orderResponse -> !Objects.equals(orderResponse.getOrderStatus(), OrderStatus.TEMP.toString()))
                 .collect(Collectors.toList());
+    }
+
+    private RsData validateCartToOrder(Member member, CartToOrderRequest request, List<CartItem> cartItems) {
+        if(member.getAddress().trim().isEmpty())
+            return RsData.of("F-1", "주소를 알 수 없어 주문이 불가능합니다.");
+
+        if(request.getSelectedItems().isEmpty())
+            return RsData.of("F-1", "상품을 선택한 후 주문해주세요.");
+
+        if (!Objects.equals(cartItems.get(0).getCart().getMember().getId(), member.getId()))
+            return RsData.of("F-1", "현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
+        return RsData.success();
+    }
+
+    private List<OrderItem> OrderMaterialsToOrderItems(List<OrderMaterial> orderMaterials) throws ProductStockOutException{
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (OrderMaterial orderMaterial : orderMaterials) { //이때 재고 감소, 재고 체크
+            orderItems.add(OrderItem.of(productService.findById(orderMaterial.getProductId()), orderMaterial.getQuantity(),
+                    orderMaterial.getSize(), orderMaterial.getColor()));
+        }
+        return orderItems;
+    }
+
+    private RsData validateAvailableCancel(Order order) {
+        if(order.getOrderStatus() == OrderStatus.CANCELED)
+            return RsData.of("F-1", "이미 취소된 주문입니다.");
+
+        if (order.getDelivery().getState() == DeliveryState.DELIVERY_ING)
+            return RsData.of("F-3", "이미 배송을 시작하여 취소가 불가능합니다.");
+        return RsData.success();
     }
 }

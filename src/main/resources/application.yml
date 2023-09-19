@@ -1,11 +1,7 @@
-server:
-  tomcat:
-    threads:
-      max: 300
 spring:
   profiles:
     active: dev
-    include: secret, db, data
+    include: secret, data
   batch:
     job:
       name: ${job.name:NONE}
@@ -39,4 +35,4 @@ spring:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      max-poll-records: 1000
+      max-poll-records: 100

@@ -63,21 +63,15 @@ public class CouponCard extends BaseTimeEntity {
                 && validateMinimumPurchaseAmount(orderItem.getOrderPrice());
     }
 
-    public void use(OrderItem orderItem, LocalDateTime dateTime) {
-        settingStatusAndDate(dateTime);
-        orderItem.applyCouponCard(this);
+    public void use(LocalDateTime dateTime) {
+        this.status = CouponStatus.USED;
+        this.usedDate = dateTime;
     }
 
     public void cancel(OrderItem orderItem){
         this.status = CouponStatus.AVAILABLE;
         this.usedDate = null;
         orderItem.cancelCouponCard();
-        this.coupon.decreaseIssueCount();
-    }
-
-    private void settingStatusAndDate(LocalDateTime dateTime) {
-        this.status = CouponStatus.USED;
-        this.usedDate = dateTime;
     }
 
     private boolean validateMinimumPurchaseAmount(int price){

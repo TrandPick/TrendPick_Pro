@@ -24,7 +24,6 @@ import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationType;
 import project.trendpick_pro.domain.store.service.StoreService;
-import project.trendpick_pro.global.kafka.view.service.ViewService;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
 import project.trendpick_pro.domain.coupon.repository.CouponRepository;
@@ -99,7 +98,6 @@ public class BaseData {
             BrandService brandService,
             ProductService productService,
             StoreService storeService,
-            ViewService viewService,
             ProductRepository productRepository,
             ReviewRepository reviewRepository,
             CouponRepository couponRepository,
@@ -137,10 +135,6 @@ public class BaseData {
 
                 saveReviews(reviewCount, productCount, accessKeyMap, memberService, productService ,reviewRepository);
                 saveStoreCoupon(couponCount, storeRepository, couponRepository, brandService);
-
-                if (viewService.findSize() == 0) {
-                    viewService.registerView();
-                }
 
                 log.info("BASE_DATA_SUCCESS");
             }
