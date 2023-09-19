@@ -15,9 +15,9 @@ spring:
     timeout-per-shutdown-phase: 1m
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:${custom.dataSource.kind}://${custom.dataSource.host}:${custom.dataSource.port}/${custom.dataSource.db}
-    username: ${custom.dataSource.username}
-    password: ${custom.dataSource.password}
+    url: jdbc:${prod.dataSource.kind}://${prod.dataSource.host}:${prod.dataSource.port}/${prod.dataSource.db}
+    username: ${prod.dataSource.username}
+    password: ${prod.dataSource.password}
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,11 +26,11 @@ spring:
       host: ${redis.host}
       port: ${redis.port}
   kafka:
-    bootstrap-servers: ${custom.kafka.host}:${custom.kafka.port}
+    bootstrap-servers: ${prod.kafka.host}:${prod.kafka.port}
 
-custom:
-  redis:
-    host: ${redis.host}
 kafka:
-  host: "my-cluster-kafka-bootstrap"
-  port: ${custom.kafka.port}
+  host: ${prod.kafka.host}
+  port: ${prod.kafka.port}
+redis:
+  host: ${prod.redis.host}
+  port: ${prod.redis.port}
