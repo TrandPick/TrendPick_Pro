@@ -47,14 +47,14 @@ public class CartItem extends BaseTimeEntity {
         return CartItem.builder()
                 .cart(cart)
                 .product(product)
-                .quantity(cartItemRequest.getQuantity())
+                .quantity(0)
                 .size(cartItemRequest.getSize())
                 .color(cartItemRequest.getColor())
                 .build();
     }
 
     public void updateCount(int quantity){
-        this.quantity += quantity;
         this.cart.updateTotalCount(quantity);
+        this.quantity += quantity;
     }
 }

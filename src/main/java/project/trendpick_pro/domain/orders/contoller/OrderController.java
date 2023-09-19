@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import project.trendpick_pro.domain.member.entity.Member;
+import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.dto.request.CartToOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.request.ProductOrderRequest;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
@@ -28,7 +29,10 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("{orderId}/form")
     public String showOrderForm(@PathVariable("orderId") Long orderId, Model model){
-        model.addAttribute("order", orderService.findById(orderId));
+        Order order = orderService.findById(orderId);
+        if(order.getPaymentKey() != null || order.getOrderState().equals("주문취소"))
+            return rq.redirectWithMsg("/", "이미 처리된 주문입니다.");
+        model.addAttribute("order", order);
         return "trendpick/orders/order-form";
     }
 

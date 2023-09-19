@@ -67,7 +67,7 @@ class OrderItemTest {
         //when //then
         assertThatThrownBy(() -> OrderItem.of(product, 11, "L", "red"))
                 .isInstanceOf(ProductStockOutException.class)
-                .hasMessage("재고가 부족 합니다.");
+                .hasMessage("상품의 재고가 부족하여 주문이 불가능합니다.");
     }
 
     @DisplayName("장바구니 주문 시에 지정한 재고 만큼 상품의 재고를 줄인다.")
@@ -156,7 +156,7 @@ class OrderItemTest {
         //when //then
         assertThatThrownBy(() -> OrderItem.of(product, cartItem))
                 .isInstanceOf(ProductStockOutException.class)
-                .hasMessage("재고가 부족 합니다.");
+                .hasMessage("상품의 재고가 부족하여 주문이 불가능합니다.");
     }
 
     @DisplayName("주문이 취소되면 기존 상품의 재고가 주문수량만큼 증가한다.")

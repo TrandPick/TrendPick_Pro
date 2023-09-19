@@ -11,13 +11,13 @@ spring:
       ddl-auto: create
   data:
     redis:
-      host: ${redis.devHost}
+      host: ${test.redis.host}
   kafka:
-    bootstrap-servers: localhost:${custom.kafka.devPort}
+    bootstrap-servers: ${test.kafka.host}:${test.kafka.port}
 
-custom:
-  redis:
-    host: ${redis.host}
 kafka:
-  host: "localhost:"
-  port: ${custom.kafka.port}
+  host: ${test.kafka.host}
+  port: ${test.kafka.port}
+redis:
+  host: ${test.redis.host}
+  port: ${test.redis.port}

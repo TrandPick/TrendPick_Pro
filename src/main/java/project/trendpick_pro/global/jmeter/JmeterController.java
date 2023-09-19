@@ -6,7 +6,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import project.trendpick_pro.domain.member.entity.Member;
@@ -20,7 +19,6 @@ import project.trendpick_pro.domain.product.service.ProductService;
 import project.trendpick_pro.domain.tags.tag.entity.Tag;
 import project.trendpick_pro.global.kafka.KafkaProducerService;
 import project.trendpick_pro.global.util.rq.Rq;
-import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,21 +44,6 @@ public class JmeterController {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         return new ResponseEntity<>(memberInfoResponse, headers, HttpStatus.OK);
-    }
-
-    @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("/order")
-    @ResponseBody
-    public void processOrder() {
-        Member member = rq.getMember();
-
-        Long id = 3L;
-        int quantity = 1;
-        String size = "80";
-        String color = "Sliver";
-
-        RsData<Long> data = orderService.productToOrder(member, id, quantity, size, color);
-        kafkaProducerService.sendMessage(data.getData());
     }
 
     @PostMapping("/edit")

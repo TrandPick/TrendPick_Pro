@@ -13,10 +13,10 @@ import project.trendpick_pro.domain.member.repository.MemberRepository;
 class CartRepositoryTest {
 
     @Autowired
-    CartRepository cartRepository;
+    protected CartRepository cartRepository;
 
     @Autowired
-    MemberRepository memberRepository;
+    protected MemberRepository memberRepository;
 
     @Test
     @DisplayName("해당 회원의 장바구니를 조회한다.")

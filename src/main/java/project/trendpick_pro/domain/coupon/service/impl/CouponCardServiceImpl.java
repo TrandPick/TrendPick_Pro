@@ -23,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class CouponCardServiceImpl implements CouponCardService {
-
     private final CouponCardRepository couponCardRepository;
     private final CouponRepository couponRepository;
     private final OrderItemRepository orderItemRepository;
@@ -31,45 +30,47 @@ public class CouponCardServiceImpl implements CouponCardService {
     @Transactional
     @Override
     public RsData issue(Member member, Long couponId, LocalDateTime dateTime) {
-        Coupon coupon = couponRepository.findById(couponId).orElseThrow(
-                () -> new CouponNotFoundException("존재하지 않는 쿠폰입니다."));
+        Coupon coupon = findCoupon(couponId);
         int count = couponCardRepository.countByCouponIdAndMemberId(couponId, member.getId());
 
-        RsData<CouponCard> of = validateCouponCard(count, coupon);
-        if (of != null) {
-            return of;
-        }
+        RsData<CouponCard> validateResult = validateCouponCard(count, coupon, dateTime);
+        if (validateResult.isFail())
+            return validateResult;
 
-        CouponCard savedCouponCard = settingCouponCard(member, dateTime, coupon);
+        settingCouponCard(member, dateTime, coupon);
         return RsData.of("S-1", coupon.getName() + " 쿠폰이 발급되었습니다.");
     }
 
+
     @Transactional
     @Override
-    public RsData apply(Long couponCardId, Long orderItemId) {
-        OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(
-                () -> new OrderItemNotFoundException("주문되지 않은 상품입니다."));
-        CouponCard couponCard = couponCardRepository.findById(couponCardId).orElseThrow(
-                () -> new CouponNotFoundException("존재하지 않은 쿠폰입니다."));
-        if (!couponCard.validate(orderItem, LocalDateTime.now()))
-            return RsData.of("F-1", "해당 주문상품에 적용된 쿠폰이 없습니다.");
-        couponCard.use(orderItem, LocalDateTime.now());
+    public RsData apply(Long couponCardId, Long orderItemId, LocalDateTime dateTime) {
+        OrderItem orderItem = findOrderItem(orderItemId);
+        CouponCard couponCard = findCouponCard(couponCardId);
+
+        if (!couponCard.validate(orderItem, dateTime))
+            return RsData.of("F-1", "해당 주문상품에 해당 쿠폰을 적용할 수 없습니다.");
+        orderItem.applyCouponCard(couponCard);
         return RsData.of("S-1", "쿠폰이 적용되었습니다.");
+    }
+
+    private CouponCard findCouponCard(Long couponCardId) {
+        CouponCard couponCard = couponCardRepository.findById(couponCardId).orElseThrow(
+                () -> new CouponNotFoundException("존재하지 않는 쿠폰입니다."));
+        return couponCard;
     }
 
     @Transactional
     @Override
     public RsData cancel(Long orderItemId) {
-        OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(
-                () -> new OrderItemNotFoundException("주문되지 않은 상품입니다."));
+        OrderItem orderItem = findOrderItem(orderItemId);
         orderItem.getCouponCard().cancel(orderItem);
         return RsData.of("S-1", "쿠폰이 취소되었습니다.");
     }
 
     @Override
     public List<CouponCardByApplyResponse> showCouponCardsByOrderItem(Long orderItemId) {
-        OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(
-                () -> new OrderItemNotFoundException("주문되지 않은 상품입니다."));
+        OrderItem orderItem = findOrderItem(orderItemId);
         List<CouponCard> couponCards = couponCardRepository.findAllByBrand(orderItem.getProduct().getProductOption().getBrand().getName());
         return createCouponCardByApplyResponseList(couponCards, orderItem);
     }
@@ -77,20 +78,19 @@ public class CouponCardServiceImpl implements CouponCardService {
     private CouponCard settingCouponCard(Member member, LocalDateTime dateTime, Coupon coupon) {
         CouponCard couponCard = new CouponCard(coupon);
         couponCard.updatePeriod(dateTime);
+        couponCard.connectMember(member);
         CouponCard savedCouponCard = couponCardRepository.save(couponCard);
-        savedCouponCard.updatePeriod(dateTime);
-        savedCouponCard.connectMember(member);
         return savedCouponCard;
     }
 
-    private static RsData<CouponCard> validateCouponCard(int count, Coupon coupon) {
+    private  RsData<CouponCard> validateCouponCard(int count, Coupon coupon, LocalDateTime dateTime) {
         if(count > 0)
             return RsData.of("F-3", "이미 발급 받으신 쿠폰입니다.");
         if(!coupon.validateLimitCount())
             return RsData.of("F-1", "수량이 모두 소진되었습니다.");
-        if(!coupon.validateLimitIssueDate(LocalDateTime.now()))
+        if(!coupon.validateLimitIssueDate(dateTime))
             return RsData.of("F-2", "쿠폰 발급 가능 날짜가 지났습니다.");
-        return null;
+        return RsData.success();
     }
 
     private List<CouponCardByApplyResponse> createCouponCardByApplyResponseList(List<CouponCard> couponCards, OrderItem orderItem) {
@@ -98,6 +98,16 @@ public class CouponCardServiceImpl implements CouponCardService {
                 .filter(couponCard -> couponCard.validate(orderItem, LocalDateTime.now()))
                 .map(couponCard -> CouponCardByApplyResponse.of(couponCard, orderItem))
                 .toList();
+    }
+
+    private OrderItem findOrderItem(Long orderItemId) {
+        return orderItemRepository.findById(orderItemId).orElseThrow(
+                () -> new OrderItemNotFoundException("주문되지 않은 상품입니다."));
+    }
+
+    private Coupon findCoupon(Long couponId) {
+        return couponRepository.findById(couponId).orElseThrow(
+                () -> new CouponNotFoundException("존재하지 않는 쿠폰입니다."));
     }
 }
 

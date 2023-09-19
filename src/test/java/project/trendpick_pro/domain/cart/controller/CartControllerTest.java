@@ -108,7 +108,6 @@ class CartControllerTest {
     @Test
     @DisplayName("장바구니에 담긴 상품의 수량을 변경하는 컨트롤러 요청")
     @WithMockUser(username = "testUser", roles = {"MEMBER"})
-
     void updateCount() throws Exception {
         Long cartItemId = 1L;
         int quantity = 10;

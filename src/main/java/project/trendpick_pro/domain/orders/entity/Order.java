@@ -39,7 +39,7 @@ public class Order extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price")
     private int totalPrice = 0;
 
     public void connectUser(Member member) {
@@ -49,7 +49,7 @@ public class Order extends BaseTimeEntity {
     public void connectPayment(String paymentMethod, String paymentKey) {
         this.paymentMethod = paymentMethod;
         this.paymentKey = paymentKey;
-        productDiscount();
+        setDiscountAmount();
     }
 
     public void connectDelivery(Delivery delivery) {
@@ -61,6 +61,15 @@ public class Order extends BaseTimeEntity {
         order.connectUser(member);
         order.connectDelivery(delivery);
         order.settingOrderItems(orderItems);
+        order.orderStatus = OrderStatus.TEMP;
+        order.paymentMethod = "";
+        return order;
+    }
+
+    public static Order createTempOrder(Member member, Delivery delivery){
+        Order order = new Order();
+        order.connectUser(member);
+        order.connectDelivery(delivery);
         order.orderStatus = OrderStatus.TEMP;
         order.paymentMethod = "";
         return order;
@@ -81,9 +90,8 @@ public class Order extends BaseTimeEntity {
     public void cancel() {
         this.orderStatus = OrderStatus.CANCELED;
         this.delivery.canceledDelivery();
-        for (OrderItem orderItem : this.orderItems) {
+        for (OrderItem orderItem : this.orderItems)
             orderItem.cancel();
-        }
     }
 
     public void cancelTemp() {
@@ -112,21 +120,26 @@ public class Order extends BaseTimeEntity {
         };
     }
 
-    private void productDiscount(){
+    private void setDiscountAmount(){ //할인 금액 적용
         for (OrderItem orderItem : getOrderItems()) {
             this.totalPrice -= orderItem.getDiscountPrice();
         }
     }
 
-    private void settingOrderItems(List<OrderItem> orderItems) {
+    public void settingOrderItems(List<OrderItem> orderItems) {
         for (OrderItem orderItem : orderItems) {
             this.addOrderItem(orderItem);
-            this.totalPrice += orderItem.getOrderItemByQuantity();
+            this.totalPrice += orderItem.getTotalPrice();
         }
     }
 
     private void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.connectOrder(this);
+    }
+
+    //구매결정 완료된건지 (환불불가, 취소불가)
+    public boolean isCompletedPurchaseDecision(){
+        return this.getDeliveryState().equals("배송완료") && this.getOrderState().equals("결제완료");
     }
 }

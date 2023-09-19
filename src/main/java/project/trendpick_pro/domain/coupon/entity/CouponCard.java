@@ -22,7 +22,7 @@ public class CouponCard extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon", nullable = false)
+    @JoinColumn(name = "coupon")
     private Coupon coupon;
 
     @Column(name = "coupon_code", nullable = false, unique = true)
@@ -63,24 +63,15 @@ public class CouponCard extends BaseTimeEntity {
                 && validateMinimumPurchaseAmount(orderItem.getOrderPrice());
     }
 
-    public void use(OrderItem orderItem, LocalDateTime dateTime) {
-        settingStatusAndDate(dateTime);
-        orderItem.applyCouponCard(this);
-        orderItem.discount(
-            orderItem.getOrderPrice() * (this.coupon.getDiscountPercent() / 100)
-        );
+    public void use(LocalDateTime dateTime) {
+        this.status = CouponStatus.USED;
+        this.usedDate = dateTime;
     }
 
     public void cancel(OrderItem orderItem){
         this.status = CouponStatus.AVAILABLE;
         this.usedDate = null;
         orderItem.cancelCouponCard();
-        this.coupon.decreaseIssueCount();
-    }
-
-    private void settingStatusAndDate(LocalDateTime dateTime) {
-        this.status = CouponStatus.USED;
-        this.usedDate = dateTime;
     }
 
     private boolean validateMinimumPurchaseAmount(int price){
@@ -98,9 +89,10 @@ public class CouponCard extends BaseTimeEntity {
 
     private void updateStatus(LocalDateTime dateTime) {
         checkDateNotNull(dateTime);
-        if(dateTime.isBefore(this.coupon.getExpirationPeriod().getStartDate())) {
+        if(dateTime.isBefore(this.coupon.getExpirationPeriod().getStartDate()))
             this.status = CouponStatus.NOT_YET_ACTIVE;
-        } this.status = CouponStatus.AVAILABLE;
+        else
+            this.status = CouponStatus.AVAILABLE;
     }
 
     private void checkDateNotNull(LocalDateTime dateTime) {

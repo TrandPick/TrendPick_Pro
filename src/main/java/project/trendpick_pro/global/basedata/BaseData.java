@@ -23,7 +23,7 @@ import project.trendpick_pro.domain.category.service.MainCategoryService;
 import project.trendpick_pro.domain.category.service.SubCategoryService;
 import project.trendpick_pro.domain.common.file.CommonFile;
 import project.trendpick_pro.domain.coupon.entity.expirationPeriod.ExpirationType;
-import project.trendpick_pro.global.kafka.view.service.ViewService;
+import project.trendpick_pro.domain.store.service.StoreService;
 import project.trendpick_pro.domain.coupon.entity.Coupon;
 import project.trendpick_pro.domain.coupon.entity.dto.request.StoreCouponSaveRequest;
 import project.trendpick_pro.domain.coupon.repository.CouponRepository;
@@ -97,7 +97,7 @@ public class BaseData {
             RecommendService recommendService,
             BrandService brandService,
             ProductService productService,
-            ViewService viewService,
+            StoreService storeService,
             ProductRepository productRepository,
             ReviewRepository reviewRepository,
             CouponRepository couponRepository,
@@ -109,6 +109,8 @@ public class BaseData {
             public void run(String... args) {
 
                 tagNameServiceImpl.saveAll(tags);
+                brandService.saveAll(brands);
+                storeService.saveAll(brands);
                 memberService.joinAll(makeBrandMembers(brands));
                 mainCategoryService.saveAll(mainCategories);
 
@@ -119,10 +121,10 @@ public class BaseData {
                 accessKeyMap.put("secretKey", secretKey);
                 accessKeyMap.put("bucket", bucket);
 
-                int memberCount = 100;
-                int productCount = 2000;
-                int reviewCount = 100;
-                int couponCount = 100;
+                int memberCount = 10;
+                int productCount = 200;
+                int reviewCount = 10;
+                int couponCount = 10;
                 String brandName = "polo";
 
                 saveMembers(memberCount, tagNameServiceImpl, memberService);
@@ -133,10 +135,6 @@ public class BaseData {
 
                 saveReviews(reviewCount, productCount, accessKeyMap, memberService, productService ,reviewRepository);
                 saveStoreCoupon(couponCount, storeRepository, couponRepository, brandService);
-
-                if (viewService.findSize() == 0) {
-                    viewService.registerView();
-                }
 
                 log.info("BASE_DATA_SUCCESS");
             }

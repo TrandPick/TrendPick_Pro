@@ -8,6 +8,7 @@ import project.trendpick_pro.domain.cart.entity.CartItem;
 import project.trendpick_pro.domain.common.base.BaseTimeEntity;
 import project.trendpick_pro.domain.coupon.entity.CouponCard;
 import project.trendpick_pro.domain.product.entity.product.Product;
+import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,8 +34,7 @@ public class OrderItem extends BaseTimeEntity {
     @Column(name = "order_price", nullable = false)
     private int orderPrice;
 
-    @Column(name = "total_price")
-    private int orderItemByQuantity;
+    private int totalPrice; //계산된 가격 (실제 지불한)
 
     @Column(name = "discount_price", nullable = false)
     private int discountPrice;
@@ -69,25 +69,27 @@ public class OrderItem extends BaseTimeEntity {
 
     public void applyCouponCard(CouponCard couponCard) {
         this.couponCard = couponCard;
+        int discountPercent = couponCard.getCoupon().getDiscountPercent();
+        this.discountPrice = getOrderPrice() * discountPercent / 100; //쿠폰은 상품 한 개 가격에서 할인 적용
+        this.totalPrice -= this.discountPrice;
     }
 
     public void cancelCouponCard(){
         this.couponCard = null;
+        this.totalPrice += this.discountPrice;
         this.discountPrice = 0;
     }
 
-    public void discount(int price){
-        this.discountPrice += price;
-    }
-
     private OrderItem(Product product, int quantity, String size, String color) {
+        if(product.getProductOption().getStock() < quantity)
+            throw new ProductStockOutException("상품의 재고가 부족하여 주문이 불가능합니다.");
         this.product = product;
         this.orderPrice = (product.getDiscountedPrice() > 0) ? product.getDiscountedPrice() : product.getProductOption().getPrice();
         this.quantity = quantity;
         this.size = size;
         this.color = color;
-        this.discountPrice = 0;
-        this.orderItemByQuantity = this.orderPrice * this.quantity;
+        this.discountPrice = 0; //쿠폰으로 인한 할인가만 적용
+        this.totalPrice = this.orderPrice * this.quantity;
         product.getProductOption().decreaseStock(quantity);
     }
 }
