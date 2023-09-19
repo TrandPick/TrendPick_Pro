@@ -32,7 +32,7 @@ import java.util.Collections;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-public class MakeRebateDataJobConfig {
+public class MakeRebateDataJobConfig { //모든 주문 품목에 대해서 복사해 놓는 job
     private final OrderItemRepository orderItemRepository;
     private final RebateOrderItemRepository rebateOrderItemRepository;
     private final JobRepository jobRepository;

@@ -30,7 +30,7 @@ public class KafkaProducerService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    @Scheduled(fixedRate = 3000) //3초마다 아웃박스를 조회하며 메시지를 보낸다.
+    @Scheduled(fixedRate = 100)
     public void sendMessage() throws JsonProcessingException {
         List<OutboxMessage> outboxMessages = outboxMessageService.findAll();
 
