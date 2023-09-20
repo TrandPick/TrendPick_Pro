@@ -156,6 +156,22 @@ public class OrderServiceImpl implements OrderService {
         return orderItemRepository.findAllByCreatedDateBetween(fromDate, toDate);
     }
 
+    public RsData<Order> getOrderFormData(Long orderId) {
+        Order order;
+        try{
+            order = findById(orderId);
+            if(order.getPaymentKey() != null || order.getOrderState().equals("주문취소"))
+                return RsData.of("F-2", "이미 처리된 주문입니다.");
+
+            if(order.getOrderItems().isEmpty())
+                return RsData.of("F-1", "주문 중에 오류가 발생했습니다. 다시 시도해주세요");
+        } catch (OrderNotFoundException e){
+            return RsData.of("F-1", "주문 중에 오류가 발생했습니다. 다시 시도해주세요");
+        }
+
+        return RsData.of("S-1", "유효성 검증 성공", order);
+    }
+
     private Page<OrderResponse> settingOrderByMemberStatus(Member member, int offset) {
         Page<OrderResponse> findOrders;
         PageRequest pageable = PageRequest.of(offset, 10);
