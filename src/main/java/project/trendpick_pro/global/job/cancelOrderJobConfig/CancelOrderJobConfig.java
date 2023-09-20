@@ -43,7 +43,7 @@ public class CancelOrderJobConfig{
     public Job cancelOrderJob(Step cancelOrderStep, JobRepository jobRepository) throws Exception {
         return new JobBuilder("cancelOrderJob", jobRepository)
                 .start(cancelOrderStep)
-//                .incrementer(new RunIdIncrementer()) //계속해서 id 업데이트 (내용이같아도)
+                .incrementer(new RunIdIncrementer()) //계속해서 id 업데이트 (내용이같아도)
                 .build();
     }
 

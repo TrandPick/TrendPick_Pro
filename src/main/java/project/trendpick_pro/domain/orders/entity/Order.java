@@ -94,14 +94,6 @@ public class Order extends BaseTimeEntity {
             orderItem.cancel();
     }
 
-    public void cancelTemp() {
-        this.orderStatus = OrderStatus.TEMP;
-        this.delivery.canceledDelivery();
-        for (OrderItem orderItem : this.orderItems) {
-            orderItem.cancel();
-        }
-    }
-
     public String getOrderState(){
         return switch (orderStatus.getValue()){
             case "ORDERED"->"결제완료";

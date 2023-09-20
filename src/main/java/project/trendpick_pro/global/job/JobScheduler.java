@@ -3,20 +3,16 @@ package project.trendpick_pro.global.job;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
-import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +22,7 @@ import java.time.LocalTime;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class JobConfig {
+public class JobScheduler {
     private final JobLauncher jobLauncher; //job을 실행시키는 주체
     @Qualifier("makeRecommendProductJob")
     private final Job makeRecommendProductJob;
@@ -55,11 +51,11 @@ public class JobConfig {
         log.info(execution.getStatus().toString());
     }
 
-    // 매일 02시에 전날 생성된 주문 객체중 결제 처리가 안된 객체를 일괄 삭제 처리한다.
-    @Scheduled(cron = "0 0 2 * * *")
+    // 10분마다 체크해서 주문이 생성된지 30분 이상 지났는데 결제 처리가 없으면 주문을 취소상태로 변경한다.
+    @Scheduled(fixedRate = 1000 * 60 * 10)
     public void performCancelOrderJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        LocalDateTime date = LocalDateTime.now().minusDays(1).with(LocalTime.MAX); //전날 11:59
-//        LocalDateTime fake = LocalDateTime.now().plusDays(1); //테스트용
+        LocalDateTime date = LocalDateTime.now().minusMinutes(30);
+//        LocalDateTime date = LocalDateTime.now().plusDays(1); //테스트용
 
         JobParameters param = new JobParametersBuilder()
                 .addLocalDateTime("date", date) //전날 11:59
@@ -69,7 +65,7 @@ public class JobConfig {
 
     }
 
-    // 매일 04시에 일일정산을 통해 월 정산을 갱신해준다.
+    // 매일 04시에 당월의 주문 목록을 복사해서 정산용 주문 목록으로 만들어 저장한다.
     @Scheduled(cron = "0 0 4 * * *") // 실제 코드
     public void performMakeRebateDataJob() throws Exception {
         String yearMonth = getPerformMakeRebateDataJobParam1Value(); // 실제 코드
