@@ -45,10 +45,12 @@ public class OutboxMessageService {
     }
 
     //주문 객쳉 생성 메시지 발행
+    @Transactional
     public void publishOrderCreationMessage(String topic, String key, List<OrderMaterial> orderMaterials, String code) {
         outboxMessageRepository.save(new OutboxMessage(topic, key, key, orderMaterials, code));
     }
 
+    @Transactional
     //주문 처리 메시지 발행
     public void publishOrderProcessMessage(String topic, String message, String payload, String email) {
         outboxMessageRepository.save(new OutboxMessage(topic, message, payload, email));

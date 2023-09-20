@@ -32,6 +32,10 @@ public class OrderMaterial {
     }
 
     public OrderMaterial(CartItem cartItem, String code){
-        new OrderMaterial(cartItem.getProduct().getId(), cartItem.getQuantity(), cartItem.getSize(), cartItem.getColor(), code);
+        this.productId = cartItem.getProduct().getId();
+        this.quantity =  cartItem.getQuantity();
+        this.size = cartItem.getSize();
+        this.color =  cartItem.getColor();
+        this.code = code;
     }
 }
