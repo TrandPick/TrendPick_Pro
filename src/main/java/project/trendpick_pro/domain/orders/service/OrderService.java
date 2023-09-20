@@ -27,4 +27,5 @@ public interface OrderService {
     Order findById(Long id);
     Page<OrderResponse> findCanceledOrders(Member member, int offset);
     List<OrderItem> findAllByCreatedDateBetweenOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate);
+    RsData<Order> getOrderFormData(Long orderId);
 }

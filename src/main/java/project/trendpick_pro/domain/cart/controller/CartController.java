@@ -1,6 +1,7 @@
 package project.trendpick_pro.domain.cart.controller;
 
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,13 +39,14 @@ public class CartController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/add")
-    public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests) {
+    public String addItem(@ModelAttribute @Valid CartItemRequest cartItemRequests, HttpServletRequest req) {
         RsData<CartItem> result = cartService.addCartItem(rq.getMember(), cartItemRequests);
 
         if(result.isFail())
-           return rq.redirectWithMsg("/trendpick/products/list?main-category=상의",result);
+           return rq.historyBack(result);
 
-        return rq.redirectWithMsg("/trendpick/usr/cart/list", result);
+        String referer = req.getHeader("referer");
+        return rq.redirectWithMsg(referer, result);
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")

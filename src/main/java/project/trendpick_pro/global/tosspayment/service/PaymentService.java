@@ -53,10 +53,11 @@ public class PaymentService {
 
     private void successPaymentProcess(String method, String paymentKey, Order order) {
         order.connectPayment("TossPayments" + method, paymentKey);
-
         for (OrderItem orderItem : order.getOrderItems()) {
             favoriteTagService.updateTag(order.getMember(), orderItem.getProduct(), TagType.ORDER);
-            orderItem.getCouponCard().use(LocalDateTime.now()); //실제 쿠폰 사용 처리
+
+            if(orderItem.getCouponCard() != null)
+                orderItem.getCouponCard().use(LocalDateTime.now()); //실제 쿠폰 사용 처리
         }
     }
 
