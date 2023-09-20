@@ -1,3 +1,12 @@
+## 개발 환경 실행하기 로컬(MYSQL, REDIS), 도커(KAFKA), 토스결제API, S3
+1. git clone
+2. application-secret.yml.default -> 2. application-secret.yml 파일명 변경/환경변수 세팅
+3. docker-compose.yml (카프카 관련) 기본값(host : localhost, port : 9092)
+4. 직접 데이터베이스 생성 CREATE DATABASE ${DATABASE_NAME}; USE ${DATABASE_NAME};
+5. 로컬 레디스 실행
+6. docker-compose up -d (카프카 실행)
+7. 실행
+   
 ## 👖 TrendPick, 취향에 맞게 상품을 추천 해주는 서비스 
 <div align="center">
 <p align="center">
