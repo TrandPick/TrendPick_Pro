@@ -29,10 +29,14 @@ public class OrderController {
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("{orderId}/form")
     public String showOrderForm(@PathVariable("orderId") Long orderId, Model model){
-        Order order = orderService.findById(orderId);
-        if(order.getPaymentKey() != null || order.getOrderState().equals("주문취소"))
+        RsData<Order> result = orderService.getOrderFormData(orderId);
+        if(result.getResultCode().equals("F-1"))
+            return rq.historyBack("주문중 오류가 발생했습니다. 다시 한 번 시도해주세요.");
+
+        if(result.getResultCode().equals("F-2"))
             return rq.redirectWithMsg("/", "이미 처리된 주문입니다.");
-        model.addAttribute("order", order);
+
+        model.addAttribute("order", result.getData());
         return "trendpick/orders/order-form";
     }
 
