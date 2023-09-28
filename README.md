@@ -259,13 +259,6 @@ Footer // issue tracker를 사용하는 경우 참조한 issue tracker ID를 기
 
 <br>
 
-## 프로젝트 트러블 슈팅
-- [카프카와 Redis를 활용한 재고에 대한 동시성 처리기 - 1 / 이수호](https://suho0303.tistory.com/48)
-- [카프카를 활용한 재고에 대한 동시성 처리기 - 2 / 이수호](https://suho0303.tistory.com/50)
-- [카프카와 레디스를 활용한 재고에 대한 동시성 처리기 - 3 / 이수호](https://suho0303.tistory.com/51)
-- [CI/CD 구축 시 방식에 대한 고민(Jenkins, Github Actions) / 이수호](https://suho0303.tistory.com/49)
-
-
 <br>
 
 ## 👏 팀원 소개
