@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import project.trendpick_pro.domain.orders.entity.Order;
 import project.trendpick_pro.domain.orders.entity.OrderItem;
+import project.trendpick_pro.domain.orders.entity.OrderStatus;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.tags.favoritetag.service.FavoriteTagService;
 import project.trendpick_pro.domain.tags.tag.entity.TagType;
@@ -59,6 +60,8 @@ public class PaymentService {
             if(orderItem.getCouponCard() != null)
                 orderItem.getCouponCard().use(LocalDateTime.now()); //실제 쿠폰 사용 처리
         }
+
+        order.updateStatus(OrderStatus.ORDERED); //주문완료
     }
 
     private PaymentResultResponse requestPayment(String paymentKey, String orderId, Integer amount) {

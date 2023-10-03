@@ -29,9 +29,5 @@ public interface ProductService {
     void applyDiscount(Long productId, double discountRate);
     Product findById(Long id);
     Product findByIdWithBrand(Long productId);
-
-    //test용
-
-    public Product findByIdInTest(Long id);
-    void decreaseStock(Long productId, int quantity);
+    Product findByIdWithOrder(Long ProductId);
 }

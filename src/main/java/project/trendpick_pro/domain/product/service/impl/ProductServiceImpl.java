@@ -3,12 +3,7 @@ package project.trendpick_pro.domain.product.service.impl;
 import com.amazonaws.services.s3.AmazonS3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -140,10 +135,6 @@ public class ProductServiceImpl implements ProductService {
         return RsData.of("S-1", "상품 수정 완료되었습니다.", product.getId());
     }
 
-//    @Caching(evict = {
-//            @CacheEvict(value = "product", key = "#productId"),
-//            @CacheEvict(value = "productList", allEntries = true)
-//    })
     @Transactional
     public void delete(Long productId) {
         rq.getAdmin();
@@ -236,19 +227,7 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByIdWithBrand(productId);
     }
 
-
-    //test용
-    @Profile("test")
-    public Product findByIdInTest(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품 입니다."));
-        Hibernate.initialize(product.getProductOption());
-        return product;
-    }
-
-    @Profile("test")
-    @Transactional
-    public void decreaseStock(Long productId, int quantity) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품 입니다."));
-        product.getProductOption().decreaseStock(quantity);
+    public Product findByIdWithOrder(Long id) {
+        return productRepository.findByIdWithOrder(id).orElseThrow(() -> new ProductNotFoundException("존재하지 않는 상품 입니다."));
     }
 }
