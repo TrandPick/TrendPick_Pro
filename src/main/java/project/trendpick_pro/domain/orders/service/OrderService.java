@@ -17,7 +17,7 @@ import java.util.List;
 
 public interface OrderService {
     RsData cartToOrder(Member member, CartToOrderRequest request);
-    RsData productToOrder(Member member, Long id, int quantity, String size, String color);
+    RsData<Long> productToOrder(Member member, Long id, int quantity, String size, String color);
     void tryOrder(String id, List<OrderMaterial> orderMaterials) throws JsonProcessingException;
     RsData cancel(Long orderId);
     void delete(Long id);

@@ -28,12 +28,12 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("{orderId}/form")
-    public String showOrderForm(@PathVariable("orderId") Long orderId, Model model){
+    public String showOrderForm(@PathVariable("orderId") Long orderId, Model model) {
         RsData<Order> result = orderService.getOrderFormData(orderId);
-        if(result.getResultCode().equals("F-1"))
+        if (result.getResultCode().equals("F-1"))
             return rq.historyBack("주문중 오류가 발생했습니다. 다시 한 번 시도해주세요.");
 
-        if(result.getResultCode().equals("F-2"))
+        if (result.getResultCode().equals("F-2"))
             return rq.redirectWithMsg("/", "이미 처리된 주문입니다.");
 
         model.addAttribute("order", result.getData());
@@ -42,43 +42,57 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/cart")
-    @ResponseBody
-    public RsData<String> cartToOrder(@RequestBody CartToOrderRequest request) {
-        try {
-            RsData data = orderService.cartToOrder(rq.getMember(), request);
-            if(data.isFail()) {
-                throw new Exception(data.getMsg());
-            }
-            return RsData.of(data.getResultCode(), data.getMsg());
-        } catch (Exception e){
-            return RsData.of("F-1", "주문이 완료되지 않았습니다.");
-        }
+    public String cartToOrder(@RequestBody CartToOrderRequest request) {
+        RsData result = orderService.cartToOrder(rq.getMember(), request);
+        if (result.isFail())
+            return rq.historyBack(result);
+
+        return rq.redirectWithMsg("/trendpick/orders/%s/form".formatted(result.getData()), result);
     }
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/product")
-    @ResponseBody
-    public RsData<String> productToOrder(@RequestBody ProductOrderRequest request) {
-        try {
-            RsData data = orderService.productToOrder(rq.getMember(),
-                    request.getProductId(), request.getQuantity(), request.getSize(), request.getColor());
-            if(data.isFail()) {
-                throw new Exception(data.getMsg());
-            }
-            return RsData.of(data.getResultCode(), data.getMsg());
-        } catch (Exception e){
-            return RsData.of("F-1", "주문이 완료되지 않았습니다.");
+    public String productToOrder(@RequestBody ProductOrderRequest request) {
+        RsData result = orderService.productToOrder(rq.getMember(),
+                request.getProductId(), request.getQuantity(), request.getSize(), request.getColor());
+        if (result.isFail())
+            return rq.historyBack(result);
+
+        return rq.redirectWithMsg("/trendpick/orders/%s/form".formatted(result.getData()), result);
+    }
+
+    @PreAuthorize("hasAuthority({'MEMBER'})")
+    @GetMapping("/{orderId}")
+    public String showOrder(@PathVariable("orderId") Long orderId, Model model) {
+        Member member = rq.getMember();
+        RsData<OrderDetailResponse> result = orderService.findOrderItems(member, orderId);
+
+        if (result.isFail()) {
+            return rq.historyBack(result);
         }
+        model.addAttribute("address", member.getAddress());
+        model.addAttribute("order", result.getData());
+        return "trendpick/orders/detail";
     }
 
     @PostMapping("/cancel/{orderId}")
     public String cancelOrder(@PathVariable("orderId") Long orderId) {
         RsData result = orderService.cancel(orderId);
-        if(result.isFail())
+        if (result.isFail())
             return rq.historyBack(result);
         return rq.redirectWithMsg("/trendpick/orders/usr/list", result);
     }
 
+    //환불 내역
+    @PreAuthorize("hasAuthority({'MEMBER'})")
+    @GetMapping("/usr/refunds")
+    public String showCanceledOrderListByMember(@RequestParam(value = "page", defaultValue = "0") int offset, Model model) {
+        Page<OrderResponse> orderList = orderService.findCanceledOrders(rq.getMember(), offset);
+        model.addAttribute("orderList", orderList);
+        return "trendpick/usr/member/refunds";
+    }
+
+    //주문 내역
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @GetMapping("usr")
     public String orderListByMember(@RequestParam(value = "page", defaultValue = "0") int offset, Model model) {
@@ -87,6 +101,7 @@ public class OrderController {
         return "trendpick/usr/member/orders";
     }
 
+    //판매 내역
     @PreAuthorize("hasAuthority({'BRAND_ADMIN'})")
     @GetMapping("admin")
     public String orderListBySeller(@RequestParam(value = "page", defaultValue = "0") int offset, Model model) {
@@ -95,27 +110,5 @@ public class OrderController {
         int totalPricePerMonth = orderService.settlementOfSales(rq.getAdmin(), LocalDate.now());
         model.addAttribute("totalPricePerMonth", totalPricePerMonth);
         return "trendpick/admin/sales";
-    }
-
-    @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("/{orderId}")
-    public String showOrder(@PathVariable("orderId") Long orderId, Model model){
-        Member member = rq.getMember();
-        RsData<OrderDetailResponse> result = orderService.findOrderItems(member, orderId);
-
-        if(result.isFail()) {
-            return rq.historyBack(result);
-        }
-        model.addAttribute("address", member.getAddress());
-        model.addAttribute("order", result.getData());
-        return "trendpick/orders/detail";
-    }
-
-    @PreAuthorize("hasAuthority({'MEMBER'})")
-    @GetMapping("/usr/refunds")
-    public String showCanceledOrderListByMember(@RequestParam(value = "page", defaultValue = "0") int offset, Model model){
-        Page<OrderResponse> orderList = orderService.findCanceledOrders(rq.getMember(), offset);
-        model.addAttribute("orderList", orderList);
-        return "trendpick/usr/member/refunds";
     }
 }

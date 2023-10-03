@@ -3,6 +3,7 @@ package project.trendpick_pro.domain.orders.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -61,38 +62,38 @@ public class OrderServiceImpl implements OrderService {
         RsData result = validateCartToOrder(member, request, cartItems);
         if (result.isFail()) return result;
 
-        Order order = orderRepository.save(Order.createTempOrder(member, new Delivery(member.getAddress())));
         String uuidCode =  UUID.randomUUID().toString();
-
         List<OrderMaterial> orderMaterials = new ArrayList<>();
-        for (CartItem cartItem : cartItems)
-            orderMaterials.add(new OrderMaterial(cartItem, uuidCode));
-        outboxMessageService.publishOrderCreationMessage("orders", String.valueOf(order.getId()), orderMaterials, uuidCode);
-        return RsData.of("S-1", "주문을 시작 합니다.");
+
+        List<OrderItem> orderItems = createOrderItems(cartItems);
+        Order order = orderRepository.save(Order.createOrder(member, new Delivery(member.getAddress()), orderItems));
+
+        return RsData.of("S-1", "주문을 시작 합니다.", order.getId());
     }
 
+
     @Transactional
-    public RsData productToOrder(Member member, Long productId, int quantity, String size, String color) {
+    public RsData<Long> productToOrder(Member member, Long productId, int quantity, String size, String color) {
         String uuidCode =  UUID.randomUUID().toString();
 
+        List<OrderItem> orderItems = createOrderItems(productId, quantity, size, color);
         Order order = orderRepository.save(
-                Order.createTempOrder(member, new Delivery(member.getAddress())));
+                Order.createOrder(member, new Delivery(member.getAddress()), orderItems));
 
-        List<OrderMaterial> orderMaterials = List.of(new OrderMaterial(productId, quantity, size, color, uuidCode));
-        outboxMessageService.publishOrderCreationMessage("orders", String.valueOf(order.getId()), orderMaterials, uuidCode);
-        return RsData.of("S-1", "주문을 시작합니다.");
+        return RsData.of("S-1", "주문을 시작합니다.", order.getId());
     }
 
     @Transactional //실제 주문 로직 (재고 유효성 검사, 재고 감소, 상태 변경)
     public void tryOrder(String id, List<OrderMaterial> orderMaterials) throws JsonProcessingException {
         Order order = findById(Long.valueOf(id));
         if(order.getOrderState().equals("결제완료")) //멱등성
+
             throw new IllegalAccessError("이미 처리된 주문입니다.");
 
         try{
-            List<OrderItem> orderItems = OrderMaterialsToOrderItems(orderMaterials);
+            List<OrderItem> orderItems = orderMaterialsToOrderItems(orderMaterials);
             order.settingOrderItems(orderItems);
-            order.updateStatus(OrderStatus.ORDERED);
+            order.updateStatus(OrderStatus.TEMP);
             outboxMessageService.publishOrderProcessMessage("standByOrder", "Success", String.valueOf(order.getId()), order.getMember().getEmail());
         } catch(ProductStockOutException e){
             log.error("error message : {} ", e.getMessage());
@@ -203,10 +204,10 @@ public class OrderServiceImpl implements OrderService {
         return RsData.success();
     }
 
-    private List<OrderItem> OrderMaterialsToOrderItems(List<OrderMaterial> orderMaterials) throws ProductStockOutException{
+    private List<OrderItem> orderMaterialsToOrderItems(List<OrderMaterial> orderMaterials) throws ProductStockOutException{
         List<OrderItem> orderItems = new ArrayList<>();
         for (OrderMaterial orderMaterial : orderMaterials) { //이때 재고 감소, 재고 체크
-            orderItems.add(OrderItem.of(productService.findById(orderMaterial.getProductId()), orderMaterial.getQuantity(),
+            orderItems.add(OrderItem.of(productService.findByIdWithOrder(orderMaterial.getProductId()), orderMaterial.getQuantity(),
                     orderMaterial.getSize(), orderMaterial.getColor()));
         }
         return orderItems;
@@ -219,5 +220,17 @@ public class OrderServiceImpl implements OrderService {
         if (order.getDelivery().getState() == DeliveryState.DELIVERY_ING)
             return RsData.of("F-3", "이미 배송을 시작하여 취소가 불가능합니다.");
         return RsData.success();
+    }
+
+    private List<OrderItem> createOrderItems(List<CartItem> cartItems) {
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (CartItem cartItem : cartItems)
+            orderItems.add(OrderItem.of(productService.findByIdWithOrder(cartItem.getProduct().getId()), cartItem));
+
+        return orderItems;
+    }
+
+    private List<OrderItem> createOrderItems(Long productId, int quantity, String size, String color) {
+        return List.of(OrderItem.of(productService.findByIdWithOrder(productId), quantity, size, color));
     }
 }
