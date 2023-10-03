@@ -42,7 +42,7 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/cart")
-    public String cartToOrder(@RequestBody CartToOrderRequest request) {
+    public String cartToOrder(@ModelAttribute CartToOrderRequest request) {
         RsData result = orderService.cartToOrder(rq.getMember(), request);
         if (result.isFail())
             return rq.historyBack(result);
@@ -52,7 +52,7 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority({'MEMBER'})")
     @PostMapping("/order/product")
-    public String productToOrder(@RequestBody ProductOrderRequest request) {
+    public String productToOrder(@ModelAttribute ProductOrderRequest request) {
         RsData result = orderService.productToOrder(rq.getMember(),
                 request.getProductId(), request.getQuantity(), request.getSize(), request.getColor());
         if (result.isFail())

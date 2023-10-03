@@ -96,7 +96,7 @@
                         <input type="hidden" id="addToCartQuantity" name="quantity" value="1" min="1"/>
                         <button type="submit" class="btn btn-accent">Add to Cart</button>
                     </form>
-                    <form onsubmit="buyNow(this); return false;" id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" method="post">
+                    <form id="ProductOptionForm" th:action="@{/trendpick/orders/order/product}" method="post" onsubmit="return confirmOrder()">
                         <input type="hidden" name="productId" th:value="${productResponse.id}">
                         <input type="hidden" name="size" id="buySize" value="1">
                         <input type="hidden" name="color" id="buyColor" value="1">
@@ -321,7 +321,17 @@
         }
 
         function confirmOrder() {
-            return confirm("해당 상품을 주문하시겠습니까 ?");
+            var confirmAction = confirm("해당 상품을 주문하시겠습니까?");
+            if (confirmAction) {
+                // 폼 전송
+                return true;
+            } else {
+                // 폼 전송 후 페이지 이동 취소
+                setTimeout(function () {
+                    window.stop();
+                }, 0);
+                return false;
+            }
         }
 
         //쿠폰창 띄우기
@@ -337,51 +347,51 @@
     <script>
         var orderId = null;
 
-        function buyNow(form) {
-            if (!confirmOrder()) {
-                return;
-            }
-            const productId = form.productId.value;
-            const size = form.size.value;
-            const color = form.color.value;
-            const quantity = form.quantity.value;
+        // function buyNow(form) {
+        //     if (!confirmOrder()) {
+        //         return;
+        //     }
+        //     const productId = form.productId.value;
+        //     const size = form.size.value;
+        //     const color = form.color.value;
+        //     const quantity = form.quantity.value;
+        //
+        //     const data = {
+        //         productId: productId,
+        //         size: size,
+        //         color: color,
+        //         quantity: quantity
+        //     };
+        //
+        //     fetch("/trendpick/orders/order/product", {
+        //         method: 'post',
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify(data)
+        //     }).then(res => {
+        //         if (!res.ok) {
+        //             throw new Error('Network response was not ok');
+        //         }
+        //         return res.json();
+        //     })
+        //         .then(res => {
+        //             console.log(res);
+        //         }).catch((error) => console.log("error:", error));
+        // }
 
-            const data = {
-                productId: productId,
-                size: size,
-                color: color,
-                quantity: quantity
-            };
-
-            fetch("/trendpick/orders/order/product", {
-                method: 'post',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data)
-            }).then(res => {
-                if (!res.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return res.json();
-            })
-                .then(res => {
-                    console.log(res);
-                }).catch((error) => console.log("error:", error));
-        }
-
-        const socket = new SockJS('/websocket');
-        const stompClient = Stomp.over(socket);
-        stompClient.connect({}, function () {
-            stompClient.subscribe('/user/topic/standByOrder', function (message) {
-                const data = JSON.parse(message.body);
-                if (data.message === 'Success') {
-                    window.location.href = "/trendpick/orders/" + data.orderId + "/form";
-                } else if (data.message === 'Fail') {
-                    history.back();
-                }
-            });
-        });
+        // const socket = new SockJS('/websocket');
+        // const stompClient = Stomp.over(socket);
+        // stompClient.connect({}, function () {
+        //     stompClient.subscribe('/user/topic/standByOrder', function (message) {
+        //         const data = JSON.parse(message.body);
+        //         if (data.message === 'Success') {
+        //             window.location.href = "/trendpick/orders/" + data.orderId + "/form";
+        //         } else if (data.message === 'Fail') {
+        //             history.back();
+        //         }
+        //     });
+        // });
     </script>
 
 </main>
