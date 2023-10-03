@@ -26,7 +26,6 @@ import project.trendpick_pro.domain.orders.repository.OrderRepository;
 import project.trendpick_pro.domain.orders.service.OrderService;
 import project.trendpick_pro.domain.product.exception.ProductStockOutException;
 import project.trendpick_pro.domain.product.service.ProductService;
-import project.trendpick_pro.global.kafka.outbox.entity.OrderMaterial;
 import project.trendpick_pro.global.util.rsData.RsData;
 
 import java.time.LocalDate;
@@ -54,9 +53,6 @@ public class OrderServiceImpl implements OrderService {
         List<CartItem> cartItems = cartService.getSelectedCartItems(member, request);
         RsData result = validateCartToOrder(member, request, cartItems);
         if (result.isFail()) return result;
-
-        String uuidCode =  UUID.randomUUID().toString();
-        List<OrderMaterial> orderMaterials = new ArrayList<>();
 
         List<OrderItem> orderItems = createOrderItems(cartItems);
         Order order = orderRepository.save(Order.createOrder(member, new Delivery(member.getAddress()), orderItems));
@@ -175,15 +171,6 @@ public class OrderServiceImpl implements OrderService {
         if (!Objects.equals(cartItems.get(0).getCart().getMember().getId(), member.getId()))
             return RsData.of("F-1", "현재 접속중인 사용자와 장바구니 사용자가 일치하지 않습니다.");
         return RsData.success();
-    }
-
-    private List<OrderItem> orderMaterialsToOrderItems(List<OrderMaterial> orderMaterials) throws ProductStockOutException{
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (OrderMaterial orderMaterial : orderMaterials) { //이때 재고 감소, 재고 체크
-            orderItems.add(OrderItem.of(productService.findByIdWithOrder(orderMaterial.getProductId()), orderMaterial.getQuantity(),
-                    orderMaterial.getSize(), orderMaterial.getColor()));
-        }
-        return orderItems;
     }
 
     private RsData validateAvailableCancel(Order order) {
