@@ -2,7 +2,6 @@ package project.trendpick_pro.domain.orders.contoller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +16,8 @@ import project.trendpick_pro.domain.orders.entity.dto.request.ProductOrderReques
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderDetailResponse;
 import project.trendpick_pro.domain.orders.entity.dto.response.OrderResponse;
 import project.trendpick_pro.global.util.rsData.RsData;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,7 +32,7 @@ class OrderControllerTest extends ControllerTestSupport {
     void cartToOrder() throws Exception {
         //given
         CartToOrderRequest request = new CartToOrderRequest(List.of(1L, 2L));
-        given(orderService.cartToOrder(any(Member.class), any(CartToOrderRequest.class))).willReturn(RsData.successOf(1L));
+        given(orderService.cartToOrder(any(), any(CartToOrderRequest.class))).willReturn(RsData.successOf(1L));
 
         //when //then
         mockMvc.perform(
@@ -54,13 +50,15 @@ class OrderControllerTest extends ControllerTestSupport {
     void productToOrder() throws Exception {
         //given
         ProductOrderRequest request = new ProductOrderRequest(1L, 10, "L", "BLACK");
-        given(orderService.productToOrder(any(Member.class), anyLong(), anyInt(), anyString(), anyString())).willReturn(RsData.successOf(1L));
+        given(orderService.productToOrder(any(), anyLong(), anyInt(), anyString(), anyString())).willReturn(RsData.successOf(1L));
 
         //when //then
         mockMvc.perform(
                         post("/trendpick/orders/order/product")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
+                                .param("productId", String.valueOf(request.getProductId()))
+                                .param("size", request.getSize())
+                                .param("quantity", String.valueOf(request.getQuantity()))
+                                .param("color", request.getColor())
                 )
                 .andDo(print())
                 .andExpect(status().isOk());

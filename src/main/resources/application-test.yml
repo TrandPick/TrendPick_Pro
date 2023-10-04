@@ -12,12 +12,7 @@ spring:
   data:
     redis:
       host: ${test.redis.host}
-  kafka:
-    bootstrap-servers: ${test.kafka.host}:${test.kafka.port}
 
-kafka:
-  host: ${test.kafka.host}
-  port: ${test.kafka.port}
 redis:
   host: ${test.redis.host}
   port: ${test.redis.port}

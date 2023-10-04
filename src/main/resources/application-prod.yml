@@ -25,12 +25,6 @@ spring:
     redis:
       host: ${redis.host}
       port: ${redis.port}
-  kafka:
-    bootstrap-servers: ${prod.kafka.host}:${prod.kafka.port}
-
-kafka:
-  host: ${prod.kafka.host}
-  port: ${prod.kafka.port}
 redis:
   host: ${prod.redis.host}
   port: ${prod.redis.port}
