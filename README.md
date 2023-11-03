@@ -206,8 +206,7 @@ Footer // issue tracker를 사용하는 경우 참조한 issue tracker ID를 기
 <br>
 
 ### ERD 설계도
-
-![image](https://github.com/TrandPick/TrendPick_Pro/assets/62290451/555f5b17-9a28-455a-a9db-08536e8e5454)
+<img width="1511" alt="image" src="https://github.com/TrandPick/TrendPick_Pro/assets/26915908/d9fe821e-8b74-4081-b145-847e6d701ed2">
 
 <br>
 
